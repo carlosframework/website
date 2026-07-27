@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CARLOS — Continuously Available, Replicated, Lightweight, Open, Secure</title>
+<meta name="description" content="🤖 An architecture for software that costs nothing when nobody is using it, holds nothing it can read, and can be run by the person who depends on it. Continuously Available, Replicated, Lightweight, Open, Secure.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:title" content="CARLOS">
+<meta property="og:description" content="Continuously Available, Replicated, Lightweight, Open, Secure — an architecture for building small sovereign systems with AI as the factory.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://carlosframework.com/">
+<style>
+  :root {
+    --bg: #ffffff;
+    --ink: #1d2029;
+    --muted: #647686;
+    --accent: #0d6e63;
+    --accent-soft: rgba(13, 110, 99, 0.09);
+    --rule: #e7e9f0;
+    --max: 42rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14151c;
+      --ink: #eef0f6;
+      --muted: #93a8ba;
+      --accent: #4cc3ae;
+      --accent-soft: rgba(76, 195, 174, 0.12);
+      --rule: #2a2e38;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14151c;
+    --ink: #eef0f6;
+    --muted: #93a8ba;
+    --accent: #4cc3ae;
+    --accent-soft: rgba(76, 195, 174, 0.12);
+    --rule: #2a2e38;
+  }
+  :root[data-theme="light"] {
+    --bg: #ffffff;
+    --ink: #1d2029;
+    --muted: #647686;
+    --accent: #0d6e63;
+    --accent-soft: rgba(13, 110, 99, 0.09);
+    --rule: #e7e9f0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 1.0625rem/1.65 Charter, Georgia, "Times New Roman", serif;
+    -webkit-font-smoothing: antialiased;
+    padding: 0 1.25rem;
+  }
+  header, main, footer { max-width: var(--max); margin: 0 auto; }
+  header { padding: 4.5rem 0 1rem; }
+  h1 {
+    font-size: 3rem; line-height: 1; letter-spacing: 0.02em;
+    margin: 0 0 0.85rem; font-weight: 700;
+  }
+  .tagline { font-size: 1.2rem; color: var(--muted); font-style: italic; }
+  .robot-note {
+    margin: 1.75rem 0 0; padding: 0.6rem 0.9rem;
+    background: var(--accent-soft); border-radius: 0.5rem;
+    font-size: 0.9rem; color: var(--muted);
+    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  }
+  .robot-note a { color: var(--accent); }
+  main { padding: 1rem 0 3rem; }
+  section { padding: 2.25rem 0; }
+  section + section { border-top: 1px solid var(--rule); }
+  h2 {
+    font-size: 1.55rem; line-height: 1.25; font-weight: 700;
+    letter-spacing: -0.01em; margin-bottom: 0.4rem;
+  }
+  h2 a { color: inherit; text-decoration: none; }
+  h2 a:hover { color: var(--accent); }
+  h3 {
+    font-size: 1.1rem; font-weight: 700; margin: 1.6rem 0 0.4rem;
+  }
+  .epigraph {
+    font-size: 1.15rem; font-style: italic; color: var(--muted);
+    margin-bottom: 1.1rem;
+  }
+  p { margin: 0 0 1.1rem; }
+  p:last-child { margin-bottom: 0; }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  strong { font-weight: 700; }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.88em; background: var(--accent-soft);
+    padding: 0.1em 0.35em; border-radius: 0.25rem;
+  }
+
+  /* the expansion */
+  .expansion {
+    margin: 1.5rem 0 0; list-style: none;
+  }
+  .expansion li {
+    border-top: 1px solid var(--rule);
+    padding: 1rem 0;
+  }
+  .expansion li:last-child { border-bottom: 1px solid var(--rule); }
+  .expansion .term {
+    font-weight: 700; font-size: 1.1rem; display: block; margin-bottom: 0.2rem;
+  }
+  .expansion .term b {
+    color: var(--accent); font-weight: 700;
+  }
+  .expansion .gloss { color: var(--muted); }
+
+  .keyline {
+    margin: 1.5rem 0; padding: 1rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 0 0.4rem 0.4rem 0;
+  }
+  .keyline p:last-child { margin-bottom: 0; }
+
+  ul.plain { list-style: none; margin: 1.1rem 0; }
+  ul.plain li {
+    padding: 0.45rem 0 0.45rem 1.25rem; position: relative;
+  }
+  ul.plain li::before {
+    content: "—"; position: absolute; left: 0; color: var(--accent);
+  }
+
+  dl.built { margin: 1.25rem 0 0; }
+  dl.built dt {
+    font-weight: 700; margin-top: 1rem;
+  }
+  dl.built dd { color: var(--muted); margin: 0.1rem 0 0; }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 2rem 0 4rem;
+    color: var(--muted); font-size: 0.95rem;
+  }
+  footer p { margin-bottom: 0.6rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>CARLOS</h1>
+  <p class="tagline"><b>C</b>ontinuously <b>A</b>vailable, <b>R</b>eplicated, <b>L</b>ightweight, <b>O</b>pen, <b>S</b>ecure.</p>
+  <p class="robot-note">🤖 This document was written by an LLM, on the ideas, instruction, and editing of humans. AI-written text here is always marked, visibly, like this — that's <a href="https://11factor.org/#x">factor X</a>.</p>
+</header>
+
+<main>
+
+<section id="intro">
+  <p>CARLOS is an architecture for building software that is <strong>cheap enough to leave running forever, small enough to understand, sealed so tightly the operator is not a party to it, and yours to run</strong>. It was not designed. It was extracted — the same shapes kept appearing across a messenger, an email service, a social network, a file store and a training app, until it was obvious they were one thing being rebuilt five times.</p>
+
+  <p>It exists because the economics of building software changed. AI made the hard parts cheap, and in doing so made a category of system newly viable: software crafted for an audience of five, systems no company would ever have staffed, care applied to corners no budget ever reached. <a href="https://11factor.org">The Eleven Factors</a> set out what such systems should promise. CARLOS is the shape that keeps those promises in code.</p>
+
+  <div class="keyline">
+    <p>The premise in one line: <strong>treat AI as a factory, not a feature.</strong> Spend an extravagant machine, at length, to produce a lean artifact — one static binary, no build step, no dependencies, no JavaScript that isn't hand-written. The compute is spent once at the factory. What ships is small forever.</p>
+  </div>
+</section>
+
+<section id="name">
+  <h2><a href="#name">What the letters mean</a></h2>
+  <p class="epigraph">Five claims, each of which a system either honours or doesn't.</p>
+
+  <ul class="expansion">
+    <li>
+      <span class="term"><b>C</b>ontinuously <b>A</b>vailable</span>
+      <span class="gloss">Always there when someone knocks; not running when nobody does. An instance is spawned on the request that needs it and stopped when it goes idle. Most software is used a few hours a week and billed for a hundred and sixty-eight.</span>
+    </li>
+    <li>
+      <span class="term"><b>R</b>eplicated</span>
+      <span class="gloss">The box is disposable; the data is not. Every database streams to object storage from the first byte, and can move between machines under a lease that guarantees exactly one writer. Losing a server should cost a restart, not a history.</span>
+    </li>
+    <li>
+      <span class="term"><b>L</b>ightweight</span>
+      <span class="gloss">One static binary with the database compiled in. No container required, no runtime to install, no bundler, no build step. Small enough that one person can read all of it, and cheap enough that running it for a handful of users is not a business decision.</span>
+    </li>
+    <li>
+      <span class="term"><b>O</b>pen</span>
+      <span class="gloss">Source-available and forkable, and — the part that is usually missing — actually runnable by the person who depends on it. If you can't run it yourself, you don't own it. Software built with AI should belong to the people it was built for.</span>
+    </li>
+    <li>
+      <span class="term"><b>S</b>ecure</span>
+      <span class="gloss">Not "we take security seriously". A specific, falsifiable claim: the server holds only ciphertext it cannot open, so publishing the entire database leaks no content. Last in the acronym, first in the architecture — every other letter is shaped around this one.</span>
+    </li>
+  </ul>
+</section>
+
+<section id="rule">
+  <h2><a href="#rule">The one rule</a></h2>
+  <p class="epigraph">If the server is compromised, the attacker gets nothing.</p>
+
+  <p>This is the constraint every other decision is downstream of. The server stores and relays <strong>opaque ciphertext</strong> plus key material it cannot open. It never sees plaintext and never receives a usable private key. Private keys live in browsers, and nowhere else.</p>
+
+  <p>Each person holds a keypair. Content is sealed under symmetric keys that are wrapped to each member's public key, so membership is the boundary and it is enforced by cryptography rather than by a permission check that someone can forget to write. Invite links carry a one-time secret in the URL <code>#fragment</code> — which browsers never send to the server.</p>
+
+  <p>The test is blunt, and it is the only one that counts: <strong>publish the entire database and see what leaks.</strong> In a system built this way the answer is metadata — who talks to whom, and when — and never content. That residue is real, and worth stating plainly rather than papering over; the point of the architecture is that it is <em>all</em> that is left.</p>
+</section>
+
+<section id="shape">
+  <h2><a href="#shape">The shape: a blind router, and one process per person</a></h2>
+  <p class="epigraph">The front door owns identity. It knows nothing about what is behind it.</p>
+
+  <p>A CARLOS deployment is a small <strong>router</strong> and many <strong>instances</strong>. The router owns identity, sessions and routing, and knows nothing about what it routes to. An instance owns exactly one person's data and knows nothing about anyone else. They speak over a unix socket, and the socket <em>is</em> the boundary — an instance has no authentication of its own, deliberately, because the front door owns identity entirely and a second auth layer is a second thing to get wrong.</p>
+
+  <h3>Blast radius</h3>
+  <p>A panic, a runaway query, or a memory leak in one person's request path takes down one person's process. The next request starts it again. Nobody else notices. This is the kind of resilience you get from partitioning rather than from engineering, which is why it holds up under code nobody has read closely.</p>
+
+  <h3>Hibernation is the real prize</h3>
+  <p>Waking is <strong>lazy</strong>: a request arrives, the process is spawned, the request waits a beat. Sleeping is a <strong>sweep</strong>, not a timer per instance, so a thousand idle people cost one goroutine rather than a thousand. Stopping is a <strong>drain</strong>, never a kill: work in flight when the sweep loses patience still lands.</p>
+  <p>Spawning is locked <em>per person</em>, never globally — several requests arriving at once for someone asleep would otherwise each start a process against the same database file, fight over the lock, and delete each other's sockets.</p>
+
+  <h3>Parking, and the single-writer lease</h3>
+  <p>An idle instance can go further than stopping: its database leaves the box entirely for object storage, and comes back on the next request. That is only safe if exactly one machine may ever write it, so the lease and the manifest are <strong>one object, not two</strong> — a lock and a manifest in separate objects need two writes to move together, an object store cannot make two writes atomic, and the moment between them is precisely the window where a takeover reads a lock saying one thing and a manifest saying another.</p>
+  <p>Every state change is a conditional write against the version that was read. Two machines both trying to claim the same expired lease is the normal case, not the exotic one: exactly one write lands, and the loser is told it lost rather than being left to believe it won.</p>
+
+  <div class="keyline">
+    <p>The failure this prevents is not a merge conflict. Two writers on an append-only log produce no conflict anyone notices — they produce <em>a record that silently never happened</em>, and everything derived from it computed against a history with a hole in it. Some data models fail loudly. This one fails quietly, so the lease has to be right.</p>
+  </div>
+</section>
+
+<section id="lean">
+  <h2><a href="#lean">Lean by construction</a></h2>
+  <p class="epigraph">The artifact is small because the rules make it hard to grow.</p>
+
+  <ul class="plain">
+    <li><strong>One static binary.</strong> Pure Go, no cgo, SQLite compiled in. Copy it to a box and run it. Adding a dependency is a decision, not a default.</li>
+    <li><strong>No build step, anywhere.</strong> The client is hand-written ES modules served directly. No bundler, no transpiler, no lockfile to rot. What you read in the repo is what runs in the browser.</li>
+    <li><strong>One file, one concern — enforced.</strong> A hard line-count cap per module, checked by a test that fails the build. When a file trips the guard you split a concern out; you never raise the number. The cap only ratchets down. Every previous codebase that skipped this grew one do-everything file, and it cost real time.</li>
+    <li><strong>Additive-only migrations.</strong> Idempotent schema changes, so deploying new code over an old database is always safe — which is what makes a thousand independently-versioned instances tractable at all.</li>
+    <li><strong>Integers for anything that matters.</strong> Money, weights, counts. A float never touches a value a person will be held to. Display converts.</li>
+  </ul>
+</section>
+
+<section id="ai">
+  <h2><a href="#ai">AI as the factory — and as a guest with a name tag</a></h2>
+  <p class="epigraph">Extravagant machines, spent on lean artifacts.</p>
+
+  <p>CARLOS assumes AI wrote most of the code, and is arranged so that this is safe rather than merely fast. The discipline is not in the typing — it is in the guard rails that survive an author who does not get tired and does not push back.</p>
+
+  <ul class="plain">
+    <li><strong>Every session gets its own worktree and its own canary.</strong> Several sessions — human and machine — are usually in flight at once. Nobody builds in the main checkout, and shared hosts only ever run merged code.</li>
+    <li><strong>Review happens on something deployed, never on localhost.</strong> A rendering bug that only a real browser engine exposes passes a unit suite clean, so the gate after every deploy is a headless engine failing on any console error.</li>
+    <li><strong>Nothing lands untested.</strong> Every change carries the tests for what it adds; a bug fix carries its regression test. The line caps, the schema rules and the crypto invariants are all assertions in a suite, not paragraphs in a document — because a paragraph does not fail a build.</li>
+  </ul>
+
+  <p>Where AI appears in the <em>product</em> rather than the factory, it is <strong>opt-in, never required, always disclosed</strong>. An agent is an ordinary encrypted member whose device is an operator-run sidecar holding its own key: it decrypts exactly the conversations it was invited to and nothing else. Agent code never runs inside the server process, and the sidecar is a pure outbound client with no inbound ports — so compromising the server yields neither the agent's keys nor the model provider's. Every path through the system works with the agent switched off.</p>
+
+  <p>Machine-authored text is marked 🤖 wherever it surfaces, including on this page.</p>
+</section>
+
+<section id="open">
+  <h2><a href="#open">Open, and self-hostable, and those are two different promises</a></h2>
+  <p class="epigraph">If you can't run it yourself, you don't own it.</p>
+
+  <p>Publishing source is the easy half. The half that usually goes missing is that the thing is <em>actually runnable</em> by a person who is not the vendor: no proprietary control plane, no license server, no essential component that only exists in someone else's account. A CARLOS system is one binary and a directory. That is the whole dependency list, and it is deliberate.</p>
+
+  <p>Centralised pieces are allowed — push relays, discovery, backup stores — on one condition: they must be <strong>glue</strong>. Thin, blind, and replaceable. A relay forwards sealed bytes it cannot open. Anyone can run their own. The test is the subpoena, the seizure, the hack: when the central piece falls, the people inside lose at most some convenience, never a word they said.</p>
+</section>
+
+<section id="built">
+  <h2><a href="#built">Where it came from</a></h2>
+  <p>CARLOS is being extracted from five systems that arrived at the same architecture independently, and are now converging on a shared one. The framework is the intersection, not the union — a shape has to earn its place by appearing more than once.</p>
+
+  <dl class="built">
+    <dt>Eleven Messenger</dt>
+    <dd>End-to-end encrypted messaging with no logins and no passwords — just secret invite links. Where the model started.</dd>
+
+    <dt>Keymail</dt>
+    <dd>Email, but secure. Instances relay ciphertext and proofs; a compromised server holds nothing readable.</dd>
+
+    <dt>Woodstar</dt>
+    <dd>Pre-takeover Twitter on the same model. Source of the module-size discipline and the browser test harness.</dd>
+
+    <dt>Slopbox</dt>
+    <dd>An open, end-to-end-encrypted alternative to Dropbox.</dd>
+
+    <dt>Kass</dt>
+    <dd>A training app for personal trainers and the people they train. The first system built on CARLOS deliberately rather than by convergence.</dd>
+  </dl>
+
+  <p style="margin-top:1.5rem">The framework is early: the router, the activator, the parking lease and the object store exist and are under test, but they live inside the applications they were pulled from. Extracting them into something a stranger can adopt is the current work. This page describes the architecture honestly, including the parts that are not yet packaged.</p>
+</section>
+
+</main>
+
+<footer>
+  <p>🤖 Written by an LLM (Claude), on the ideas, instruction, and editing of humans. AI-written text here is always marked and always disclosed — see <a href="https://11factor.org/#x">factor X</a>.</p>
+  <p>CARLOS keeps the promises set out in <a href="https://11factor.org">The Eleven Factors</a>, and is informed by building <a href="https://elevenmessenger.com">Eleven</a> — the way the twelve factors were separate from Heroku, but informed by it.</p>
+  <p><a href="https://github.com/carlosframework/website">Source for this site on GitHub</a> — open, of course.</p>
+</footer>
+
+</body>
+</html>
