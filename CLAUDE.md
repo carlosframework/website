@@ -4,8 +4,8 @@ Working notes for anyone (human or agent) changing this repo.
 
 ## What this is
 
-The website for **CARLOS** — *Continuously Available, Replicated, Lightweight,
-Open, Secure* — the architecture being extracted from Eleven Messenger,
+The website for **CARLOS** — *Cost-efficient, Available, Replicated,
+Lightweight, Open, Secure* — the architecture being extracted from Eleven Messenger,
 Keymail, Woodstar, Slopbox and Kass. The site is a single static
 `index.html`: no build step, no dependencies, no JavaScript. Keep it that way;
 a framework whose first claim is "lightweight, no build step" does not get to
@@ -60,6 +60,11 @@ person marker.**
 - **CARLOS is not an operating system.** It is an application architecture, and
   the expansion ends in "Open, Secure" for exactly that reason — an earlier
   draft read "Operating System", which overclaimed.
+- **C and A are two separate claims.** The expansion is "Cost-efficient,
+  Available" — six letters, six promises. It replaced "Continuously Available"
+  (July 2026) because cost-efficiency is the novel claim and deserved its own
+  letter; "Cheap" was considered and rejected for its low-quality connotation.
+  Don't recombine them in a drive-by edit.
 - **The name is CARLOS, one S.** "CARLOSS" (…Open, Secure, Software) was
   considered for the OSS ending and rejected: the double letter invites typos
   forever, "Software" only earns its place via the pun, and the org, domain and
