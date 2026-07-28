@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CARLOS — Continuously Available, Replicated, Lightweight, Open, Secure</title>
-<meta name="description" content="🤖 An architecture for software that costs nothing when nobody is using it, holds nothing it can read, and can be run by the person who depends on it. Continuously Available, Replicated, Lightweight, Open, Secure.">
+<meta name="description" content="🤖 The productivity AI promised, in software worth owning: apps that cost almost nothing when idle, give up nothing when breached, and ship as one binary anyone can run. Continuously Available, Replicated, Lightweight, Open, Secure.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta property="og:title" content="CARLOS">
-<meta property="og:description" content="Continuously Available, Replicated, Lightweight, Open, Secure — an architecture for building small sovereign systems with AI as the factory.">
+<meta property="og:description" content="Continuously Available, Replicated, Lightweight, Open, Secure — the architecture for turning AI's productivity into apps people can actually own and run.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://carlosframework.com/">
 <style>
@@ -61,6 +61,7 @@
     margin: 0 0 0.85rem; font-weight: 700;
   }
   .tagline { font-size: 1.2rem; color: var(--muted); font-style: italic; }
+  .lede { font-size: 1.15rem; margin: 1.25rem 0 0; }
   .robot-note {
     margin: 1.75rem 0 0; padding: 0.6rem 0.9rem;
     background: var(--accent-soft); border-radius: 0.5rem;
@@ -146,15 +147,16 @@
 <header>
   <h1>CARLOS</h1>
   <p class="tagline"><b>C</b>ontinuously <b>A</b>vailable, <b>R</b>eplicated, <b>L</b>ightweight, <b>O</b>pen, <b>S</b>ecure.</p>
+  <p class="lede">AI finally made building software fast. CARLOS makes what you build worth keeping: apps that cost almost nothing when idle, give up nothing when breached, and ship as a single binary anyone can run.</p>
   <p class="robot-note">🤖 This document was written by an LLM, on the ideas, instruction, and editing of humans. AI-written text here is always marked, visibly, like this — that's <a href="https://11factor.org/#x">factor X</a>.</p>
 </header>
 
 <main>
 
 <section id="intro">
-  <p>CARLOS is an architecture for building software that is <strong>cheap enough to leave running forever, small enough to understand, sealed so tightly the operator is not a party to it, and yours to run</strong>. It was not designed. It was extracted — the same shapes kept appearing across a messenger, an email service, a social network, a file store and a training app, until it was obvious they were one thing being rebuilt five times.</p>
+  <p>AI made software cheap to build. CARLOS makes it cheap to own — an architecture for apps that are <strong>cheap enough to leave running forever, small enough to understand, sealed so tightly the operator is not a party to them, and yours to run anywhere</strong>. It was not designed on a whiteboard. It was extracted: the same shapes kept appearing across a messenger, an email service, a social network, a file store and a training app, until it was obvious they were one thing being rebuilt five times.</p>
 
-  <p>It exists because the economics of building software changed. AI made the hard parts cheap, and in doing so made a category of system newly viable: software crafted for an audience of five, systems no company would ever have staffed, care applied to corners no budget ever reached. <a href="https://11factor.org">The Eleven Factors</a> set out what such systems should promise. CARLOS is the shape that keeps those promises in code.</p>
+  <p>The payoff is a category of software that was never viable before: apps crafted for an audience of five, systems no company would ever have staffed, care applied to corners no budget ever reached. <a href="https://11factor.org">The Eleven Factors</a> set out what such software should promise the people who use it. CARLOS is the shape that keeps those promises in code.</p>
 
   <div class="keyline">
     <p>The premise in one line: <strong>treat AI as a factory, not a feature.</strong> Spend an extravagant machine, at length, to produce a lean artifact — one static binary, no build step, no dependencies, no JavaScript that isn't hand-written. The compute is spent once at the factory. What ships is small forever.</p>
@@ -162,8 +164,8 @@
 </section>
 
 <section id="name">
-  <h2><a href="#name">What the letters mean</a></h2>
-  <p class="epigraph">Five claims, each of which a system either honours or doesn't.</p>
+  <h2><a href="#name">What the letters buy you</a></h2>
+  <p class="epigraph">Not five buzzwords — five testable promises.</p>
 
   <ul class="expansion">
     <li>
@@ -239,7 +241,7 @@
   <h2><a href="#ai">AI as the factory — and as a guest with a name tag</a></h2>
   <p class="epigraph">Extravagant machines, spent on lean artifacts.</p>
 
-  <p>CARLOS assumes AI wrote most of the code, and is arranged so that this is safe rather than merely fast. The discipline is not in the typing — it is in the guard rails that survive an author who does not get tired and does not push back.</p>
+  <p>CARLOS assumes AI wrote most of the code — that is where the productivity comes from — and is arranged so that this is safe rather than merely fast. The discipline is not in the typing; it is in guard rails that survive an author who never gets tired and never pushes back.</p>
 
   <ul class="plain">
     <li><strong>Every session gets its own worktree and its own canary.</strong> Several sessions — human and machine — are usually in flight at once. Nobody builds in the main checkout, and shared hosts only ever run merged code.</li>
@@ -256,13 +258,13 @@
   <h2><a href="#open">Open, and self-hostable, and those are two different promises</a></h2>
   <p class="epigraph">If you can't run it yourself, you don't own it.</p>
 
-  <p>Publishing source is the easy half. The half that usually goes missing is that the thing is <em>actually runnable</em> by a person who is not the vendor: no proprietary control plane, no license server, no essential component that only exists in someone else's account. A CARLOS system is one binary and a directory. That is the whole dependency list, and it is deliberate.</p>
+  <p>Publishing source is the easy half. The half that usually goes missing is that the thing is <em>actually runnable</em> by a person who is not the vendor: no proprietary control plane, no license server, no essential component that only exists in someone else's account. A CARLOS system is one binary and a directory. That is the whole dependency list — which means distribution is copying a file, and handing someone the binary is handing them the product, not a client for it.</p>
 
   <p>Centralised pieces are allowed — push relays, discovery, backup stores — on one condition: they must be <strong>glue</strong>. Thin, blind, and replaceable. A relay forwards sealed bytes it cannot open. Anyone can run their own. The test is the subpoena, the seizure, the hack: when the central piece falls, the people inside lose at most some convenience, never a word they said.</p>
 </section>
 
 <section id="built">
-  <h2><a href="#built">Where it came from</a></h2>
+  <h2><a href="#built">Extracted, not invented</a></h2>
   <p>CARLOS is being extracted from five systems that arrived at the same architecture independently, and are now converging on a shared one. The framework is the intersection, not the union — a shape has to earn its place by appearing more than once.</p>
 
   <dl class="built">
@@ -282,7 +284,7 @@
     <dd>A training app for personal trainers and the people they train. The first system built on CARLOS deliberately rather than by convergence.</dd>
   </dl>
 
-  <p style="margin-top:1.5rem">The framework is early: the router, the activator, the parking lease and the object store exist and are under test, but they live inside the applications they were pulled from. Extracting them into something a stranger can adopt is the current work. This page describes the architecture honestly, including the parts that are not yet packaged.</p>
+  <p style="margin-top:1.5rem">The framework is early: the router, the activator, the parking lease and the object store exist and are under test, but they live inside the applications they were pulled from. Extracting them into something a stranger can adopt is the current work. If that honesty reads oddly on a homepage — good. It is the same trade the architecture makes everywhere: fewer claims, all of them checkable.</p>
 </section>
 
 </main>
