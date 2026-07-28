@@ -6,7 +6,9 @@ Working notes for anyone (human or agent) changing this repo.
 
 The website for **CARLOS** — *Cost-efficient, Available, Replicated,
 Lightweight, Open, Secure* — the architecture being extracted from Eleven Messenger,
-Keymail, Woodstar, Slopbox and Kass. The site is a single static
+Keymail, Woodstar, Slopbox and Kass. Tito (always "Tito", never "Tito Go")
+is adopting CARLOS deliberately and is listed on the site as an adopter,
+not an extraction source — it doesn't count toward the "5 systems" stat. The site is a single static
 `index.html`: no build step, no dependencies, no JavaScript. Keep it that way;
 a framework whose first claim is "lightweight, no build step" does not get to
 ship a bundler on its own homepage.
