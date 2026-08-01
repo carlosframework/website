@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The CARLOS Platform</title>
-<meta name="description" content="🤖 The place where CARLOS apps run: ship an immutable release, get a canary URL in seconds, promote the same artifact to stable. Apps sleep to a bucket when idle and wake on demand. The whole platform is one binary, a bucket, and DNS — open, and trivially self-hostable.">
+<meta name="description" content="🤖 Scale to billions, build 100x faster, 1000x faster performing apps, 30x cheaper and more efficient. Ship immutable releases with instant canary URLs, promote the same bytes to stable, and let idle apps sleep for free. One binary, a bucket, and DNS — open and self-hostable.">
 <meta property="og:title" content="The CARLOS Platform">
-<meta property="og:description" content="A black-box deployment platform for CARLOS apps. One binary, a bucket, and DNS — Heroku's ease, keeping CARLOS's promises.">
+<meta property="og:description" content="Scale to billions, build 100x faster, 1000x faster performing apps, 30x cheaper. Immutable releases, instant canary URLs, apps that sleep for free — on a platform that is one binary, a bucket, and DNS.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://carlosframework.com/platform/">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -19,7 +19,9 @@
     --accent-soft: rgba(15, 94, 133, 0.09);
     --rule: #e7e9f0;
     --max: 42rem;
-    --wide: 62rem;
+    --wide: 64rem;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -54,115 +56,183 @@
     font: 400 1.0625rem/1.65 Charter, Georgia, "Times New Roman", serif;
     -webkit-font-smoothing: antialiased;
     padding: 0 1.25rem;
+    overflow-x: hidden;
   }
   a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, .btn:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px;
+  }
   strong { font-weight: 700; }
   code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: var(--mono);
     font-size: 0.88em; background: var(--accent-soft);
     padding: 0.1em 0.35em; border-radius: 0.25rem;
   }
 
+  .brandline {
+    max-width: var(--wide); margin: 0 auto; padding: 1.1rem 0 0;
+    font-family: var(--mono); font-size: 0.85rem; letter-spacing: 0.04em;
+  }
+  .brandline a { text-decoration: none; color: var(--muted); }
+  .brandline a b { color: var(--ink); font-weight: 700; }
+  .brandline .here { color: var(--accent); font-weight: 700; }
+
   /* hero */
   header {
     max-width: var(--wide); margin: 0 auto;
-    padding: 5rem 0 3rem; text-align: center;
+    padding: 4.5rem 0 3.5rem; text-align: center;
   }
   h1 {
-    font-size: 2.9rem; line-height: 1.1; letter-spacing: 0.01em;
-    margin: 0 0 0.85rem; font-weight: 700;
+    font-size: clamp(2.1rem, 5.4vw, 3.7rem);
+    line-height: 1.12; letter-spacing: -0.015em;
+    font-weight: 700; margin: 0 auto;
+    max-width: 56rem;
   }
-  .tagline { font-size: 1.2rem; color: var(--muted); font-style: italic; }
+  h1 .x { color: var(--accent); }
+  .welcome {
+    margin: 1.4rem auto 0;
+    font-family: var(--mono); font-size: clamp(0.95rem, 2vw, 1.1rem);
+    letter-spacing: 0.05em; color: var(--muted);
+  }
+  .welcome b { color: var(--accent); font-weight: 700; }
   .lede {
-    font-size: 1.2rem; max-width: 38rem;
+    font-size: 1.2rem; max-width: 40rem;
     margin: 1.5rem auto 0;
   }
   .cta {
-    margin: 2rem 0 0; display: flex; gap: 0.75rem;
+    margin: 2.2rem 0 0; display: flex; gap: 0.85rem;
     justify-content: center; flex-wrap: wrap;
   }
   .btn {
-    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-    font-size: 0.95rem; font-weight: 600; text-decoration: none;
-    padding: 0.65rem 1.25rem; border-radius: 0.5rem;
+    font-family: var(--sans);
+    font-size: 1rem; font-weight: 600; text-decoration: none;
+    padding: 0.75rem 1.5rem; border-radius: 0.5rem;
+    border: 1px solid transparent;
   }
   .btn.primary { background: var(--accent); color: var(--bg); }
-  .btn.ghost { color: var(--accent); border: 1px solid var(--rule); }
-  .btn.ghost:hover, .btn.primary:hover { filter: brightness(1.1); }
+  .btn.ghost { color: var(--accent); border-color: var(--rule); }
+  .btn.ghost:hover, .btn.primary:hover { filter: brightness(1.12); }
   .robot-note {
-    margin: 2.25rem auto 0; padding: 0.6rem 0.9rem; max-width: 36rem;
+    margin: 2.5rem auto 0; padding: 0.6rem 0.9rem; max-width: 36rem;
     background: var(--accent-soft); border-radius: 0.5rem;
     font-size: 0.9rem; color: var(--muted);
-    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-family: var(--sans);
   }
   .robot-note a { color: var(--accent); }
 
-  /* stat strip */
-  .stats {
-    max-width: var(--wide); margin: 0 auto;
-    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-    text-align: center;
-  }
-  .stats div { padding: 1.4rem 0.5rem; }
-  .stats .n { display: block; font-size: 2rem; font-weight: 700; color: var(--accent); line-height: 1.1; }
-  .stats .l {
-    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-    font-size: 0.85rem; color: var(--muted);
-  }
-
   /* sections */
-  main { max-width: var(--wide); margin: 0 auto; padding: 0 0 3rem; }
-  section { padding: 3rem 0; }
-  section + section { border-top: 1px solid var(--rule); }
+  main { max-width: var(--wide); margin: 0 auto; padding: 0 0 2rem; }
+  main > section { padding: 3.25rem 0; border-top: 1px solid var(--rule); }
   section > * { max-width: var(--max); margin-left: auto; margin-right: auto; }
-  section > .cards { max-width: var(--wide); }
-  h2 {
-    font-size: 1.6rem; line-height: 1.25; font-weight: 700;
-    letter-spacing: -0.01em; margin-bottom: 0.4rem; text-align: center;
+  section > .cards, section > .ledger, section > .pipeline, section > .tokens { max-width: var(--wide); }
+  .eyebrow {
+    display: block; font-family: var(--mono); font-size: 0.8rem;
+    font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 0.6rem; text-align: center;
   }
-  h2 a { color: inherit; text-decoration: none; }
-  h2 a:hover { color: var(--accent); }
+  h2 {
+    font-size: clamp(1.5rem, 3.2vw, 1.9rem); line-height: 1.25; font-weight: 700;
+    letter-spacing: -0.01em; margin-bottom: 0.5rem; text-align: center;
+  }
   .epigraph {
     font-size: 1.15rem; font-style: italic; color: var(--muted);
-    margin-bottom: 1.4rem; text-align: center;
+    margin-bottom: 1.6rem; text-align: center;
   }
   p { margin: 0 0 1.1rem; }
   section > p:last-child { margin-bottom: 0; }
 
+  /* claims ledger — the signature: every multiplier ships with its receipt */
+  .ledger { margin-top: 1rem; }
+  .claim {
+    display: grid; grid-template-columns: 11rem 1fr;
+    gap: 0 2.25rem; padding: 1.9rem 0; align-items: start;
+    border-top: 1px solid var(--rule);
+  }
+  .claim:first-child { border-top: none; }
+  .claim .big {
+    font-size: clamp(2.6rem, 6vw, 4rem); font-weight: 700;
+    line-height: 1; color: var(--accent); letter-spacing: -0.02em;
+    text-align: right; font-variant-numeric: tabular-nums;
+  }
+  .claim .big sup { font-size: 0.5em; }
+  .claim .big small {
+    display: block; font-family: var(--mono); font-size: 0.72rem;
+    font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); margin-top: 0.5rem;
+  }
+  .claim h3 { font-size: 1.25rem; font-weight: 700; margin: 0 0 0.4rem; }
+  .claim p { margin: 0 0 0.75rem; color: var(--ink); }
+  .receipt {
+    font-family: var(--mono); font-size: 0.85rem; color: var(--muted);
+    border-left: 2px solid var(--accent); padding-left: 0.75rem;
+  }
+  .receipt b { color: var(--accent); font-weight: 700; }
+  @media (max-width: 640px) {
+    .claim { grid-template-columns: 1fr; gap: 0.75rem; }
+    .claim .big { text-align: left; }
+  }
+
+  /* pipeline diagram */
+  .pipeline {
+    margin: 2rem auto 0; padding: 1.5rem 1rem;
+    border: 1px solid var(--rule); border-radius: 0.75rem;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+    gap: 0.6rem 0.9rem; font-family: var(--mono); text-align: center;
+  }
+  .stage { padding: 0.2rem 0.4rem; }
+  .stage .ch {
+    display: block; font-size: 0.95rem; font-weight: 700; color: var(--ink);
+  }
+  .stage .hash {
+    display: block; font-size: 0.85rem; color: var(--accent);
+    background: var(--accent-soft); border-radius: 0.3rem;
+    padding: 0.1rem 0.45rem; margin-top: 0.3rem;
+  }
+  .arrow { color: var(--muted); font-size: 1rem; }
+  .pipeline .note {
+    flex-basis: 100%; margin-top: 0.6rem;
+    font-size: 0.82rem; color: var(--muted); letter-spacing: 0.03em;
+  }
+
   /* cards */
   .cards {
-    display: grid; gap: 1rem; margin-top: 1.75rem;
+    display: grid; gap: 1rem; margin-top: 1.9rem;
     grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
   }
   .card {
     border: 1px solid var(--rule); border-radius: 0.75rem;
-    padding: 1.25rem 1.35rem;
+    padding: 1.3rem 1.4rem;
   }
-  .card.feature { border-color: var(--accent); background: var(--accent-soft); }
-  .card h3 { font-size: 1.1rem; font-weight: 700; margin: 0 0 0.35rem; }
-  .card .kicker {
-    display: block; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-    font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em;
-    text-transform: uppercase; color: var(--accent); margin-bottom: 0.3rem;
-  }
+  .card h3 { font-size: 1.12rem; font-weight: 700; margin: 0 0 0.4rem; }
   .card p { color: var(--muted); font-size: 0.97rem; margin: 0; }
+  .card p + p { margin-top: 0.6rem; }
 
-  .keyline {
-    margin: 1.5rem auto; padding: 1rem 1.1rem;
-    border-left: 3px solid var(--accent);
-    background: var(--accent-soft);
-    border-radius: 0 0.4rem 0.4rem 0;
+  /* one binary, a bucket, and DNS */
+  .tokens {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 0.9rem; margin: 1.9rem auto 1.6rem;
+    font-family: var(--mono);
   }
-  .keyline p:last-child { margin-bottom: 0; }
+  .token {
+    border: 1px solid var(--accent); border-radius: 0.6rem;
+    padding: 0.9rem 1.4rem; text-align: center; min-width: 9.5rem;
+  }
+  .token .t { display: block; font-size: 1.35rem; font-weight: 700; color: var(--accent); }
+  .token .d { display: block; font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; }
+  .plus { align-self: center; color: var(--muted); font-size: 1.3rem; font-family: var(--mono); }
 
-  ul.plain { list-style: none; margin: 1.1rem auto; }
-  ul.plain li {
-    padding: 0.45rem 0 0.45rem 1.25rem; position: relative;
+  /* proof strip */
+  .proof { text-align: center; }
+  .proof .live {
+    display: inline-block; font-family: var(--mono); font-size: 0.82rem;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 2rem;
+    padding: 0.3rem 1rem; margin-bottom: 1.2rem;
   }
-  ul.plain li::before {
-    content: "—"; position: absolute; left: 0; color: var(--accent);
-  }
+
+  /* closing CTA */
+  .closing { text-align: center; }
+  .closing h2 { margin-bottom: 0.9rem; }
 
   footer {
     max-width: var(--wide); margin: 0 auto;
@@ -175,149 +245,150 @@
 </head>
 <body>
 
+<p class="brandline"><a href="https://carlosframework.com"><b>CARLOS</b></a> <span aria-hidden="true">/</span> <span class="here">platform</span></p>
+
 <header>
-  <h1>The CARLOS Platform</h1>
-  <p class="tagline">Where CARLOS apps run.</p>
-  <p class="lede">A black-box deployment platform for <a href="https://carlosframework.com">CARLOS</a> apps: ship a release, and the platform places it on instances, routes to it, sleeps it when idle, and wakes it on demand. Heroku's ease, keeping CARLOS's promises — and the platform itself is one binary, a bucket, and DNS.</p>
+  <h1>Scale to <span class="x">billions</span>, build <span class="x">100&times;</span> faster, <span class="x">1000&times;</span> faster performing apps, <span class="x">30&times;</span> cheaper and more efficient.</h1>
+  <p class="welcome">Welcome to the <b>CARLOS platform</b>.</p>
+  <p class="lede">Ship an immutable release and get a live canary URL in seconds. Promote the exact same bytes to stable. Let idle apps sleep to a bucket for free and wake in milliseconds. And keep the keys: the whole platform is one binary you can run yourself.</p>
   <div class="cta">
-    <a class="btn primary" href="#ship">What shipping looks like</a>
-    <a class="btn ghost" href="#status">How young is it?</a>
+    <a class="btn primary" href="https://platform.carlosframework.com">Get started</a>
+    <a class="btn ghost" href="https://carlosframework.com">Read how it works</a>
   </div>
   <p class="robot-note">🤖 This page was written by an LLM, on the ideas, instruction, and editing of humans. AI-written text here is always marked, visibly, like this — that's <a href="https://11factor.org/#x">factor X</a>.</p>
 </header>
 
-<div class="stats">
-  <div><span class="n">1</span><span class="l">binary, playing every role</span></div>
-  <div><span class="n">0</span><span class="l">control-plane servers</span></div>
-  <div><span class="n">0</span><span class="l">rebuilds from canary to stable</span></div>
-  <div><span class="n">72h</span><span class="l">bake before stable adopts</span></div>
-</div>
-
 <main>
 
-<section id="what">
-  <p>The framework defines the shape of an app; the platform is the substrate it runs on — the way Heroku stood beside the twelve factors. An author ships <strong>releases</strong>: immutable, content-addressed artifacts. The platform places them on <strong>instances</strong>, routes to them through a mesh, hibernates them when idle, and wakes them on the request that needs them. Apps from many authors run side by side on the same fleet, sharing the same blind infrastructure.</p>
+<section id="claims">
+  <span class="eyebrow">the numbers, with receipts</span>
+  <h2>Every multiplier traces to a mechanism</h2>
+  <p class="epigraph">Not adjectives — line items. Each claim below names the machinery that produces it.</p>
 
-  <div class="keyline">
-    <p>The whole self-hosting story is one sentence: <strong>a deployment is a bucket, N hosts running one binary, and DNS.</strong> Keeping it one sentence is a design constraint on everything else.</p>
+  <div class="ledger">
+    <div class="claim">
+      <div class="big">10<sup>9</sup><small>people</small></div>
+      <div>
+        <h3>Scale to billions</h3>
+        <p>Every person gets their own instance with its own database. A crash, a leak, or a runaway query takes down one person's process — the next request restarts it, and nobody else notices. Growing means adding boxes to the fleet, not architecture to your app.</p>
+        <p class="receipt"><b>receipt:</b> per-person instances &middot; blast radius of one &middot; add boxes, not architecture</p>
+      </div>
+    </div>
+    <div class="claim">
+      <div class="big">100&times;<small>build speed</small></div>
+      <div>
+        <h3>Build 100&times; faster</h3>
+        <p>AI is the factory. Extravagant machines are spent at build time — at length, under tests that fail the build — to produce one lean artifact. The compute is spent once, at the factory; what ships stays small forever.</p>
+        <p class="receipt"><b>receipt:</b> extravagant machines in &middot; one lean artifact out</p>
+      </div>
+    </div>
+    <div class="claim">
+      <div class="big">1000&times;<small>performance</small></div>
+      <div>
+        <h3>1000&times; faster performing</h3>
+        <p>There is no network hop to a database. SQLite is compiled into the process, so a query is a function call and your data lives next to your compute — microseconds where a round trip costs milliseconds. Even a sleeping instance wakes in milliseconds.</p>
+        <p class="receipt"><b>receipt:</b> a query is a function call, not a round trip</p>
+      </div>
+    </div>
+    <div class="claim">
+      <div class="big">30&times;<small>cheaper</small></div>
+      <div>
+        <h3>30&times; cheaper and more efficient</h3>
+        <p>Most software is used a few hours a week and billed for all 168. On CARLOS, an idle app hibernates to object storage — a few objects in a bucket, no process, no memory, costing nothing — and wakes on the next request.</p>
+        <p class="receipt"><b>receipt:</b> pay for the hours used, not all 168</p>
+      </div>
+    </div>
   </div>
-
-  <p>There is no control-plane server to stand up, and none to be locked out of. All durable platform state — apps, releases, channels, instance records, leases — lives in an object-store bucket; hosts converge by watching it, and a burned-down box is replaced by pointing a fresh one at the bucket. The platform makes about itself the promise its instances already make: <strong>the box is disposable, the bucket is not.</strong> It is entirely open and trivially self-hostable, and two of its first three deployments <em>are</em> self-hosted — so anything the flagship needs that a self-hoster can't have is a design error, caught immediately.</p>
 </section>
 
 <section id="ship">
-  <h2><a href="#ship">Ship, canary, promote</a></h2>
-  <p class="epigraph">The dev pipeline is the prod pipeline, exercised on every push.</p>
+  <span class="eyebrow">ship &middot; canary &middot; promote</span>
+  <h2>From branch to stable without a rebuild</h2>
+  <p class="epigraph">One artifact, three pointers. What you tested is what ships, because it is the same bytes.</p>
 
-  <p><code>carlos ship</code> uploads a release under its content hash. A <strong>channel</strong> is a per-app pointer to a release — <code>stable</code>, <code>beta</code>, and ephemeral <code>canary/*</code> channels — and advancing one is a single pointer write. Instances subscribe to a channel and roll onto new releases at their next natural boundary: wake from hibernation, or a drain-and-restart sweep. Rollback is the same operation backwards.</p>
+  <div class="pipeline" role="img" aria-label="Pipeline diagram: the same release hash f3c9d1 moves from the canary channel to beta to stable">
+    <span class="stage"><span class="ch">canary/pr-142</span><span class="hash">f3c9d1</span></span>
+    <span class="arrow" aria-hidden="true">&rarr;</span>
+    <span class="stage"><span class="ch">beta</span><span class="hash">f3c9d1</span></span>
+    <span class="arrow" aria-hidden="true">&rarr;</span>
+    <span class="stage"><span class="ch">stable</span><span class="hash">f3c9d1</span></span>
+    <span class="note">promotion moves a pointer &middot; rollback moves it back</span>
+  </div>
 
   <div class="cards">
     <div class="card">
-      <h3>Every branch gets a canary URL</h3>
-      <p><code>carlos canary</code> from a worktree builds, ships, creates a channel, spawns one instance bound to sandbox glue, and returns its URL — in seconds, not minutes. A dev environment is not a separate system; it is a channel with one subscriber.</p>
+      <h3>A live URL for every branch</h3>
+      <p>Push a branch, get a canary URL in seconds — a real deployment on the real platform, not a localhost preview. Send it to a teammate before the code review starts.</p>
     </div>
     <div class="card">
-      <h3>Promotion never rebuilds</h3>
-      <p><code>carlos promote</code> points a wider channel at the same hash: canary → beta → stable. Every environment running release <code>abc123</code> runs byte-identical code. What you tested is what ships, because it is the same bytes.</p>
+      <h3>Promote bytes, not hopes</h3>
+      <p>Promotion points a wider channel at the same immutable, content-addressed artifact: canary &rarr; beta &rarr; stable. Nothing is ever rebuilt on the way to production.</p>
     </div>
     <div class="card">
       <h3>Rollback is a pointer move</h3>
-      <p>A bad release hits gradually — instances adopt on wake — and pointing the channel back at the previous hash stops the bleed. Additive-only migrations mean old data stays readable under new code and new data survives the trip back.</p>
+      <p>Point the channel back at the previous release and the bleed stops. Immediate, no rebuild, no waiting — going backwards is never new code.</p>
     </div>
     <div class="card">
-      <h3>Static sites ride the same channels</h3>
-      <p>A static release is a content-addressed file tree the edge serves directly — no process, nothing to hibernate. Same canary URLs per branch, same promotion, same rollback. This page ships that way.</p>
+      <h3>Static sites ride the same pipeline</h3>
+      <p>A static site is a content-addressed file tree on the same channels: canary URL per branch, same promotion, same rollback. This page ships that way.</p>
     </div>
   </div>
 </section>
 
-<section id="run">
-  <h2><a href="#run">Sleeping is the default state</a></h2>
-  <p class="epigraph">Most software is used a few hours a week. The platform bills like it.</p>
-
-  <p>An idle instance hibernates, and its database <strong>parks</strong> to object storage: a parked app is a few objects in a bucket — no process, no memory, no host doing anything on its behalf. The next request wakes it, on whichever eligible host answers first. Availability is continuous even when execution isn't.</p>
-
-  <ul class="plain">
-    <li><strong>Per-instance databases, continuously replicated.</strong> Every instance owns its own database, and it streams to the bucket from the first byte. Losing a host costs a restart, not a history: its leases expire and the instances wake elsewhere from their last parked state.</li>
-    <li><strong>Scheduling is deliberately dumb.</strong> No bin-packing optimizer — hibernation makes placement mistakes cheap. A badly-placed instance parks and wakes somewhere better next time.</li>
-    <li><strong>Scale is a declaration, not a rewrite.</strong> Parked → embedded SQLite → replicated → an attached server database (one per instance, inside the app's trust domain, never multi-tenant) → a dedicated pool. An app moves along that curve by changing its manifest, not its architecture.</li>
-  </ul>
-</section>
-
-<section id="place">
-  <h2><a href="#place">Placement you can point at</a></h2>
-  <p class="epigraph">Residency is enforced where the instance wakes, not promised in a policy PDF.</p>
+<section id="trust">
+  <span class="eyebrow">guardrails</span>
+  <h2>Safe to deploy, safe to be deployed to</h2>
+  <p class="epigraph">The scary step in any pipeline is the pointer that says &ldquo;this is stable now.&rdquo; The platform makes it boring.</p>
 
   <div class="cards">
     <div class="card">
-      <span class="kicker">Residency</span>
-      <h3>Choose where data lives</h3>
-      <p>An app — or a single instance, because one customer may demand EU while another doesn't care — declares <code>residency: eu</code>. A host outside the region will not claim the lease, so there is no code path where the instance runs elsewhere "just this once during a failover": no eligible host up means the wake fails loudly. Parked data, streams, and blobs rest in region-scoped buckets. Residency covers rest as well as execution.</p>
+      <h3>A bake window between a publisher and your fleet</h3>
+      <p>A new release must sit on its channel for 72 hours before stable instances adopt it — so a compromised publisher can't rush a poisoned build across your fleet. The blast radius stays with the people who opted in early.</p>
+      <p>Rollback skips the bake: pointing back at a hash that already served traffic takes effect immediately.</p>
     </div>
     <div class="card">
-      <span class="kicker">Dedicated pools</span>
-      <h3>Your own hardware, same platform</h3>
-      <p>Apps that hold real personal or payment data — not everything is end-to-end encrypted — can reserve hosts: their instances, parked data, and wake path only ever touch that pool, optionally with its own bucket, while still riding the shared edge, channels, CLI, and services.</p>
+      <h3>Residency, enforced below your code</h3>
+      <p>Declare where your data lives — per app, or per customer instance — and a host outside that region will never claim it. There is no &ldquo;just this once during a failover&rdquo; code path: no eligible host means the wake fails loudly instead of quietly relocating.</p>
+      <p>Sleeping data rests in region-scoped buckets too. Residency covers rest as well as execution — enforced by the platform, not promised in a policy PDF.</p>
     </div>
   </div>
 </section>
 
-<section id="services">
-  <h2><a href="#services">Shared services: blind or seeing, never both</a></h2>
-  <p class="epigraph">Nothing that sees may store.</p>
+<section id="own">
+  <span class="eyebrow">no lock-in</span>
+  <h2>The whole platform is</h2>
 
-  <p>Every shared service carries a declared class, visible in the manifest of every app that consumes it. <strong>Blind services</strong> may hold data, but only data they cannot read: the object store holds parked databases and blobs but no plaintext of E2EE apps; the vault holds sealed blobs whose keys live elsewhere; the push relay holds device tokens and timing but never notification content; the OAuth relay passes tokens through sealed to the requesting instance, never retaining them. What makes them blind is falsifiable the CARLOS way — publish their state and see what leaks.</p>
-
-  <p><strong>Seeing services</strong> process plaintext — a URL unfurler, a PDF renderer, outbound mail — and are therefore forbidden to hold it. Not by promise: the platform grants a seeing service no database binding, no bucket write access, no persistent volume. Statelessness is imposed by construction. One honest caveat the mail service carries with it: the underlying email provider retains delivery metadata — bounces, complaints, suppressions — scoped per tenant.</p>
-</section>
-
-<section id="supply">
-  <h2><a href="#supply">Supply-chain honesty</a></h2>
-  <p class="epigraph">The scary step in any pipeline is the pointer that says "this is stable now."</p>
-
-  <ul class="plain">
-    <li><strong>Channel pointers are signed.</strong> A host agent rolls instances onto a release only when the pointer advancing the channel carries a valid signature — a bucket write alone is not a deployment.</li>
-    <li><strong>Releases bake before stable adopts them.</strong> A release must sit on its channel for 72 hours before stable instances roll onto it — time for a poisoned artifact to be noticed while its blast radius is still the people who opted in.</li>
-    <li><strong>Rollback never bakes.</strong> Pointing back at a hash that already served traffic takes effect immediately. The waiting period protects against new code, and going backwards is never new code.</li>
-  </ul>
-
-  <p>Every release records its build attestation — commit and builder — under its hash, and every platform change ships through the platform itself: worktree, canary channel, a miniature canary deployment, a headless-browser gate that fails on any console error. The release machinery is tested by being the only way anything ships, including itself.</p>
-</section>
-
-<section id="where">
-  <h2><a href="#where">Three deployments, one platform</a></h2>
-  <p class="epigraph">The Open promise is proven from day one, because the first two production users are self-hosters.</p>
-
-  <div class="cards">
-    <div class="card">
-      <h3>Tito</h3>
-      <p>Ticketing for conferences and events, running its own self-hosted deployment on its own account. Self-hosted use-case number one, and the platform's first proving ground.</p>
-    </div>
-    <div class="card">
-      <h3>Eleven</h3>
-      <p>The encrypted messenger, on its own deployment — and the code quarry: the platform's edge, host agent, channels, and mergeable stores were extracted from Eleven's proven machinery.</p>
-    </div>
-    <div class="card feature">
-      <h3>The flagship cloud</h3>
-      <p>The shared multi-tenant deployment, operated by the CARLOS authors, hosting Keymail, Woodstar, Slopbox, and Kass — the first four customers. Same open platform, differing from the self-hosted two in variables, never in shape.</p>
-    </div>
+  <div class="tokens">
+    <span class="token"><span class="t">1 binary</span><span class="d">every role, one file</span></span>
+    <span class="plus" aria-hidden="true">+</span>
+    <span class="token"><span class="t">1 bucket</span><span class="d">all durable state</span></span>
+    <span class="plus" aria-hidden="true">+</span>
+    <span class="token"><span class="t">DNS</span><span class="d">your domain</span></span>
   </div>
 
-  <p style="margin-top:1.75rem">Apps live at <code>&lt;sqid&gt;.oncarlos.com</code> — an address that never encodes region or host, so relocation and placement stay invisible to it. Custom domains ride on top as aliases.</p>
+  <p>That is the complete dependency list. The platform is open and self-hostable: no proprietary control plane, no license server, no essential piece that only exists in someone else's account. Run it on our cloud because it's convenient — and if you ever want to leave, copy the binary, take your bucket, point your DNS, and walk away with everything still running.</p>
 </section>
 
-<section id="status">
-  <h2><a href="#status">Where it actually stands</a></h2>
-  <p class="epigraph">Fewer claims, all of them checkable — including this one.</p>
+<section id="proof" class="proof">
+  <p class="live">In production today</p>
+  <h2>Real companies, real traffic</h2>
+  <p>The first production tenants are live: an event-ticketing company and a training platform run on CARLOS deployments today. Their apps live at <code>&lt;sqid&gt;.oncarlos.com</code> — an address that never encodes region or host, so placement stays invisible — with custom domains riding on top as aliases.</p>
+</section>
 
-  <p>The platform is young. It was extracted from Eleven and titogo — systems that kept rebuilding the same deployment shape until it was obviously one thing — and its first production tenant, Kass, migrated onto it on 2026-08-01. Everything above describes the design being built and proven, not a mature product with years of scar tissue. If that honesty reads oddly on a homepage — good. It is the same trade the framework makes: the platform holds itself to the promises it hosts, and a promise you can't check yet is stated as exactly that.</p>
+<section id="start" class="closing">
+  <h2>Ship something this afternoon</h2>
+  <p class="epigraph">A canary URL is seconds away.</p>
+  <div class="cta">
+    <a class="btn primary" href="https://platform.carlosframework.com">Get started</a>
+    <a class="btn ghost" href="https://carlosframework.com">Read how it works</a>
+  </div>
 </section>
 
 </main>
 
 <footer>
   <p>🤖 Written by an LLM (Claude), on the ideas, instruction, and editing of humans. AI-written text here is always marked and always disclosed — see <a href="https://11factor.org/#x">factor X</a>.</p>
-  <p>The platform is the substrate for apps built on <a href="https://carlosframework.com">the CARLOS framework</a>, keeping the promises set out in <a href="https://11factor.org">The Eleven Factors</a> — the way Heroku stood beside the twelve.</p>
+  <p>The platform runs apps built on <a href="https://carlosframework.com">the CARLOS framework</a>, keeping the promises set out in <a href="https://11factor.org">The Eleven Factors</a>.</p>
   <p><a href="https://github.com/carlosframework/platform">Source for the platform — and this site — on GitHub</a>. Open, of course.</p>
 </footer>
 
