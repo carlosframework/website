@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rastrillo — the CARLOS web framework</title>
+<meta name="description" content="🤖 Rastrillo is the CARLOS web framework: filesystem routing, a bootstrap that already speaks the platform's activation contract, and generated code you can read. A v1 walking skeleton today — go install it and have an app running locally in a minute.">
+<meta property="og:title" content="Rastrillo — the CARLOS web framework">
+<meta property="og:description" content="Filesystem routing, a platform-ready bootstrap, generated code you can read. go install it and have an app running locally in a minute; deploy it to a real CARLOS platform in a few more.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://carlosframework.com/rastrillo/">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root {
+    --bg: #ffffff;
+    --ink: #1d2029;
+    --muted: #64707f;
+    --accent: #0f5e85;
+    --accent-soft: rgba(15, 94, 133, 0.09);
+    --rule: #e7e9f0;
+    --max: 42rem;
+    --wide: 64rem;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14151c;
+      --ink: #eef0f6;
+      --muted: #93a4ba;
+      --accent: #5db8dd;
+      --accent-soft: rgba(93, 184, 221, 0.12);
+      --rule: #2a2e38;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14151c; --ink: #eef0f6; --muted: #93a4ba;
+    --accent: #5db8dd; --accent-soft: rgba(93, 184, 221, 0.12); --rule: #2a2e38;
+  }
+  :root[data-theme="light"] {
+    --bg: #ffffff; --ink: #1d2029; --muted: #64707f;
+    --accent: #0f5e85; --accent-soft: rgba(15, 94, 133, 0.09); --rule: #e7e9f0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 400 1.0625rem/1.65 Charter, Georgia, "Times New Roman", serif;
+    -webkit-font-smoothing: antialiased;
+    padding: 0 1.25rem; overflow-x: hidden;
+  }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, .btn:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px;
+  }
+  strong { font-weight: 700; }
+  code {
+    font-family: var(--mono); font-size: 0.88em;
+    background: var(--accent-soft); padding: 0.1em 0.35em; border-radius: 0.25rem;
+  }
+  pre {
+    font-family: var(--mono); font-size: 0.88rem; line-height: 1.55;
+    background: var(--accent-soft); border: 1px solid var(--rule);
+    border-radius: 0.6rem; padding: 1rem 1.15rem; overflow-x: auto;
+    margin: 1.1rem 0;
+  }
+  pre code { background: none; padding: 0; }
+  .stepnum {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 1.6rem; height: 1.6rem; border-radius: 50%;
+    background: var(--accent); color: var(--bg);
+    font-family: var(--sans); font-size: 0.85rem; font-weight: 700;
+    margin-right: 0.5rem; flex-shrink: 0;
+  }
+  .step { display: flex; align-items: baseline; margin: 1.5rem 0 0.4rem; }
+  .step:first-of-type { margin-top: 0; }
+  .step h3 { font-size: 1.05rem; font-weight: 700; }
+
+  .brandline {
+    max-width: var(--wide); margin: 0 auto; padding: 1.1rem 0 0;
+    font-family: var(--mono); font-size: 0.85rem; letter-spacing: 0.04em;
+  }
+  .brandline a { text-decoration: none; color: var(--muted); }
+  .brandline a b { color: var(--ink); font-weight: 700; }
+  .brandline .here { color: var(--accent); font-weight: 700; }
+
+  header {
+    max-width: var(--wide); margin: 0 auto;
+    padding: 4.5rem 0 3.5rem; text-align: center;
+  }
+  h1 {
+    font-size: clamp(2.1rem, 5.4vw, 3.7rem);
+    line-height: 1.12; letter-spacing: -0.015em;
+    font-weight: 700; margin: 0 auto; max-width: 56rem;
+  }
+  h1 .x { color: var(--accent); }
+  .welcome {
+    margin: 1.4rem auto 0; font-family: var(--mono);
+    font-size: clamp(0.95rem, 2vw, 1.1rem); letter-spacing: 0.05em; color: var(--muted);
+  }
+  .welcome b { color: var(--accent); font-weight: 700; }
+  .lede { font-size: 1.2rem; max-width: 40rem; margin: 1.5rem auto 0; }
+  .cta {
+    margin: 2.2rem 0 0; display: flex; gap: 0.85rem;
+    justify-content: center; flex-wrap: wrap;
+  }
+  .btn {
+    font-family: var(--sans); font-size: 1rem; font-weight: 600;
+    text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem;
+    border: 1px solid transparent;
+  }
+  .btn.primary { background: var(--accent); color: var(--bg); }
+  .btn.ghost { color: var(--accent); border-color: var(--rule); }
+  .btn.ghost:hover, .btn.primary:hover { filter: brightness(1.12); }
+  .robot-note {
+    margin: 2.5rem auto 0; padding: 0.6rem 0.9rem; max-width: 36rem;
+    background: var(--accent-soft); border-radius: 0.5rem;
+    font-size: 0.9rem; color: var(--muted); font-family: var(--sans);
+  }
+  .robot-note a { color: var(--accent); }
+
+  main { max-width: var(--wide); margin: 0 auto; padding: 0 0 2rem; }
+  main > section { padding: 3.25rem 0; border-top: 1px solid var(--rule); }
+  section > * { max-width: var(--max); margin-left: auto; margin-right: auto; }
+  section > .cards { max-width: var(--wide); }
+  .eyebrow {
+    display: block; font-family: var(--mono); font-size: 0.8rem;
+    font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 0.6rem; text-align: center;
+  }
+  h2 {
+    font-size: clamp(1.5rem, 3.2vw, 1.9rem); line-height: 1.25; font-weight: 700;
+    letter-spacing: -0.01em; margin-bottom: 0.5rem; text-align: center;
+  }
+  .epigraph {
+    font-size: 1.15rem; font-style: italic; color: var(--muted);
+    margin-bottom: 1.6rem; text-align: center;
+  }
+  p { margin: 0 0 1.1rem; }
+  section > p:last-child { margin-bottom: 0; }
+
+  .cards {
+    display: grid; gap: 1rem; margin-top: 1.9rem;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  }
+  .card { border: 1px solid var(--rule); border-radius: 0.75rem; padding: 1.3rem 1.4rem; }
+  .card h3 { font-size: 1.12rem; font-weight: 700; margin: 0 0 0.4rem; }
+  .card p { color: var(--muted); font-size: 0.97rem; margin: 0; }
+  .card p + p { margin-top: 0.6rem; }
+
+  .status-strip { text-align: center; }
+  .status-strip .live {
+    display: inline-block; font-family: var(--mono); font-size: 0.82rem;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 2rem;
+    padding: 0.3rem 1rem; margin-bottom: 1.2rem;
+  }
+
+  .yesno { display: grid; gap: 1.5rem; margin-top: 1.9rem; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); max-width: var(--wide); margin-left: auto; margin-right: auto; }
+  .yesno h3 { font-size: 1rem; font-family: var(--sans); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.7rem; }
+  .yesno.built h3 { color: var(--accent); }
+  .yesno.not-built h3 { color: var(--muted); }
+  .yesno ul { list-style: none; }
+  .yesno li { padding: 0.3rem 0; font-size: 0.97rem; }
+  .yesno.built li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+  .yesno.not-built li { color: var(--muted); }
+  .yesno.not-built li::before { content: "— "; }
+
+  .closing { text-align: center; }
+  .closing h2 { margin-bottom: 0.9rem; }
+
+  footer {
+    max-width: var(--wide); margin: 0 auto; border-top: 1px solid var(--rule);
+    padding: 2rem 0 4rem; text-align: center; color: var(--muted); font-size: 0.95rem;
+  }
+  footer p { margin-bottom: 0.6rem; max-width: var(--max); margin-left: auto; margin-right: auto; }
+</style>
+</head>
+<body>
+
+<p class="brandline"><a href="https://carlosframework.com"><b>CARLOS</b></a> <span aria-hidden="true">/</span> <span class="here">rastrillo</span></p>
+
+<header>
+  <h1>The shape of a <span class="x">CARLOS app</span>, in one command.</h1>
+  <p class="welcome">Welcome to <b>rastrillo</b>.</p>
+  <p class="lede">Rastrillo is the CARLOS web framework: filesystem routing, a bootstrap that already speaks the platform's activation contract, and generated code you can read — no manifest interpreted at runtime, no magic you can't <code>grep</code>. Scaffold an app, run it locally, and deploy it to a real CARLOS platform, all with one binary.</p>
+  <div class="cta">
+    <a class="btn primary" href="#start">Get started</a>
+    <a class="btn ghost" href="https://github.com/carlosframework/rastrillo">Read the source</a>
+  </div>
+  <p class="robot-note">🤖 This page was written by an LLM, on the ideas, instruction, and editing of humans. AI-written text here is always marked, visibly, like this — that's <a href="https://11factor.org/#x">factor X</a>.</p>
+</header>
+
+<main>
+
+<section id="what">
+  <span class="eyebrow">what it is</span>
+  <h2>Structure, not a runtime to trust</h2>
+  <p class="epigraph">Everything rastrillo generates, you can read — because it's a file, not a request handled behind your back.</p>
+
+  <div class="cards">
+    <div class="card">
+      <h3>Filesystem routing</h3>
+      <p><code>actions/orders/[id]/cancel.POST.go</code> becomes <code>POST /orders/{id}/cancel</code> — the directory structure <em>is</em> the route table. Bracket segments are path params, the filename suffix is the HTTP verb.</p>
+    </div>
+    <div class="card">
+      <h3>Generated, not interpreted</h3>
+      <p><code>rastrillo generate</code> writes a plain <code>gen/router.go</code> on Go's standard <code>http.ServeMux</code> — committed, readable, diffable. Nothing is decided by parsing a manifest at request time.</p>
+    </div>
+    <div class="card">
+      <h3>Platform-ready by default</h3>
+      <p><code>rastrillo.Serve</code> already speaks the CARLOS platform's activation contract — <code>-socket</code>/<code>-addr</code>, systemd <code>LISTEN_FDS</code>, the SQLite pragma-ordering fix, additive migrations — so shipping to a real deployment isn't a separate integration.</p>
+    </div>
+    <div class="card">
+      <h3>One binary, zero build step beyond Go</h3>
+      <p>No bundler, no separate codegen toolchain to install — <code>go install</code> gets you the CLI, <code>go build</code> gets you the app. The framework whose homepage brags about no build step doesn't get to ship one on its own tools either.</p>
+    </div>
+  </div>
+</section>
+
+<section id="status">
+  <span class="eyebrow">honestly</span>
+  <h2>What's real today</h2>
+  <p class="epigraph">A v1 walking skeleton, built to prove the core loop end to end — not the full design yet.</p>
+
+  <div class="yesno built">
+    <h3>Built</h3>
+    <ul>
+      <li><code>rastrillo new</code> / <code>generate</code> — scaffold and route</li>
+      <li><code>rastrillo.Serve</code> — the platform activation contract</li>
+      <li>SQLite bootstrap: pragma ordering, single-writer, additive migrations</li>
+      <li>A real example, deployed for real — see below</li>
+    </ul>
+  </div>
+  <div class="yesno not-built">
+    <h3>Not yet</h3>
+    <ul>
+      <li>The typed-manifest / TOML component system</li>
+      <li>The mergeable event-log store, blobs</li>
+      <li>The crypto core, WebAuthn</li>
+      <li>Agents, localization, a component vocabulary</li>
+    </ul>
+  </div>
+</section>
+
+<section id="proof" class="status-strip">
+  <p class="live">Live proof</p>
+  <h2>Not a mockup</h2>
+  <p>Rastrillo's example app is deployed on a real CARLOS platform right now: real S3-backed storage, a real edge, a real certificate. <a href="https://helloworld.dev.oncarlos.com">helloworld.dev.oncarlos.com</a> — the exact code you'll have running locally in the next section, actually shipped.</p>
+</section>
+
+<section id="start" class="closing">
+  <span class="eyebrow">step one</span>
+  <h2>Run it locally</h2>
+  <p class="epigraph">One command to install, three more to a running app.</p>
+
+  <div class="step"><span class="stepnum">1</span><h3>Install the CLI</h3></div>
+  <pre><code>go install github.com/carlosframework/rastrillo/cmd/rastrillo@latest</code></pre>
+  <p>Or via Homebrew: <code>brew install carlosframework/tap/rastrillo</code>.</p>
+
+  <div class="step"><span class="stepnum">2</span><h3>Scaffold an app</h3></div>
+  <pre><code>rastrillo new myapp</code></pre>
+  <p>Writes a <code>go.mod</code>, one starter action, and a <code>main.go</code> wiring <code>rastrillo.Serve</code> — then runs <code>generate</code> once, so the next step just works.</p>
+
+  <div class="step"><span class="stepnum">3</span><h3>Run it</h3></div>
+  <pre><code>cd myapp && go mod tidy && go build ./... && ./myapp -addr :8080</code></pre>
+  <p>Visit <code>localhost:8080</code> — that's your app, served by <code>rastrillo.Serve</code>.</p>
+</section>
+
+<section id="deploy" class="closing">
+  <span class="eyebrow">step two</span>
+  <h2>Deploy it for real</h2>
+  <p class="epigraph">CARLOS is self-hostable — one binary, a bucket, and DNS. No PaaS account to sign up for.</p>
+
+  <div class="step"><span class="stepnum">1</span><h3>Install the platform binary</h3></div>
+  <pre><code>brew install carlosframework/tap/carlos</code></pre>
+  <p>Or grab a binary directly from <a href="https://github.com/carlosframework/releases">carlosframework/releases</a>.</p>
+
+  <div class="step"><span class="stepnum">2</span><h3>Build your app for the target host</h3></div>
+  <pre><code>GOOS=linux GOARCH=arm64 go build -o myapp ./cmd/myapp</code></pre>
+
+  <div class="step"><span class="stepnum">3</span><h3>Ship, promote, route</h3></div>
+  <pre><code>carlos ship -app myapp -version $(git rev-parse --short HEAD) myapp-binary
+carlos promote -app myapp &lt;version&gt; stable
+carlos add -app myapp -kind instance myapp.yourdomain.com</code></pre>
+  <p>That's the same sequence — against a real S3-backed bucket, a real edge, a real certificate — that put rastrillo's own example live at <a href="https://helloworld.dev.oncarlos.com">helloworld.dev.oncarlos.com</a>. Standing up the box, bucket, and DNS the first time is the one-off part; from here on, every deploy is <code>ship</code> then <code>promote</code>.</p>
+</section>
+
+</main>
+
+<footer>
+  <p>🤖 Written by an LLM (Claude), on the ideas, instruction, and editing of humans. AI-written text here is always marked and always disclosed — see <a href="https://11factor.org/#x">factor X</a>.</p>
+  <p>Rastrillo builds apps that run on <a href="https://carlosframework.com/platform">the CARLOS platform</a>, keeping the promises set out in <a href="https://11factor.org">The Eleven Factors</a>.</p>
+  <p><a href="https://github.com/carlosframework/rastrillo">Source for rastrillo on GitHub</a>. Open, of course.</p>
+</footer>
+
+</body>
+</html>
