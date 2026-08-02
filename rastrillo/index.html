@@ -256,7 +256,7 @@
   <p>Writes a <code>go.mod</code>, one starter action, and a <code>main.go</code> wiring <code>rastrillo.Serve</code> — then runs <code>generate</code> once, so the next step just works.</p>
 
   <div class="step"><span class="stepnum">3</span><h3>Run it</h3></div>
-  <pre><code>cd myapp && go mod tidy && go build ./... && ./myapp -addr :8080</code></pre>
+  <pre><code>cd myapp && go mod tidy && go build ./cmd/myapp && ./myapp -addr :8080</code></pre>
   <p>Visit <code>localhost:8080</code> — that's your app, served by <code>rastrillo.Serve</code>.</p>
 </section>
 
