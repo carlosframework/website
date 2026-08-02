@@ -78,5 +78,31 @@ person marker.**
 
 ## Deploying
 
-GitHub Pages from `main` (root), custom domain `carlosframework.com` via
-`CNAME`. Pushing to `main` publishes.
+**The live apex, `carlosframework.com`, moved off GitHub Pages onto the
+CARLOS flagship itself on 2026-08-02** — the site now runs on the thing
+it's the homepage for. Pushing to `main` no longer publishes it; deploying
+is the same `ship`/`promote`/`add` sequence any CARLOS app uses:
+
+```
+carlos ship -app carlosframework -kind static -version <sha> .
+carlos promote -app carlosframework <sha> canary/rehearsal
+carlos add -app carlosframework -kind static -channel canary/rehearsal carlosframework.com
+```
+
+(Still on `canary/rehearsal`, not `stable` — same reason Kass's real
+cutover used it: `stable` bakes 72h on a box's *first* sighting of a
+channel head, which would have meant 72h of downtime for a
+never-before-served route. A future `stable` flip is optional cleanup,
+not required — mirrors Kass's own still-pending flip.)
+
+`www.carlosframework.com` still runs on GitHub Pages, deliberately
+untouched — it's the rollback path. To roll back the apex: delete its
+`A` record (`99.81.104.219`) in the `carlosframework.com` DNSimple zone
+(account 285) and recreate the four GitHub Pages `A` records
+(`185.199.108-111.153`) and four `AAAA` records
+(`2606:50c0:8000-8003::153`) — GitHub Pages was never disabled, so this
+takes effect the moment DNS propagates.
+
+The repo itself is still the source of truth and still builds via
+GitHub Pages (for `www` and as a live fallback build) — `CNAME` and
+`.nojekyll` stay as they are.
