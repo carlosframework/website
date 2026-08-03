@@ -202,7 +202,7 @@
     </div>
     <div class="card">
       <h3>Platform-ready by default</h3>
-      <p><code>rastrillo.Serve</code> already speaks the CARLOS platform's activation contract — <code>-socket</code>/<code>-addr</code>, systemd <code>LISTEN_FDS</code>, the SQLite pragma-ordering fix, additive migrations — so shipping to a real deployment isn't a separate integration.</p>
+      <p><code>rastrillo.Run</code> already speaks the CARLOS platform's activation contract end to end — hibernating instances, <code>carlos-app@</code> systemd unit tenants, plain instances, and a bare dev fallback all handled, no separate integration per deployment shape — plus the SQLite pragma-ordering fix and additive migrations.</p>
     </div>
     <div class="card">
       <h3>One binary, zero build step beyond Go</h3>
@@ -221,8 +221,10 @@
     <ul>
       <li><code>rastrillo new</code> / <code>generate</code> — scaffold and route</li>
       <li><code>rastrillo dev</code> — save, and it regenerates, rebuilds, restarts</li>
-      <li><code>rastrillo.Serve</code> — the platform activation contract</li>
+      <li><code>rastrillo.Run</code> — the full platform activation contract, hibernate and systemd tenants included</li>
       <li>SQLite bootstrap: pragma ordering, single-writer, additive migrations</li>
+      <li>Localization: locale-resolved routes, <code>T</code>/<code>Tf</code> with fallback, a ship-gate catalog check</li>
+      <li><code>rastrillo/ui</code>: List-screen partials and a token-based, light/dark stylesheet</li>
       <li>A real example, deployed for real — see below</li>
     </ul>
   </div>
@@ -232,7 +234,7 @@
       <li>The typed-manifest / TOML component system</li>
       <li>The mergeable event-log store, blobs</li>
       <li>The crypto core, WebAuthn</li>
-      <li>Agents, localization, a component vocabulary</li>
+      <li>Agents, the rest of the component vocabulary beyond List screens</li>
     </ul>
   </div>
 </section>
