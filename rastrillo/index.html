@@ -202,7 +202,7 @@
     </div>
     <div class="card">
       <h3>Platform-ready by default</h3>
-      <p><code>rastrillo.Serve</code> already speaks the CARLOS platform's activation contract — <code>-socket</code>/<code>-addr</code>, systemd <code>LISTEN_FDS</code>, the SQLite pragma-ordering fix, additive migrations — so shipping to a real deployment isn't a separate integration.</p>
+      <p><code>rastrillo.Run</code> already speaks the CARLOS platform's activation contract end to end — hibernating instances, <code>carlos-app@</code> systemd unit tenants, plain instances, and a bare dev fallback all handled, no separate integration per deployment shape — plus the SQLite pragma-ordering fix and additive migrations.</p>
     </div>
     <div class="card">
       <h3>One binary, zero build step beyond Go</h3>
@@ -220,8 +220,10 @@
     <h3>Built</h3>
     <ul>
       <li><code>rastrillo new</code> / <code>generate</code> — scaffold and route</li>
-      <li><code>rastrillo.Serve</code> — the platform activation contract</li>
+      <li><code>rastrillo dev</code> — save, and it regenerates, rebuilds, restarts</li>
+      <li><code>rastrillo.Run</code> — the full platform activation contract, hibernate and systemd tenants included</li>
       <li>SQLite bootstrap: pragma ordering, single-writer, additive migrations</li>
+      <li>Localization: locale-resolved routes, <code>T</code>/<code>Tf</code> with fallback, a ship-gate catalog check</li>
       <li><code>rastrillo/ui</code> — eight List-screen partials plus design tokens: light and dark, WCAG AA contrast, zero JavaScript</li>
       <li><code>examples/blog</code> — a real blog, admin side and all, from stock components only</li>
       <li>A real example, deployed for real — see below</li>
@@ -233,7 +235,7 @@
       <li>The typed-manifest / TOML component system</li>
       <li>The mergeable event-log store, blobs</li>
       <li>The crypto core, WebAuthn</li>
-      <li>Agents, localization</li>
+      <li>Agents, the rest of the component vocabulary beyond List screens</li>
     </ul>
   </div>
 </section>
@@ -255,11 +257,11 @@
 
   <div class="step"><span class="stepnum">2</span><h3>Scaffold an app</h3></div>
   <pre><code>rastrillo new myapp</code></pre>
-  <p>Writes a <code>go.mod</code>, one starter action, a <code>main.go</code> wiring <code>rastrillo.Serve</code>, and the <code>rastrillo/ui</code> design tokens as <code>static/tokens.css</code> — then runs <code>generate</code> once, so the next step just works.</p>
+  <p>Writes a <code>go.mod</code>, one starter action, a <code>main.go</code> wiring <code>rastrillo.Run</code>, and the <code>rastrillo/ui</code> design tokens as <code>static/tokens.css</code> — then runs <code>generate</code> once, so the next step just works.</p>
 
   <div class="step"><span class="stepnum">3</span><h3>Run it</h3></div>
-  <pre><code>cd myapp && go mod tidy && go build ./cmd/myapp && ./myapp -addr :8080</code></pre>
-  <p>Visit <code>localhost:8080</code> — that's your app, served by <code>rastrillo.Serve</code>.</p>
+  <pre><code>cd myapp && go mod tidy && rastrillo dev</code></pre>
+  <p>Visit <code>localhost:8080</code> — that's your app, served by <code>rastrillo.Run</code>. Now edit an action, save, and refresh: <code>rastrillo dev</code> regenerates, rebuilds, and restarts for you, in about a second. A save that doesn't compile keeps the previous build serving while you fix it.</p>
 </section>
 
 <section id="deploy" class="closing">
