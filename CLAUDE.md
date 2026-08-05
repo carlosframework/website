@@ -86,10 +86,21 @@ it's the homepage for. Pushing to `main` no longer publishes it; deploying
 is the same `ship`/`promote`/`add` sequence any CARLOS app uses:
 
 ```
+export AWS_PROFILE=keymail AWS_REGION=eu-west-1 \
+       CARLOS_DEPLOYMENT_BUCKET=carlos-flagship-271376211898
 carlos ship -app carlosframework -kind static -version <sha> .
-carlos promote -app carlosframework <sha> canary/rehearsal
-carlos add -app carlosframework -kind static -channel canary/rehearsal carlosframework.com
+CARLOS_RELEASE_KEY=$(aws ssm get-parameter --name /carlos/release-key \
+  --with-decryption --query Parameter.Value --output text) \
+  carlos promote -app carlosframework <sha> canary/rehearsal
 ```
+
+The env matters: without `CARLOS_DEPLOYMENT_BUCKET` the CLI goes through
+the console API, where this app was never registered, and fails with
+"not found". This is bucket mode — the same flow as `ship-app.sh` /
+`promote-app.sh` in `carlosframework/platform-infrastructure`, which are
+the canonical copies. Routes (`carlos add`) are registry-mode: they run
+on the flagship box itself (instance `i-092c0c1eea75723cb`, via SSM;
+env comes from `/etc/carlos/host.env`, binary at `/opt/carlos/carlos`).
 
 (Still on `canary/rehearsal`, not `stable` — same reason Kass's real
 cutover used it: `stable` bakes 72h on a box's *first* sighting of a
