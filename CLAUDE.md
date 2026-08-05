@@ -86,10 +86,21 @@ it's the homepage for. Pushing to `main` no longer publishes it; deploying
 is the same `ship`/`promote`/`add` sequence any CARLOS app uses:
 
 ```
+export AWS_PROFILE=keymail AWS_REGION=eu-west-1 \
+       CARLOS_DEPLOYMENT_BUCKET=carlos-flagship-271376211898
 carlos ship -app carlosframework -kind static -version <sha> .
-carlos promote -app carlosframework <sha> canary/rehearsal
-carlos add -app carlosframework -kind static -channel canary/rehearsal carlosframework.com
+CARLOS_RELEASE_KEY=$(aws ssm get-parameter --name /carlos/release-key \
+  --with-decryption --query Parameter.Value --output text) \
+  carlos promote -app carlosframework <sha> canary/rehearsal
 ```
+
+The env matters: without `CARLOS_DEPLOYMENT_BUCKET` the CLI goes through
+the console API, where this app was never registered, and fails with
+"not found". This is bucket mode — the same flow as `ship-app.sh` /
+`promote-app.sh` in `carlosframework/platform-infrastructure`, which are
+the canonical copies. Routes (`carlos add`) are registry-mode: they run
+on the flagship box itself (instance `i-092c0c1eea75723cb`, via SSM;
+env comes from `/etc/carlos/host.env`, binary at `/opt/carlos/carlos`).
 
 (Still on `canary/rehearsal`, not `stable` — same reason Kass's real
 cutover used it: `stable` bakes 72h on a box's *first* sighting of a
@@ -97,14 +108,17 @@ channel head, which would have meant 72h of downtime for a
 never-before-served route. A future `stable` flip is optional cleanup,
 not required — mirrors Kass's own still-pending flip.)
 
-`www.carlosframework.com` still runs on GitHub Pages, deliberately
-untouched — it's the rollback path. To roll back the apex: delete its
-`A` record (`99.81.104.219`) in the `carlosframework.com` DNSimple zone
-(account 285) and recreate the four GitHub Pages `A` records
-(`185.199.108-111.153`) and four `AAAA` records
-(`2606:50c0:8000-8003::153`) — GitHub Pages was never disabled, so this
-takes effect the moment DNS propagates.
+**GitHub Pages is retired (2026-08-05).** `www.carlosframework.com` is a
+CARLOS route on the same app and channel as the apex; its DNS `A` record
+points at the flagship (`99.81.104.219`) in the `carlosframework.com`
+DNSimple zone (account 285), same as the apex. `CNAME` and `.nojekyll`
+are gone from the repo and Pages is disabled on the GitHub repo.
 
-The repo itself is still the source of truth and still builds via
-GitHub Pages (for `www` and as a live fallback build) — `CNAME` and
-`.nojekyll` stay as they are.
+Rollback is a pointer move, like any CARLOS app: promote the previous
+good sha back onto `canary/rehearsal` and the edge swaps within a minute
+(`carlos channels -app carlosframework` to see what's on the channel).
+Pages is no longer a fallback; don't resurrect it in a drive-by fix.
+
+Shipping publishes the repo tree verbatim — ship from a clean
+`git archive <sha>` export, never from a working checkout (`PackDir`
+packs every regular file it sees, including `.git` and `.claude/`).
