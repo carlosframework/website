@@ -97,14 +97,17 @@ channel head, which would have meant 72h of downtime for a
 never-before-served route. A future `stable` flip is optional cleanup,
 not required — mirrors Kass's own still-pending flip.)
 
-`www.carlosframework.com` still runs on GitHub Pages, deliberately
-untouched — it's the rollback path. To roll back the apex: delete its
-`A` record (`99.81.104.219`) in the `carlosframework.com` DNSimple zone
-(account 285) and recreate the four GitHub Pages `A` records
-(`185.199.108-111.153`) and four `AAAA` records
-(`2606:50c0:8000-8003::153`) — GitHub Pages was never disabled, so this
-takes effect the moment DNS propagates.
+**GitHub Pages is retired (2026-08-05).** `www.carlosframework.com` is a
+CARLOS route on the same app and channel as the apex; its DNS `A` record
+points at the flagship (`99.81.104.219`) in the `carlosframework.com`
+DNSimple zone (account 285), same as the apex. `CNAME` and `.nojekyll`
+are gone from the repo and Pages is disabled on the GitHub repo.
 
-The repo itself is still the source of truth and still builds via
-GitHub Pages (for `www` and as a live fallback build) — `CNAME` and
-`.nojekyll` stay as they are.
+Rollback is a pointer move, like any CARLOS app: promote the previous
+good sha back onto `canary/rehearsal` and the edge swaps within a minute
+(`carlos channels -app carlosframework` to see what's on the channel).
+Pages is no longer a fallback; don't resurrect it in a drive-by fix.
+
+Shipping publishes the repo tree verbatim — ship from a clean
+`git archive <sha>` export, never from a working checkout (`PackDir`
+packs every regular file it sees, including `.git` and `.claude/`).
