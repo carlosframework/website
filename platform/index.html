@@ -4,248 +4,34 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The CARLOS Platform</title>
-<meta name="description" content="🤖 Scale to billions, build 100x faster, 1000x faster performing apps, 30x cheaper and more efficient. Ship immutable releases with instant canary URLs, promote the same bytes to stable, and let idle apps sleep for free. One binary, a bucket, and DNS — open and self-hostable.">
+<meta name="description" content="🤖 Scale to billions, build 100x faster, 1000x faster performing apps, 30x cheaper and more efficient. Ship immutable releases with instant canary URLs, promote the same bytes to stable, and let idle apps sleep for free. One binary, a bucket, and DNS: open and self-hostable.">
 <meta property="og:title" content="The CARLOS Platform">
-<meta property="og:description" content="Scale to billions, build 100x faster, 1000x faster performing apps, 30x cheaper. Immutable releases, instant canary URLs, apps that sleep for free — on a platform that is one binary, a bucket, and DNS.">
+<meta property="og:description" content="Scale to billions, build 100x faster, 1000x faster performing apps, 30x cheaper. Immutable releases, instant canary URLs, apps that sleep for free, on a platform that is one binary, a bucket, and DNS.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://carlosframework.com/platform/">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14151c" media="(prefers-color-scheme: dark)">
+<link rel="stylesheet" href="../site.css">
 <style>
   :root {
-    --bg: #ffffff;
-    --ink: #1d2029;
-    --muted: #64707f;
     --accent: #0f5e85;
     --accent-soft: rgba(15, 94, 133, 0.09);
-    --rule: #e7e9f0;
-    --max: 42rem;
+    --muted: #64707f;
     --wide: 64rem;
-    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    --sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #14151c;
-      --ink: #eef0f6;
-      --muted: #93a4ba;
       --accent: #5db8dd;
       --accent-soft: rgba(93, 184, 221, 0.12);
-      --rule: #2a2e38;
+      --muted: #93a4ba;
     }
   }
-  :root[data-theme="dark"] {
-    --bg: #14151c;
-    --ink: #eef0f6;
-    --muted: #93a4ba;
-    --accent: #5db8dd;
-    --accent-soft: rgba(93, 184, 221, 0.12);
-    --rule: #2a2e38;
-  }
-  :root[data-theme="light"] {
-    --bg: #ffffff;
-    --ink: #1d2029;
-    --muted: #64707f;
-    --accent: #0f5e85;
-    --accent-soft: rgba(15, 94, 133, 0.09);
-    --rule: #e7e9f0;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font: 400 1.0625rem/1.65 Charter, Georgia, "Times New Roman", serif;
-    -webkit-font-smoothing: antialiased;
-    padding: 0 1.25rem;
-    overflow-x: hidden;
-  }
-  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
-  a:focus-visible, .btn:focus-visible {
-    outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px;
-  }
-  strong { font-weight: 700; }
-  code {
-    font-family: var(--mono);
-    font-size: 0.88em; background: var(--accent-soft);
-    padding: 0.1em 0.35em; border-radius: 0.25rem;
-  }
-
-  .brandline {
-    max-width: var(--wide); margin: 0 auto; padding: 1.1rem 0 0;
-    font-family: var(--mono); font-size: 0.85rem; letter-spacing: 0.04em;
-  }
-  .brandline a { text-decoration: none; color: var(--muted); }
-  .brandline a b { color: var(--ink); font-weight: 700; }
-  .brandline .here { color: var(--accent); font-weight: 700; }
-
-  /* hero */
-  header {
-    max-width: var(--wide); margin: 0 auto;
-    padding: 4.5rem 0 3.5rem; text-align: center;
-  }
-  h1 {
-    font-size: clamp(2.1rem, 5.4vw, 3.7rem);
-    line-height: 1.12; letter-spacing: -0.015em;
-    font-weight: 700; margin: 0 auto;
-    max-width: 56rem;
-  }
-  h1 .x { color: var(--accent); }
-  .welcome {
-    margin: 1.4rem auto 0;
-    font-family: var(--mono); font-size: clamp(0.95rem, 2vw, 1.1rem);
-    letter-spacing: 0.05em; color: var(--muted);
-  }
-  .welcome b { color: var(--accent); font-weight: 700; }
-  .lede {
-    font-size: 1.2rem; max-width: 40rem;
-    margin: 1.5rem auto 0;
-  }
-  .cta {
-    margin: 2.2rem 0 0; display: flex; gap: 0.85rem;
-    justify-content: center; flex-wrap: wrap;
-  }
-  .btn {
-    font-family: var(--sans);
-    font-size: 1rem; font-weight: 600; text-decoration: none;
-    padding: 0.75rem 1.5rem; border-radius: 0.5rem;
-    border: 1px solid transparent;
-  }
-  .btn.primary { background: var(--accent); color: var(--bg); }
-  .btn.ghost { color: var(--accent); border-color: var(--rule); }
-  .btn.ghost:hover, .btn.primary:hover { filter: brightness(1.12); }
-  .robot-note {
-    margin: 2.5rem auto 0; padding: 0.6rem 0.9rem; max-width: 36rem;
-    background: var(--accent-soft); border-radius: 0.5rem;
-    font-size: 0.9rem; color: var(--muted);
-    font-family: var(--sans);
-  }
-  .robot-note a { color: var(--accent); }
-
-  /* sections */
-  main { max-width: var(--wide); margin: 0 auto; padding: 0 0 2rem; }
-  main > section { padding: 3.25rem 0; border-top: 1px solid var(--rule); }
-  section > * { max-width: var(--max); margin-left: auto; margin-right: auto; }
-  section > .cards, section > .ledger, section > .pipeline, section > .tokens { max-width: var(--wide); }
-  .eyebrow {
-    display: block; font-family: var(--mono); font-size: 0.8rem;
-    font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--accent); margin-bottom: 0.6rem; text-align: center;
-  }
-  h2 {
-    font-size: clamp(1.5rem, 3.2vw, 1.9rem); line-height: 1.25; font-weight: 700;
-    letter-spacing: -0.01em; margin-bottom: 0.5rem; text-align: center;
-  }
-  .epigraph {
-    font-size: 1.15rem; font-style: italic; color: var(--muted);
-    margin-bottom: 1.6rem; text-align: center;
-  }
-  p { margin: 0 0 1.1rem; }
-  section > p:last-child { margin-bottom: 0; }
-
-  /* claims ledger — the signature: every multiplier ships with its receipt */
-  .ledger { margin-top: 1rem; }
-  .claim {
-    display: grid; grid-template-columns: 11rem 1fr;
-    gap: 0 2.25rem; padding: 1.9rem 0; align-items: start;
-    border-top: 1px solid var(--rule);
-  }
-  .claim:first-child { border-top: none; }
-  .claim .big {
-    font-size: clamp(2.6rem, 6vw, 4rem); font-weight: 700;
-    line-height: 1; color: var(--accent); letter-spacing: -0.02em;
-    text-align: right; font-variant-numeric: tabular-nums;
-  }
-  .claim .big sup { font-size: 0.5em; }
-  .claim .big small {
-    display: block; font-family: var(--mono); font-size: 0.72rem;
-    font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--muted); margin-top: 0.5rem;
-  }
-  .claim h3 { font-size: 1.25rem; font-weight: 700; margin: 0 0 0.4rem; }
-  .claim p { margin: 0 0 0.75rem; color: var(--ink); }
-  .receipt {
-    font-family: var(--mono); font-size: 0.85rem; color: var(--muted);
-    border-left: 2px solid var(--accent); padding-left: 0.75rem;
-  }
-  .receipt b { color: var(--accent); font-weight: 700; }
-  @media (max-width: 640px) {
-    .claim { grid-template-columns: 1fr; gap: 0.75rem; }
-    .claim .big { text-align: left; }
-  }
-
-  /* pipeline diagram */
-  .pipeline {
-    margin: 2rem auto 0; padding: 1.5rem 1rem;
-    border: 1px solid var(--rule); border-radius: 0.75rem;
-    display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
-    gap: 0.6rem 0.9rem; font-family: var(--mono); text-align: center;
-  }
-  .stage { padding: 0.2rem 0.4rem; }
-  .stage .ch {
-    display: block; font-size: 0.95rem; font-weight: 700; color: var(--ink);
-  }
-  .stage .hash {
-    display: block; font-size: 0.85rem; color: var(--accent);
-    background: var(--accent-soft); border-radius: 0.3rem;
-    padding: 0.1rem 0.45rem; margin-top: 0.3rem;
-  }
-  .arrow { color: var(--muted); font-size: 1rem; }
-  .pipeline .note {
-    flex-basis: 100%; margin-top: 0.6rem;
-    font-size: 0.82rem; color: var(--muted); letter-spacing: 0.03em;
-  }
-
-  /* cards */
-  .cards {
-    display: grid; gap: 1rem; margin-top: 1.9rem;
-    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-  }
-  .card {
-    border: 1px solid var(--rule); border-radius: 0.75rem;
-    padding: 1.3rem 1.4rem;
-  }
-  .card h3 { font-size: 1.12rem; font-weight: 700; margin: 0 0 0.4rem; }
-  .card p { color: var(--muted); font-size: 0.97rem; margin: 0; }
-  .card p + p { margin-top: 0.6rem; }
-
-  /* one binary, a bucket, and DNS */
-  .tokens {
-    display: flex; flex-wrap: wrap; justify-content: center;
-    gap: 0.9rem; margin: 1.9rem auto 1.6rem;
-    font-family: var(--mono);
-  }
-  .token {
-    border: 1px solid var(--accent); border-radius: 0.6rem;
-    padding: 0.9rem 1.4rem; text-align: center; min-width: 9.5rem;
-  }
-  .token .t { display: block; font-size: 1.35rem; font-weight: 700; color: var(--accent); }
-  .token .d { display: block; font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; }
-  .plus { align-self: center; color: var(--muted); font-size: 1.3rem; font-family: var(--mono); }
-
-  /* proof strip */
-  .proof { text-align: center; }
-  .proof .live {
-    display: inline-block; font-family: var(--mono); font-size: 0.82rem;
-    letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
-    border: 1px solid var(--accent); border-radius: 2rem;
-    padding: 0.3rem 1rem; margin-bottom: 1.2rem;
-  }
-
-  /* closing CTA */
-  .closing { text-align: center; }
-  .closing h2 { margin-bottom: 0.9rem; }
-
-  footer {
-    max-width: var(--wide); margin: 0 auto;
-    border-top: 1px solid var(--rule);
-    padding: 2rem 0 4rem; text-align: center;
-    color: var(--muted); font-size: 0.95rem;
-  }
-  footer p { margin-bottom: 0.6rem; max-width: var(--max); margin-left: auto; margin-right: auto; }
 </style>
 </head>
-<body>
+<body class="platform">
 
-<p class="brandline"><a href="https://carlosframework.com"><b>CARLOS</b></a> <span aria-hidden="true">/</span> <span class="here">platform</span></p>
+<nav class="brandline" aria-label="Breadcrumb"><a href="https://carlosframework.com"><b>CARLOS</b></a> <span aria-hidden="true">/</span> <span class="here" aria-current="page">platform</span></nav>
 
 <header>
   <h1>Scale to <span class="x">billions</span>, build <span class="x">100&times;</span> faster, <span class="x">1000&times;</span> faster performing apps, <span class="x">30&times;</span> cheaper and more efficient.</h1>
@@ -255,13 +41,12 @@
     <a class="btn primary" href="https://platform.carlosframework.com">Get started</a>
     <a class="btn ghost" href="https://carlosframework.com">Read how it works</a>
   </div>
-  <p class="robot-note">🤖 This page was written by an LLM, on the ideas, instruction, and editing of humans. AI-written text here is always marked, visibly, like this — that's <a href="https://11factor.org/#x">factor X</a>.</p>
+  <p class="robot-note">🤖 This page was written by an LLM, on the ideas, instruction, and editing of humans. AI-written text here is always marked, visibly, like this. That's <a href="https://11factor.org/#x">factor X</a>.</p>
 </header>
 
 <main>
 
 <section id="claims">
-  <span class="eyebrow">the numbers, with receipts</span>
   <h2>Every multiplier traces to a mechanism</h2>
   <p class="epigraph">Not adjectives — line items. Each claim below names the machinery that produces it.</p>
 
@@ -270,7 +55,7 @@
       <div class="big">10<sup>9</sup><small>people</small></div>
       <div>
         <h3>Scale to billions</h3>
-        <p>Every person gets their own instance with its own database. A crash, a leak, or a runaway query takes down one person's process — the next request restarts it, and nobody else notices. Growing means adding boxes to the fleet, not architecture to your app.</p>
+        <p>Every person gets their own instance with its own database. A crash, a leak, or a runaway query takes down one person's process; the next request restarts it, and nobody else notices. Growing means adding boxes to the fleet, not architecture to your app.</p>
         <p class="receipt"><b>receipt:</b> per-person instances &middot; blast radius of one &middot; add boxes, not architecture</p>
       </div>
     </div>
@@ -278,7 +63,7 @@
       <div class="big">100&times;<small>build speed</small></div>
       <div>
         <h3>Build 100&times; faster</h3>
-        <p>AI is the factory. Extravagant machines are spent at build time — at length, under tests that fail the build — to produce one lean artifact. The compute is spent once, at the factory; what ships stays small forever.</p>
+        <p>AI is the factory. Extravagant machines are spent at build time (at length, under tests that fail the build) to produce one lean artifact. The compute is spent once, at the factory; what ships stays small forever.</p>
         <p class="receipt"><b>receipt:</b> extravagant machines in &middot; one lean artifact out</p>
       </div>
     </div>
@@ -286,7 +71,7 @@
       <div class="big">1000&times;<small>performance</small></div>
       <div>
         <h3>1000&times; faster performing</h3>
-        <p>There is no network hop to a database. SQLite is compiled into the process, so a query is a function call and your data lives next to your compute — microseconds where a round trip costs milliseconds. Even a sleeping instance wakes in milliseconds.</p>
+        <p>There is no network hop to a database. SQLite is compiled into the process, so a query is a function call and your data lives next to your compute: microseconds where a round trip costs milliseconds. Even a sleeping instance wakes in milliseconds.</p>
         <p class="receipt"><b>receipt:</b> a query is a function call, not a round trip</p>
       </div>
     </div>
@@ -294,7 +79,7 @@
       <div class="big">30&times;<small>cheaper</small></div>
       <div>
         <h3>30&times; cheaper and more efficient</h3>
-        <p>Most software is used a few hours a week and billed for all 168. On CARLOS, an idle app hibernates to object storage — a few objects in a bucket, no process, no memory, costing nothing — and wakes on the next request.</p>
+        <p>Most software is used a few hours a week and billed for all 168. On CARLOS, an idle app hibernates to object storage (a few objects in a bucket, no process, no memory, costing nothing) and wakes on the next request.</p>
         <p class="receipt"><b>receipt:</b> pay for the hours used, not all 168</p>
       </div>
     </div>
@@ -302,7 +87,6 @@
 </section>
 
 <section id="ship">
-  <span class="eyebrow">ship &middot; canary &middot; promote</span>
   <h2>From branch to stable without a rebuild</h2>
   <p class="epigraph">One artifact, three pointers. What you tested is what ships, because it is the same bytes.</p>
 
@@ -318,7 +102,7 @@
   <div class="cards">
     <div class="card">
       <h3>A live URL for every branch</h3>
-      <p>Push a branch, get a canary URL in seconds — a real deployment on the real platform, not a localhost preview. Send it to a teammate before the code review starts.</p>
+      <p>Push a branch, get a canary URL in seconds: a real deployment on the real platform, not a localhost preview. Send it to a teammate before the code review starts.</p>
     </div>
     <div class="card">
       <h3>Promote bytes, not hopes</h3>
@@ -326,7 +110,7 @@
     </div>
     <div class="card">
       <h3>Rollback is a pointer move</h3>
-      <p>Point the channel back at the previous release and the bleed stops. Immediate, no rebuild, no waiting — going backwards is never new code.</p>
+      <p>Point the channel back at the previous release and the bleed stops. Immediate, no rebuild, no waiting. Going backwards is never new code.</p>
     </div>
     <div class="card">
       <h3>Static sites ride the same pipeline</h3>
@@ -336,26 +120,24 @@
 </section>
 
 <section id="trust">
-  <span class="eyebrow">guardrails</span>
   <h2>Safe to deploy, safe to be deployed to</h2>
   <p class="epigraph">The scary step in any pipeline is the pointer that says &ldquo;this is stable now.&rdquo; The platform makes it boring.</p>
 
   <div class="cards">
     <div class="card">
       <h3>A bake window between a publisher and your fleet</h3>
-      <p>A new release must sit on its channel for 72 hours before stable instances adopt it — so a compromised publisher can't rush a poisoned build across your fleet. The blast radius stays with the people who opted in early.</p>
+      <p>A new release must sit on its channel for 72 hours before stable instances adopt it, so a compromised publisher can't rush a poisoned build across your fleet. The blast radius stays with the people who opted in early.</p>
       <p>Rollback skips the bake: pointing back at a hash that already served traffic takes effect immediately.</p>
     </div>
     <div class="card">
       <h3>Residency, enforced below your code</h3>
-      <p>Declare where your data lives — per app, or per customer instance — and a host outside that region will never claim it. There is no &ldquo;just this once during a failover&rdquo; code path: no eligible host means the wake fails loudly instead of quietly relocating.</p>
+      <p>Declare where your data lives (per app, or per customer instance) and a host outside that region will never claim it. There is no &ldquo;just this once during a failover&rdquo; code path: no eligible host means the wake fails loudly instead of quietly relocating.</p>
       <p>Sleeping data rests in region-scoped buckets too. Residency covers rest as well as execution — enforced by the platform, not promised in a policy PDF.</p>
     </div>
   </div>
 </section>
 
 <section id="own">
-  <span class="eyebrow">no lock-in</span>
   <h2>The whole platform is</h2>
 
   <div class="tokens">
@@ -366,13 +148,13 @@
     <span class="token"><span class="t">DNS</span><span class="d">your domain</span></span>
   </div>
 
-  <p>That is the complete dependency list. The platform is open and self-hostable: no proprietary control plane, no license server, no essential piece that only exists in someone else's account. Run it on our cloud because it's convenient — and if you ever want to leave, copy the binary, take your bucket, point your DNS, and walk away with everything still running.</p>
+  <p>That is the complete dependency list. The platform is open and self-hostable: no proprietary control plane, no license server, no essential piece that only exists in someone else's account. Run it on our cloud because it's convenient. If you ever want to leave, copy the binary, take your bucket, point your DNS, and walk away with everything still running.</p>
 </section>
 
 <section id="proof" class="proof">
   <p class="live">In production today</p>
   <h2>Real companies, real traffic</h2>
-  <p>The first production tenants are live: an event-ticketing company and a training platform run on CARLOS deployments today. Their apps live at <code>&lt;sqid&gt;.oncarlos.com</code> — an address that never encodes region or host, so placement stays invisible — with custom domains riding on top as aliases.</p>
+  <p>The first production tenants are live: an event-ticketing company and a training platform run on CARLOS deployments today. Their apps live at <code>&lt;sqid&gt;.oncarlos.com</code>, an address that never encodes region or host, so placement stays invisible; custom domains ride on top as aliases.</p>
 </section>
 
 <section id="start" class="closing">
@@ -387,9 +169,9 @@
 </main>
 
 <footer>
-  <p>🤖 Written by an LLM (Claude), on the ideas, instruction, and editing of humans. AI-written text here is always marked and always disclosed — see <a href="https://11factor.org/#x">factor X</a>.</p>
+  <p>🤖 Written by an LLM (Claude), on the ideas, instruction, and editing of humans. AI-written text here is always marked and always disclosed; see <a href="https://11factor.org/#x">factor X</a>.</p>
   <p>The platform runs apps built on <a href="https://carlosframework.com">the CARLOS framework</a>, keeping the promises set out in <a href="https://11factor.org">The Eleven Factors</a>.</p>
-  <p><a href="https://github.com/carlosframework/platform">Source for the platform — and this site — on GitHub</a>. Open, of course.</p>
+  <p><a href="https://github.com/carlosframework/platform">Source for the platform (and this site) on GitHub</a>. Open, of course.</p>
 </footer>
 
 </body>
