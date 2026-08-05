@@ -3,18 +3,178 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="refresh" content="0; url=https://carloku.com/">
-<link rel="canonical" href="https://carloku.com/">
-<title>Moved — carloku.com</title>
+<title>The CARLOS Platform</title>
+<meta name="description" content="🤖 Scale to billions, build 100x faster, 1000x faster performing apps, 30x cheaper and more efficient. Ship immutable releases with instant canary URLs, promote the same bytes to stable, and let idle apps sleep for free. One binary, a bucket, and DNS: open and self-hostable.">
+<meta property="og:title" content="The CARLOS Platform">
+<meta property="og:description" content="Scale to billions, build 100x faster, 1000x faster performing apps, 30x cheaper. Immutable releases, instant canary URLs, apps that sleep for free, on a platform that is one binary, a bucket, and DNS.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://carlosframework.com/platform/">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14151c" media="(prefers-color-scheme: dark)">
+<link rel="stylesheet" href="../site.css">
 <style>
-  body { font-family: ui-sans-serif, system-ui, sans-serif; margin: 4rem auto; max-width: 42rem; padding: 0 1.25rem; line-height: 1.6; color: #1d2029; background: #fff; }
-  a { color: #5b3e96; }
-  @media (prefers-color-scheme: dark) { body { color: #eef0f6; background: #14151c; } a { color: #b394f2; } }
+  :root {
+    --accent: #0f5e85;
+    --accent-soft: rgba(15, 94, 133, 0.09);
+    --muted: #64707f;
+    --wide: 64rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --accent: #5db8dd;
+      --accent-soft: rgba(93, 184, 221, 0.12);
+      --muted: #93a4ba;
+    }
+  }
 </style>
 </head>
-<body>
-<p>🤖 The hosted platform now lives at <a href="https://carloku.com/">carloku.com</a>.
-You're being redirected; follow the link if not.</p>
+<body class="platform">
+
+<nav class="brandline" aria-label="Breadcrumb"><a href="https://carlosframework.com"><b>CARLOS</b></a> <span aria-hidden="true">/</span> <span class="here" aria-current="page">platform</span></nav>
+
+<header>
+  <h1>Scale to <span class="x">billions</span>, build <span class="x">100&times;</span> faster, <span class="x">1000&times;</span> faster performing apps, <span class="x">30&times;</span> cheaper and more efficient.</h1>
+  <p class="welcome">Welcome to the <b>CARLOS platform</b>.</p>
+  <p class="lede">Ship an immutable release and get a live canary URL in seconds. Promote the exact same bytes to stable. Let idle apps sleep to a bucket for free and wake in milliseconds. And keep the keys: the whole platform is one binary you can run yourself.</p>
+  <div class="cta">
+    <a class="btn primary" href="https://platform.carlosframework.com">Get started</a>
+    <a class="btn ghost" href="https://carlosframework.com">Read how it works</a>
+  </div>
+  <p class="robot-note">🤖 This page was written by an LLM, on the ideas, instruction, and editing of humans. AI-written text here is always marked, visibly, like this. That's <a href="https://11factor.org/#x">factor X</a>.</p>
+</header>
+
+<p class="lede">This page describes the open-source platform. <a href="https://carloku.com">Carloku</a> is the commercial cloud offering built on it — the flagship deployment of this exact code.</p>
+
+<main>
+
+<section id="claims">
+  <h2>Every multiplier traces to a mechanism</h2>
+  <p class="epigraph">Not adjectives — line items. Each claim below names the machinery that produces it.</p>
+
+  <div class="ledger">
+    <div class="claim">
+      <div class="big">10<sup>9</sup><small>people</small></div>
+      <div>
+        <h3>Scale to billions</h3>
+        <p>Every person gets their own instance with its own database. A crash, a leak, or a runaway query takes down one person's process; the next request restarts it, and nobody else notices. Growing means adding boxes to the fleet, not architecture to your app.</p>
+        <p class="receipt"><b>receipt:</b> per-person instances &middot; blast radius of one &middot; add boxes, not architecture</p>
+      </div>
+    </div>
+    <div class="claim">
+      <div class="big">100&times;<small>build speed</small></div>
+      <div>
+        <h3>Build 100&times; faster</h3>
+        <p>AI is the factory. Extravagant machines are spent at build time (at length, under tests that fail the build) to produce one lean artifact. The compute is spent once, at the factory; what ships stays small forever.</p>
+        <p class="receipt"><b>receipt:</b> extravagant machines in &middot; one lean artifact out</p>
+      </div>
+    </div>
+    <div class="claim">
+      <div class="big">1000&times;<small>performance</small></div>
+      <div>
+        <h3>1000&times; faster performing</h3>
+        <p>There is no network hop to a database. SQLite is compiled into the process, so a query is a function call and your data lives next to your compute: microseconds where a round trip costs milliseconds. Even a sleeping instance wakes in milliseconds.</p>
+        <p class="receipt"><b>receipt:</b> a query is a function call, not a round trip</p>
+      </div>
+    </div>
+    <div class="claim">
+      <div class="big">30&times;<small>cheaper</small></div>
+      <div>
+        <h3>30&times; cheaper and more efficient</h3>
+        <p>Most software is used a few hours a week and billed for all 168. On CARLOS, an idle app hibernates to object storage (a few objects in a bucket, no process, no memory, costing nothing) and wakes on the next request.</p>
+        <p class="receipt"><b>receipt:</b> pay for the hours used, not all 168</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="ship">
+  <h2>From branch to stable without a rebuild</h2>
+  <p class="epigraph">One artifact, three pointers. What you tested is what ships, because it is the same bytes.</p>
+
+  <div class="pipeline" role="img" aria-label="Pipeline diagram: the same release hash f3c9d1 moves from the canary channel to beta to stable">
+    <span class="stage"><span class="ch">canary/pr-142</span><span class="hash">f3c9d1</span></span>
+    <span class="arrow" aria-hidden="true">&rarr;</span>
+    <span class="stage"><span class="ch">beta</span><span class="hash">f3c9d1</span></span>
+    <span class="arrow" aria-hidden="true">&rarr;</span>
+    <span class="stage"><span class="ch">stable</span><span class="hash">f3c9d1</span></span>
+    <span class="note">promotion moves a pointer &middot; rollback moves it back</span>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <h3>A live URL for every branch</h3>
+      <p>Push a branch, get a canary URL in seconds: a real deployment on the real platform, not a localhost preview. Send it to a teammate before the code review starts.</p>
+    </div>
+    <div class="card">
+      <h3>Promote bytes, not hopes</h3>
+      <p>Promotion points a wider channel at the same immutable, content-addressed artifact: canary &rarr; beta &rarr; stable. Nothing is ever rebuilt on the way to production.</p>
+    </div>
+    <div class="card">
+      <h3>Rollback is a pointer move</h3>
+      <p>Point the channel back at the previous release and the bleed stops. Immediate, no rebuild, no waiting. Going backwards is never new code.</p>
+    </div>
+    <div class="card">
+      <h3>Static sites ride the same pipeline</h3>
+      <p>A static site is a content-addressed file tree on the same channels: canary URL per branch, same promotion, same rollback. This page ships that way.</p>
+    </div>
+  </div>
+</section>
+
+<section id="trust">
+  <h2>Safe to deploy, safe to be deployed to</h2>
+  <p class="epigraph">The scary step in any pipeline is the pointer that says &ldquo;this is stable now.&rdquo; The platform makes it boring.</p>
+
+  <div class="cards">
+    <div class="card">
+      <h3>A bake window between a publisher and your fleet</h3>
+      <p>A new release must sit on its channel for 72 hours before stable instances adopt it, so a compromised publisher can't rush a poisoned build across your fleet. The blast radius stays with the people who opted in early.</p>
+      <p>Rollback skips the bake: pointing back at a hash that already served traffic takes effect immediately.</p>
+    </div>
+    <div class="card">
+      <h3>Residency, enforced below your code</h3>
+      <p>Declare where your data lives (per app, or per customer instance) and a host outside that region will never claim it. There is no &ldquo;just this once during a failover&rdquo; code path: no eligible host means the wake fails loudly instead of quietly relocating.</p>
+      <p>Sleeping data rests in region-scoped buckets too. Residency covers rest as well as execution — enforced by the platform, not promised in a policy PDF.</p>
+    </div>
+  </div>
+</section>
+
+<section id="own">
+  <h2>The whole platform is</h2>
+
+  <div class="tokens">
+    <span class="token"><span class="t">1 binary</span><span class="d">every role, one file</span></span>
+    <span class="plus" aria-hidden="true">+</span>
+    <span class="token"><span class="t">1 bucket</span><span class="d">all durable state</span></span>
+    <span class="plus" aria-hidden="true">+</span>
+    <span class="token"><span class="t">DNS</span><span class="d">your domain</span></span>
+  </div>
+
+  <p>That is the complete dependency list. The platform is open and self-hostable: no proprietary control plane, no license server, no essential piece that only exists in someone else's account. Run it on our cloud because it's convenient. If you ever want to leave, copy the binary, take your bucket, point your DNS, and walk away with everything still running.</p>
+</section>
+
+<section id="proof" class="proof">
+  <p class="live">In production today</p>
+  <h2>Real companies, real traffic</h2>
+  <p>The first production tenants are live: an event-ticketing company and a training platform run on CARLOS deployments today. Their apps live at <code>&lt;sqid&gt;.oncarlos.com</code>, an address that never encodes region or host, so placement stays invisible; custom domains ride on top as aliases.</p>
+</section>
+
+<section id="start" class="closing">
+  <h2>Ship something this afternoon</h2>
+  <p class="epigraph">A canary URL is seconds away.</p>
+  <div class="cta">
+    <a class="btn primary" href="https://platform.carlosframework.com">Get started</a>
+    <a class="btn ghost" href="https://carlosframework.com">Read how it works</a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>🤖 Written by an LLM (Claude), on the ideas, instruction, and editing of humans. AI-written text here is always marked and always disclosed; see <a href="https://11factor.org/#x">factor X</a>.</p>
+  <p>The platform runs apps built on <a href="https://carlosframework.com">the CARLOS framework</a>, keeping the promises set out in <a href="https://11factor.org">The Eleven Factors</a>.</p>
+  <p><a href="https://github.com/carlosframework/platform">Source for the platform (and this site) on GitHub</a>. Open, of course.</p>
+</footer>
+
 </body>
 </html>
