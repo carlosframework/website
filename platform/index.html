@@ -105,6 +105,10 @@
       <p>Push a branch, get a canary URL in seconds: a real deployment on the real platform, not a localhost preview. Send it to a teammate before the code review starts.</p>
     </div>
     <div class="card">
+      <h3>One command to serving</h3>
+      <p><code>carlos deploy</code> ships, promotes, and returns only when the URL is provably serving the new build &mdash; the edge names the version it serves, and the command checks. Exit 0 means refresh and it&rsquo;s there.</p>
+    </div>
+    <div class="card">
       <h3>Promote bytes, not hopes</h3>
       <p>Promotion points a wider channel at the same immutable, content-addressed artifact: canary &rarr; beta &rarr; stable. Nothing is ever rebuilt on the way to production.</p>
     </div>
