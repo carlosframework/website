@@ -47,7 +47,13 @@ and is informed by building [Eleven](https://elevenmessenger.com).
 
 ## Deploying
 
-GitHub Pages from `main` (root). Pushing to `main` publishes.
+The apex runs on the CARLOS flagship as a static app, not GitHub Pages
+(retired 2026-08-05) — pushing to `main` does not publish it. Deploying is
+`ship`/`promote`, either via the operator pinfra scripts (the documented
+default) or the one-command member-CLI form, `carlos deploy -app
+carlosframework -kind static -version <sha> <site-dir>`. Convergence is
+seconds; the edge stamps the serving build in `X-Carlos-Version`. Full
+details, env, and rollback are in [`CLAUDE.md`](CLAUDE.md).
 
 ## License
 

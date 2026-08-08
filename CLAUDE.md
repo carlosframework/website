@@ -115,10 +115,31 @@ DNSimple zone (account 285), same as the apex. `CNAME` and `.nojekyll`
 are gone from the repo and Pages is disabled on the GitHub repo.
 
 Rollback is a pointer move, like any CARLOS app: promote the previous
-good sha back onto `canary/rehearsal` and the edge swaps within a minute
-(`carlos channels -app carlosframework` to see what's on the channel).
-Pages is no longer a fallback; don't resurrect it in a drive-by fix.
+good sha back onto `canary/rehearsal` and the edge picks it up (see
+convergence speed below; `carlos channels -app carlosframework` to see
+what's on the channel). Pages is no longer a fallback; don't resurrect it
+in a drive-by fix.
 
 Shipping publishes the repo tree verbatim — ship from a clean
 `git archive <sha>` export, never from a working checkout (`PackDir`
 packs every regular file it sees, including `.git` and `.claude/`).
+
+**Convergence is now seconds, not minutes (CARLOS platform PR #108, live
+2026-08-08).** A promote is picked up by the edge within ~2s, and every
+response carries the serving build in `X-Carlos-Version`:
+
+```
+curl -sI https://carlosframework.com/ | grep -i x-carlos-version
+```
+
+The one-command member-CLI form folds ship + promote + wait-until-serving
+into a single call that exits 0 only once the new build is actually live:
+
+```
+carlos deploy -app carlosframework -kind static -version <sha> <site-dir>
+```
+
+That needs a `carlos` built from platform `main` at or after `1fba18f`.
+The operator pinfra `ship-app.sh` / `promote-app.sh` scripts above remain
+the documented default for this site; `carlos deploy` is the quicker
+member-CLI path when you already have credentials and a recent build.
