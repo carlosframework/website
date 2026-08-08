@@ -125,21 +125,20 @@ Shipping publishes the repo tree verbatim — ship from a clean
 packs every regular file it sees, including `.git` and `.claude/`).
 
 **Convergence is now seconds, not minutes (CARLOS platform PR #108, live
-2026-08-08).** A promote is picked up by the edge within ~2s, and every
-response carries the serving build in `X-Carlos-Version`:
+2026-08-08).** A promote is picked up by the edge within ~2s. `X-Carlos-Version`
+is a binary-app header, though — this is a STATIC route, so it never
+carries it (platform#112). Verify by content instead:
 
 ```
-curl -sI https://carlosframework.com/ | grep -i x-carlos-version
+curl -s https://carlosframework.com/ | grep -i "<something from the change>"
 ```
 
-The one-command member-CLI form folds ship + promote + wait-until-serving
-into a single call that exits 0 only once the new build is actually live:
+or by pointer: `carlos channels -app carlosframework` should show the new
+sha promoted.
 
-```
-carlos deploy -app carlosframework -kind static -version <sha> <site-dir>
-```
-
-That needs a `carlos` built from platform `main` at or after `1fba18f`.
-The operator pinfra `ship-app.sh` / `promote-app.sh` scripts above remain
-the documented default for this site; `carlos deploy` is the quicker
-member-CLI path when you already have credentials and a recent build.
+`carlos deploy -app carlosframework -kind static -version <sha> <site-dir>`
+ships and promotes, but its wait-until-serving watch doesn't yet cover
+instance-less static apps like this one (same platform#112) — for this
+site, the `ship`/`promote` pair above IS the deploy; convergence is still
+seconds. The operator pinfra `ship-app.sh` / `promote-app.sh` scripts
+above remain the documented default for this site.
