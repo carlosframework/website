@@ -49,10 +49,11 @@ and is informed by building [Eleven](https://elevenmessenger.com).
 
 The apex runs on the CARLOS flagship as a static app, not GitHub Pages
 (retired 2026-08-05) — pushing to `main` does not publish it. Deploying is
-`ship`/`promote`, either via the operator pinfra scripts (the documented
-default) or the one-command member-CLI form, `carlos deploy -app
-carlosframework -kind static -version <sha> <site-dir>`. Convergence is
-seconds; the edge stamps the serving build in `X-Carlos-Version`. Full
+`ship`/`promote` via the operator pinfra scripts — that pair IS the
+deploy for this static, instance-less app; `carlos deploy`'s
+wait-until-serving watch doesn't cover it yet (platform#112). Convergence
+is seconds; verify by content (STATIC routes don't carry
+`X-Carlos-Version`) or with `carlos channels -app carlosframework`. Full
 details, env, and rollback are in [`CLAUDE.md`](CLAUDE.md).
 
 ## License
