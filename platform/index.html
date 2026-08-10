@@ -138,6 +138,10 @@
       <p>Declare where your data lives (per app, or per customer instance) and a host outside that region will never claim it. There is no &ldquo;just this once during a failover&rdquo; code path: no eligible host means the wake fails loudly instead of quietly relocating.</p>
       <p>Sleeping data rests in region-scoped buckets too. Residency covers rest as well as execution — enforced by the platform, not promised in a policy PDF.</p>
     </div>
+    <div class="card">
+      <h3>When it breaks, it says why</h3>
+      <p><code>carlos logs</code> is one timeline: your app&rsquo;s own output merged with the platform&rsquo;s events about it &mdash; wakes, restarts, and the reason a wake failed &mdash; filterable, followable live with <code>-f</code>, and in the console. No server access required, because the answer comes to you.</p>
+    </div>
   </div>
 </section>
 
