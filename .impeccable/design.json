@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-19T00:00:00Z",
+  "title": "Design System: CARLOS Framework Site",
+  "extensions": {
+    "colorMeta": {
+      "bg": { "role": "neutral", "displayName": "Paper", "canonical": "#fbfbfd", "darkValue": "#0a0c10", "tonalRamp": ["#0a0c10", "#14181f", "#2a303a", "#4a5260", "#7a8391", "#aeb6c1", "#d8dde4", "#fbfbfd"] },
+      "bg-sunk": { "role": "neutral", "displayName": "Sunk", "canonical": "#f2f3f7", "darkValue": "#06080b", "tonalRamp": ["#06080b", "#10141a", "#252b34", "#454c58", "#757d8a", "#a9b1bd", "#d4d9e1", "#f2f3f7"] },
+      "surface": { "role": "neutral", "displayName": "Surface", "canonical": "#ffffff", "darkValue": "#111621", "tonalRamp": ["#0a0e16", "#111621", "#1d2431", "#333c4d", "#5c6779", "#8f99a9", "#c7ced8", "#ffffff"] },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#0c1015", "darkValue": "#e9edf4", "tonalRamp": ["#0c1015", "#171c24", "#2b323d", "#454e5c", "#6e7787", "#a3abb9", "#cfd5de", "#e9edf4"] },
+      "ink-2": { "role": "neutral", "displayName": "Ink Two", "canonical": "#3c4757", "darkValue": "#b3bdcc", "tonalRamp": ["#131822", "#1f2632", "#2d3644", "#3c4757", "#6b7688", "#8792a3", "#b3bdcc", "#dde2ea"] },
+      "muted": { "role": "neutral", "displayName": "Muted", "canonical": "#667385", "darkValue": "#7f8b9d", "tonalRamp": ["#161b22", "#242b36", "#39424f", "#4f5a69", "#667385", "#8d97a6", "#b6bec9", "#dde1e7"] },
+      "rule": { "role": "neutral", "displayName": "Rule", "canonical": "rgba(12, 16, 21, 0.11)", "darkValue": "rgba(233, 237, 244, 0.12)", "tonalRamp": [] },
+      "rule-soft": { "role": "neutral", "displayName": "Rule Soft", "canonical": "rgba(12, 16, 21, 0.06)", "darkValue": "rgba(233, 237, 244, 0.07)", "tonalRamp": [] },
+      "accent-teal": { "role": "primary", "displayName": "Sealed Teal", "canonical": "#067a68", "darkValue": "#2fd4ac", "tonalRamp": ["#02231e", "#03362e", "#04564a", "#067a68", "#0a9d86", "#2fd4ac", "#7fe7cd", "#cbf6ec"] },
+      "accent-blue": { "role": "primary", "displayName": "Substrate Blue", "canonical": "#0d5f88", "darkValue": "#59bfe8", "tonalRamp": ["#03202f", "#063247", "#094761", "#0d5f88", "#1a86ba", "#59bfe8", "#9adcf3", "#d5f0fb"] },
+      "sig-s": { "role": "tertiary", "displayName": "Signal S — Blind Grey", "canonical": "#667385", "darkValue": "#8a94a6", "tonalRamp": ["#161b22", "#242b36", "#39424f", "#4f5a69", "#667385", "#8a94a6", "#b6bec9", "#dde1e7"] },
+      "sig-a": { "role": "tertiary", "displayName": "Signal A — Sealed Teal", "canonical": "#067a68", "darkValue": "#2fd4ac", "tonalRamp": ["#02231e", "#03362e", "#04564a", "#067a68", "#0a9d86", "#2fd4ac", "#7fe7cd", "#cbf6ec"] },
+      "sig-b": { "role": "tertiary", "displayName": "Signal B — Sealed Amber", "canonical": "#8a5a12", "darkValue": "#f0b34a", "tonalRamp": ["#2a1b03", "#412a06", "#5e3d0a", "#8a5a12", "#b8791c", "#f0b34a", "#f7d193", "#fbe9cd"] },
+      "sig-c": { "role": "tertiary", "displayName": "Signal C — Sighted Coral", "canonical": "#b03f29", "darkValue": "#ff7f60", "tonalRamp": ["#2d0f08", "#48180d", "#6c2415", "#b03f29", "#d95a3d", "#ff7f60", "#ffab97", "#ffd9cf"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero headline only, capped at 17ch. Set in the Neo-Grotesque body face at 700 with -0.038em tracking; there is no separate display family." },
+      "headline": { "displayName": "Headline", "purpose": "Section headings and letter-plate headings." },
+      "title": { "displayName": "Title", "purpose": "Attribute and ledger item headings." },
+      "lede": { "displayName": "Lede / Standfirst", "purpose": "The paragraph directly beneath a display or headline, ink-2, capped at 46rem." },
+      "body": { "displayName": "Body", "purpose": "All prose. Capped at 34-40rem so lines land at 65-75 characters inside the 72rem wrap." },
+      "label": { "displayName": "Label", "purpose": "Monospace Code, reserved for data, identifiers, measurements, hosts, SHAs, grades and column heads. Never prose." },
+      "figure": { "displayName": "Figure", "purpose": "Industrial stack on numerals and short figures only, as a progressive enhancement that degrades to the sans." }
+    },
+    "shadows": [
+      { "name": "resting-lift", "value": "0 1px 2px rgba(12, 16, 21, 0.05), 0 4px 12px -5px rgba(12, 16, 21, 0.12)", "purpose": "Objects that sit slightly above the page at rest: the primary button, the week figure, the promotion rail. Dark mode: 0 1px 2px rgba(0,0,0,0.5), 0 4px 14px -6px rgba(0,0,0,0.6)." },
+      { "name": "responding-lift", "value": "0 2px 4px rgba(12, 16, 21, 0.05), 0 22px 44px -22px rgba(12, 16, 21, 0.25)", "purpose": "Hover only: the primary button and the route cards. Dark mode: 0 2px 6px rgba(0,0,0,0.5), 0 26px 52px -24px rgba(0,0,0,0.8)." },
+      { "name": "inset-hairline", "value": "inset 0 0 0 1px var(--rule-soft)", "purpose": "The drawn edge on recessed calendar cells; a border, not a lift." }
+    ],
+    "motion": [
+      { "name": "ease-response", "value": "cubic-bezier(.2, .7, .3, 1)", "purpose": "The 140-160ms hover transform on buttons and route cards." },
+      { "name": "ease-wake", "value": "cubic-bezier(.16, 1, .3, 1)", "purpose": "Exponential ease-out for the one authored moment: the week calendar's used hours arriving over 560ms." },
+      { "name": "wake-stagger", "value": "calc(var(--i) * 48ms + 320ms)", "purpose": "Per-cell delay from an inline index, with animation-fill-mode: backwards from an already-visible default. The whole block is gated behind prefers-reduced-motion: no-preference." }
+    ],
+    "breakpoints": [
+      { "name": "cal-half", "value": "26rem" },
+      { "name": "rail-stack", "value": "34rem" },
+      { "name": "table-stack", "value": "46rem" },
+      { "name": "two-up", "value": "48rem" },
+      { "name": "routes-three-up", "value": "52rem" },
+      { "name": "letter-split", "value": "60rem" },
+      { "name": "hero-split", "value": "64rem" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one action a page most wants taken; accent-filled, resting lift, rises on hover.",
+      "html": "<a class=\"ds-btn ds-btn-primary\" href=\"#\">Start building on the model</a>",
+      "css": ".ds-btn { display: inline-block; font: 600 0.975rem/1.65 var(--font-sans, Inter, Roboto, Arial, sans-serif); letter-spacing: -0.006em; text-decoration: none; white-space: nowrap; padding: 0.72rem 1.35rem; border-radius: 7px; border: 1px solid transparent; transition: transform 140ms cubic-bezier(.2,.7,.3,1), box-shadow 140ms, background-color 140ms, border-color 140ms; } .ds-btn-primary { background: var(--accent, #067a68); color: var(--on-accent, #fff); box-shadow: var(--shadow-1, 0 1px 2px rgba(12,16,21,0.05), 0 4px 12px -5px rgba(12,16,21,0.12)); } .ds-btn-primary:hover { background: var(--accent-deep, #04564a); transform: translateY(-1px); box-shadow: var(--shadow-2, 0 2px 4px rgba(12,16,21,0.05), 0 22px 44px -22px rgba(12,16,21,0.25)); } .ds-btn-primary:active { transform: translateY(0); } .ds-btn-primary:focus-visible { outline: 2px solid var(--accent, #067a68); outline-offset: 3px; border-radius: 3px; } @media (prefers-reduced-motion: reduce) { .ds-btn, .ds-btn:hover { transform: none; transition: none; } }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "The secondary route out of a hero; surface fill and a hairline border that turns accent on hover.",
+      "html": "<a class=\"ds-btn ds-btn-ghost\" href=\"#\">See what the letters buy you</a>",
+      "css": ".ds-btn-ghost { display: inline-block; font: 600 0.975rem/1.65 var(--font-sans, Inter, Roboto, Arial, sans-serif); letter-spacing: -0.006em; text-decoration: none; white-space: nowrap; padding: 0.72rem 1.35rem; border-radius: 7px; background: var(--surface, #fff); color: var(--ink, #0c1015); border: 1px solid var(--rule, rgba(12,16,21,0.11)); transition: transform 140ms cubic-bezier(.2,.7,.3,1), border-color 140ms, color 140ms; } .ds-btn-ghost:hover { border-color: var(--accent, #067a68); color: var(--accent, #067a68); transform: translateY(-1px); } .ds-btn-ghost:active { transform: translateY(0); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--accent, #067a68); outline-offset: 3px; }"
+    },
+    {
+      "name": "Masthead Navigation",
+      "kind": "nav",
+      "refersTo": null,
+      "description": "Drawn SVG wordmark plus right-pushed section links; wraps instead of collapsing into a menu.",
+      "html": "<header class=\"ds-masthead\"><a class=\"ds-mark\" href=\"/\"><svg class=\"ds-wordmark\" viewBox=\"11 11 518 118\" role=\"img\" aria-label=\"CARLOS\"><path transform=\"translate(0,0)\" d=\"M77,44 A20,20 0 0 0 57,24 H43 A20,20 0 0 0 23,44 V96 A20,20 0 0 0 43,116 H57 A20,20 0 0 0 77,96\"/><path transform=\"translate(88,0)\" d=\"M25,117 L45,23 H55 L75,117 M33,80 H67\"/><path transform=\"translate(176,0)\" d=\"M23,117 V23 H53 A23,23 0 0 1 53,69 H23 M50,69 L77,117\"/><path transform=\"translate(264,0)\" d=\"M23,23 V117 H77\"/><path transform=\"translate(352,0)\" d=\"M23,44 A20,20 0 0 1 43,24 H57 A20,20 0 0 1 77,44 V96 A20,20 0 0 1 57,116 H43 A20,20 0 0 1 23,96 Z\"/><path transform=\"translate(440,0)\" d=\"M77,39 A16,16 0 0 0 61,23 H39 A16,16 0 0 0 23,39 V54 A16,16 0 0 0 39,70 H61 A16,16 0 0 1 77,86 V101 A16,16 0 0 1 61,117 H39 A16,16 0 0 1 23,101 V98\"/></svg></a><nav aria-label=\"Sections\"><a href=\"#a\">The six</a><a href=\"#b\">Trust classes</a><a href=\"#c\" aria-current=\"page\">Platform</a></nav></header>",
+      "css": ".ds-masthead { display: flex; align-items: baseline; gap: 1.25rem; flex-wrap: wrap; padding-block: 1.6rem 0; font: 400 0.875rem/1.65 var(--font-sans, Inter, Roboto, Arial, sans-serif); } .ds-mark { display: block; color: var(--ink, #0c1015); line-height: 0; } .ds-mark:hover { color: var(--accent, #067a68); } .ds-wordmark { display: block; height: 1.15rem; width: auto; fill: none; stroke: currentColor; stroke-width: 18; stroke-linecap: square; stroke-linejoin: miter; vector-effect: non-scaling-stroke; } .ds-masthead nav { display: flex; gap: 1.1rem; flex-wrap: wrap; margin-left: auto; } .ds-masthead nav a { color: var(--muted, #667385); text-decoration: none; } .ds-masthead nav a:hover { color: var(--ink, #0c1015); } .ds-masthead nav a[aria-current] { color: var(--accent, #067a68); }"
+    },
+    {
+      "name": "Letter Plate",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "A drawn CARLOS letterform on the 100x140 construction grid heading a section, with its promise beneath; sticky in the left rail on wide screens.",
+      "html": "<div class=\"ds-plate\"><svg class=\"ds-glyph\" viewBox=\"11 11 78 118\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M77,44 A20,20 0 0 0 57,24 H43 A20,20 0 0 0 23,44 V96 A20,20 0 0 0 43,116 H57 A20,20 0 0 0 77,96\"/></svg><h2>Cost-efficient</h2><p>Not running when nobody is using it.</p></div>",
+      "css": ".ds-plate .ds-glyph { display: block; height: clamp(5rem, 12vw, 8.5rem); width: auto; color: var(--accent, #067a68); fill: none; stroke: currentColor; stroke-width: 21; stroke-linecap: butt; stroke-linejoin: miter; } .ds-plate h2 { margin: 0.65rem 0 0; font: 680 clamp(1.5rem, 3vw, 2rem)/1.12 var(--font-sans, Inter, Roboto, Arial, sans-serif); letter-spacing: -0.03em; color: var(--ink, #0c1015); text-wrap: balance; } .ds-plate p { margin: 0.7rem 0 0; font-size: 0.99rem; line-height: 1.65; color: var(--muted, #667385); max-width: 24rem; text-wrap: pretty; }"
+    },
+    {
+      "name": "Ledger Entry",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "The site's structural unit: a claim, its body capped at 36rem, and a mono receipt line naming the mechanism that produces it. Divided by a soft hairline, not boxed.",
+      "html": "<div class=\"ds-entry\"><h3>Failure that stays small</h3><div><p>One person's process serves one person's data. A panic in someone's request path takes down their process; the next request starts it again.</p><p class=\"ds-receipt\"><b>mechanism:</b> blast radius of one · multi-upstream routes · five-minute snapshots</p></div></div>",
+      "css": ".ds-entry { display: grid; gap: 0.4rem 2.5rem; grid-template-columns: minmax(0, 1fr); padding-block: clamp(1.6rem, 3vw, 2.25rem); border-top: 1px solid var(--rule-soft, rgba(12,16,21,0.06)); font-family: var(--font-sans, Inter, Roboto, Arial, sans-serif); } @media (min-width: 48rem) { .ds-entry { grid-template-columns: 15rem minmax(0, 1fr); align-items: start; } } .ds-entry h3 { margin: 0; font: 680 clamp(1.15rem, 2.2vw, 1.4rem)/1.3 inherit; letter-spacing: -0.022em; color: var(--ink, #0c1015); text-wrap: balance; } .ds-entry p { margin: 0; font-size: 1.0625rem; line-height: 1.65; color: var(--ink-2, #3c4757); max-width: 36rem; text-wrap: pretty; } .ds-entry .ds-receipt { font-size: 0.875rem; line-height: 1.6; color: var(--muted, #667385); padding-top: 0.55rem; max-width: 36rem; } .ds-entry .ds-receipt b { font-family: var(--font-mono, ui-monospace, Menlo, monospace); font-size: 0.9em; letter-spacing: 0.04em; color: var(--accent, #067a68); font-weight: 600; }"
+    },
+    {
+      "name": "Route Card",
+      "kind": "card",
+      "refersTo": "card-route",
+      "description": "One of only four card patterns on the site; a discrete choice object that takes the accent border and responding lift on hover.",
+      "html": "<div class=\"ds-route ds-route-lead\"><h3>Self-host it</h3><p>One static binary, a bucket and DNS. Hand someone the binary and you have handed them the product.</p><span class=\"ds-data\">OPEN SOURCE · NO CONTROL PLANE</span><a class=\"ds-go\" href=\"#\">Read the setup</a></div>",
+      "css": ".ds-route { display: flex; flex-direction: column; gap: 0.55rem; padding: 1.4rem 1.45rem 1.5rem; border: 1px solid var(--rule, rgba(12,16,21,0.11)); border-radius: 10px; background: var(--surface, #fff); font-family: var(--font-sans, Inter, Roboto, Arial, sans-serif); transition: border-color 160ms, box-shadow 160ms, transform 160ms cubic-bezier(.2,.7,.3,1); } .ds-route:hover { border-color: var(--accent, #067a68); box-shadow: var(--shadow-2, 0 2px 4px rgba(12,16,21,0.05), 0 22px 44px -22px rgba(12,16,21,0.25)); transform: translateY(-2px); } .ds-route-lead { border-color: var(--accent, #067a68); background: var(--accent-soft, rgba(6,122,104,0.10)); } .ds-route h3 { margin: 0; font: 680 1.075rem/1.3 inherit; letter-spacing: -0.012em; color: var(--ink, #0c1015); } .ds-route p { margin: 0; font-size: 0.955rem; line-height: 1.65; color: var(--ink-2, #3c4757); } .ds-route .ds-data { font-family: var(--font-mono, ui-monospace, Menlo, monospace); font-size: 0.775rem; letter-spacing: 0.06em; color: var(--muted, #667385); font-variant-numeric: tabular-nums; margin-top: auto; padding-top: 0.9rem; } .ds-route .ds-go { font-weight: 600; font-size: 0.955rem; text-decoration: none; color: var(--accent, #067a68); } .ds-route .ds-go::after { content: \" →\"; } @media (prefers-reduced-motion: reduce) { .ds-route, .ds-route:hover { transform: none; transition: none; } }"
+    },
+    {
+      "name": "Trust Class Row",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "A baseline-aligned row whose grade colour comes from the four-step signal ramp via data-g. The only place those hues appear.",
+      "html": "<div class=\"ds-class\" data-g=\"b\"><span class=\"ds-grade\">B</span><span class=\"ds-name\">Sealed</span><span class=\"ds-what\">The host holds ciphertext and key material it cannot open.<span class=\"ds-who\">keymail · slopbox</span></span></div>",
+      "css": ".ds-class { display: grid; gap: 0.35rem 1.5rem; grid-template-columns: minmax(0, 1fr); padding-block: 1.35rem; border-bottom: 1px solid var(--rule-soft, rgba(12,16,21,0.06)); font-family: var(--font-sans, Inter, Roboto, Arial, sans-serif); } @media (min-width: 46rem) { .ds-class { grid-template-columns: 4.5rem 12rem minmax(0, 1fr); align-items: baseline; } } .ds-class[data-g=\"s\"] { --g: #667385; } .ds-class[data-g=\"a\"] { --g: #067a68; } .ds-class[data-g=\"b\"] { --g: #8a5a12; } .ds-class[data-g=\"c\"] { --g: #b03f29; } .ds-grade { font-family: var(--font-mono, ui-monospace, Menlo, monospace); font-size: 1.15rem; font-weight: 700; letter-spacing: 0.04em; line-height: 1.25; color: var(--g); white-space: nowrap; } .ds-name { font-weight: 620; letter-spacing: -0.012em; color: var(--ink, #0c1015); } .ds-what { color: var(--ink-2, #3c4757); font-size: 0.985rem; line-height: 1.65; max-width: 40rem; } .ds-who { display: block; margin-top: 0.4rem; font-family: var(--font-mono, ui-monospace, Menlo, monospace); font-size: 0.8rem; color: var(--muted, #667385); }"
+    },
+    {
+      "name": "Trust Tag",
+      "kind": "chip",
+      "refersTo": "chip-tag",
+      "description": "A mono chip carrying an app's trust class in a currentColor border; an undeclared class sets a dashed border rather than an error colour.",
+      "html": "<span class=\"ds-tag\" data-g=\"a\">A1</span> <span class=\"ds-tag\">—</span>",
+      "css": ".ds-tag { display: inline-block; font-family: var(--font-mono, ui-monospace, Menlo, monospace); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; padding: 0.16rem 0.42rem; border-radius: 4px; border: 1px solid currentColor; color: var(--g, var(--muted, #667385)); } .ds-tag[data-g=\"s\"] { --g: #667385; } .ds-tag[data-g=\"a\"] { --g: #067a68; } .ds-tag[data-g=\"b\"] { --g: #8a5a12; } .ds-tag[data-g=\"c\"] { --g: #b03f29; } .ds-tag:not([data-g]) { color: var(--muted, #667385); border-style: dashed; }"
+    },
+    {
+      "name": "The Week",
+      "kind": "custom",
+      "refersTo": "card-week",
+      "description": "168 hour cells, the handful anyone used lit in the accent. Exposed as a single role=img with a full label, and carrying the site's one authored motion moment.",
+      "html": "<figure class=\"ds-week\"><figcaption><h2>A week is 168 hours</h2></figcaption><div class=\"ds-cal\" role=\"img\" aria-label=\"A calendar of one week: seven rows of twenty-four hours. Eleven cells are lit, marking the hours this application was actually used.\"><span class=\"ds-day\">MON</span><i></i><i></i><i></i><i class=\"on\" style=\"--i:0\"></i><i class=\"on\" style=\"--i:1\"></i><i></i><i></i><i></i></div><span class=\"ds-data\">11 / 168 HOURS USED · 157 NOT BILLED</span></figure>",
+      "css": ".ds-week { margin: 0; padding: 1.4rem 1.5rem 1.5rem; border: 1px solid var(--rule, rgba(12,16,21,0.11)); border-radius: 11px; background: var(--surface, #fff); box-shadow: var(--shadow-1, 0 1px 2px rgba(12,16,21,0.05), 0 4px 12px -5px rgba(12,16,21,0.12)); font-family: var(--font-sans, Inter, Roboto, Arial, sans-serif); } .ds-week h2 { margin: 0 0 1rem; font: 680 1.15rem/1.12 inherit; letter-spacing: -0.015em; color: var(--ink, #0c1015); } .ds-cal { display: grid; gap: 3px; grid-template-columns: auto repeat(8, minmax(0, 1fr)); align-items: center; } .ds-day { font-family: var(--font-mono, ui-monospace, Menlo, monospace); font-size: 0.62rem; letter-spacing: 0.08em; color: var(--muted, #667385); padding-right: 0.5rem; } .ds-cal i { aspect-ratio: 1; border-radius: 1.5px; background: var(--bg-sunk, #f2f3f7); box-shadow: inset 0 0 0 1px var(--rule-soft, rgba(12,16,21,0.06)); } .ds-cal i.on { background: var(--accent, #067a68); box-shadow: none; } .ds-week .ds-data { display: block; margin-top: 0.85rem; font-family: var(--font-mono, ui-monospace, Menlo, monospace); font-size: 0.775rem; letter-spacing: 0.06em; color: var(--muted, #667385); font-variant-numeric: tabular-nums; } @media (prefers-reduced-motion: no-preference) { .ds-cal i.on { animation: ds-wake 560ms cubic-bezier(.16,1,.3,1) backwards; animation-delay: calc(var(--i) * 48ms + 320ms); } } @keyframes ds-wake { from { background: var(--bg-sunk, #f2f3f7); transform: scale(0.5); } 55% { background: var(--accent, #067a68); transform: scale(1.35); } to { background: var(--accent, #067a68); transform: scale(1); } }"
+    },
+    {
+      "name": "Promotion Rail",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "One artifact, three pointers: mono stop names and accent SHAs, the final stop tinted and outlined in the accent.",
+      "html": "<div class=\"ds-rail\"><div class=\"ds-stop\"><b>canary</b><span class=\"ds-sha\">4f2a91c</span></div><span class=\"ds-to\">→</span><div class=\"ds-stop\"><b>beta</b><span class=\"ds-sha\">4f2a91c</span></div><span class=\"ds-to\">→</span><div class=\"ds-stop ds-stop-final\"><b>stable</b><span class=\"ds-sha\">4f2a91c</span></div><span class=\"ds-foot\">THE SAME BYTES AT EVERY STOP</span></div>",
+      "css": ".ds-rail { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0.6rem; padding: 1.4rem; border: 1px solid var(--rule, rgba(12,16,21,0.11)); border-radius: 10px; background: var(--surface, #fff); box-shadow: var(--shadow-1, 0 1px 2px rgba(12,16,21,0.05), 0 4px 12px -5px rgba(12,16,21,0.12)); } .ds-stop { flex: 1 1 9rem; display: grid; gap: 0.4rem; justify-items: center; padding: 0.9rem 0.6rem; border-radius: 7px; background: var(--bg-sunk, #f2f3f7); } .ds-stop-final { background: var(--accent-soft, rgba(6,122,104,0.10)); outline: 1px solid var(--accent, #067a68); } .ds-stop b { font-family: var(--font-mono, ui-monospace, Menlo, monospace); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.02em; color: var(--ink, #0c1015); } .ds-sha { font-family: var(--font-mono, ui-monospace, Menlo, monospace); font-size: 0.85rem; color: var(--accent, #067a68); font-variant-numeric: tabular-nums; } .ds-to { align-self: center; color: var(--muted, #667385); font-size: 1.1rem; } .ds-foot { flex-basis: 100%; padding-top: 0.4rem; text-align: center; font-family: var(--font-mono, ui-monospace, Menlo, monospace); font-size: 0.78rem; letter-spacing: 0.05em; color: var(--muted, #667385); } @media (max-width: 34rem) { .ds-to { display: none; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Annunciator Panel",
+    "overview": "This is an instrument face, not a brochure. Every claim on these pages arrives attached to the machinery that produces it, and the visual system is built to make that pairing legible: a heading, a hairline, and a mono receipt line underneath. Nothing glows to seem important. The pages read exciting, modern and assertive — deliberately not the warm paper-and-serif world rastrillo.org already owns.\n\nThe whole world ships under the constraints of the architecture it describes: one hand-written stylesheet, no build step, no JavaScript, no fetched fonts. That constraint is the source of the system's most distinctive decision — the six CARLOS letter marks and the wordmark are drawn as inline SVG paths on a shared construction grid, because no installed stack carries a condensed industrial capital everywhere. Editing a mark means editing path geometry, not a font-family.\n\nStructure is carried by rules, not by boxes. Sections are separated by a one-pixel hairline and a generous bay of vertical space; list items inside a section are separated by an even softer hairline. Cards exist, but only four things in the entire build are cards, and each earned it. Light and dark are both first-class: every token has a value in each, and the near-black ground (#0a0c10) is as much the house as the paper white.",
+    "keyCharacteristics": [
+      "Drawn letterforms on a 100x140 grid; no display face anywhere",
+      "One accent per page, teal on /, blue on /platform/ — siblings, never identical",
+      "Hairline rules as the primary divider; cards as an exception that must be argued for",
+      "A four-step signal ramp that only ever encodes app trust class",
+      "Exactly one authored motion moment on the whole site",
+      "Mono reserved for data, identifiers and measurement — never for prose"
+    ],
+    "rules": [
+      { "name": "The Sibling Accent Rule", "body": "A page declares exactly one accent, as four tokens (--accent, --accent-deep, --accent-soft, --on-accent) in a small inline :root block covering both colour schemes. Sibling pages must be visibly related and never identical. A page never mixes two accents.", "section": "colors" },
+      { "name": "The Signal Reservation Rule", "body": "--sig-s/a/b/c encode app trust class only. They may not be borrowed for emphasis, charts, status pills, or decoration. If a surface needs amber or coral for any other reason, it does not get them.", "section": "colors" },
+      { "name": "The Two Hairlines Rule", "body": "There are exactly two divider weights. --rule separates sections and outlines cards; --rule-soft separates items within a section. A third weight is a sign the hierarchy is wrong.", "section": "colors" },
+      { "name": "The Drawn Letter Rule", "body": "The six CARLOS letters and the wordmark are inline SVG paths on a shared 100x140 construction grid, cropped by viewBox=\"11 11 78 118\" (wordmark 11 11 518 118, letters advanced 88 units apart). One stroke weight per context — 21 for the section plates, 18 for the wordmark — with stroke-linecap: butt (square on the wordmark), stroke-linejoin: miter, stroke: currentColor and fill: none, so a mark inherits its colour from the accent. Changing a mark means editing path geometry. Never substitute a font-family for a mark, and never introduce a fetched display face to imitate one.", "section": "typography" },
+      { "name": "The Mono Is Data Rule", "body": "--font-mono is for measurements, identifiers, hostnames, SHAs, grades, units and column heads. It is never used for prose and never worn as a \"technical\" costume. Its companion: any number that is a measurement sets in font-variant-numeric: tabular-nums.", "section": "typography" },
+      { "name": "The Progressive Figure Rule", "body": "--font-stencil (Industrial) is an enhancement, not a dependency: it appears only on numerals and short figures, and its last fallback is var(--font-sans). A surface must read correctly when that stack resolves to nothing special.", "section": "typography" },
+      { "name": "The Zero Fetch Rule", "body": "The site binds to no fetched font and no JavaScript. Every face is a Modern Font Stacks system stack. A design that needs a webfont is a design this site does not ship.", "section": "typography" },
+      { "name": "The Rule-Not-Box Rule", "body": "Sections and list items are divided by a hairline and space. Reach for a border-boxed container only when the content is genuinely a discrete object; four exist on the whole site.", "section": "layout" },
+      { "name": "The Own Breakpoint Rule", "body": "Each pattern declares the width at which its own content stops working (26rem, 34rem, 46rem, 48rem, 52rem, 60rem, 64rem). There is no device-named breakpoint scale, and new patterns should not invent one.", "section": "layout" },
+      { "name": "The Flat-Until-It-Responds Rule", "body": "Surfaces are flat at rest unless they are one of the four cards. Shadow escalates only from --shadow-1 to --shadow-2, and only on hover. There is no third shadow and no shadow on text, icons or rules.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do divide with hairlines and space first; a card must be a discrete object you can name, not a way to group paragraphs.",
+      "Do declare a page's accent as the four accent tokens in a small inline :root block covering both colour schemes, and give every new token a light and a dark value.",
+      "Do attach every claim to its mechanism — the ledger's mono receipt line is the system's way of saying \"check this\".",
+      "Do set measurements, identifiers, grades, hosts, SHAs and column heads in mono with tabular numerals.",
+      "Do draw new letterforms as inline SVG on the 100x140 grid at the existing stroke weight, caps and joins, with stroke: currentColor and fill: none.",
+      "Do cap prose at 34-40rem inside the 72rem wrap so lines land at 65-75 characters.",
+      "Do let each pattern choose the width at which its own content breaks.",
+      "Do theme the surfaces you did not draw: selection, scrollbar, focus ring, underline offset.",
+      "Do gate any animation behind prefers-reduced-motion: no-preference and make the un-animated state the complete one."
+    ],
+    "donts": [
+      "Don't use the signal ramp (--sig-s/a/b/c) for anything but app trust class.",
+      "Don't fetch a font or add JavaScript; the site ships under the same rules as the architecture it describes.",
+      "Don't set a letter mark or the wordmark in a typeface, and don't add a display face — the drawn marks are the display voice.",
+      "Don't put prose in mono, or use mono to make a passage look technical.",
+      "Don't add a third shadow, a third hairline weight, or a shadow on text, icons or rules.",
+      "Don't mix two accents on one page, or use the sibling page's accent as a secondary colour.",
+      "Don't add a second animated moment; the waking week is the site's one piece of motion.",
+      "Don't introduce a device-named breakpoint scale or a global grid; the patterns carry their own."
+    ]
+  }
+}

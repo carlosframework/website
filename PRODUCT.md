@@ -21,8 +21,10 @@ Two audiences, one per page (confirmed 2026-08-05):
 The site exists to win adoption, and each page has a concrete success action:
 
 - index → the visitor starts building on the model, beginning with the
-  [Claude Code skill](https://github.com/carlosframework/skills).
-- /platform/ → the visitor gets started at platform.carlosframework.com.
+  [Claude Code skill](https://github.com/carlosframework/skills). That is the
+  hero's primary action; everything else on the page is subordinate to it.
+- /platform/ → the visitor gets started at platform.carlosframework.com, or
+  takes the hosted route at carloku.com.
 
 ## Positioning
 
@@ -39,10 +41,16 @@ Claims a neighboring framework could not truthfully copy:
 
 ## Operating Context
 
-Static site on GitHub Pages from `main` (root), custom domain
-carlosframework.com via `CNAME`; pushing to `main` publishes. Sibling site of
-11factor.org (house style inherited from it). Source is public at
-github.com/carlosframework/website.
+The site runs on the CARLOS flagship itself — it is the homepage for the thing
+it is deployed on. GitHub Pages was retired 2026-08-05; pushing to `main` no
+longer publishes. Deploying is the same `ship` / `promote` sequence any CARLOS
+app uses (recipe in CLAUDE.md). Source is public at
+github.com/carlosframework/website. Note that `carlosframework/platform` is a
+PRIVATE repo and must never be linked from the site.
+
+Pages: `/` (framework), `/platform/` (the platform, and the engine under
+carloku.com), `/rastrillo/` (a redirect stub — Rastrillo's real site is
+rastrillo.org).
 
 ## Capabilities and Constraints
 
@@ -59,10 +67,16 @@ github.com/carlosframework/website.
 
 - AI authorship is always visibly marked 🤖 (factor X practiced on itself).
   Person-emoji-marked blocks are certified human and off-limits to LLM edits.
-- House style from 11factor: Charter/Georgia serif, a single accent per page,
-  `--max: 42rem` measure, hairline rules, an italic epigraph under each h2.
-- Accents: index teal (`#0d6e63` light / `#4cc3ae` dark); /platform/ blue
-  (`#0f5e85` / `#5db8dd`). Sibling pages, visibly related, never identical.
+- House style (redesigned 2026-08-19; see CLAUDE.md for the full record).
+  CARLOS reads exciting, modern and assertive — deliberately NOT the warm
+  paper-and-serif world rastrillo.org already owns. Type from Modern Font
+  Stacks: Neo-Grotesque voice, Monospace Code for data and identifiers only.
+  The six letter marks and the wordmark are drawn as inline SVG, not set in a
+  face. Hairline rules divide; a card has to earn being a card.
+- Accents: index teal (`#067a68` light / `#2fd4ac` dark); /platform/ blue
+  (`#0d5f88` / `#59bfe8`). Sibling pages, visibly related, never identical.
+- A four-step signal ramp (`--sig-s/a/b/c`) encodes app trust class and
+  nothing else. Never reuse those hues decoratively.
 - No Eleven branding beyond footer credit links.
 - Tito is always "Tito" (never "Tito Go"), listed as a deliberate adopter, not
   an extraction source; it does not count toward the "5 systems" stat.
@@ -72,8 +86,20 @@ github.com/carlosframework/website.
 - Five extraction sources: Eleven Messenger, Keymail, Woodstar, Slopbox, Kass.
 - Real production tenants for /platform/ (an event-ticketing company and a
   training platform); claims trace to the platform repo.
-- No og:image asset exists (confirmed gap, 2026-08-05). Do not fabricate one;
-  add the meta tags only when a real 1200×630 image lands in the repo.
+- The homepage's "Running on CARLOS today" table is evidence, not marketing:
+  every row was verified live by its `X-Carlos-Version` header on 2026-08-19.
+  Re-verify before changing it. Eleven Messenger and Slopbox are extraction
+  SOURCES and carry no header — they must never be listed as adopters.
+- App trust classes (S / A1 / A2 / A-public / B / C) come from
+  `docs/superpowers/specs/2026-08-12-app-trust-classes-design.md`, merged to
+  platform `main` as 59d2d43 (PR #231).
+- No og:image asset exists (confirmed gap 2026-08-05, STILL OPEN at the
+  2026-08-19 redesign). Do not fabricate one; add the meta tags only when a
+  real 1200×630 image lands in the repo. Until then a shared link renders as a
+  bare title on every surface.
+- The fleet table's caption carries a hand-stamped verification date. A
+  hand-dated claim rots silently: re-run the curl sweep and re-stamp it in the
+  same commit as any deploy that touches that section.
 
 ## Product Principles
 

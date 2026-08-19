@@ -44,11 +44,27 @@ person marker.**
   anywhere, no analytics, no JavaScript.
 - **Light and dark** via `prefers-color-scheme` — keep both working when
   touching styles.
-- **House style is inherited from [11factor](https://11factor.org)**: Charter/
-  Georgia serif, a single accent colour, `--max: 42rem` measure, sections
-  separated by hairline rules, an italic epigraph under each `h2`. CARLOS's
-  accent is teal (`#0d6e63` light, `#4cc3ae` dark) so the two sites are
-  visibly siblings and not the same site.
+- **House style (redesigned 2026-08-19).** The site used to inherit 11factor's
+  Charter/Georgia serif, `--max: 42rem` measure and italic epigraphs. It no
+  longer does. Paul's brief was that CARLOS should read "exciting, modern and
+  assertive", and rastrillo.org already owns the family's warm paper-and-serif
+  world (its own "account book" design) — carlosframework.com must not be a
+  second, weaker version of that. The world now is:
+  - **Type from [Modern Font Stacks](https://modernfontstacks.com)**, so real
+    character with nothing fetched. Neo-Grotesque carries the voice; Monospace
+    Code carries data, identifiers and measurement, and nothing else (mono as a
+    costume for "technical" prose is a regression, not a style).
+  - **Letter marks are drawn**, as inline SVG on a 100×140 grid at one stroke
+    weight (`.glyph`, `.wordmark` in `site.css`). No installed stack carries a
+    condensed industrial capital everywhere, so the six CARLOS letters are
+    geometry, not type. Edit the paths, not a font-family.
+  - **Measures**: `--wrap: 72rem`, `--prose: 40rem`, body copy capped near 36rem
+    so it stays inside a 65–75ch line.
+  - **Accents**: index teal (`#067a68` light / `#2fd4ac` dark), platform blue
+    (`#0d5f88` / `#59bfe8`). Sibling pages, visibly related, never identical.
+  - **Hairline rules divide; nothing is a card unless being a card is a choice.**
+    Cards are for the three run-it routes and the two exhibits, not for page
+    structure.
 - **No Eleven branding.** CARLOS is separate from Eleven Messenger — informed
   by building it. Eleven and 11factor get credit links in the footer, and no
   more.
@@ -125,9 +141,15 @@ Shipping publishes the repo tree verbatim — ship from a clean
 packs every regular file it sees, including `.git` and `.claude/`).
 
 **Convergence is now seconds, not minutes (CARLOS platform PR #108, live
-2026-08-08).** A promote is picked up by the edge within ~2s. `X-Carlos-Version`
-is a binary-app header, though — this is a STATIC route, so it never
-carries it (platform#112). Verify by content instead:
+2026-08-08).** A promote is picked up by the edge within ~2s.
+
+**Static routes DO carry `X-Carlos-Version` (platform#112, corrected here
+2026-08-19).** This note used to say the opposite. Verified live on
+2026-08-19: carlosframework.com, platform.carlosframework.com, rastrillo.org
+and carloku.com all answer with the header. The homepage's "Running on CARLOS
+today" table cites it as evidence, so keep this straight. (Alias hosts are the
+real exception — a minted alias serves 200 with no version header by design.)
+Verify by header, or by content:
 
 ```
 curl -s https://carlosframework.com/ | grep -i "<something from the change>"
