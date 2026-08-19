@@ -136,6 +136,31 @@ convergence speed below; `carlos channels -app carlosframework` to see
 what's on the channel). Pages is no longer a fallback; don't resurrect it
 in a drive-by fix.
 
+**Caching: the edge sends no `Cache-Control` and no `ETag` on this static
+route — only `Last-Modified`** (confirmed live 2026-08-19). Browsers therefore
+apply HEURISTIC caching, roughly 10% of the age since `Last-Modified`, so a
+returning visitor can hold a stale page for days. This bit us the day the
+redesign shipped: one browser served the whole old page, another served the NEW
+html against the OLD `site.css`, which renders the drawn wordmark as giant
+black shapes and the type as the retired serif.
+
+Two defences live in the repo, and neither is the real fix:
+
+1. Every inline SVG carries `width`, `height`, `fill` and `stroke` as
+   PRESENTATION ATTRIBUTES, not only CSS, so a missing or stale stylesheet
+   degrades to a correctly-sized outlined mark rather than a black blob.
+2. The stylesheet is linked as `site.css?v=0`. **Bump that token on every
+   deploy** — the export step below does it — so new HTML never pairs with an
+   old cached stylesheet.
+
+The real fix is server-side `Cache-Control` on static routes: platform issue
+**carlosframework/platform#234**. Until it lands, step 2 is a required part of deploying this site.
+
+```
+# in the clean export, before shipping:
+sed -i "s/site\.css?v=0/site.css?v=$SHA/g" index.html platform/index.html rastrillo/index.html
+```
+
 Shipping publishes the repo tree verbatim — ship from a clean
 `git archive <sha>` export, never from a working checkout (`PackDir`
 packs every regular file it sees, including `.git` and `.claude/`).
