@@ -284,7 +284,10 @@ p + p { margin-top: 1.05rem; }
 .week .data { display: block; margin-top: 0.85rem; }
 
 @media (max-width: 26rem) {
-  .week .cal { grid-template-columns: auto repeat(12, minmax(0, 1fr)); }
+  /* The day label takes its own full-width line here, so the hour cells must
+     flow over exactly 12 columns. Leaving the label's `auto` column in the
+     track list gives 13, and 24 cells over 13 columns ends every day raggedly. */
+  .week .cal { grid-template-columns: repeat(12, minmax(0, 1fr)); }
   .week .cal .day { grid-column: 1 / -1; padding: 0.35rem 0 0.1rem; }
 }
 
