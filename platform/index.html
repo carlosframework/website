@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The CARLOS platform — open source, self-hostable, and the engine under Carloku</title>
-<meta name="description" content="🤖 Ship an immutable release and get a live canary URL in seconds. Promote the same bytes to stable. Let idle apps sleep to a bucket and wake in milliseconds. The whole platform is one binary you can run yourself.">
+<meta name="description" content="🤖 Ship an immutable release with carlos deploy and it's live on your app's channel in seconds — no ladder, no ceremony. Add a pipeline when you want staged rollout, bake windows and passkeys. Let idle apps sleep to a bucket and wake in milliseconds.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0a0c10" media="(prefers-color-scheme: dark)">
@@ -61,7 +61,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 <div class="hero">
   <h1>Scale to billions. Ship in seconds. Pay for the hours somebody used.</h1>
 
-  <p class="lede">The CARLOS platform is the deployment substrate underneath every app on the framework. Ship an immutable release and get a live canary URL in seconds. Promote the exact same bytes to stable. Let idle apps sleep to a bucket for nothing and wake in milliseconds. It is open source and self-hostable — and it is also the engine under <a href="https://carloku.com">Carloku</a>, if you would rather not run boxes.</p>
+  <p class="lede">The CARLOS platform is the deployment substrate underneath every app on the framework. Ship an immutable release with <code>carlos deploy</code> and it's live on your app's channel in seconds — no ladder, no passkey ceremony. Want a staged rollout instead? Add a pipeline and promote the exact same bytes up it, on rules you set. Let idle apps sleep to a bucket for nothing and wake in milliseconds. It is open source and self-hostable — and it is also the engine under <a href="https://carloku.com">Carloku</a>, if you would rather not run boxes.</p>
 
   <div class="actions">
     <a class="btn primary" href="https://platform.carlosframework.com">Get started</a>
@@ -117,35 +117,35 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 
 <section id="ship">
   <div class="head">
-    <h2>From branch to stable without a rebuild</h2>
-    <p class="standfirst">One artifact, three pointers. What you tested is what ships, because it is the same bytes.</p>
+    <h2>Live on deploy. A pipeline when you want more.</h2>
+    <p class="standfirst"><code>carlos deploy</code> lands your release on the app's one channel and it's live — no ladder, no passkey, no ceremony. Want staged rollout instead? Opt into a pipeline and promote the same bytes up it, on rules you set.</p>
   </div>
 
-  <div class="rail" role="img" aria-label="Promotion rail: the release f3c9d1 moves from the canary channel to beta to stable without being rebuilt.">
+  <div class="rail" role="img" aria-label="Promotion rail: an opted-in pipeline moves the release f3c9d1 from the canary channel to beta to stable without being rebuilt.">
     <span class="stop"><b>canary/pr-142</b><span class="sha">f3c9d1</span></span>
     <span class="to" aria-hidden="true">→</span>
     <span class="stop"><b>beta</b><span class="sha">f3c9d1</span></span>
     <span class="to" aria-hidden="true">→</span>
     <span class="stop final"><b>stable</b><span class="sha">f3c9d1</span></span>
-    <span class="foot">PROMOTION MOVES A POINTER · ROLLBACK MOVES IT BACK</span>
+    <span class="foot">AN OPTED-IN PIPELINE · PROMOTION MOVES A POINTER · ROLLBACK MOVES IT BACK</span>
   </div>
 
   <div class="pair" style="margin-top:2.25rem">
     <div>
       <h3>A live URL for every branch</h3>
-      <p>Push a branch and get a canary URL in seconds: a real deployment on the real platform, not a localhost preview. Send it to a teammate before the code review starts.</p>
+      <p>Push a branch and get a canary URL in seconds: a real deployment on the real platform, not a localhost preview. Send it to a teammate before the code review starts — no pipeline required.</p>
     </div>
     <div>
       <h3>One command to serving</h3>
-      <p><code>carlos deploy</code> ships, promotes, and returns only when the URL is provably serving the new build — the edge names the version it serves and the command checks. Exit 0 means refresh and it is there.</p>
+      <p><code>carlos deploy</code> ships to your app's channel and returns only when the URL is provably serving the new build — the edge names the version it serves and the command checks. Exit 0 means refresh and it is there.</p>
     </div>
     <div>
-      <h3>Promote bytes, not hopes</h3>
-      <p>Promotion points a wider channel at the same immutable, content-addressed artifact. Nothing is ever rebuilt on the way to production.</p>
+      <h3>Add channels when you want staged rollout</h3>
+      <p><code>carlos pipeline init -template edge-production</code> — or the full ladder — adds channels with their own bake window, passkey, or team approval rules. Promotion points a wider channel at the same immutable, content-addressed artifact; nothing is ever rebuilt on the way up.</p>
     </div>
     <div>
       <h3>Rollback is a pointer move</h3>
-      <p>Point the channel back at the previous release and the bleed stops. Immediate, no rebuild, no waiting. Going backwards is never new code.</p>
+      <p>Point a channel back at the previous release and the bleed stops. Immediate, no rebuild, no waiting. Going backwards is never new code.</p>
     </div>
   </div>
 </section>
