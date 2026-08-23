@@ -37,7 +37,7 @@ Everything in this repo written by an AI carries a **visible 🤖 marker** — o
 the page, in this README, at the top of every prose file. That is factor X
 applied to the project itself: AI-written words are always disclosed, never
 passed off as human. The full rule (including the human-certification markers
-that AI must not touch) is in [`CLAUDE.md`](CLAUDE.md).
+that AI must not touch) is in [`AGENTS.md`](AGENTS.md).
 
 ## Provenance
 
@@ -54,7 +54,7 @@ deploy for this static, instance-less app; `carlos deploy`'s
 wait-until-serving watch doesn't cover it yet (platform#112). Convergence
 is seconds; verify by content (STATIC routes don't carry
 `X-Carlos-Version`) or with `carlos channels -app carlosframework`. Full
-details, env, and rollback are in [`CLAUDE.md`](CLAUDE.md).
+details, env, and rollback are in [`AGENTS.md`](AGENTS.md).
 
 ## License
 

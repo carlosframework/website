@@ -1,0 +1,201 @@
+# 🤖 AGENTS.md
+
+Working notes for anyone (human or agent) changing this repo. This is the
+canonical agent-instructions file — keep it current here, not in a
+tool-specific file. (Claude Code reads it via the `CLAUDE.md` pointer.)
+
+## What this is
+
+The website for **CARLOS** — *Cost-efficient, Available, Replicated,
+Lightweight, Open, Secure* — the architecture being extracted from Eleven Messenger,
+Keymail, Woodstar, Slopbox and Kass. Tito (always "Tito", never "Tito Go")
+is adopting CARLOS deliberately and is listed on the site as an adopter,
+not an extraction source — it doesn't count toward the "5 systems" stat. The pages are static and the
+stylesheet (`site.css`) is plain: what a visitor downloads is HTML and CSS,
+with no JavaScript and nothing fetched from anywhere. Keep it that way — a
+framework whose first claim is "lightweight" does not get to ship a bundler to
+its own readers. Durable product context for design tooling lives in
+`PRODUCT.md`.
+
+`index.html` and `platform/index.html` are still written by hand and have no
+build step. `/docs` does: its pages come from markdown through Eleventy, the
+same pipeline rastrillo.org uses, run here before you ship rather than on
+anyone's browser. A dozen docs pages sharing a sidebar are not something you
+hand-maintain as HTML, and the served site keeps every promise in the paragraph
+above. See "Building the docs" below.
+
+## The one rule: AI authorship is always marked (🤖 / 👨)
+
+This repo practices factor X on itself. Every piece of prose carries an
+authorship marker so a reader — human or agent — can tell who wrote what, and
+so a human can fence text off from AI rewriting.
+
+- **🤖 — written by an LLM.** Always **visible**, immediately before the
+  heading, paragraph, or section it applies to. A 🤖 on a heading **cascades**:
+  it marks that heading and everything beneath it, down to the next marker of
+  the same-or-higher level or a human-certified block. One 🤖 on a document's
+  top heading marks the whole document. On the website, the marker must render
+  visibly on the page — never hide it in a comment.
+- **No marker — ambiguous.** Could be either. Never *assume* AI authorship;
+  when you genuinely don't know, leave it unmarked.
+- **A person emoji (👨 / 👤 / 🧑 …) — certified human, off-limits.** The text
+  was written or vetted by a person. **An LLM must not rewrite, rephrase,
+  condense, or delete it.** You may add new 🤖 prose nearby, but the human's
+  words are fixed. In HTML/Markdown the person marker may hide in a comment
+  (`<!-- 👨 -->`) so it doesn't render; the 🤖 marker must **never** be hidden.
+
+Baseline: **everything in this repo was AI-written unless a block carries a
+person marker.**
+
+## Conventions
+
+- **Nothing runs in the browser.** No frameworks, no fonts fetched from
+  anywhere, no analytics, no JavaScript. The `/docs` build is a devDependency
+  that runs at authoring time; `_site/` is gitignored and never committed.
+- **Light and dark** via `prefers-color-scheme` — keep both working when
+  touching styles.
+- **House style (redesigned 2026-08-19).** The site used to inherit 11factor's
+  Charter/Georgia serif, `--max: 42rem` measure and italic epigraphs. It no
+  longer does. Paul's brief was that CARLOS should read "exciting, modern and
+  assertive", and rastrillo.org already owns the family's warm paper-and-serif
+  world (its own "account book" design) — carlosframework.com must not be a
+  second, weaker version of that. The world now is:
+  - **Type from [Modern Font Stacks](https://modernfontstacks.com)**, so real
+    character with nothing fetched. Neo-Grotesque carries the voice; Monospace
+    Code carries data, identifiers and measurement, and nothing else (mono as a
+    costume for "technical" prose is a regression, not a style).
+  - **Letter marks are drawn**, as inline SVG on a 100×140 grid at one stroke
+    weight (`.glyph`, `.wordmark` in `site.css`). No installed stack carries a
+    condensed industrial capital everywhere, so the six CARLOS letters are
+    geometry, not type. Edit the paths, not a font-family.
+  - **Measures**: `--wrap: 72rem`, `--prose: 40rem`, body copy capped near 36rem
+    so it stays inside a 65–75ch line.
+  - **Accents**: index teal (`#067a68` light / `#2fd4ac` dark), platform blue
+    (`#0d5f88` / `#59bfe8`). Sibling pages, visibly related, never identical.
+  - **Hairline rules divide; nothing is a card unless being a card is a choice.**
+    Cards are for the three run-it routes and the two exhibits, not for page
+    structure.
+- **No Eleven branding.** CARLOS is separate from Eleven Messenger — informed
+  by building it. Eleven and 11factor get credit links in the footer, and no
+  more.
+
+## Accuracy rules (these matter more than the prose)
+
+- **The five source repos are private.** Never link to them from the site;
+  the links would 404 for every visitor. Name the products, not the repos.
+- **Don't overclaim the framework's maturity.** The components described exist
+  inside the applications they were pulled from, not as an adoptable library.
+  The "Where it came from" section says so on purpose — keep it honest as the
+  work progresses, and update it when extraction actually lands.
+- **CARLOS is not an operating system.** It is an application architecture, and
+  the expansion ends in "Open, Secure" for exactly that reason — an earlier
+  draft read "Operating System", which overclaimed.
+- **C and A are two separate claims.** The expansion is "Cost-efficient,
+  Available" — six letters, six promises. It replaced "Continuously Available"
+  (July 2026) because cost-efficiency is the novel claim and deserved its own
+  letter; "Cheap" was considered and rejected for its low-quality connotation.
+  Don't recombine them in a drive-by edit.
+- **The name is CARLOS, one S.** "CARLOSS" (…Open, Secure, Software) was
+  considered for the OSS ending and rejected: the double letter invites typos
+  forever, "Software" only earns its place via the pun, and the org, domain and
+  `internal/carlos` package are all already correct. Don't relitigate it in a
+  drive-by edit.
+- Every technical claim on the page is traceable to `internal/carlos` and the
+  `CLAUDE.md` files of the five source projects. If you change a claim, check
+  it against the code rather than against the previous copy.
+
+## Deploying
+
+**The live apex, `carlosframework.com`, moved off GitHub Pages onto the
+CARLOS flagship itself on 2026-08-02** — the site now runs on the thing
+it's the homepage for. Pushing to `main` no longer publishes it; deploying
+is the same `ship`/`promote`/`add` sequence any CARLOS app uses:
+
+```
+export AWS_PROFILE=keymail AWS_REGION=eu-west-1 \
+       CARLOS_DEPLOYMENT_BUCKET=carlos-flagship-271376211898
+carlos ship -app carlosframework -kind static -version <sha> .
+CARLOS_RELEASE_KEY=$(aws ssm get-parameter --name /carlos/release-key \
+  --with-decryption --query Parameter.Value --output text) \
+  carlos promote -app carlosframework <sha> canary/rehearsal
+```
+
+The env matters: without `CARLOS_DEPLOYMENT_BUCKET` the CLI goes through
+the console API, where this app was never registered, and fails with
+"not found". This is bucket mode — the same flow as `ship-app.sh` /
+`promote-app.sh` in `carlosframework/platform-infrastructure`, which are
+the canonical copies. Routes (`carlos add`) are registry-mode: they run
+on the flagship box itself (instance `i-092c0c1eea75723cb`, via SSM;
+env comes from `/etc/carlos/host.env`, binary at `/opt/carlos/carlos`).
+
+(Still on `canary/rehearsal`, not `stable` — same reason Kass's real
+cutover used it: `stable` bakes 72h on a box's *first* sighting of a
+channel head, which would have meant 72h of downtime for a
+never-before-served route. A future `stable` flip is optional cleanup,
+not required — mirrors Kass's own still-pending flip.)
+
+**GitHub Pages is retired (2026-08-05).** `www.carlosframework.com` is a
+CARLOS route on the same app and channel as the apex; its DNS `A` record
+points at the flagship (`99.81.104.219`) in the `carlosframework.com`
+DNSimple zone (account 285), same as the apex. `CNAME` and `.nojekyll`
+are gone from the repo and Pages is disabled on the GitHub repo.
+
+Rollback is a pointer move, like any CARLOS app: promote the previous
+good sha back onto `canary/rehearsal` and the edge picks it up (see
+convergence speed below; `carlos channels -app carlosframework` to see
+what's on the channel). Pages is no longer a fallback; don't resurrect it
+in a drive-by fix.
+
+**Caching: the edge sends no `Cache-Control` and no `ETag` on this static
+route — only `Last-Modified`** (confirmed live 2026-08-19). Browsers therefore
+apply HEURISTIC caching, roughly 10% of the age since `Last-Modified`, so a
+returning visitor can hold a stale page for days. This bit us the day the
+redesign shipped: one browser served the whole old page, another served the NEW
+html against the OLD `site.css`, which renders the drawn wordmark as giant
+black shapes and the type as the retired serif.
+
+Two defences live in the repo, and neither is the real fix:
+
+1. Every inline SVG carries `width`, `height`, `fill` and `stroke` as
+   PRESENTATION ATTRIBUTES, not only CSS, so a missing or stale stylesheet
+   degrades to a correctly-sized outlined mark rather than a black blob.
+2. The stylesheet is linked as `site.css?v=0`. **Bump that token on every
+   deploy** — the export step below does it — so new HTML never pairs with an
+   old cached stylesheet.
+
+The real fix is server-side `Cache-Control` on static routes: platform issue
+**carlosframework/platform#234**. Until it lands, step 2 is a required part of deploying this site.
+
+```
+# in the clean export, before shipping:
+sed -i "s/site\.css?v=0/site.css?v=$SHA/g" index.html platform/index.html rastrillo/index.html
+```
+
+Shipping publishes the repo tree verbatim — ship from a clean
+`git archive <sha>` export, never from a working checkout (`PackDir`
+packs every regular file it sees, including `.git` and `.claude/`).
+
+**Convergence is now seconds, not minutes (CARLOS platform PR #108, live
+2026-08-08).** A promote is picked up by the edge within ~2s.
+
+**Static routes DO carry `X-Carlos-Version` (platform#112, corrected here
+2026-08-19).** This note used to say the opposite. Verified live on
+2026-08-19: carlosframework.com, platform.carlosframework.com, rastrillo.org
+and carloku.com all answer with the header. The homepage's "Running on CARLOS
+today" table cites it as evidence, so keep this straight. (Alias hosts are the
+real exception — a minted alias serves 200 with no version header by design.)
+Verify by header, or by content:
+
+```
+curl -s https://carlosframework.com/ | grep -i "<something from the change>"
+```
+
+or by pointer: `carlos channels -app carlosframework` should show the new
+sha promoted.
+
+`carlos deploy -app carlosframework -kind static -version <sha> <site-dir>`
+ships and promotes, but its wait-until-serving watch doesn't yet cover
+instance-less static apps like this one (same platform#112) — for this
+site, the `ship`/`promote` pair above IS the deploy; convergence is still
+seconds. The operator pinfra `ship-app.sh` / `promote-app.sh` scripts
+above remain the documented default for this site.
