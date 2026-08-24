@@ -175,6 +175,11 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
       <h3>When it breaks, it says why</h3>
       <p><code>carlos logs</code> is one timeline: your app's own output merged with the platform's events about it — wakes, restarts, and the reason a wake failed — filterable, followable live with <code>-f</code>, and in the console. No server access required, because the answer comes to you.</p>
     </div>
+    <div>
+      <h3>Recurring work, on an app that sleeps</h3>
+      <p>A hibernating instance cannot run its own timer — the process is not there to fire it. So the platform keeps the clock. <code>carlos schedule set</code> declares the work once, <code>-every 6h</code> or a cron line in UTC, and at the due time the platform wakes the instance, POSTs the path you named with the token already in its environment, and holds it awake until your handler returns. A sync every six hours; reminders in the days before a date.</p>
+      <p>2xx means done, 5xx is retried with backoff, 4xx is your app declining and nothing retries. <code>carlos schedule ls</code> prints the next and last fire for every instance, so "did it run?" is a question you answer from your terminal.</p>
+    </div>
   </div>
 </section>
 
