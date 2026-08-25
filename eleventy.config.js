@@ -28,6 +28,7 @@ export function slugify(text) {
 export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/index.html": "index.html" });
   eleventyConfig.addPassthroughCopy({ "src/platform": "platform" });
+  eleventyConfig.addPassthroughCopy({ "src/rastrillo": "rastrillo" });
   eleventyConfig.addPassthroughCopy({ "src/site.css": "site.css" });
   eleventyConfig.addPassthroughCopy({ "src/favicon.svg": "favicon.svg" });
 
