@@ -1,0 +1,14 @@
+{
+  "sections": [
+    {
+      "title": "Reference",
+      "pages": [
+        {
+          "slug": "cli",
+          "label": "The CLI",
+          "blurb": "Every carlos command, grouped by whether you are shipping an app, running a deployment, or on a box."
+        }
+      ]
+    }
+  ]
+}

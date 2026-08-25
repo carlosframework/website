@@ -1,0 +1,13 @@
+---
+pagination:
+  data: collections.docs
+  size: 1
+  alias: doc
+layout: docs.njk
+eleventyComputed:
+  title: "{{ doc.page.rawInput | docsTitle }}"
+  description: "{{ docsnav | docsBlurb(doc.slug) }}"
+  docsSlug: "{{ doc.slug }}"
+permalink: "/docs/{{ doc.slug }}/index.html"
+---
+{{ doc.page.templateContent | safe }}

@@ -1,0 +1,5 @@
+{
+  "//": "Written by hack/sync-docs.mjs. The vendored markdown is input for src/docs.njk and src/docsmd.njk, not pages of its own.",
+  "permalink": false,
+  "eleventyExcludeFromCollections": false
+}

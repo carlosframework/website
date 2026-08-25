@@ -1,0 +1,13 @@
+{
+  "Getting started": "getting-started",
+  "The `carlos ship` contract": "the-carlos-ship-contract",
+  "404, never 403": "404-never-403",
+  "Routes & instances": "routes-instances",
+  "  Leading and trailing  ": "leading-and-trailing",
+  "Hyphen-joined words": "hyphen-joined-words",
+  "`-app` and `--app`": "app-and-app",
+  "canary/rehearsal": "canary-rehearsal",
+  "X-Carlos-Version": "x-carlos-version",
+  "-app": "app",
+  "--app": "app"
+}
