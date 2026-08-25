@@ -49,6 +49,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/platform": "platform" });
   eleventyConfig.addPassthroughCopy({ "src/rastrillo": "rastrillo" });
   eleventyConfig.addPassthroughCopy({ "src/site.css": "site.css" });
+  eleventyConfig.addPassthroughCopy({ "src/docs.css": "docs.css" });
   eleventyConfig.addPassthroughCopy({ "src/favicon.svg": "favicon.svg" });
 
   const md = markdownIt({ html: true, linkify: false, typographer: false }).use(
