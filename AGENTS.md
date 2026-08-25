@@ -104,21 +104,84 @@ person marker.**
   `CLAUDE.md` files of the five source projects. If you change a claim, check
   it against the code rather than against the previous copy.
 
+## Building the docs
+
+`/docs` is built from markdown that lives in the **platform** repo at
+`docs/site/`, where its Go tests gate it against the CLI it documents and it
+changes in the same pull request as the code. `hack/sync-docs.mjs` vendors that
+corpus into this repo so the build is self-contained.
+
+**Nothing under `src/docs/` or `src/_data/docs*.json` is edited here.**
+`sync-docs.mjs` wipes and rewrites all of it — an edit made here is discarded
+on the next sync, silently, and the site then disagrees with the repo that
+gates it. Fix the source in the platform repo instead. (Every file the script
+writes carries a `"//"` generated-by notice saying so in the file itself.)
+
+```
+npm install
+node hack/sync-docs.mjs ~/github.com/carlosframework/platform
+npm run check          # builds, then checks links, ids and the anchor rule
+npm run serve          # localhost:8080
+```
+
+`node hack/sync-docs.mjs <checkout> --check` reports whether the vendored copy
+is behind that checkout, and writes nothing — that is the read-only form to
+run before assuming the site is current.
+
+`npm run check` is `eleventy` followed by `hack/check-docs.mjs`, which reads
+`_site/` after the build: every nav entry has a built page and a built `.md`
+twin, every internal `/docs` href resolves to a built file and to a real
+`id="…"` when it carries a fragment, and `slugify` in `eleventy.config.js`
+agrees with Go's `internal/docsite.Anchor` on every case in
+`src/_data/docsanchors.json`. That last one is why the fixture is vendored
+rather than retyped: both languages assert against one artifact, so a heading
+whose fragment the Go gate accepted cannot 404 in a browser because the two
+slug rules drifted.
+
 ## Deploying
 
 **The live apex, `carlosframework.com`, moved off GitHub Pages onto the
 CARLOS flagship itself on 2026-08-02** — the site now runs on the thing
 it's the homepage for. Pushing to `main` no longer publishes it; deploying
-is the same `ship`/`promote`/`add` sequence any CARLOS app uses:
+is the same `ship`/`promote` sequence any CARLOS app uses — with one
+difference this repo did not use to have. **There is a build step now, so
+what ships is `_site/`, never the repo tree.** A tree ship has no `_site/`
+in it: it would publish `index.html` buried under `src/`, no built pages,
+and no `/docs` at all.
 
 ```
+SHA=$(git rev-parse --short HEAD)     # the sha you are shipping
+
+# 1. Clean export. Never ship a working checkout — PackDir packs every
+#    regular file it sees, including .git and .claude/.
+rm -rf /tmp/website-ship && mkdir -p /tmp/website-ship
+git archive "$SHA" --prefix=export/ | tar -x -C /tmp/website-ship
+cd /tmp/website-ship/export
+
+# 2. Build, and gate the rendered output. `check` runs eleventy, then
+#    hack/check-docs.mjs over what it produced.
+npm ci
+npm run check
+
+# 3. Cache-bust BOTH stylesheets across every built page — see Caching
+#    below; this is not optional.
+find _site -name '*.html' -exec sed -i "s/\.css?v=0\"/.css?v=$SHA\"/g" {} +
+grep -rn '?v=0"' _site && echo "STALE TOKEN — do not ship" || echo "cache-bust ok"
+
+# 4. Ship the BUILT OUTPUT, then promote.
 export AWS_PROFILE=keymail AWS_REGION=eu-west-1 \
        CARLOS_DEPLOYMENT_BUCKET=carlos-flagship-271376211898
-carlos ship -app carlosframework -kind static -version <sha> .
+carlos ship -app carlosframework -kind static -version "$SHA" _site
 CARLOS_RELEASE_KEY=$(aws ssm get-parameter --name /carlos/release-key \
   --with-decryption --query Parameter.Value --output text) \
-  carlos promote -app carlosframework <sha> canary/rehearsal
+  carlos promote -app carlosframework "$SHA" canary/rehearsal
 ```
+
+Both the `sed` and the `grep` end at the closing quote on purpose. A sha
+beginning with `0` — `008f73e` — makes `?v=008f73e` contain the literal
+substring `?v=0`, so an unanchored verification grep calls every freshly
+bumped file stale, and an unanchored `sed` run twice appends the sha twice.
+Anchoring on `"` fixes both and makes step 3 idempotent.
 
 The env matters: without `CARLOS_DEPLOYMENT_BUCKET` the CLI goes through
 the console API, where this app was never registered, and fails with
@@ -159,21 +222,16 @@ Two defences live in the repo, and neither is the real fix:
 1. Every inline SVG carries `width`, `height`, `fill` and `stroke` as
    PRESENTATION ATTRIBUTES, not only CSS, so a missing or stale stylesheet
    degrades to a correctly-sized outlined mark rather than a black blob.
-2. The stylesheet is linked as `site.css?v=0`. **Bump that token on every
-   deploy** — the export step below does it — so new HTML never pairs with an
-   old cached stylesheet.
+2. The stylesheets are linked as `site.css?v=0` — and, on the docs pages,
+   `docs.css?v=0` as well. **Bump both tokens on every deploy**, across every
+   generated page, so new HTML never pairs with an old cached stylesheet.
+   That is step 3 of the deploy sequence above; it walks `_site` with `find`
+   rather than naming files, because the pages are generated now and an
+   enumerated list goes stale the moment a page is added.
 
 The real fix is server-side `Cache-Control` on static routes: platform issue
-**carlosframework/platform#234**. Until it lands, step 2 is a required part of deploying this site.
-
-```
-# in the clean export, before shipping:
-sed -i "s/site\.css?v=0/site.css?v=$SHA/g" index.html platform/index.html rastrillo/index.html
-```
-
-Shipping publishes the repo tree verbatim — ship from a clean
-`git archive <sha>` export, never from a working checkout (`PackDir`
-packs every regular file it sees, including `.git` and `.claude/`).
+**carlosframework/platform#234**. Until it lands, step 2 here is a required
+part of deploying this site.
 
 **Convergence is now seconds, not minutes (CARLOS platform PR #108, live
 2026-08-08).** A promote is picked up by the edge within ~2s.
@@ -184,18 +242,24 @@ packs every regular file it sees, including `.git` and `.claude/`).
 and carloku.com all answer with the header. The homepage's "Running on CARLOS
 today" table cites it as evidence, so keep this straight. (Alias hosts are the
 real exception — a minted alias serves 200 with no version header by design.)
-Verify by header, or by content:
+Verify by header, or by content — and verify `/docs` **specifically**, because
+the landing page looks right whether or not the built docs made it into the
+artifact:
 
 ```
 curl -s https://carlosframework.com/ | grep -i "<something from the change>"
+curl -s https://carlosframework.com/docs/ | grep -i "the cli"
+curl -s https://carlosframework.com/docs/ | grep -o 'docs\.css?v=[^"]*'
 ```
 
 or by pointer: `carlos channels -app carlosframework` should show the new
 sha promoted.
 
-`carlos deploy -app carlosframework -kind static -version <sha> <site-dir>`
-ships and promotes, but its wait-until-serving watch doesn't yet cover
-instance-less static apps like this one (same platform#112) — for this
+`carlos deploy -app carlosframework -kind static -version "$SHA" _site`
+ships and promotes in one command, but its wait-until-serving watch doesn't yet
+cover instance-less static apps like this one (same platform#112) — for this
 site, the `ship`/`promote` pair above IS the deploy; convergence is still
-seconds. The operator pinfra `ship-app.sh` / `promote-app.sh` scripts
-above remain the documented default for this site.
+seconds. The operator pinfra `ship-app.sh` / `promote-app.sh` scripts remain
+the documented default. **Whichever of the three you use, the directory
+argument is `_site` of a built, cache-busted clean export** — steps 1 to 3
+above are not optional in any of them.
