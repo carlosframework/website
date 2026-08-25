@@ -25,6 +25,25 @@ export function slugify(text) {
   return out;
 }
 
+// fenceDelim/sameFence port internal/docsite/docsite.go's fence-matching
+// exactly, for docsSections below: a trimmed line opens or closes a
+// fence, and a closer only closes if it is the same character as the
+// opener and at least as long a run.
+function fenceDelim(line) {
+  let r = null;
+  if (line.startsWith("```")) r = "`";
+  else if (line.startsWith("~~~")) r = "~";
+  else return null;
+  let n = 0;
+  while (n < line.length && line[n] === r) n++;
+  return { mark: line.slice(0, n), info: line.slice(n).trim() };
+}
+
+function sameFence(closing, opening) {
+  if (!closing || !opening || closing[0] !== opening[0]) return false;
+  return closing.length >= opening.length;
+}
+
 export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/index.html": "index.html" });
   eleventyConfig.addPassthroughCopy({ "src/platform": "platform" });
@@ -65,14 +84,33 @@ export default function (eleventyConfig) {
 
   // Section headings of one page, for the sidebar's sub-nav. Read from
   // the source rather than the rendered HTML so it needs no DOM.
+  //
+  // Fence tracking is ported from internal/docsite/docsite.go's
+  // fenceDelim/sameFence in the platform repo, not invented here: a
+  // closing marker must match the opener's character and be at least as
+  // long, so a ``` block nested inside an outer ~~~ fence stays inside
+  // that outer fence instead of prematurely toggling out of it (which
+  // would both hide real "##" headings after the true close and expose
+  // fence-internal "##" lines as fake ones).
   eleventyConfig.addFilter("docsSections", (raw) => {
     const out = [];
     let inFence = false;
+    let fenceMark = "";
     for (const line of String(raw).split("\n")) {
       const trimmed = line.trim();
-      if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
-        inFence = !inFence;
-        continue;
+      const fd = fenceDelim(trimmed);
+      if (fd) {
+        if (!inFence) {
+          inFence = true;
+          fenceMark = fd.mark;
+          continue;
+        } else if (sameFence(fd.mark, fenceMark)) {
+          inFence = false;
+          continue;
+        }
+        // A fence-looking line that doesn't close the current fence
+        // (different character, or a shorter run) is body content of
+        // the still-open fence, same as the Go side.
       }
       if (inFence) continue;
       const m = /^##\s+(.+?)\s*#*$/.exec(trimmed);
