@@ -80,6 +80,33 @@
 }
 @media (max-width: 40rem) { .folio { display: none; } }
 
+/* The sidebar carries 40+ links before the article on every page, and
+   there is no search to route around them, so a keyboard user needs a
+   way past it. Hidden via the shared .visually-hidden utility (site.css)
+   until it receives focus — the idiom that class already establishes —
+   at which point every property it hides behind is reasserted visible
+   so the link becomes the first thing on the page a sighted keyboard
+   user sees. */
+.skip-link:focus {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 10;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0.6rem 1rem;
+  overflow: visible;
+  clip-path: none;
+  white-space: normal;
+  background: var(--surface);
+  color: var(--accent);
+  border: 1px solid var(--rule);
+  border-radius: 7px;
+  box-shadow: var(--shadow-2);
+  font-weight: 600;
+}
+
 /* ----------------------------------------------------------------- shell -- */
 
 .docs-shell {

@@ -8,6 +8,12 @@
 
   The sidebar precedes the article in document order, which on a narrow
   viewport is what puts the nav above the content without a toggle.
+
+  The sidebar is a <nav>, not an <aside>: with no search, it IS this
+  site's whole navigation model, not supplementary content. The article
+  is wrapped in <main> so the skip link (first focusable element in
+  <body>) has a landmark to target — with 40+ sidebar links ahead of it
+  on every page, a keyboard user needs a way past them.
 #}
 <!doctype html>
 <html lang="en">
@@ -27,10 +33,11 @@
 <link rel="stylesheet" href="/docs.css?v=0">
 </head>
 <body class="docs-body">
+<a class="skip-link visually-hidden" href="#main">Skip to content</a>
 <p class="brandline"><a href="/"><b>CARLOS</b></a> <span aria-hidden="true">/</span> <a href="/platform/">platform</a> <span aria-hidden="true">/</span> <span class="here">docs</span><span class="folio" aria-hidden="true">carlosframework.com/docs</span></p>
 
 <div class="docs-shell">
-  <aside class="docs-nav" aria-label="Documentation">
+  <nav class="docs-nav" aria-label="Documentation">
     <p class="docs-nav-title"><a href="/docs/"{% if isIndex %} class="active" aria-current="page"{% endif %}>Documentation</a></p>
     {% for section in docsnav.sections %}
     <p class="docs-nav-section">{{ section.title }}</p>
@@ -50,18 +57,20 @@
       {% endfor %}
     </ul>
     {% endfor %}
-  </aside>
+  </nav>
 
-  <article class="docs-article">
-    {{ content | safe }}
+  <main id="main">
+    <article class="docs-article">
+      {{ content | safe }}
 
-    {% if not isIndex %}
-    <p class="docs-foot">
-      <a href="/docs/{{ docsSlug }}.md">Read this page as markdown</a> —
-      exact, unstyled, and cheap for an agent to fetch.
-    </p>
-    {% endif %}
-  </article>
+      {% if not isIndex %}
+      <p class="docs-foot">
+        <a href="/docs/{{ docsSlug }}.md">Read this page as markdown</a> —
+        exact, unstyled, and cheap for an agent to fetch.
+      </p>
+      {% endif %}
+    </article>
+  </main>
 </div>
 
 <footer class="docs-sitefoot">

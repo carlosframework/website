@@ -36,7 +36,34 @@ const exists = (p) => {
   }
 };
 
-// 1. Every nav entry has a built page and a built .md twin.
+// 1. The site as a whole was actually built. Everything below this check
+//    is scoped to _site/docs — deliberately, that's the docs-specific
+//    gate this file owns — but nothing else in the pipeline verifies
+//    that the hand-written pages and shared assets were emitted at all.
+//    This is not hypothetical: this branch has already dropped
+//    /rastrillo/ once (a live redirect page, missing because a
+//    passthrough file list went stale) and shipped a 404ing docs.css
+//    once — both silently, because npm run check only ever looked under
+//    _site/docs and exited 0 either time. A build missing its homepage
+//    should fail before anyone reads about anchors, so this runs first.
+//    When one of these goes missing, it is almost always because an
+//    addPassthroughCopy line in eleventy.config.js was removed or
+//    renamed — check there first.
+const requiredSitePaths = [
+  "index.html",
+  "platform/index.html",
+  "rastrillo/index.html",
+  "site.css",
+  "docs.css",
+  "favicon.svg",
+];
+for (const rel of requiredSitePaths) {
+  if (!exists(join(site, rel))) {
+    fail(`_site/${rel} was not built — check the addPassthroughCopy lines in eleventy.config.js`);
+  }
+}
+
+// 2. Every nav entry has a built page and a built .md twin.
 //
 // The floor below is the point of the whole gate: a loop over an empty
 // nav asserts nothing, so a sync-docs regression that wrote
@@ -46,7 +73,11 @@ const slugs = [];
 const sections = Array.isArray(nav.sections) ? nav.sections : [];
 if (!Array.isArray(nav.sections)) fail("docsnav.json has no sections array at all");
 for (const section of sections) {
-  for (const entry of section.pages ?? []) {
+  if (!Array.isArray(section.pages)) {
+    fail(`docsnav.json section ${JSON.stringify(section.title ?? "?")} has no "pages" key — sync-docs has probably written a malformed file`);
+    continue;
+  }
+  for (const entry of section.pages) {
     slugs.push(entry.slug);
     if (!exists(join(docs, entry.slug, "index.html"))) fail(`no built page for /docs/${entry.slug}/`);
     if (!exists(join(docs, `${entry.slug}.md`))) fail(`no markdown twin for /docs/${entry.slug}.md`);
@@ -55,11 +86,11 @@ for (const section of sections) {
   }
 }
 if (slugs.length === 0) {
-  fail("docsnav.json lists no pages — sync-docs has not run, or has failed; nothing in check 1 can fail against an empty nav");
+  fail("docsnav.json lists no pages — sync-docs has not run, or has failed; nothing in check 2 can fail against an empty nav");
 }
 if (!exists(join(docs, "index.html"))) fail("no built /docs/ index");
 
-// 2. Every internal href resolves — to a built page, and to a real id
+// 3. Every internal href resolves — to a built page, and to a real id
 //    when it carries a fragment.
 const pages = walk(docs, (n) => n.endsWith(".html"));
 if (pages.length === 0) fail("no built docs pages at all");
@@ -107,7 +138,7 @@ for (const p of pages) {
   }
 }
 
-// 3. The anchor rule agrees on both sides. The Go gate accepted these
+// 4. The anchor rule agrees on both sides. The Go gate accepted these
 //    fragments; if the renderer slugifies differently they are dead
 //    links no earlier check can see. The fixture is the platform repo's
 //    docs/site/anchors.json, vendored — both languages read this file
