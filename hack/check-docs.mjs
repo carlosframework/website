@@ -37,15 +37,25 @@ const exists = (p) => {
 };
 
 // 1. Every nav entry has a built page and a built .md twin.
+//
+// The floor below is the point of the whole gate: a loop over an empty
+// nav asserts nothing, so a sync-docs regression that wrote
+// {"sections": []} would print "docs ok — 0 pages" and exit 0 on a
+// corpus that had vanished. Same shape as the pages.length guard below.
 const slugs = [];
-for (const section of nav.sections) {
-  for (const entry of section.pages) {
+const sections = Array.isArray(nav.sections) ? nav.sections : [];
+if (!Array.isArray(nav.sections)) fail("docsnav.json has no sections array at all");
+for (const section of sections) {
+  for (const entry of section.pages ?? []) {
     slugs.push(entry.slug);
     if (!exists(join(docs, entry.slug, "index.html"))) fail(`no built page for /docs/${entry.slug}/`);
     if (!exists(join(docs, `${entry.slug}.md`))) fail(`no markdown twin for /docs/${entry.slug}.md`);
     if (!entry.blurb) fail(`nav entry ${entry.slug} has no blurb`);
     if (!entry.label) fail(`nav entry ${entry.slug} has no label`);
   }
+}
+if (slugs.length === 0) {
+  fail("docsnav.json lists no pages — sync-docs has not run, or has failed; nothing in check 1 can fail against an empty nav");
 }
 if (!exists(join(docs, "index.html"))) fail("no built /docs/ index");
 

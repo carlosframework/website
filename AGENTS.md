@@ -217,7 +217,9 @@ redesign shipped: one browser served the whole old page, another served the NEW
 html against the OLD `site.css`, which renders the drawn wordmark as giant
 black shapes and the type as the retired serif.
 
-Two defences live in the repo, and neither is the real fix:
+Two defences live in the repo, and neither is the real fix. (These are
+*defences*, numbered separately from the deploy steps above — don't read a
+number here as a step number there.)
 
 1. Every inline SVG carries `width`, `height`, `fill` and `stroke` as
    PRESENTATION ATTRIBUTES, not only CSS, so a missing or stale stylesheet
@@ -230,8 +232,10 @@ Two defences live in the repo, and neither is the real fix:
    enumerated list goes stale the moment a page is added.
 
 The real fix is server-side `Cache-Control` on static routes: platform issue
-**carlosframework/platform#234**. Until it lands, step 2 here is a required
-part of deploying this site.
+**carlosframework/platform#234**. Until it lands, **defence 2 — which is
+step 3 of the deploy sequence above, the `find … sed` — is a required part of
+deploying this site.** (Deploy step 2 is `npm ci && npm run check`; this
+sentence used to say "step 2" and pointed 2am operators at the wrong one.)
 
 **Convergence is now seconds, not minutes (CARLOS platform PR #108, live
 2026-08-08).** A promote is picked up by the edge within ~2s.
@@ -247,10 +251,19 @@ the landing page looks right whether or not the built docs made it into the
 artifact:
 
 ```
+# by header — --resolve so a stale DNS answer cannot satisfy it. The IP is
+# the flagship, the same address the apex and www A records point at above.
+curl -sI --resolve carlosframework.com:443:99.81.104.219 \
+  https://carlosframework.com/docs/ | grep -i x-carlos-version
+
+# by content
 curl -s https://carlosframework.com/ | grep -i "<something from the change>"
 curl -s https://carlosframework.com/docs/ | grep -i "the cli"
 curl -s https://carlosframework.com/docs/ | grep -o 'docs\.css?v=[^"]*'
 ```
+
+`-I` is fine for the version header, but it sends a HEAD, and HEAD is excluded
+from edge compression — anything about `Content-Encoding` needs a GET.
 
 or by pointer: `carlos channels -app carlosframework` should show the new
 sha promoted.
