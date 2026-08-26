@@ -1,0 +1,384 @@
+/* 🤖 carlosframework.com/docs — the documentation skin.
+
+   Loaded after site.css, never instead of it: every colour, measure and
+   type stack here comes from that file's tokens, so light and dark, the
+   focus ring, the scrollbars and the selection colour are all inherited
+   rather than restated. What this file adds is the shape site.css has no
+   page for — a sidebar, a reference column, and fenced code.
+
+   Same rules as the rest of the site: nothing fetched, no @import, no
+   JavaScript. Hairline rules divide. The only cards are the index's nav
+   entries, because a label with a blurb is what a card is for. */
+
+/* ---------------------------------------------------------------- tokens -- */
+
+/* The docs sit under the platform, so they take the platform's blue —
+   the same values platform/index.html sets inline, by the same
+   mechanism, so the two pages are visibly one pair. site.css defines
+   these; this is the sanctioned per-page override, not a redefinition. */
+:root {
+  --accent:      #0d5f88;
+  --accent-deep: #094761;
+  --accent-soft: rgba(13, 95, 136, 0.10);
+  --on-accent:   #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --accent:      #59bfe8;
+    --accent-deep: #93d8f5;
+    --accent-soft: rgba(89, 191, 232, 0.13);
+    --on-accent:   #04202e;
+  }
+}
+
+:root {
+  /* The one measure site.css lacks. Body copy still sets at 36rem and
+     headings at --prose (40rem), but a reference page also carries
+     command lines, and the longest in the corpus is 72 characters —
+     just past --prose in the mono stack. The column is --prose plus
+     that allowance, so the ordinary command sits in its box without
+     scrolling and only a genuinely long one has to. */
+  --docs-column: 46rem;
+}
+
+/* ------------------------------------------------------------ page frame -- */
+
+/* .docs-body carries nothing of its own: site.css's body rule already
+   sets the ground, the gutters and the voice, and inventing a
+   declaration so the class appears here would be worse than leaving the
+   hook alone. Same for .language-sh, further down. */
+
+/* Where you are, in words, above the rule. The masthead's drawn wordmark
+   belongs to the pages that are a destination; a reference page gets a
+   line of text and gets out of the way. */
+.brandline {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-block: 1.5rem 0.9rem;
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+.brandline a { color: var(--muted); text-decoration: none; }
+.brandline a:hover { color: var(--accent); }
+.brandline b { font-weight: 650; letter-spacing: 0.02em; color: inherit; }
+.brandline a:hover b { color: inherit; }
+.brandline .here { color: var(--ink); font-weight: 600; }
+
+/* The folio is an address, so it sets as data and it is the first thing
+   a narrow viewport loses. */
+.folio {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.775rem;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+@media (max-width: 40rem) { .folio { display: none; } }
+
+/* The sidebar carries 40+ links before the article on every page, and
+   there is no search to route around them, so a keyboard user needs a
+   way past it. Hidden via the shared .visually-hidden utility (site.css)
+   until it receives focus — the idiom that class already establishes —
+   at which point every property it hides behind is reasserted visible
+   so the link becomes the first thing on the page a sighted keyboard
+   user sees. */
+.skip-link:focus {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 10;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0.6rem 1rem;
+  overflow: visible;
+  clip-path: none;
+  white-space: normal;
+  background: var(--surface);
+  color: var(--accent);
+  border: 1px solid var(--rule);
+  border-radius: 7px;
+  box-shadow: var(--shadow-2);
+  font-weight: 600;
+}
+
+/* ----------------------------------------------------------------- shell -- */
+
+.docs-shell {
+  max-width: var(--wrap);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+  padding-block: clamp(1.75rem, 4vw, 3rem);
+  align-items: start;
+}
+
+/* Two columns once there is room for both. Below this the nav keeps its
+   document order — it is written before the article — so it simply
+   stacks above the content, with no toggle and no script. */
+@media (min-width: 60rem) {
+  .docs-shell {
+    grid-template-columns: 15rem minmax(0, 1fr);
+    gap: clamp(2.5rem, 5vw, 4rem);
+  }
+  .docs-nav {
+    position: sticky;
+    top: 2rem;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+/* ------------------------------------------------------------------- nav -- */
+
+.docs-nav { font-size: 0.94rem; }
+.docs-nav ul { list-style: none; }
+.docs-nav li { margin-top: 0.15rem; }
+
+.docs-nav a {
+  display: block;
+  padding: 0.22rem 0 0.22rem 0.7rem;
+  border-left: 2px solid transparent;
+  color: var(--ink-2);
+  text-decoration: none;
+}
+.docs-nav a:hover { color: var(--ink); border-left-color: var(--rule); }
+
+/* The page you are on, marked where the eye scans for it. Keyed to the
+   class the template stamps alongside aria-current. */
+.docs-nav a.active {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  font-weight: 620;
+}
+
+.docs-nav-title {
+  margin: 0 0 1.1rem;
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.012em;
+}
+.docs-nav-title a { color: var(--ink); padding-left: 0; border-left: 0; }
+.docs-nav-title a:hover { border-left: 0; color: var(--accent); }
+.docs-nav-title a.active { border-left: 0; }
+
+/* A section label, not a heading and not data — so it is tracked small
+   caps in the voice face, never mono. */
+.docs-nav-section {
+  margin: 1.5rem 0 0.45rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--rule-soft);
+  font-size: 0.715rem;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.docs-nav-title + .docs-nav-section { margin-top: 0; padding-top: 0; border-top: 0; }
+
+/* The open page's own sections, indented under it against a hairline. */
+.docs-subnav {
+  margin: 0.3rem 0 0.65rem 0.7rem;
+  padding-left: 0.55rem;
+  border-left: 1px solid var(--rule);
+  font-size: 0.875rem;
+}
+.docs-subnav li { margin-top: 0; }
+.docs-subnav a {
+  padding: 0.16rem 0 0.16rem 0.45rem;
+  border-left: 0;
+  color: var(--muted);
+}
+.docs-subnav a:hover { border-left: 0; color: var(--accent); }
+
+/* --------------------------------------------------------------- article -- */
+
+.docs-article { max-width: var(--docs-column); min-width: 0; }
+
+.docs-article h1 {
+  font-size: clamp(2rem, 4.4vw, 2.9rem);
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  font-weight: 700;
+}
+.docs-article h1 + p { margin-top: 1.25rem; font-size: 1.1rem; color: var(--ink-2); }
+
+/* A group of commands opens on a full rule; the reference reads as a
+   run of divided entries rather than a stack of boxes. */
+.docs-article h2 {
+  margin-top: clamp(3rem, 6vw, 4.5rem);
+  padding-top: clamp(1.75rem, 3.5vw, 2.5rem);
+  border-top: 1px solid var(--rule);
+  font-size: clamp(1.5rem, 2.8vw, 2rem);
+  max-width: var(--prose);
+}
+
+/* Every h3 on this page is a command — something you type — so it sets
+   in the mono stack under the house rule that mono carries identifiers.
+   That is the whole licence: the prose beneath it stays in the voice. */
+.docs-article h3 {
+  margin-top: 2.5rem;
+  padding-top: 1.15rem;
+  border-top: 1px solid var(--rule-soft);
+  font-family: var(--font-mono);
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+}
+.docs-article h2 + h3 { margin-top: 1.75rem; padding-top: 0; border-top: 0; }
+
+.docs-article h4 {
+  margin-top: 1.9rem;
+  font-size: 0.98rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.docs-article :is(h1, h2, h3, h4) { scroll-margin-top: 1.5rem; }
+
+.docs-article p {
+  margin-top: 1.05rem;
+  color: var(--ink-2);
+  max-width: 36rem;
+}
+.docs-article :is(h1, h2, h3, h4) + p { margin-top: 0.85rem; }
+.docs-article em { color: var(--ink-2); }
+
+/* Markdown the current corpus does not use yet but the next page will:
+   lists, tables and rules, in the same hairline world. Kept short on
+   purpose — this is the floor, not a theme. */
+.docs-article ul:not(.docs-cards),
+.docs-article ol {
+  margin-top: 1rem;
+  padding-left: 1.25rem;
+  max-width: 36rem;
+  color: var(--ink-2);
+}
+.docs-article li + li { margin-top: 0.35rem; }
+.docs-article blockquote {
+  margin-top: 1.15rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--rule);
+  color: var(--muted);
+  max-width: 36rem;
+}
+.docs-article hr {
+  margin-block: 2.25rem;
+  border: 0;
+  border-top: 1px solid var(--rule);
+}
+.docs-article table {
+  margin-top: 1.25rem;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.docs-article :is(th, td) {
+  text-align: left;
+  padding: 0.6rem 0.9rem 0.6rem 0;
+  border-top: 1px solid var(--rule-soft);
+  vertical-align: baseline;
+}
+.docs-article th { font-weight: 620; color: var(--ink); }
+
+/* ------------------------------------------------------------------ code -- */
+
+/* A fence is a box that scrolls itself. The page must never scroll
+   sideways because a command line was long, and site.css's body
+   overflow-x: hidden would clip it rather than let the reader see it —
+   so the overflow belongs here, on the pre. */
+.docs-article pre {
+  margin-top: 1.15rem;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding: 0.9rem 1.05rem;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--bg-sunk);
+  -webkit-overflow-scrolling: touch;
+}
+.docs-article p + pre { margin-top: 0.9rem; }
+
+/* site.css gives inline code an accent chip; inside a fence that chip
+   would tile the whole block, so it is undone here. */
+.docs-article pre code {
+  display: block;
+  background: none;
+  color: var(--ink);
+  padding: 0;
+  border-radius: 0;
+  font-size: 0.855rem;
+  line-height: 1.6;
+  white-space: pre;
+}
+
+/* The class markdown-it stamps on a fence's language is left unstyled
+   on purpose: the site ships no highlighter, and a reference page reads
+   better as plain text than as pretend syntax colour. */
+
+/* ------------------------------------------------------------- the index -- */
+
+/* The one deliberate card on either page: an entry per doc, a label and
+   a line saying what is inside it. Nothing else here is a card. */
+.docs-cards {
+  margin-top: 1.25rem;
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: minmax(0, 1fr);
+  list-style: none;
+}
+@media (min-width: 46rem) {
+  .docs-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.docs-cards li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1.25rem 1.3rem 1.35rem;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--surface);
+  transition: border-color 160ms, box-shadow 160ms, transform 160ms cubic-bezier(.2,.7,.3,1);
+}
+.docs-cards li:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-2);
+  transform: translateY(-2px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .docs-cards li, .docs-cards li:hover { transform: none; transition: none; }
+}
+.docs-cards a { text-decoration: none; }
+.docs-cards a strong { font-size: 1.05rem; letter-spacing: -0.015em; color: var(--accent); }
+.docs-cards a:hover strong { text-decoration: underline; text-underline-offset: 0.18em; }
+.docs-cards span { font-size: 0.955rem; color: var(--ink-2); }
+
+/* The index's card sections are dividers like any other h2, but they
+   head a grid rather than prose, so they need less air under them. */
+.docs-article h2 + .docs-cards { margin-top: 1.5rem; }
+
+/* ------------------------------------------------------------------ feet -- */
+
+.docs-foot {
+  margin-top: clamp(3rem, 6vw, 4.5rem);
+  padding-top: 1.15rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.9rem;
+  color: var(--muted);
+  max-width: 36rem;
+}
+
+/* site.css already gives <footer> the wrap, the rule and the muted
+   voice; only the provenance line needs anything of its own. */
+.docs-sitefoot { margin-top: clamp(2rem, 5vw, 3.5rem); }
+.docs-provenance { font-size: 0.85rem; }
+.docs-provenance code { font-size: 0.8rem; }

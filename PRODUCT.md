@@ -44,7 +44,7 @@ Claims a neighboring framework could not truthfully copy:
 The site runs on the CARLOS flagship itself — it is the homepage for the thing
 it is deployed on. GitHub Pages was retired 2026-08-05; pushing to `main` no
 longer publishes. Deploying is the same `ship` / `promote` sequence any CARLOS
-app uses (recipe in CLAUDE.md). Source is public at
+app uses (recipe in AGENTS.md). Source is public at
 github.com/carlosframework/website. Note that `carlosframework/platform` is a
 PRIVATE repo and must never be linked from the site.
 
@@ -56,7 +56,7 @@ rastrillo.org).
 
 - Static pages sharing one plain local stylesheet (`site.css`); no build step,
   no dependencies, no JavaScript, no fetched fonts, no analytics. Binding.
-- Accuracy rules (see CLAUDE.md, they outrank prose): the five source repos are
+- Accuracy rules (see AGENTS.md, they outrank prose): the five source repos are
   private and never linked; never overclaim the framework's maturity; CARLOS is
   an application architecture, not an operating system; "Cost-efficient" and
   "Available" are two separate claims; the name is CARLOS, one S. Every
@@ -67,7 +67,7 @@ rastrillo.org).
 
 - AI authorship is always visibly marked 🤖 (factor X practiced on itself).
   Person-emoji-marked blocks are certified human and off-limits to LLM edits.
-- House style (redesigned 2026-08-19; see CLAUDE.md for the full record).
+- House style (redesigned 2026-08-19; see AGENTS.md for the full record).
   CARLOS reads exciting, modern and assertive — deliberately NOT the warm
   paper-and-serif world rastrillo.org already owns. Type from Modern Font
   Stacks: Neo-Grotesque voice, Monospace Code for data and identifiers only.

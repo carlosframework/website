@@ -1,0 +1,81 @@
+{#
+  🤖 The documentation shell: sidebar, section sub-nav, article column.
+
+  One layout serves the index and every page, because they share the
+  whole chrome. Zero client-side JavaScript, per the site's standing
+  rule — there is no search box, and findability is the nav, the card
+  index, and the per-page section list.
+
+  The sidebar precedes the article in document order, which on a narrow
+  viewport is what puts the nav above the content without a toggle.
+
+  The sidebar is a <nav>, not an <aside>: with no search, it IS this
+  site's whole navigation model, not supplementary content. The article
+  is wrapped in <main> so the skip link (first focusable element in
+  <body>) has a landmark to target — with 40+ sidebar links ahead of it
+  on every page, a keyboard user needs a way past them.
+#}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title }} &middot; CARLOS docs</title>
+<meta name="description" content="{{ description }}">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a0c10" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="{{ title }} &middot; CARLOS docs">
+<meta property="og:description" content="{{ description }}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://carlosframework.com/docs/{% if not isIndex %}{{ docsSlug }}/{% endif %}">
+<link rel="stylesheet" href="/site.css?v=0">
+<link rel="stylesheet" href="/docs.css?v=0">
+</head>
+<body class="docs-body">
+<a class="skip-link visually-hidden" href="#main">Skip to content</a>
+<p class="brandline"><a href="/"><b>CARLOS</b></a> <span aria-hidden="true">/</span> <a href="/platform/">platform</a> <span aria-hidden="true">/</span> <span class="here">docs</span><span class="folio" aria-hidden="true">carlosframework.com/docs</span></p>
+
+<div class="docs-shell">
+  <nav class="docs-nav" aria-label="Documentation">
+    <p class="docs-nav-title"><a href="/docs/"{% if isIndex %} class="active" aria-current="page"{% endif %}>Documentation</a></p>
+    {% for section in docsnav.sections %}
+    <p class="docs-nav-section">{{ section.title }}</p>
+    <ul>
+      {% for entry in section.pages %}
+      <li>
+        <a href="/docs/{{ entry.slug }}/"{% if entry.slug == docsSlug %} class="active" aria-current="page"{% endif %}>{{ entry.label }}</a>
+        {% if entry.slug == docsSlug %}
+        {% set sections = collections.docs | docsRawFor(docsSlug) | docsSections %}
+        {% if sections.length %}
+        <ul class="docs-subnav">
+          {% for s in sections %}<li><a href="#{{ s.anchor }}">{{ s.title }}</a></li>{% endfor %}
+        </ul>
+        {% endif %}
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endfor %}
+  </nav>
+
+  <main id="main">
+    <article class="docs-article">
+      {{ content | safe }}
+
+      {% if not isIndex %}
+      <p class="docs-foot">
+        <a href="/docs/{{ docsSlug }}.md">Read this page as markdown</a> —
+        exact, unstyled, and cheap for an agent to fetch.
+      </p>
+      {% endif %}
+    </article>
+  </main>
+</div>
+
+<footer class="docs-sitefoot">
+  <p>🤖 These pages were written by an LLM, on the ideas, instruction, and editing of humans. AI-written text here is always marked, visibly — that's <a href="https://11factor.org/#x">factor X</a>.</p>
+  <p class="docs-provenance">Documented from <a href="https://github.com/carlosframework/platform">carlosframework/platform</a> at <code>{{ docsversion.short }}</code>. Every claim on these pages is checked against that source by tests in that repo.</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,20 @@
+---
+layout: docs.njk
+title: Documentation
+description: "The CARLOS platform reference: the commands you type, and what happens on a box after you type them."
+isIndex: true
+permalink: /docs/index.html
+---
+{{ collections.docsIndex[0].templateContent | safe }}
+
+{% for section in docsnav.sections %}
+<h2 id="{{ section.title | docsSlugify }}">{{ section.title }}</h2>
+<ul class="docs-cards">
+  {% for entry in section.pages %}
+  <li>
+    <a href="/docs/{{ entry.slug }}/"><strong>{{ entry.label }}</strong></a>
+    <span>{{ entry.blurb }}</span>
+  </li>
+  {% endfor %}
+</ul>
+{% endfor %}

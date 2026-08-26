@@ -7,8 +7,22 @@ small enough to understand, sealed so tightly the operator is not a party to
 it, and yours to run. Extracted — not designed — from five systems that kept
 rebuilding the same shape.
 
-The whole site is one static page: [`index.html`](index.html). No build step,
-no dependencies, no JavaScript. The framework's own rules apply to its website.
+The hand-written pages — [`src/index.html`](src/index.html), `src/platform/`,
+`src/rastrillo/` — ship as plain HTML and CSS: no build step, no dependencies,
+no JavaScript. The framework's own rules apply to its website. `/docs` is the
+one exception: a dozen reference pages sharing a sidebar go through Eleventy
+(see `AGENTS.md`), so that part of the repo does have a devDependency and a
+build step, run before you ship rather than in anyone's browser.
+
+**The rule for adding a page:** if a URL on carlosframework.com should return
+it, the file goes under `src/` — either as Eleventy build input, or as a raw
+file with a matching `addPassthroughCopy` entry in `eleventy.config.js` if it
+must ship byte-identical (`eleventy.config.js` reads from `src/`, so anything
+outside it is invisible to the build, not intentionally skipped). Everything
+under `src/docs/` and every `src/_data/docs*.json` file is vendored from the
+platform repo by `hack/sync-docs.mjs` and says so with a `"//"` key at the top
+of each JSON file — edit `docs/site/` in `carlosframework/platform` instead;
+a hand edit here is silently overwritten on the next sync.
 
 ## The letters
 
@@ -37,7 +51,7 @@ Everything in this repo written by an AI carries a **visible 🤖 marker** — o
 the page, in this README, at the top of every prose file. That is factor X
 applied to the project itself: AI-written words are always disclosed, never
 passed off as human. The full rule (including the human-certification markers
-that AI must not touch) is in [`CLAUDE.md`](CLAUDE.md).
+that AI must not touch) is in [`AGENTS.md`](AGENTS.md).
 
 ## Provenance
 
@@ -54,7 +68,7 @@ deploy for this static, instance-less app; `carlos deploy`'s
 wait-until-serving watch doesn't cover it yet (platform#112). Convergence
 is seconds; verify by content (STATIC routes don't carry
 `X-Carlos-Version`) or with `carlos channels -app carlosframework`. Full
-details, env, and rollback are in [`CLAUDE.md`](CLAUDE.md).
+details, env, and rollback are in [`AGENTS.md`](AGENTS.md).
 
 ## License
 

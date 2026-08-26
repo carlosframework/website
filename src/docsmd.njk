@@ -1,0 +1,9 @@
+---
+pagination:
+  data: collections.docs
+  size: 1
+  alias: doc
+permalink: "/docs/{{ doc.slug }}.md"
+eleventyExcludeFromCollections: true
+---
+{{ doc.page.rawInput | safe }}
