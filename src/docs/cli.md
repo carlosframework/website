@@ -20,7 +20,7 @@ logged in to more than one deployment.
 Most app commands work two ways. Signed in with `carlos auth login`, they go
 through a console's API, which is how someone with no box access and no cloud
 credentials gets their work done. With `CARLOS_DEPLOYMENT_BUCKET` or
-`CARLOS_DEPLOYMENT_DIR` set, they write to the bucket directly, which is the
+`CARLOS_DEPLOYMENT_DIR` set, they write to the bucket directly. That is the
 operator's path. Where a command only works one way, its section says so.
 
 ## Your apps
@@ -33,10 +33,10 @@ the platform holds itself to, and a command that broke it would be a bug.
 
 Logs this terminal in to a console. `carlos auth login` prints a short code
 that you approve in a browser already signed in to that console, and the
-browser does not have to be on this machine, which is what makes this work
-over SSH. The token lands in `~/.carlos/credentials` at mode 0600, one entry
-per console, so a laptop can hold credentials for the flagship and your own
-deployment at once.
+browser does not have to be on this machine, so this works over SSH. The
+token lands in `~/.carlos/credentials` at mode 0600, one entry per console,
+so a laptop can hold credentials for the flagship and your own deployment at
+once.
 
 ```sh
 carlos auth login
@@ -120,14 +120,16 @@ carlos deploy -app hello ./hello
 ```
 
 Signed-in only. With saved project defaults you can run `carlos deploy` with
-no arguments and no questions. The first run at a terminal asks which
-artifact to ship, works out from what you point it at whether that is a
-binary or a site, and offers to save the answer as the project's default.
-With neither arguments nor defaults and no terminal to ask at — CI, usually —
-it refuses instead of guessing. `-channel` overrides the channel it picks
-(normally the one the app's instances already follow), and `-host` scopes the
-watch to a single instance. A static site needs that second flag, having no
-instances to resolve a channel from.
+no arguments and no questions. A first run at a terminal fills the blanks by
+asking. If your account owns no apps yet, it offers to claim one named after
+the directory you are in, through the same door as `carlos apps create`. It
+then asks which artifact to ship, works out from what you point it at whether
+that is a binary or a site, and offers to save both answers as the project's
+defaults. With neither arguments nor defaults and no terminal to ask at — CI,
+usually — it refuses instead of guessing. `-channel` overrides the channel it
+picks (normally the one the app's instances already follow), and `-host`
+scopes the watch to a single instance. A static site needs that second flag,
+having no instances to resolve a channel from.
 
 ```sh
 carlos deploy -app website -kind static -host www.example.com ./dist
@@ -149,6 +151,31 @@ stop within seconds and respawn on their next request, which for an idle app
 may be a while. Nothing is stuck: the instance comes back with the next
 request that needs it. Hibernating instances are left asleep.
 
+### carlos schedule
+
+Gives an app a timetable. A schedule is a time and a path: at each fire the
+app's own instance gets a POST at that path, so the work is a route your app
+already serves rather than a separate worker. The sub-verbs are `ls`, `set`,
+`rm` and `run`.
+
+```sh
+carlos schedule set -app hello -name nightly -every 6h -path /jobs/nightly
+```
+
+`-every` takes whole minutes, from `1m` up to `720h`; `-cron` takes a
+five-field expression instead, and you give one or the other, never both.
+`carlos schedule ls` prints the declared schedules alongside what each
+instance reports it will do next and what it did last. `carlos schedule run
+-app hello -name nightly` asks for one out-of-band run on top of the normal
+timetable, and every instance fires within about fifteen seconds.
+
+The wording is deliberate: `set` records, `rm` removes, `run` requests. The
+console writes one small object and every box serving the app notices on its
+own within seconds; nothing is pushed at a box. The write itself wakes
+nothing, and a hibernating instance is woken by its own runner when a tick
+falls due. Schedules need a logged-in console; there is no direct-bucket
+form.
+
 ### carlos rollback
 
 Points a channel back at the version it was serving before.
@@ -165,6 +192,29 @@ release earned one at stable.
 ```sh
 carlos channels -app hello
 ```
+
+### carlos pipeline
+
+Shows an app's release channels and the rules for moving a version through
+them, and shapes that ladder. Bare `carlos pipeline` is the `show` verb: the
+channels in order, plus any change still waiting on confirmations. `init`,
+`add`, `set` and `remove` edit it.
+
+```sh
+carlos pipeline init -app hello -template edge-production
+```
+
+Two starter templates exist, `edge-production` and `full-ladder`. After
+that, `-bake <dur>` holds a version for a while before the channel may adopt
+it, and `-passkey`, `-promote-approvals N` and `-change-approvals N` set how
+much human agreement a promotion into the channel, or an edit to the channel
+itself, has to collect. `set` leaves any rule flag you did not type exactly
+as it was, so two people shaping different rules do not overwrite each other.
+
+A fresh app has one channel, `edge`, and prints as a single line rather than
+a one-row table. Shaping a pipeline wants a logged-in console: there is no
+bucket-direct editor for it. Promoting and rolling back are unaffected and
+work in either mode.
 
 ### carlos releases
 
@@ -244,6 +294,23 @@ it lists that box's own registry routes, backing and owning unit included.
 Off the box, [carlos routes](/docs/cli#carlos-routes) answers the same
 question through the console.
 
+### carlos steering
+
+Decides whether one instance's DNS answer varies by where the request comes
+from. `latency` opts the host into a Route53 latency record per armed edge,
+so the nearest one answers; `off` clears the opt-in and returns the host to
+the single static answer every requester shares.
+
+```sh
+carlos steering -app hello -host hello.example.com latency
+```
+
+The opt-in is recorded immediately and reaches the box's registry row at the
+next converge tick, but no DNS answer changes until the deployment itself
+has armed its Route53 steering converger. In v1 only instances on the shared
+pool can be steered; a pool-scoped route is refused, and the refusal names
+that as the reason.
+
 ### carlos routes
 
 The app's routes on this deployment: where each one sends traffic, which
@@ -308,6 +375,39 @@ deployment's own cloud account, so it also wants an address on
 stranger still meets the same 404 as everyone else rather than a 403 that
 would confirm the app exists.
 
+### carlos email
+
+Tenant email sending. `carlos email enable` is the whole path in one
+command: it declares the From address the app sends as, ensures a sending
+domain, waits for SES to verify it, and delivers SMTP credentials to the app
+as env vars under a prefix — `CARLOS_SMTP` unless `-env-prefix` names
+another.
+
+```sh
+carlos email enable -app hello
+carlos email test -app hello -to you@example.com
+```
+
+On a custom domain, `enable` prints the DNS records to publish and then
+keeps polling until SES confirms them, giving up after ten minutes unless
+`-timeout` says otherwise; a wait that gives up exits non-zero and names what
+SES never confirmed. `carlos email domains add` is that same half on its own,
+for a second domain on an app already declared.
+
+`carlos email test` sends a real message and reports what SES said about it.
+It sends through a throwaway standalone credential it mints and revokes
+around the send, so it never needs the delivered credential's password, and
+it proves that mail leaves the building rather than that the console believes
+it should.
+
+`status` shows every domain's per-region verification state, the day's count
+against the cap, and whether sending is paused. `credentials create` mints a
+standalone SMTP credential for something not running on CARLOS — a laptop, a
+cron box — printed once on that command's output and nowhere else. `rotate`
+mints a fresh delivered credential and leaves the old one live until you run
+it again with `-finish`. `pause` and `resume` are operator verbs. None of it
+has a direct-bucket form; all of it wants a logged-in console.
+
 ### carlos ledger
 
 Append-only hash-chained ledgers an app can publish. `append` adds one JSON
@@ -326,9 +426,9 @@ one's sha, so an entry can point at it. Uploads are create-only and capped at
 Ledgers have no direct-bucket mode at all: every sub-verb except `verify`
 goes through the console, because a contributor's machine is never given
 bucket credentials. `carlos ledger verify` walks a published chain over plain
-HTTPS and re-hashes every entry. It needs no credentials at all, which is the whole point:
-anybody can check a ledger you publish, including you, from a machine that
-has never been logged in.
+HTTPS and re-hashes every entry. It needs no credentials at all: anybody can
+check a ledger you publish, including you, from a machine that has never been
+logged in.
 
 ### carlos vet
 
@@ -376,9 +476,9 @@ carlos bootstrap
 ```
 
 `-root <dir>` writes the files into a staging directory instead, creating no
-users and running no systemctl, which is how you read what it would do before
-it does it. `-offcloud` is for a box outside EC2, where credentials come from
-a staged 0600 file instead of an instance profile.
+users and running no systemctl, so you can read what it would do before it
+does it. `-offcloud` is for a box outside EC2, where credentials come from a
+staged 0600 file instead of an instance profile.
 
 ### carlos accounts
 
@@ -392,7 +492,7 @@ carlos accounts create -name acme -owner someone@example.com
 
 `-owner` is the path for a box or a CI job, where there is no browser to log
 in with. It needs no identity of its own and takes precedence over any
-logged-in one, which is why it exists.
+logged-in one.
 
 `carlos accounts migrate` copies an app's objects to an account-qualified
 prefix and re-stamps its routes. Run it with `-dry-run` first; it prints the

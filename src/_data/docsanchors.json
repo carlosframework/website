@@ -10,5 +10,7 @@
   "canary/rehearsal": "canary-rehearsal",
   "X-Carlos-Version": "x-carlos-version",
   "-app": "app",
-  "--app": "app"
+  "--app": "app",
+  "Ship — then promote": "ship-then-promote",
+  "Montréal edge": "montr-al-edge"
 }
