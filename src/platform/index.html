@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The CARLOS platform — open source, self-hostable, and the engine under Carloku</title>
-<meta name="description" content="🤖 Ship an immutable release and get a live canary URL in seconds. Promote the same bytes to stable. Let idle apps sleep to a bucket and wake in milliseconds. The whole platform is one binary you can run yourself.">
+<meta name="description" content="🤖 carlos deploy ships an immutable release straight to your app's one edge channel — live in seconds, no promotion step. Stage a rollout with bake windows and approvals only if you opt in. Let idle apps sleep to a bucket and wake in milliseconds. The whole platform is one binary you can run yourself.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0a0c10" media="(prefers-color-scheme: dark)">
@@ -61,7 +61,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 <div class="hero">
   <h1>Scale to billions. Ship in seconds. Pay for the hours somebody used.</h1>
 
-  <p class="lede">The CARLOS platform is the deployment substrate underneath every app on the framework. Ship an immutable release and get a live canary URL in seconds. Promote the exact same bytes to stable. Let idle apps sleep to a bucket for nothing and wake in milliseconds. It is open source and self-hostable — and it is also the engine under <a href="https://carloku.com">Carloku</a>, if you would rather not run boxes.</p>
+  <p class="lede">The CARLOS platform is the deployment substrate underneath every app on the framework. Every app starts with one channel, <code>edge</code>: run <code>carlos deploy</code> and it's live in seconds, no promotion step. Canary channels are there whenever you want a second opinion first, and a staged rollout — per-channel bake windows, a passkey, sign-off from more than one person — is one command away the day you want it, never before. Let idle apps sleep to a bucket for nothing and wake in milliseconds. It is open source and self-hostable — and it is also the engine under <a href="https://carloku.com">Carloku</a>, if you would rather not run boxes.</p>
 
   <div class="actions">
     <a class="btn primary" href="https://platform.carlosframework.com">Get started</a>
@@ -117,17 +117,15 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 
 <section id="ship">
   <div class="head">
-    <h2>From branch to stable without a rebuild</h2>
-    <p class="standfirst">One artifact, three pointers. What you tested is what ships, because it is the same bytes.</p>
+    <h2>From branch to live, without a rebuild</h2>
+    <p class="standfirst">One artifact, one pointer by default. What you tested is what ships, because it is the same bytes.</p>
   </div>
 
-  <div class="rail" role="img" aria-label="Promotion rail: the release f3c9d1 moves from the canary channel to beta to stable without being rebuilt.">
+  <div class="rail" role="img" aria-label="Deploy rail: the release f3c9d1 moves from a canary channel to edge, the app's one channel, live immediately and without being rebuilt.">
     <span class="stop"><b>canary/pr-142</b><span class="sha">f3c9d1</span></span>
     <span class="to" aria-hidden="true">→</span>
-    <span class="stop"><b>beta</b><span class="sha">f3c9d1</span></span>
-    <span class="to" aria-hidden="true">→</span>
-    <span class="stop final"><b>stable</b><span class="sha">f3c9d1</span></span>
-    <span class="foot">PROMOTION MOVES A POINTER · ROLLBACK MOVES IT BACK</span>
+    <span class="stop final"><b>edge</b><span class="sha">f3c9d1</span></span>
+    <span class="foot">DEPLOY LANDS HERE, NO PROMOTION STEP · MORE CHANNELS ARE OPT-IN</span>
   </div>
 
   <div class="pair" style="margin-top:2.25rem">
@@ -140,8 +138,8 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
       <p><code>carlos deploy</code> ships, promotes, and returns only when the URL is provably serving the new build — the edge names the version it serves and the command checks. Exit 0 means refresh and it is there.</p>
     </div>
     <div>
-      <h3>Promote bytes, not hopes</h3>
-      <p>Promotion points a wider channel at the same immutable, content-addressed artifact. Nothing is ever rebuilt on the way to production.</p>
+      <h3>A staged pipeline is one command, opt-in</h3>
+      <p><code>carlos pipeline init --template edge-production</code> gives an app more channels, each with its own bake window and approval rules; <code>--template full-ladder</code> is the old fixed canary → edge → beta → stable ladder, still there for anyone who wants it. Either way, promotion only ever points an existing channel at bytes you already shipped — nothing is rebuilt to get there.</p>
     </div>
     <div>
       <h3>Rollback is a pointer move</h3>
@@ -153,14 +151,14 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 <section id="trust">
   <div class="head">
     <h2>Safe to deploy, and safe to be deployed to</h2>
-    <p class="standfirst">The frightening step in any pipeline is the pointer that says "this is stable now." The platform's job is to make it boring.</p>
+    <p class="standfirst">The default is live the moment you ship — the platform's job is to make that boring. Want a frightening step to guard against instead, on your own terms? That's a pipeline you opt into, not one you're stuck with.</p>
   </div>
 
   <div class="pair">
     <div>
-      <h3>A bake window between a publisher and your fleet</h3>
-      <p>A new release must sit on its channel for 72 hours before stable instances adopt it, so a compromised publisher cannot rush a poisoned build across your fleet. The blast radius stays with the people who opted in early.</p>
-      <p>Rollback skips the bake: pointing back at a hash that already served traffic takes effect immediately.</p>
+      <h3>A bake window, when you ask for one</h3>
+      <p>Give a channel <code>--bake 72h</code> and a new release must sit on it for that long before the channel's instances adopt it, so a compromised publisher cannot rush a poisoned build across your fleet. Deploys to an app's default <code>edge</code> channel carry no bake — they're live as soon as the header proves it — and canary channels never do either; the window is something you add per channel, through <code>carlos pipeline</code>.</p>
+      <p>Rollback always skips the bake: pointing back at a hash that already served traffic takes effect immediately.</p>
     </div>
     <div>
       <h3>Residency, enforced below your code</h3>
