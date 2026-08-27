@@ -171,10 +171,10 @@ grep -rn '?v=0"' _site && echo "STALE TOKEN — do not ship" || echo "cache-bust
 # 4. Ship the BUILT OUTPUT, then promote.
 export AWS_PROFILE=keymail AWS_REGION=eu-west-1 \
        CARLOS_DEPLOYMENT_BUCKET=carlos-flagship-271376211898
-carlos ship -app carlosframework -kind static -version "$SHA" _site
+carlos ship --app carlosframework --kind static --version "$SHA" _site
 CARLOS_RELEASE_KEY=$(aws ssm get-parameter --name /carlos/release-key \
   --with-decryption --query Parameter.Value --output text) \
-  carlos promote -app carlosframework "$SHA" canary/rehearsal
+  carlos promote --app carlosframework "$SHA" canary/rehearsal
 ```
 
 Both the `sed` and the `grep` end at the closing quote on purpose. A sha
@@ -205,7 +205,7 @@ are gone from the repo and Pages is disabled on the GitHub repo.
 
 Rollback is a pointer move, like any CARLOS app: promote the previous
 good sha back onto `canary/rehearsal` and the edge picks it up (see
-convergence speed below; `carlos channels -app carlosframework` to see
+convergence speed below; `carlos channels --app carlosframework` to see
 what's on the channel). Pages is no longer a fallback; don't resurrect it
 in a drive-by fix.
 
@@ -265,10 +265,10 @@ curl -s https://carlosframework.com/docs/ | grep -o 'docs\.css?v=[^"]*'
 `-I` is fine for the version header, but it sends a HEAD, and HEAD is excluded
 from edge compression — anything about `Content-Encoding` needs a GET.
 
-or by pointer: `carlos channels -app carlosframework` should show the new
+or by pointer: `carlos channels --app carlosframework` should show the new
 sha promoted.
 
-`carlos deploy -app carlosframework -kind static -version "$SHA" _site`
+`carlos deploy --app carlosframework --kind static --version "$SHA" _site`
 ships and promotes in one command, but its wait-until-serving watch doesn't yet
 cover instance-less static apps like this one (same platform#112) — for this
 site, the `ship`/`promote` pair above IS the deploy; convergence is still

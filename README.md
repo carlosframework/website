@@ -67,7 +67,7 @@ The apex runs on the CARLOS flagship as a static app, not GitHub Pages
 deploy for this static, instance-less app; `carlos deploy`'s
 wait-until-serving watch doesn't cover it yet (platform#112). Convergence
 is seconds; verify by content (STATIC routes don't carry
-`X-Carlos-Version`) or with `carlos channels -app carlosframework`. Full
+`X-Carlos-Version`) or with `carlos channels --app carlosframework`. Full
 details, env, and rollback are in [`AGENTS.md`](AGENTS.md).
 
 ## License

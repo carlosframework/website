@@ -11,9 +11,9 @@ command is for and when you would reach for it. It does not list every flag,
 because `-h` already does.
 
 Three flags turn up almost everywhere, and the sections below do not repeat
-them. `-app` names the app. `-account` names the account it belongs to, or
-`-account-id` when you want a sqid matched as a sqid and nothing else; leave
-both off if you belong to exactly one account. `-console` picks which
+them. `--app` names the app (`-a` for short). `--account` names the account it belongs to, or
+`--account-id` when you want a sqid matched as a sqid and nothing else; leave
+both off if you belong to exactly one account. `--console` picks which
 logged-in console to act through, and you need it only when this terminal is
 logged in to more than one deployment.
 
@@ -45,10 +45,10 @@ carlos auth whoami
 
 Do not do this on a box. A box has no browser and no human, and the
 long-lived token you would leave behind is a standing credential nobody is
-watching; pass `-owner <address>` to
+watching; pass `--owner <address>` to
 [carlos accounts](/docs/cli#carlos-accounts) instead. `carlos auth default`
 shows the console this machine talks to by default, and sets it when you give
-it a URL. With `-project` it writes `./.carlos/config`, which you can commit
+it a URL. With `--project` it writes `./.carlos/config`, which you can commit
 so a checkout pins its own deployment.
 
 ### carlos apps
@@ -58,7 +58,7 @@ restores one. Creating goes through the same door the console's New app form
 uses, so a name that form would refuse is refused here too.
 
 ```sh
-carlos apps create -app hello
+carlos apps create --app hello
 ```
 
 `carlos apps delete` moves an app to the Trash. Every route drops, custom
@@ -68,9 +68,9 @@ production flag exactly as they were, but no routes at all — not even the
 platform apex — so plan on adding those again. Delete is refused while the
 app is flagged production; clear the flag first.
 
-`-place fleet/<name>` at create, or `carlos apps place -target fleet/<name>`
+`--place fleet/<name>` at create, or `carlos apps place --target fleet/<name>`
 later, puts the app's routes and instances on a fleet your account owns.
-`-target ""` brings them back to platform-served. `-target` is mandatory even
+`--target ""` brings them back to platform-served. `--target` is mandatory even
 in that empty spelling: leaving it off is a usage error, never a silent
 clear.
 
@@ -82,12 +82,12 @@ does not change what anything serves — for that, see
 [carlos promote](/docs/cli#carlos-promote).
 
 ```sh
-carlos ship -app hello -label "fixing modals" ./hello
+carlos ship --app hello --label "fixing modals" ./hello
 ```
 
-`-version` is optional once the app has a version target set, and leaving it
+`--version` is optional once the app has a version target set, and leaving it
 off is the point of having one: ship mints the next iteration under it. Use
-`-kind static` with a directory to ship a site instead of a binary. `-label`
+`--kind static` with a directory to ship a site instead of a binary. `--label`
 is one line for humans and shows up in `carlos releases` and in the console,
 so write it for the person doing a rollback at 2am.
 
@@ -100,10 +100,10 @@ cuts the release's semver tag. Channels named `canary/<something>` are never
 refused, because that is what the fleet itself runs on.
 
 ```sh
-carlos promote -app hello a1b2c3d edge
+carlos promote --app hello a1b2c3d edge
 ```
 
-Promoting the same version twice succeeds and does nothing. `-hotfix` skips
+Promoting the same version twice succeeds and does nothing. `--hotfix` skips
 the ladder and is an operator act: it works on the direct-bucket path only,
 and the console refuses it by name, so the flag never quietly does nothing.
 
@@ -116,7 +116,7 @@ for this one by default; ship and promote separately when you want the gap
 between them.
 
 ```sh
-carlos deploy -app hello ./hello
+carlos deploy --app hello ./hello
 ```
 
 Signed-in only. With saved project defaults you can run `carlos deploy` with
@@ -126,13 +126,13 @@ the directory you are in, through the same door as `carlos apps create`. It
 then asks which artifact to ship, works out from what you point it at whether
 that is a binary or a site, and offers to save both answers as the project's
 defaults. With neither arguments nor defaults and no terminal to ask at — CI,
-usually — it refuses instead of guessing. `-channel` overrides the channel it
-picks (normally the one the app's instances already follow), and `-host`
+usually — it refuses instead of guessing. `--channel` overrides the channel it
+picks (normally the one the app's instances already follow), and `--host`
 scopes the watch to a single instance. A static site needs that second flag,
 having no instances to resolve a channel from.
 
 ```sh
-carlos deploy -app website -kind static -host www.example.com ./dist
+carlos deploy --app website --kind static --host www.example.com ./dist
 ```
 
 ### carlos restart
@@ -141,7 +141,7 @@ Cycles an app's processes with no new version and no config change. This is
 the answer to a wedged instance.
 
 ```sh
-carlos restart -app hello
+carlos restart --app hello
 ```
 
 It reports the restart as *requested*, which is the honest word: the console
@@ -159,14 +159,14 @@ already serves rather than a separate worker. The sub-verbs are `ls`, `set`,
 `rm` and `run`.
 
 ```sh
-carlos schedule set -app hello -name nightly -every 6h -path /jobs/nightly
+carlos schedule set --app hello --name nightly --every 6h --path /jobs/nightly
 ```
 
-`-every` takes whole minutes, from `1m` up to `720h`; `-cron` takes a
+`--every` takes whole minutes, from `1m` up to `720h`; `--cron` takes a
 five-field expression instead, and you give one or the other, never both.
 `carlos schedule ls` prints the declared schedules alongside what each
 instance reports it will do next and what it did last. `carlos schedule run
--app hello -name nightly` asks for one out-of-band run on top of the normal
+--app hello --name nightly` asks for one out-of-band run on top of the normal
 timetable, and every instance fires within about fifteen seconds.
 
 The wording is deliberate: `set` records, `rm` removes, `run` requests. The
@@ -181,7 +181,7 @@ form.
 Points a channel back at the version it was serving before.
 
 ```sh
-carlos rollback -app hello stable
+carlos rollback --app hello stable
 ```
 
 ### carlos channels
@@ -190,7 +190,7 @@ What each of the app's channels is serving right now, with the tag if the
 release earned one at stable.
 
 ```sh
-carlos channels -app hello
+carlos channels --app hello
 ```
 
 ### carlos pipeline
@@ -201,12 +201,12 @@ channels in order, plus any change still waiting on confirmations. `init`,
 `add`, `set` and `remove` edit it.
 
 ```sh
-carlos pipeline init -app hello -template edge-production
+carlos pipeline init --app hello --template edge-production
 ```
 
 Two starter templates exist, `edge-production` and `full-ladder`. After
-that, `-bake <dur>` holds a version for a while before the channel may adopt
-it, and `-passkey`, `-promote-approvals N` and `-change-approvals N` set how
+that, `--bake <dur>` holds a version for a while before the channel may adopt
+it, and `--passkey`, `--promote-approvals N` and `--change-approvals N` set how
 much human agreement a promotion into the channel, or an edit to the channel
 itself, has to collect. `set` leaves any rule flag you did not type exactly
 as it was, so two people shaping different rules do not overwrite each other.
@@ -223,15 +223,15 @@ tag it earned. Channels answer "what is running"; this answers "what is there
 to run".
 
 ```sh
-carlos releases -app hello
+carlos releases --app hello
 ```
 
-There is one sub-verb. `carlos releases retention -keep 20` sets an ambient
-prune policy, and `-dry-run` shows you what it would remove before you commit
+There is one sub-verb. `carlos releases retention --keep 20` sets an ambient
+prune policy, and `--dry-run` shows you what it would remove before you commit
 to it. The safety list always wins over the number: channel pointers,
 rollback history, tagged releases, anything inside the bake window, and each
 box's own adopted versions are never pruned, so nothing promoted or recent
-disappears by policy. `-off` goes back to keeping everything.
+disappears by policy. `--off` goes back to keeping everything.
 
 ### carlos version
 
@@ -243,7 +243,7 @@ the semver your ships count iterations under, so `carlos ship` can mint the
 next one for you.
 
 ```sh
-carlos version target -app hello 0.5.0
+carlos version target --app hello 0.5.0
 ```
 
 ### carlos env
@@ -251,13 +251,13 @@ carlos version target -app hello 0.5.0
 Plain per-app config vars: `set`, `unset`, `list`.
 
 ```sh
-carlos env set -app hello LOG_LEVEL=debug
+carlos env set --app hello LOG_LEVEL=debug
 ```
 
-Values land in the app's default bundle. `-environment <name>` writes a named
+Values land in the app's default bundle. `--environment <name>` writes a named
 bundle instead, layered on top of the default when config is materialized,
-and `carlos route -environment` is what binds a route to one.
-`carlos env environments -app hello` lists the bundle names an app has.
+and `carlos route --environment` is what binds a route to one.
+`carlos env environments --app hello` lists the bundle names an app has.
 
 ### carlos secrets
 
@@ -265,7 +265,7 @@ The same shape as `carlos env`, sealed. `list` prints key names and never
 values.
 
 ```sh
-carlos secrets set -app hello STRIPE_KEY=sk_live_example
+carlos secrets set --app hello STRIPE_KEY=sk_live_example
 ```
 
 Sealing uses a public key; the private half lives on the box that decrypts
@@ -281,11 +281,11 @@ work on records through the console, and the box's reconcile pass turns a
 record into a live route.
 
 ```sh
-carlos instances enable -app hello
-carlos instances list -app hello
+carlos instances enable --app hello
+carlos instances list --app hello
 ```
 
-`-health <slug>` narrows the listing to one state: `running`, `asleep`,
+`--health <slug>` narrows the listing to one state: `running`, `asleep`,
 `not-responding` and the rest. That is usually what you want when something
 is wrong.
 
@@ -302,7 +302,7 @@ so the nearest one answers; `off` clears the opt-in and returns the host to
 the single static answer every requester shares.
 
 ```sh
-carlos steering -app hello -host hello.example.com latency
+carlos steering --app hello --host hello.example.com latency
 ```
 
 The opt-in is recorded immediately and reaches the box's registry row at the
@@ -319,7 +319,7 @@ column is the one worth knowing about, because it decides which sealed
 secrets the route's process is delivered.
 
 ```sh
-carlos routes -app hello
+carlos routes --app hello
 ```
 
 It reads the console's own box, so on a multi-box fleet a short answer is not
@@ -331,10 +331,10 @@ Attaches a customer's own hostname to one of the app's routes, detaches it,
 or lists what is claimed.
 
 ```sh
-carlos domains attach -app hello www.example.com
+carlos domains attach --app hello www.example.com
 ```
 
-`-route` picks which route to point at, and you can leave it off when the app
+`--route` picks which route to point at, and you can leave it off when the app
 has exactly one instance record. The hostname comes live on the box owning
 that route at its next domains pass, certificate and all. The `list` verb
 joins the claims to the fleet's own readings sweep, so DNS state, certificate
@@ -347,11 +347,11 @@ wakes, restarts, and failures with the reason. A site served from files has
 no app stream, but its platform events still show up.
 
 ```sh
-carlos logs -app hello -since 1h -f
+carlos logs --app hello --since 1h -f
 ```
 
-`-f` follows, polling every two seconds until you interrupt it. `-grep` takes
-an RE2 pattern, `-stream app` drops the platform commentary, and `-host`
+`-f` follows, polling every two seconds until you interrupt it. `--grep` takes
+an RE2 pattern, `--stream app` drops the platform commentary, and `--host`
 narrows to one instance.
 
 ### carlos store
@@ -362,12 +362,12 @@ until an operator runs `grant`. `status` shows what is declared, granted and
 delivered, including a rotation that stopped half way.
 
 ```sh
-carlos store create -app hello
-carlos store status -app hello
+carlos store create --app hello
+carlos store status --app hello
 ```
 
 `carlos store rotate` mints a fresh credential and leaves the old one live
-until you run it again with `-finish`, so the app has a window to pick the
+until you run it again with `--finish`, so the app has a window to pick the
 new one up. Rotating, declaring and reading status are member verbs and want
 nothing but your bearer token. `grant` is the one that spends money in the
 deployment's own cloud account, so it also wants an address on
@@ -380,17 +380,17 @@ would confirm the app exists.
 Tenant email sending. `carlos email enable` is the whole path in one
 command: it declares the From address the app sends as, ensures a sending
 domain, waits for SES to verify it, and delivers SMTP credentials to the app
-as env vars under a prefix — `CARLOS_SMTP` unless `-env-prefix` names
+as env vars under a prefix — `CARLOS_SMTP` unless `--env-prefix` names
 another.
 
 ```sh
-carlos email enable -app hello
-carlos email test -app hello -to you@example.com
+carlos email enable --app hello
+carlos email test --app hello --to you@example.com
 ```
 
 On a custom domain, `enable` prints the DNS records to publish and then
 keeps polling until SES confirms them, giving up after ten minutes unless
-`-timeout` says otherwise; a wait that gives up exits non-zero and names what
+`--timeout` says otherwise; a wait that gives up exits non-zero and names what
 SES never confirmed. `carlos email domains add` is that same half on its own,
 for a second domain on an app already declared.
 
@@ -405,7 +405,7 @@ against the cap, and whether sending is paused. `credentials create` mints a
 standalone SMTP credential for something not running on CARLOS — a laptop, a
 cron box — printed once on that command's output and nowhere else. `rotate`
 mints a fresh delivered credential and leaves the old one live until you run
-it again with `-finish`. `pause` and `resume` are operator verbs. None of it
+it again with `--finish`. `pause` and `resume` are operator verbs. None of it
 has a direct-bucket form; all of it wants a logged-in console.
 
 ### carlos ledger
@@ -416,7 +416,7 @@ app's ledgers and what it publishes, and `publish` decides which of them are
 served publicly.
 
 ```sh
-carlos ledger append -app hello carbon entry.json
+carlos ledger append --app hello carbon entry.json
 ```
 
 `blob` uploads files to a chain as content-addressed blobs and prints each
@@ -437,10 +437,10 @@ it. The manifest has to exist and parse, and every artifact's stored bytes
 have to match the sha256 and size it claims.
 
 ```sh
-carlos vet -app hello -version a1b2c3d -boot
+carlos vet --app hello --version a1b2c3d --boot
 ```
 
-`-boot` goes further and runs the binary: it must accept `-socket <path>`,
+`--boot` goes further and runs the binary: it must accept `-socket <path>`,
 serve HTTP on that socket, and answer `GET /healthz` with a 200 within ten
 seconds. That is the entire app contract, and this is the cheapest place to
 find out you have broken it.
@@ -475,9 +475,9 @@ the systemd units. Run it once per host, as root.
 carlos bootstrap
 ```
 
-`-root <dir>` writes the files into a staging directory instead, creating no
+`--root <dir>` writes the files into a staging directory instead, creating no
 users and running no systemctl, so you can read what it would do before it
-does it. `-offcloud` is for a box outside EC2, where credentials come from a
+does it. `--offcloud` is for a box outside EC2, where credentials come from a
 staged 0600 file instead of an instance profile.
 
 ### carlos accounts
@@ -487,15 +487,15 @@ prefixes all hang off one. `create` mints an account and prints the sqid
 every object underneath it is keyed by.
 
 ```sh
-carlos accounts create -name acme -owner someone@example.com
+carlos accounts create --name acme --owner someone@example.com
 ```
 
-`-owner` is the path for a box or a CI job, where there is no browser to log
+`--owner` is the path for a box or a CI job, where there is no browser to log
 in with. It needs no identity of its own and takes precedence over any
 logged-in one.
 
 `carlos accounts migrate` copies an app's objects to an account-qualified
-prefix and re-stamps its routes. Run it with `-dry-run` first; it prints the
+prefix and re-stamps its routes. Run it with `--dry-run` first; it prints the
 plan and touches nothing.
 
 ### carlos fleets
@@ -505,7 +505,7 @@ console over a channel named `<fleet>/<label>`. Create one against the
 customer's own data bucket, then register each box.
 
 ```sh
-carlos fleets create -bucket acme-data acme
+carlos fleets create --bucket acme-data acme
 carlos fleets add-box acme pi-1
 ```
 
@@ -525,13 +525,13 @@ sidecar that reads instances. Reach is fixed at mint, so adding you to
 another account later does not widen it, and it has its own rate-limit budget.
 
 ```sh
-carlos services create -role publish -app hello ci-shipper
+carlos services create --role publish --app hello ci-shipper
 ```
 
 Pick the narrowest role that works. `publish` ships releases, `instance` is
 what a box-side reader wants, `operate` administers, and `admin` includes
 `store grant`, which mints a path-scoped IAM user; treat that one as a real
-handover. `-app` binds the credential to one app, which also means it cannot
+handover. `--app` binds the credential to one app, which also means it cannot
 create apps.
 
 The secret prints once, same as a fleet token, and the same distinction
@@ -545,12 +545,12 @@ app, following this channel. It is the box-local, operator-side counterpart
 to an instance record.
 
 ```sh
-carlos add -app hello -socket /run/hello.sock hello.example.com
+carlos add --app hello --socket /run/hello.sock hello.example.com
 ```
 
-`-channel` sets what the route follows, `-kind` picks instance, service or
-static, and `-addr` takes a TCP upstream where the app is not a socket
-tenant. `-unit console.service` names the systemd unit that owns the route's
+`--channel` sets what the route follows, `--kind` picks instance, service or
+static, and `--addr` takes a TCP upstream where the app is not a socket
+tenant. `--unit console.service` names the systemd unit that owns the route's
 process, which is what lets adoption cycle it; leave it off for an ordinary
 exec child.
 
@@ -571,19 +571,19 @@ and a repoint are different acts with different safety rails, and a command
 that did both would commit them together.
 
 ```sh
-carlos route -host hello.example.com -channel edge
+carlos route --host hello.example.com --channel edge
 ```
 
-`-channel` and `-environment` repoint, and those two may be given together.
-`-grant` and `-revoke` change a capability. `-hibernate` lets the route sleep
-when idle. `-backing` and `-unit` are two answers to one question — who owns
+`--channel` and `--environment` repoint, and those two may be given together.
+`--grant` and `--revoke` change a capability. `--hibernate` lets the route sleep
+when idle. `--backing` and `--unit` are two answers to one question — who owns
 this route's process — so the command will not let you write both.
 
 Repointing the channel is the half to be careful with. Adoption converges a
 route onto whatever its channel currently points at, so moving the channel
 changes what production serves on the next pass; the command resolves the
 target pointer first and refuses a version change unless you pass
-`-allow-version-change`; `-dry-run` runs the same rails and prints the plan
+`--allow-version-change`; `--dry-run` runs the same rails and prints the plan
 without writing. And once a route is `Provisioned`, its channel and
 environment belong to its instance record: `carlos route` refuses both axes
 on such a row and names the record, because the reconciler would revert you
@@ -595,11 +595,11 @@ Mints the deployment's root signing key, or a scoped key that can sign only
 certain rungs of the ladder.
 
 ```sh
-carlos release-keygen -scope canary,edge -name builder
+carlos release-keygen --scope canary,edge --name builder
 ```
 
 With no flags it prints a fresh root pair: the key goes into your secret
-manager, the public half into host config. With `-scope` it prints a key and
+manager, the public half into host config. With `--scope` it prints a key and
 a grant. The grant carries no secret material but has to travel with the key,
 because a scoped key on its own signs pointers nothing will accept. Only the
 root key can mint a grant, which is what stops a scoped key widening itself.
@@ -610,25 +610,34 @@ Records one month's AWS bill so the console's economics dashboard has a real
 number to divide by.
 
 ```sh
-carlos economics bill -month 2026-08 -total 412.55 -line AmazonEC2=55.00
+carlos economics bill --month 2026-08 --total 412.55 --line AmazonEC2=55.00
 ```
 
 Operator only, and the console answers everyone else with the same bare 404
 it gives an unknown route. A "not found" here almost always means your
 account lacks the fleet-operator bit, not that you typed the path wrong.
 
+`carlos economics backhaul` shows what serving through region edges costs
+the platform this period: the part of each account's egress that was
+backhauled from its home box, priced at the rate card's inter-region
+$/GB and absorbed — it appears in nobody's bill.
+
+```sh
+carlos economics backhaul --period mtd
+```
+
 ### carlos status
 
-`-live` prints what every box in the fleet last reported about itself:
+`--live` prints what every box in the fleet last reported about itself:
 release, tunnel state, memory, load, free disk. A box that has stopped
 reporting shows as UNREACHABLE with how long it has been dark, and none of
 its stale readings.
 
 ```sh
-carlos status -live
+carlos status --live
 ```
 
-`-dry-run <dir>` is the self-hoster's leak check. It builds a throwaway fleet
+`--dry-run <dir>` is the self-hoster's leak check. It builds a throwaway fleet
 stuffed with fixture secrets, runs it through the real publish path into a
 scratch directory, reads every published object back, and fails if any
 fixture escaped. Run it before you ever point this binary at a real bucket.
@@ -646,11 +655,11 @@ The front door. TLS and ACME, and the proxy that maps a hostname to whatever
 is serving it. One per box, started by `carlos-edge.service`.
 
 ```sh
-carlos edge -dev -http :8080
+carlos edge --dev --http :8080
 ```
 
-`-dev` serves plain HTTP with no TLS or ACME, which is how you run it on a
-laptop. `-fallback` redirects unknown hostnames somewhere (an apex marketing
+`--dev` serves plain HTTP with no TLS or ACME, which is how you run it on a
+laptop. `--fallback` redirects unknown hostnames somewhere (an apex marketing
 site, usually) instead of returning the plain 404.
 
 ### carlos agent
@@ -677,7 +686,7 @@ owning unit is the exception: adoption cycles that one itself, and rolls the
 adoption back if the restart fails, so the version header never claims a
 build the process is not serving.
 
-`-restart-only` and `-config-only` are the narrower passes the agent asks a
+`--restart-only` and `--config-only` are the narrower passes the agent asks a
 root-side unit to run for it, since the agent can request a pass but cannot
 write to `/etc` or restart units itself.
 
