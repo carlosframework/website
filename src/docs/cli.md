@@ -340,6 +340,24 @@ that route at its next domains pass, certificate and all. The `list` verb
 joins the claims to the fleet's own readings sweep, so DNS state, certificate
 expiry and delegation are readable without leaving the terminal.
 
+### carlos features
+
+Sets or lists an app's own feature flags — switches the app defines, the
+platform stores and serves, and nobody but the app interprets.
+
+```sh
+carlos features set --app titogo sandbox=on
+carlos features list --app titogo
+```
+
+Keys and values are the app's vocabulary (`sandbox=on`, `beta-ui=v2`); the
+platform never reads them. `key=` with nothing after the equals clears a key.
+The app finds the map on the `deployment` block its instance token already
+fetches beside `managed_domains`, so a change lands on its next poll — no
+restart, no environment edit, no root-owned file on an edge box. Setting is
+an admin-role write and every change is audited under the app's Activity;
+the app's own instance credential can read the flags but never set them.
+
 ### carlos logs
 
 The app's own stdout and stderr, merged with the platform's events about it:
