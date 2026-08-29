@@ -52,6 +52,14 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/docs.css": "docs.css" });
   eleventyConfig.addPassthroughCopy({ "src/favicon.svg": "favicon.svg" });
 
+  // The agent-skills tree (vendored by hack/sync-skills.mjs) ships
+  // byte-for-byte at /.well-known/agent-skills/ — the discovery index
+  // digests pin the served bytes, so its markdown must never be
+  // rendered as pages. Ignoring the tree keeps Eleventy's md template
+  // engine away from it; passthrough still copies ignored files.
+  eleventyConfig.ignores.add("src/well-known/**");
+  eleventyConfig.addPassthroughCopy({ "src/well-known": ".well-known" });
+
   const md = markdownIt({ html: true, linkify: false, typographer: false }).use(
     markdownItAnchor,
     { slugify, level: [2, 3, 4], tabIndex: false },

@@ -5,8 +5,9 @@
   "scripts": {
     "build": "eleventy",
     "serve": "eleventy --serve",
-    "check": "eleventy && node hack/check-docs.mjs",
-    "sync-docs": "node hack/sync-docs.mjs"
+    "check": "eleventy && node hack/check-docs.mjs && node hack/check-skills.mjs",
+    "sync-docs": "node hack/sync-docs.mjs",
+    "sync-skills": "node hack/sync-skills.mjs"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0",

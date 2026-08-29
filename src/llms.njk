@@ -1,0 +1,23 @@
+---
+permalink: llms.txt
+eleventyExcludeFromCollections: true
+---
+# 🤖 CARLOS
+
+> CARLOS — Cost-efficient, Available, Replicated, Lightweight, Open, Secure — is an application architecture: one static Go binary per app, one fully-isolated instance per account, many instances on one small box. This site documents the architecture, the platform that runs it, and the carlos CLI.
+
+Every docs page below is served as plain markdown at the listed URL; the same page rendered for people is the URL without the `.md`.
+{% for section in docsnav.sections %}
+## {{ section.title | safe }}
+{% for page in section.pages %}
+- [{{ page.label | safe }}](https://carlosframework.com/docs/{{ page.slug }}.md): {{ page.blurb | safe }}
+{%- endfor %}
+{% endfor %}
+## Agent skills
+
+Skills in the Agent Skills format (SKILL.md), published per the Agent Skills Discovery draft — fetch the index, then the skill you need:
+
+- [Skills index](https://carlosframework.com/.well-known/agent-skills/index.json): name, description, url and sha256 digest per skill.
+{%- for skill in agentskills.skills %}
+- [{{ skill.name }}](https://carlosframework.com{{ skill.url }}): {{ skill.description | safe }}
+{%- endfor %}
