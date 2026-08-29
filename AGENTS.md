@@ -138,6 +138,39 @@ rather than retyped: both languages assert against one artifact, so a heading
 whose fragment the Go gate accepted cannot 404 in a browser because the two
 slug rules drifted.
 
+## Publishing the agent skills (`/.well-known/agent-skills/`)
+
+The site publishes the CARLOS skills for agent discovery, per the
+[Agent Skills Discovery draft](https://github.com/cloudflare/agent-skills-discovery-rfc):
+`/.well-known/agent-skills/index.json` lists each skill with a sha256
+digest, and each `SKILL.md` (plus its `references/`) is served beside it.
+`/llms.txt` points agents at the index and at every docs page's `.md`
+twin, and is generated from `docsnav.json` and the index so it cannot
+drift from either.
+
+The skills live in **carlosframework/skills**, where they are authored
+and released as the Claude Code plugin. `hack/sync-skills.mjs` vendors
+the platform-facing ones (`getting-started`, `building-carlos-apps` —
+deliberately not `delegate`, which is generic operator tooling) into
+this repo so the build is self-contained.
+
+**Nothing under `src/well-known/` is edited here.** The sync wipes and
+rewrites it, and the index digests pin the served bytes to the skills
+repo's bytes — a local edit either gets discarded on the next sync or
+ships a digest mismatch, which spec-following consumers treat as
+tampering and refuse. Fix the source in the skills repo instead.
+
+```
+node hack/sync-skills.mjs ~/github.com/carlosframework/skills
+node hack/sync-skills.mjs ~/github.com/carlosframework/skills --check   # verify, write nothing
+```
+
+`npm run check` also runs `hack/check-skills.mjs` over `_site/` after
+the build: every index entry's url has a built file whose bytes hash to
+the entry's digest, every relative link inside a served `SKILL.md`
+resolves, and every carlosframework.com link in `llms.txt` points at a
+built file.
+
 ## Deploying
 
 **The live apex, `carlosframework.com`, moved off GitHub Pages onto the
