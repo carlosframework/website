@@ -74,6 +74,16 @@ later, puts the app's routes and instances on a fleet your account owns.
 in that empty spelling: leaving it off is a usage error, never a silent
 clear.
 
+Two more flags are stamped at claim time. `--control-plane` marks the app as
+the control plane, after which it refuses trash, purge, rename and transfer,
+and refuses a service credential's promote — owner only. `--build-probe /path`
+names a path whose response body carries the running build, `/healthz` serving
+`ok abc1234` being the shape; [carlos deploy](/docs/cli#carlos-deploy) then
+polls that instead of the `X-Carlos-Version` header, which the edge stamps from
+the route row and which therefore reports the new build before the process has
+actually restarted. Both are checked against what the console echoes back, so a
+write that silently failed is an error rather than a quiet lie.
+
 ### carlos ship
 
 Publishes a release. The artifact is hashed, stored under its content
@@ -311,6 +321,14 @@ has armed its Route53 steering converger. In v1 only instances on the shared
 pool can be steered; a pool-scoped route is refused, and the refusal names
 that as the reason.
 
+A **static site on a platform hostname is steered from the moment it is
+created** — you do not have to ask. Static is the one kind every edge can
+serve on its own, straight from the channel pointer, so there is no reason
+for one edge to answer for all of them. `off` turns it back off if you want
+a single answer, and nothing re-applies the default to a host that already
+exists. Custom domains are not steered for you, because their DNS is yours:
+point them at the steering hostname the app's Settings page names.
+
 ### carlos routes
 
 The app's routes on this deployment: where each one sends traffic, which
@@ -477,6 +495,24 @@ carlos update
 It refuses to run as root, and refuses on a box: box binaries are rolled by
 the platform, and a self-updating box would fight that machinery. `-y` skips
 the confirmation, though it still wants a terminal.
+
+### carlos skills
+
+The platform publishes its agent skills at
+`/.well-known/agent-skills/index.json`, per the [Agent Skills Discovery
+draft](https://github.com/cloudflare/agent-skills-discovery-rfc). `carlos
+skills` lists what is published; `carlos skills <name>` fetches one, checks
+its sha256 digest against what the index claims, and prints the SKILL.md to
+stdout — a mismatch means corruption or tampering, and the command refuses
+to print it.
+
+```sh
+carlos skills
+carlos skills getting-started > SKILL.md
+```
+
+`-index <url>` points it at another deployment's index, for a self-hosted
+site or a test.
 
 ## Your deployment
 
