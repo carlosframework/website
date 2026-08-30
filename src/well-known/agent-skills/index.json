@@ -7,14 +7,14 @@
       "type": "skill-md",
       "description": "Use when someone wants a new app on CARLOS built and live with minimum decisions — \"start a CARLOS app\", \"put this on carloku\", a first deploy to an oncarlos.com URL, or when an agent needs the family's default stack (rastrillo + the carlos CLI) as a recipe rather than a menu. Not for weighing trust models, app shapes, or hosting options — that is building-carlos-apps.",
       "url": "/.well-known/agent-skills/getting-started/SKILL.md",
-      "digest": "sha256:3bee5fc8e853fb5ee4cf980e2a95730e4e01d7c1121c46ead8214d072aac1d70"
+      "digest": "sha256:5f330b6a7e266f0239830b21a0307bfb2b35212d4ab673ed468964781e02e0ec"
     },
     {
       "name": "building-carlos-apps",
       "type": "skill-md",
       "description": "Use when building or designing an app on the CARLOS architecture (Cost-efficient, Available, Replicated, Lightweight, Open, Secure) or with rastrillo (the CARLOS web framework), bringing an existing app onto it, or weighing the family's open choices — full vs partial encryption, server-rendered vs client-owned shape, hosted vs self-hosted — the model extracted from Eleven Messenger, Keymail, Woodstar, Slopbox and Kass, adopted by Tito and Seapointish. For the zero-decisions happy path to a first live app, use getting-started instead.",
       "url": "/.well-known/agent-skills/building-carlos-apps/SKILL.md",
-      "digest": "sha256:a05073d695a079c66f9eed8e8487a2a11baca6b017e7f8409953ccdd217009b9"
+      "digest": "sha256:ce53c522613ddaf04eb7c2f4964d9140ede55bc3936dbd9b03eef732101f8636"
     }
   ]
 }

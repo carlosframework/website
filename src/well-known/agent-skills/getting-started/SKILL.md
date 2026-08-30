@@ -241,8 +241,10 @@ The platform mechanized the infrastructure, not the discipline:
   safe. Never delete data to update.
 - Zero-JS first; when JS is earned, small ES modules, no bundler, no
   build step, 300-line cap.
-- Worktree per session; branch → PR → squash-merge; deploy only what
-  merged. Commit trailers mark AI authorship (🤖 / `Co-Authored-By`).
+- Worktree per session, on a branch, with regular commits pushed as you
+  go. Squash-merge to main only once the work is done, a human has
+  approved it, and CI is green; deploy only what merged. Commit trailers
+  mark AI authorship (🤖 / `Co-Authored-By`).
 
 The full working conventions are building-carlos-apps'
 `references/process.md`.

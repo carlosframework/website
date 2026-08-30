@@ -5,12 +5,14 @@ hard way at least once; the incident is noted where it names the rule.
 
 ## Repo documents
 
-- **CLAUDE.md** — "how we build and the decisions we've committed to."
+- **AGENTS.md** — "how we build and the decisions we've committed to."
   Written before the code (factor V: the intent is the system — the code
   should have to argue with something). Opens with the one rule. Contains:
   settled decisions (dated, attributed, with rejected alternatives),
   named laws, the workflow, and a "Deliberately not built yet" list with the
-  trigger for each deferral.
+  trigger for each deferral. One file, for every agent that reads the repo —
+  not one per vendor. Older repos still carry it as CLAUDE.md; rename it to
+  AGENTS.md the next time you touch one, rather than keeping two.
 - **README.md** — user-facing: what it is, run it, honest trade-offs.
 - **DESIGN.md** — the spec, what gets built. **PLAN.md** — why it is shaped
   this way, the roadmap.
@@ -26,10 +28,16 @@ hard way at least once; the incident is noted where it names the rule.
   are active at once; the main checkout's uncommitted state belongs to
   another session. Never build in the main checkout — reading it is fine,
   writing is not.
-- Feature branch → small focused PR → squash-merge
-  (`gh pr merge --squash --delete-branch`). Never commit to main. Deploy
-  only merged main. Branch / commit / PR / merge / deploy **only when
-  asked**.
+- **The cadence is: worktree → branch → regular pushed commits →
+  squash-merge.** Commit as you go and push every commit. The branch is
+  where work in progress lives; you do not wait to be asked to put it
+  there, and a session that ends with unpushed work has lost it as far as
+  everyone else is concerned. Keep the PR small and focused.
+- **Squash-merge to main when all three hold: the work is done, a human has
+  approved it, and CI is green** (`gh pr merge --squash --delete-branch`).
+  Two of the three is not a merge — a green run on unapproved work waits,
+  and an approval over a red run waits. Never commit to main. Deploy only
+  merged main, and only when asked.
 - Commit subjects are area-prefixed prose that says why (`web: the front
   door is a homepage — pitch left, sign-in right`; `auth: delete the
   recovery passphrase, root and branch`). Comment the why, not the what.
