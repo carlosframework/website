@@ -11,10 +11,10 @@ CARLOS is an application architecture: **one static Go binary, one
 fully-isolated instance per account (own process, own SQLite file, own unix
 socket, own hostname), many instances on one small box behind a small
 router**, with every database continuously replicated to object storage.
-Everything below is distilled from the prompt histories, CLAUDE.md files and
-code of the apps it was extracted from. The house style is to state rules as
-laws, date and attribute decisions, and make rules mechanical rather than
-remembered.
+Everything below is distilled from the prompt histories, repo instruction
+files and code of the apps it was extracted from. The house style is to
+state rules as laws, date and attribute decisions, and make rules
+mechanical rather than remembered.
 
 ## When to use
 
@@ -26,7 +26,7 @@ remembered.
   family's sanctioned options.
 
 Not for: contributing to one of the existing apps (read that repo's
-CLAUDE.md instead — it always wins over this skill). And for "just get me
+AGENTS.md instead — it always wins over this skill). And for "just get me
 a first app live, decide everything for me", use the sibling skill
 **carlos:getting-started** — it is this skill with all four decision axes
 pre-answered with the defaults.
@@ -66,7 +66,7 @@ the platform for a specific reason: blueprint.md in full still applies.
 
 ## The one rule comes first
 
-Every app opens its CLAUDE.md with a single load-bearing rule and derives
+Every app opens its AGENTS.md with a single load-bearing rule and derives
 everything from it. Write yours before writing code (the first commit of
 Kass is literally "Write down the architecture before writing any code").
 
@@ -87,7 +87,7 @@ settling a new app's trust model, app shape, hosting, or identity story.
 
 ## Guiding principles
 
-1. **Intent before code.** CLAUDE.md is written first and is binding. Design
+1. **Intent before code.** AGENTS.md is written first and is binding. Design
    docs precede big builds; the doc's decisions are taken — if one proves
    wrong, stop and flag it in the PR rather than redesigning.
 2. **Decisions are dated, attributed, and settled.** "Paul's call,
@@ -137,7 +137,7 @@ The ones the family invokes operationally:
 
 - **III — Encrypt everything** → the one rule: server-blind by default;
   deviations are legitimate under the deviation rule, not violations.
-- **V — Intent is the system** → CLAUDE.md and design docs before code;
+- **V — Intent is the system** → AGENTS.md and design docs before code;
   "the code should have to argue with something."
 - **VI — Built by humanity, owned by humanity** → open source; private
   until it works is allowed, but "factor VI is not optional, only
@@ -171,7 +171,7 @@ The ones the family invokes operationally:
 | Identity | "Sign in with Keymail" / passkeys+PRF / magic link+TOTP by trust model — decisions.md §4 |
 | Trust | Server-blind by default; the spectrum and its named softenings — decisions.md §1 |
 | UI stance | Hide the machinery: no hostnames, keys, or crypto vocabulary in the default flow — "no nerdspeak"; calm UI, red for danger only, no toasts |
-| Process | Worktree per session; branch → PR → squash-merge; review on a deployed canary, never localhost |
+| Process | Worktree per session, branch, regular pushed commits; squash-merge to main only when done, approved and CI green; review on a deployed canary, never localhost |
 | Authorship | 🤖/👨 markers, `Co-Authored-By: Claude …` trailers, published prompt + carbon ledgers |
 
 ## Details
@@ -200,7 +200,7 @@ The ones the family invokes operationally:
 ## Adopting CARLOS in an existing app (Tito's path)
 
 1. Restate the model in your first commit and at the top of README and
-   CLAUDE.md.
+   AGENTS.md.
 2. Deploy onto the platform (hosted or self-hosted) rather than porting
    the router/replication machinery — that is what it is for. Only when
    the app must run somewhere the platform can't: take the core into
