@@ -7,7 +7,7 @@
       "type": "skill-md",
       "description": "Use when someone wants a new app on CARLOS built and live with minimum decisions — \"start a CARLOS app\", \"put this on carloku\", a first deploy to an oncarlos.com URL, or when an agent needs the family's default stack (rastrillo + the carlos CLI) as a recipe rather than a menu. Not for weighing trust models, app shapes, or hosting options — that is building-carlos-apps.",
       "url": "/.well-known/agent-skills/getting-started/SKILL.md",
-      "digest": "sha256:5f330b6a7e266f0239830b21a0307bfb2b35212d4ab673ed468964781e02e0ec"
+      "digest": "sha256:37b635336b9742b33d3ebe5d079afd348029f54c706059dd9ace931a6c0c42b6"
     },
     {
       "name": "building-carlos-apps",

@@ -49,8 +49,9 @@ hard way at least once; the incident is noted where it names the rule.
 - **Every session gets its own canary; review happens on a deployed canary,
   never on localhost.** (Adopted after two sessions sharing a dev host
   produced an evening outage.) Local stacks are for automated drives only.
-- On the platform, a canary is a channel: promote to `canary/<slug>` (a
-  per-session dead-end rung, zero bake) and the canary host serves it at
+- On the platform, a canary is a channel: `carlos deploy -channel
+  canary/<slug>` (a per-session dead-end rung, zero bake) and the canary
+  host serves it at
   `<canary>.<app>.<sqid>.<domain>` — same rule, no box. Off-platform,
   canaries multiplex onto the devbox: own port/state/unit/TLS at
   `<branch>.<dev-host>`. Shared hosts (`prod`, the plain dev host) only ever
