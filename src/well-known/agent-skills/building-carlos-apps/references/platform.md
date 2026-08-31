@@ -47,7 +47,8 @@ apt, static binaries) and Windows (client-only zip — no self-replace,
   owner/member. `carlos auth whoami` shows yours.
 - **App** — named per account (not globally). Claimed with
   `carlos apps create`; deleted apps sit in a 30-day trash.
-- **Release** — immutable, content-addressed, produced by `carlos ship`.
+- **Release** — immutable, content-addressed, produced by the ship half
+  of `carlos deploy` (or by `carlos ship` on its own).
   Kinds: `binary` (default) and `static`. Versions are free-form; git
   short sha is the house convention.
 - **Channels and pipelines** (release pipelines v2, live 2026-08-22) —
@@ -97,9 +98,9 @@ apt, static binaries) and Windows (client-only zip — no self-replace,
 |---|---|
 | `carlos auth login\|whoami\|logout\|default` | Device-code login (approve in any signed-in browser); identity + memberships; per-project default console |
 | `carlos apps create\|place\|delete\|restore` | Claim an app; place it on a customer fleet; trash/restore |
-| `carlos ship` | Publish an immutable release (`-kind binary\|static`, `-version`, `-notes`); rate-limited per app (~2/minute — a 429 carries `Retry-After`) |
-| `carlos promote` | Move a version up the ladder (`-hotfix` to bypass, recorded) |
-| `carlos deploy` | ship + promote + watch `X-Carlos-Version` until live — the one-command release; zero-arg with a saved project config |
+| `carlos deploy` | **Release new code — reach for this one.** ship + promote + watch `X-Carlos-Version` until live; zero-arg with a saved project config. `-channel` to land somewhere other than the entry channel (a canary); `-host` on a static app's first deploy |
+| `carlos ship` | The ship half alone: publish a release *without* releasing it (`-kind binary\|static`, `-version`, `-notes`); rate-limited per app (~2/minute — a 429 carries `Retry-After`) |
+| `carlos promote` | The promote half alone: move an **already-shipped** version onto a channel (`-hotfix` to bypass a bake, recorded) — a ladder step or a re-point, not how you release new code |
 | `carlos rollback` | Point a channel back at an earlier version |
 | `carlos pipeline` | Show or shape the app's release channels; `init -template edge-production\|full-ladder` replaces the single default channel with a starter pipeline |
 | `carlos channels` / `carlos releases` | What each channel serves / every shipped version; `releases retention` prunes old ones |

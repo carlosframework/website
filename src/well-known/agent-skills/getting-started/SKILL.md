@@ -182,13 +182,17 @@ arguments.
 
 ### The static path
 
-No instance, no binary — ship the directory and promote:
+No instance, no binary — deploy the directory:
 
 ```sh
-carlos ship -kind static -version v1 ./public
-carlos promote v1 edge
-# or in one motion: carlos deploy -kind static ./public
+carlos deploy -app myapp -kind static -host myapp.<sqid>.oncarlos.com ./public
 ```
+
+`-host` is required on the **first** static deploy and only that one: a
+static app has no instance record yet, so there is nothing to resolve the
+host and channel from. That deploy attaches the host and writes the
+record; afterwards `carlos deploy` from the project dir resolves both on
+its own. Omitting `-host` on a first deploy is a refusal, not a default.
 
 ## Step 4 — verify like the family does
 
