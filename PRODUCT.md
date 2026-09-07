@@ -48,9 +48,14 @@ app uses (recipe in AGENTS.md). Source is public at
 github.com/carlosframework/website. Note that `carlosframework/platform` is a
 PRIVATE repo and must never be linked from the site.
 
-Pages: `/` (framework), `/platform/` (the platform, and the engine under
-carloku.com), `/rastrillo/` (a redirect stub — Rastrillo's real site is
-rastrillo.org).
+Pages (refactored 2026-09-07 into a hub of summaries linking to inner
+pages): `/` (the hub), `/letters/` (the six letters in full — the old
+homepage), `/apps/` (the gallery: goal, host, class and status per app),
+`/trust/` (the classes S to C), `/start/` (getting started, with the
+skills), `/platform/` (the platform, and the engine under carloku.com),
+`/rastrillo/` (a redirect stub — Rastrillo's real site is rastrillo.org).
+The two pitch decks live off-site at use.carlosframework.com and
+migrate.carlosframework.com and are linked from the hub and every footer.
 
 ## Capabilities and Constraints
 

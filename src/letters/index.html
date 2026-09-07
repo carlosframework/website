@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The six letters — CARLOS</title>
+<meta name="description" content="🤖 An application architecture extracted from five systems that kept rebuilding it. One person, one process, one encrypted database that sleeps into a bucket. Cost-efficient, Available, Replicated, Lightweight, Open, Secure.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a0c10" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="The six letters — CARLOS">
+<meta property="og:description" content="Lower your costs. Raise your security, resilience, privacy and sovereignty. Cost-efficient, Available, Replicated, Lightweight, Open, Secure.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://carlosframework.com/letters/">
+<link rel="stylesheet" href="/site.css?v=0">
+</head>
+<body>
+
+<header class="masthead">
+  <a class="mark" href="/"><svg class="wordmark" viewBox="11 11 518 118" width="79" height="18" fill="none" stroke="currentColor" stroke-width="18" role="img" aria-label="CARLOS"><path transform="translate(0,0)" d="M77,44 A20,20 0 0 0 57,24 H43 A20,20 0 0 0 23,44 V96 A20,20 0 0 0 43,116 H57 A20,20 0 0 0 77,96"/><path transform="translate(88,0)" d="M25,117 L45,23 H55 L75,117 M33,80 H67"/><path transform="translate(176,0)" d="M23,117 V23 H53 A23,23 0 0 1 53,69 H23 M50,69 L77,117"/><path transform="translate(264,0)" d="M23,23 V117 H77"/><path transform="translate(352,0)" d="M23,44 A20,20 0 0 1 43,24 H57 A20,20 0 0 1 77,44 V96 A20,20 0 0 1 57,116 H43 A20,20 0 0 1 23,96 Z"/><path transform="translate(440,0)" d="M77,39 A16,16 0 0 0 61,23 H39 A16,16 0 0 0 23,39 V54 A16,16 0 0 0 39,70 H61 A16,16 0 0 1 77,86 V101 A16,16 0 0 1 61,117 H39 A16,16 0 0 1 23,101 V98"/></svg></a>
+  <nav aria-label="Site">
+    <a href="/apps/">Apps</a>
+    <a href="/trust/">Trust</a>
+    <a href="/platform/">Platform</a>
+    <a href="/docs/">Docs</a>
+    <a href="/start/">Get started</a>
+  </nav>
+</header>
+
+<div class="hero compact">
+  <p class="kicker">The six letters</p>
+  <h1>What the letters <span class="rise">buy</span> you.</h1>
+  <p class="lede">Cost-efficient, Available, Replicated, Lightweight, Open, Secure. Six promises, and under each one the machinery that produces it. If a claim here has no machinery under it, it should not be on the page.</p>
+  <p class="robot">Where an LLM has written in slop-voice, it is marked with a 🤖That's <a href="https://11factor.org/#x">factor X</a>.</p>
+</div>
+
+<main>
+
+<section id="unlocks">
+  <div class="head">
+    <h2>What adopting it unlocks</h2>
+    <p class="standfirst">Six outcomes, each with the mechanism that produces it. If a claim here has no machinery under it, it should not be on the page.</p>
+  </div>
+
+  <div class="ledger">
+    <div class="entry">
+      <h3>Thousands off the bill</h3>
+      <p>Conventional deployments buy capacity for the peak and pay for it around the clock. A CARLOS fleet is sized to concurrent use, not to how many accounts exist: idle tenants hibernate to a bucket, and a box carries as many sleeping tenants as it has disk to list them.</p>
+      <p class="receipt"><b>mechanism:</b> hibernate to object storage · wake on the request that needs it · metered in cpu-core-hours, GB-hours and instance-hours, so the bill follows what actually ran</p>
+    </div>
+
+    <div class="entry">
+      <h3>Carbon you stop burning</h3>
+      <p>The cheapest watt is the one never drawn. Because an idle app runs no process at all (not a scaled-down container, not a warm pool, nothing), the energy floor under a CARLOS deployment is set by concurrent usage rather than by headcount. Fewer boxes for the same product is the whole of the mechanism, and it is measurable on your own bill.</p>
+      <p class="receipt"><b>mechanism:</b> no process while idle · fleet sized to concurrent use · one static binary with no runtime to keep warm</p>
+    </div>
+
+    <div class="entry">
+      <h3>A security claim you can falsify</h3>
+      <p>This one is specific and testable rather than reassuring: publish the entire database and see what leaks. Built this way the answer is metadata (who talked to whom, and when) and never content. The residue is real and worth stating plainly; the point of the architecture is that it is <em>all</em> that is left.</p>
+      <p class="receipt"><b>mechanism:</b> the server stores ciphertext plus key material it cannot open · private keys live in browsers and nowhere else</p>
+    </div>
+
+    <div class="entry">
+      <h3>Failure that stays small</h3>
+      <p>One person's process serves one person's data. A panic, a runaway query or a memory leak in someone's request path takes down their process; the next request starts it again, and nobody else notices. Underneath, routes carry several health-checked upstreams and box state snapshots to object storage every five minutes.</p>
+      <p class="receipt"><b>mechanism:</b> blast radius of one · multi-upstream routes with in-request retry · five-minute snapshots · auto-recovery alarms on every instance</p>
+    </div>
+
+    <div class="entry">
+      <h3>Privacy that survives the subpoena</h3>
+      <p>Centralised pieces are allowed (push relays, discovery, backup stores) on one condition: they must be glue. Thin, blind, replaceable. When the central piece falls to a subpoena, a seizure or a hack, the people inside lose some convenience and never a word they said.</p>
+      <p class="receipt"><b>mechanism:</b> membership enforced by cryptography rather than a permission check · invite secrets ride in the URL fragment, which browsers never send to a server</p>
+    </div>
+
+    <div class="entry">
+      <h3>Residency you can point at</h3>
+      <p>Data residency stops being a contract clause and becomes a placement decision. The deployment is yours: your cloud account, your bucket, your regions. An app can be pinned to a region because the fleet is a list of boxes you own, and a workload is only ever placed on a host trusted enough to hold what it holds.</p>
+      <p class="receipt"><b>mechanism:</b> one binary, a bucket and DNS is the entire dependency list · placement gated on declared trust class, not on capacity alone</p>
+    </div>
+  </div>
+</section>
+
+<section class="letter" id="cost">
+  <div class="wrap">
+    <div class="plate">
+      <svg class="glyph" viewBox="11 11 78 118" width="79" height="119" fill="none" stroke="currentColor" stroke-width="21" aria-hidden="true" focusable="false"><path d="M77,44 A20,20 0 0 0 57,24 H43 A20,20 0 0 0 23,44 V96 A20,20 0 0 0 43,116 H57 A20,20 0 0 0 77,96"/></svg>
+      <h2>Cost-efficient</h2>
+      <p>Not running when nobody is using it. Most software is used a few hours a week and billed for a hundred and sixty-eight.</p>
+    </div>
+    <ul class="attrs">
+      <li>
+        <h3>Instances hibernate into object storage</h3>
+        <p>An instance with no traffic stops, and its database leaves the box for a bucket. What remains is a few objects, no process and no memory.</p>
+      </li>
+      <li>
+        <h3>Waking is lazy, sleeping is a sweep, stopping is a drain</h3>
+        <p>Nothing polls to keep an app alive. A sweep retires the idle; work still in flight when an instance winds down lands before it goes.</p>
+      </li>
+      <li>
+        <h3>A thousand idle people cost one goroutine</h3>
+        <p>Sleeping tenants are entries in a list, not processes. Capacity is bought for the people using the product right now.</p>
+      </li>
+      <li>
+        <h3>The bill is metered from what ran</h3>
+        <p>Usage is accrued per account in cpu-core-hours, GB-hours and instance-hours, and reconciled against the cloud bill — so the number you are charged names the machinery that produced it.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="letter" id="available">
+  <div class="wrap">
+    <div class="plate">
+      <svg class="glyph" viewBox="11 11 78 118" width="79" height="119" fill="none" stroke="currentColor" stroke-width="21" aria-hidden="true" focusable="false"><path d="M25,117 L45,23 H55 L75,117 M33,80 H67"/></svg>
+      <h2>Available</h2>
+      <p>Always there when someone knocks. Availability is continuous even when execution isn't.</p>
+    </div>
+    <ul class="attrs">
+      <li>
+        <h3>A request for a sleeping instance wakes it and waits a beat</h3>
+        <p>The caller does not get an error and does not get a cold-start page. The connection is held while the instance comes back, and then it is answered.</p>
+      </li>
+      <li>
+        <h3>Routes carry several upstreams, health-checked</h3>
+        <p>The edge round-robins across live upstreams and retries within the same request when one refuses a connection, so losing a box is not losing a route.</p>
+      </li>
+      <li>
+        <h3>Box state snapshots every five minutes</h3>
+        <p>The registry — routes, instances, the shape of the deployment — is written to object storage on a timer, so a replacement box can be brought up from the bucket rather than from memory.</p>
+      </li>
+      <li>
+        <h3>Instances recover themselves</h3>
+        <p>Auto-recovery alarms are armed on every box in the fleet, in each box's own region.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="letter" id="replicated">
+  <div class="wrap">
+    <div class="plate">
+      <svg class="glyph" viewBox="11 11 78 118" width="79" height="119" fill="none" stroke="currentColor" stroke-width="21" aria-hidden="true" focusable="false"><path d="M23,117 V23 H53 A23,23 0 0 1 53,69 H23 M50,69 L77,117"/></svg>
+      <h2>Replicated</h2>
+      <p>The box is disposable; the data is not. Losing a server costs a restart, not a history.</p>
+    </div>
+    <ul class="attrs">
+      <li>
+        <h3>Every database streams to object storage from the first byte</h3>
+        <p>Replication is not a nightly job that might have run. It is continuous, and it starts when the database does.</p>
+      </li>
+      <li>
+        <h3>The parking lease makes the lock and the manifest one object</h3>
+        <p>An idle database leaves for the bucket under a single-writer lease where the lock and the manifest are the same object — so a takeover can never read a torn state.</p>
+      </li>
+      <li>
+        <h3>Snapshots are fingerprinted over the whole shape</h3>
+        <p>The digest covers every column that describes a route, so a snapshot cannot silently drop the part of the deployment you would need on the way back up.</p>
+      </li>
+      <li>
+        <h3>Restoring is the ordinary path, not the emergency one</h3>
+        <p>Because every wake from hibernation already pulls a database out of a bucket, the restore path is exercised continuously rather than rehearsed once a year.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="letter" id="lightweight">
+  <div class="wrap">
+    <div class="plate">
+      <svg class="glyph" viewBox="11 11 78 118" width="79" height="119" fill="none" stroke="currentColor" stroke-width="21" aria-hidden="true" focusable="false"><path d="M23,23 V117 H77"/></svg>
+      <h2>Lightweight</h2>
+      <p>The artifact is small because the rules make it hard to grow. Small enough that one person can read all of it.</p>
+    </div>
+    <ul class="attrs">
+      <li>
+        <h3>One static binary, with the database compiled in</h3>
+        <p>Pure Go, no cgo, SQLite linked into the process, and nothing else to install alongside it: no container, no runtime, no bundler. Copy it to a box and run it.</p>
+      </li>
+      <li>
+        <h3>No build step, anywhere</h3>
+        <p>Hand-written ES modules are served directly. What you read in the repository is what runs in the browser.</p>
+      </li>
+      <li>
+        <h3>One file, one concern — enforced by a test</h3>
+        <p>A hard line-count cap per module, checked by a test that fails the build. The cap only ever ratchets down.</p>
+      </li>
+      <li>
+        <h3>Additive-only migrations</h3>
+        <p>Deploying new code over an old database is always safe, which is what makes a thousand independently-versioned instances tractable in the first place.</p>
+      </li>
+      <li>
+        <h3>Adding a dependency is a decision, not a default</h3>
+        <p>The dependency list is short enough to read in a sitting, and every entry on it had to argue its way in.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="letter" id="open">
+  <div class="wrap">
+    <div class="plate">
+      <svg class="glyph" viewBox="11 11 78 118" width="79" height="119" fill="none" stroke="currentColor" stroke-width="21" aria-hidden="true" focusable="false"><path d="M23,44 A20,20 0 0 1 43,24 H57 A20,20 0 0 1 77,44 V96 A20,20 0 0 1 57,116 H43 A20,20 0 0 1 23,96 Z"/></svg>
+      <h2>Open</h2>
+      <p>Open is not a licence badge. It is whether the person who depends on the software can actually run it, with no vendor in the loop.</p>
+    </div>
+    <ul class="attrs">
+      <li>
+        <h3>No proprietary control plane</h3>
+        <p>There is no license server, no phone-home, and no essential component that exists only in somebody else's account. Nothing about running it yourself is a degraded mode.</p>
+      </li>
+      <li>
+        <h3>What is public today, and what is not</h3>
+        <p><a href="https://rastrillo.org">Rastrillo</a>, the <a href="https://github.com/carlosframework/skills">Claude Code skill</a> and the source of this site are public repositories you can read right now. The platform's own repository is not public yet. That is worth stating on the page that claims every other claim is checkable.</p>
+      </li>
+      <li>
+        <h3>The whole dependency list is a binary, a bucket and DNS</h3>
+        <p>That is not a summary of the dependency list. That is the dependency list.</p>
+      </li>
+      <li>
+        <h3>Distribution is copying a file</h3>
+        <p>Handing someone the binary hands them the product, not a client for it.</p>
+      </li>
+      <li>
+        <h3>Central pieces are allowed, but only as glue</h3>
+        <p>Push relays, discovery and backup stores may exist on one condition: thin, blind and replaceable. When the central piece falls, the people inside lose convenience, never content.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="letter" id="secure">
+  <div class="wrap">
+    <div class="plate">
+      <svg class="glyph" viewBox="11 11 78 118" width="79" height="119" fill="none" stroke="currentColor" stroke-width="21" aria-hidden="true" focusable="false"><path d="M77,39 A16,16 0 0 0 61,23 H39 A16,16 0 0 0 23,39 V54 A16,16 0 0 0 39,70 H61 A16,16 0 0 1 77,86 V101 A16,16 0 0 1 61,117 H39 A16,16 0 0 1 23,101 V98"/></svg>
+      <h2>Secure</h2>
+      <p>Last in the acronym, first in the architecture. Every other letter is shaped around this one.</p>
+    </div>
+    <ul class="attrs">
+      <li>
+        <h3>The server holds ciphertext it cannot open</h3>
+        <p>It stores opaque bytes plus key material wrapped to each member's public key. It never sees plaintext and never receives a usable private key.</p>
+      </li>
+      <li>
+        <h3>Private keys live in browsers, and nowhere else</h3>
+        <p>There is no copy on the server to seize, subpoena or leak, because there was never a path by which one could arrive.</p>
+      </li>
+      <li>
+        <h3>Membership is the boundary, enforced by cryptography</h3>
+        <p>Access is decided by whether content was sealed to your key, not by a permission check somebody can forget to write.</p>
+      </li>
+      <li>
+        <h3>Invite secrets ride in the URL fragment</h3>
+        <p>A one-time secret after the <code>#</code> is never transmitted to the server by any browser, so an invite link is not a server-side credential.</p>
+      </li>
+      <li>
+        <h3>Every app declares what it leaks</h3>
+        <p>The framework does not pick your posture. It makes you name it, publish it, and accept where that lets the workload run.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section id="classes">
+  <div class="head">
+    <h2>Shared, not prescribed</h2>
+    <p class="standfirst">CARLOS does not choose your security posture. It makes you declare it, in one published letter, and refuses to place a workload on a host not trusted enough to hold it. <a href="/trust/">The trust classes, S to C →</a></p>
+  </div>
+</section>
+
+<section id="extracted">
+  <div class="head">
+    <h2>Extracted, not invented</h2>
+    <p class="standfirst">The framework is the intersection, not the union. A shape earns its place by appearing more than once.</p>
+  </div>
+
+  <div class="prose">
+    <p>CARLOS was extracted rather than invented. Five systems arrived at the same architecture independently — a messenger, an email service, a social network, a file store and a training app — and <a href="https://11factor.org">The Eleven Factors</a> had already set out what small, sovereign software should promise the people who use it. CARLOS is the shape that keeps those promises in code.</p>
+    <p>Extraction is real and it is unfinished, which is worth saying on a homepage rather than in a footnote. <a href="https://rastrillo.org">Rastrillo</a>, the web framework that gives a CARLOS app its shape, is adoptable today at v0.6.0: filesystem routing, a manifest system, a component vocabulary, fingerprinted assets, a development watch loop, and a bootstrap that speaks the platform's activation contract. The deployment substrate underneath it runs <a href="/apps/#running">the fleet on the apps page</a>. Other pieces still live inside the applications they were pulled from.</p>
+    <p>The conventions travel ahead of the code: the principles, the stack and the infrastructure shape are distilled into a <a href="https://github.com/carlosframework/skills">Claude Code skill</a>, so a new system can start on the model today.</p>
+  </div>
+</section>
+
+<section class="close">
+  <h2>Now see it running</h2>
+  <p class="standfirst">The apps the letters were extracted from, and the ones adopting them.</p>
+  <div class="actions">
+    <a class="btn primary" href="/apps/">Browse the app gallery</a>
+    <a class="btn ghost" href="/start/">Get started</a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>🤖 Written by an LLM (Claude), on the ideas, instruction, and editing of humans. AI-written text here is always marked and always disclosed; see <a href="https://11factor.org/#x">factor X</a>.</p>
+  <p>CARLOS keeps the promises set out in <a href="https://11factor.org">The Eleven Factors</a>, and is informed by building <a href="https://elevenmessenger.com">Eleven</a> — the way the twelve factors were separate from Heroku, but informed by it.</p>
+  <p><a href="https://github.com/carlosframework/website">Source for this site on GitHub</a>. Open, of course.</p>
+</footer>
+
+</body>
+</html>

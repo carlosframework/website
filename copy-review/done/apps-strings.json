@@ -1,0 +1,255 @@
+[
+  {
+    "id": "meta.title",
+    "section": "Browser tab",
+    "label": "Page title",
+    "text": "CARLOS. The apps",
+    "context": "Browser tab and search-result title for /apps/. Matches your homepage title shape."
+  },
+  {
+    "id": "meta.description",
+    "section": "Browser tab",
+    "label": "Search description",
+    "text": "Every CARLOS app: what it's for, where it runs, how far along it is.",
+    "context": "Search-result summary."
+  },
+  {
+    "id": "hero.kicker",
+    "section": "Hero",
+    "label": "Kicker",
+    "text": "The apps",
+    "context": "Small mono label above the headline."
+  },
+  {
+    "id": "hero.headline",
+    "section": "Hero",
+    "label": "Headline",
+    "text": "Real apps. Real status.",
+    "context": "Page headline. The words 'Real status' are coloured.",
+    "notes": "Keep a short phrase to colour"
+  },
+  {
+    "id": "hero.lede",
+    "section": "Hero",
+    "label": "Lede",
+    "text": "No roadmap here. Every app says what it's for and how far along it is.",
+    "context": "Under the headline. You blanked the last draft; this is a shorter one in the homepage voice."
+  },
+  {
+    "id": "hero.robot",
+    "section": "Hero",
+    "label": "AI disclosure",
+    "text": "Where an LLM has written in slop-voice, it is marked with a 🤖That's factor X.",
+    "context": "Your approved homepage wording, reused on every page."
+  },
+  {
+    "id": "vocab.heading",
+    "section": "Status words",
+    "label": "Section heading",
+    "text": "Status, decoded",
+    "context": "Above a five-row definition list."
+  },
+  {
+    "id": "vocab.daily",
+    "section": "Status words",
+    "label": "in daily use",
+    "text": "People depend on it.",
+    "context": "Definition beside the status word."
+  },
+  {
+    "id": "vocab.usable",
+    "section": "Status words",
+    "label": "usable",
+    "text": "It works. Not yet lived in.",
+    "context": ""
+  },
+  {
+    "id": "vocab.foundations",
+    "section": "Status words",
+    "label": "foundations",
+    "text": "Groundwork done. Main job not yet.",
+    "context": ""
+  },
+  {
+    "id": "vocab.poc",
+    "section": "Status words",
+    "label": "proof of concept",
+    "text": "Testing the idea.",
+    "context": ""
+  },
+  {
+    "id": "vocab.designed",
+    "section": "Status words",
+    "label": "designed",
+    "text": "Specced, not coded.",
+    "context": ""
+  },
+  {
+    "id": "gallery.heading",
+    "section": "The apps",
+    "label": "Section heading",
+    "text": "The apps",
+    "context": "Above the fifteen app entries."
+  },
+  {
+    "id": "gallery.standfirst",
+    "section": "The apps",
+    "label": "Standfirst",
+    "text": "The originals, the adopters, and what's still cooking. Checked live on 2026-09-07.",
+    "context": "One line under the heading."
+  },
+  {
+    "id": "app.keymail.goal",
+    "section": "App entries",
+    "label": "Keymail · goal",
+    "text": "Email, but secure. E2EE spam-free messaging with oauth built in.",
+    "context": "One line under the name Keymail. Status beside the name: in daily use. Relationship, host and class are data beneath and not up for review. Your homepage lines for Keymail, Woodstar, amadan, Tito, Oficina and Dineraya are carried over unchanged."
+  },
+  {
+    "id": "app.woodstar.goal",
+    "section": "App entries",
+    "label": "Woodstar · goal",
+    "text": "A birdlike social platform that tweets ActivityPub and AT Protocol.",
+    "context": "One line under the name Woodstar. Status beside the name: in daily use. Relationship, host and class are data beneath and not up for review. Your homepage lines for Keymail, Woodstar, amadan, Tito, Oficina and Dineraya are carried over unchanged."
+  },
+  {
+    "id": "app.kass.goal",
+    "section": "App entries",
+    "label": "Kass · goal",
+    "text": "Coaching for trainers and the people they train. One instance per person.",
+    "context": "One line under the name Kass. Status beside the name: in daily use. Relationship, host and class are data beneath and not up for review. Your homepage lines for Keymail, Woodstar, amadan, Tito, Oficina and Dineraya are carried over unchanged."
+  },
+  {
+    "id": "app.eleven.goal",
+    "section": "App entries",
+    "label": "Eleven · goal",
+    "text": "The messenger it all started with. No logins, no passwords, just invite links.",
+    "context": "One line under the name Eleven. Status beside the name: in daily use. Relationship, host and class are data beneath and not up for review. Your homepage lines for Keymail, Woodstar, amadan, Tito, Oficina and Dineraya are carried over unchanged."
+  },
+  {
+    "id": "app.slopbox.goal",
+    "section": "App entries",
+    "label": "Slopbox · goal",
+    "text": "Dropbox, but yours. Encrypted before it leaves your machine.",
+    "context": "One line under the name Slopbox. Status beside the name: usable. Relationship, host and class are data beneath and not up for review. Your homepage lines for Keymail, Woodstar, amadan, Tito, Oficina and Dineraya are carried over unchanged."
+  },
+  {
+    "id": "app.tito.goal",
+    "section": "App entries",
+    "label": "Tito · goal",
+    "text": "CARLOS applied to a Rails monolith, 10x cheaper, 10x better",
+    "context": "One line under the name Tito. Status beside the name: in daily use. Relationship, host and class are data beneath and not up for review. Your homepage lines for Keymail, Woodstar, amadan, Tito, Oficina and Dineraya are carried over unchanged."
+  },
+  {
+    "id": "app.amadan.goal",
+    "section": "App entries",
+    "label": "amadan · goal",
+    "text": "Screaming fast self-hostable git forge and CI with optional E2EE",
+    "context": "One line under the name amadan. Status beside the name: in daily use. Relationship, host and class are data beneath and not up for review. Your homepage lines for Keymail, Woodstar, amadan, Tito, Oficina and Dineraya are carried over unchanged."
+  },
+  {
+    "id": "app.cribado.goal",
+    "section": "App entries",
+    "label": "Cribado · goal",
+    "text": "DMARC reports, sieved. Self-hosted, port 25 and all.",
+    "context": "One line under the name Cribado. Status beside the name: in daily use. Relationship, host and class are data beneath and not up for review. Your homepage lines for Keymail, Woodstar, amadan, Tito, Oficina and Dineraya are carried over unchanged."
+  },
+  {
+    "id": "app.ocho.goal",
+    "section": "App entries",
+    "label": "Ocho · goal",
+    "text": "Personal messaging. Signal and iMessage, on an instance you own.",
+    "context": "One line under the name Ocho. Status beside the name: usable. Relationship, host and class are data beneath and not up for review. Your homepage lines for Keymail, Woodstar, amadan, Tito, Oficina and Dineraya are carried over unchanged."
+  },
+  {
+    "id": "app.oficina.goal",
+    "section": "App entries",
+    "label": "Oficina · goal",
+    "text": "A maximally viable secure, open office suite",
+    "context": "One line under the name Oficina. Status beside the name: usable. Relationship, host and class are data beneath and not up for review. Your homepage lines for Keymail, Woodstar, amadan, Tito, Oficina and Dineraya are carried over unchanged."
+  },
+  {
+    "id": "app.movement.goal",
+    "section": "App entries",
+    "label": "Movement · goal",
+    "text": "The CARLOS sign-up. Proof of work, no tracking.",
+    "context": "One line under the name Movement. Status beside the name: usable. Relationship, host and class are data beneath and not up for review. Your homepage lines for Keymail, Woodstar, amadan, Tito, Oficina and Dineraya are carried over unchanged."
+  },
+  {
+    "id": "app.correomona.goal",
+    "section": "App entries",
+    "label": "Correomona · goal",
+    "text": "Mailing lists with consent. No pixels, no click rewriting.",
+    "context": "One line under the name Correomona. Status beside the name: foundations. Relationship, host and class are data beneath and not up for review. Your homepage lines for Keymail, Woodstar, amadan, Tito, Oficina and Dineraya are carried over unchanged."
+  },
+  {
+    "id": "app.dineraya.goal",
+    "section": "App entries",
+    "label": "Dineraya · goal",
+    "text": "A non-custodial payments platform",
+    "context": "One line under the name Dineraya. Status beside the name: foundations. Relationship, host and class are data beneath and not up for review. Your homepage lines for Keymail, Woodstar, amadan, Tito, Oficina and Dineraya are carried over unchanged."
+  },
+  {
+    "id": "app.jelly.goal",
+    "section": "App entries",
+    "label": "Jelly · goal",
+    "text": "Jelly's shared inbox, as a CARLOS edition you can run yourself.",
+    "context": "One line under the name Jelly. Status beside the name: designed. Relationship, host and class are data beneath and not up for review. Your homepage lines for Keymail, Woodstar, amadan, Tito, Oficina and Dineraya are carried over unchanged."
+  },
+  {
+    "id": "app.pegamento.goal",
+    "section": "App entries",
+    "label": "Pegamento · goal",
+    "text": "The glue: registry, vault, graph. Thin, blind, replaceable.",
+    "context": "One line under the name Pegamento. Status beside the name: designed. Relationship, host and class are data beneath and not up for review. Your homepage lines for Keymail, Woodstar, amadan, Tito, Oficina and Dineraya are carried over unchanged."
+  },
+  {
+    "id": "running.heading",
+    "section": "Answering today",
+    "label": "Section heading",
+    "text": "Live right now",
+    "context": "Above the verified-hosts table."
+  },
+  {
+    "id": "running.standfirst",
+    "section": "Answering today",
+    "label": "Standfirst",
+    "text": "Every host here answered with a CARLOS version header at last deploy. Live, not necessarily finished.",
+    "context": "One line under the heading."
+  },
+  {
+    "id": "running.caption",
+    "section": "Answering today",
+    "label": "Table caption",
+    "text": "Verified 2026-09-07 · every row answered carrying an X-Carlos-Version header",
+    "context": "Mono caption at the top of the table. The header name is set in code."
+  },
+  {
+    "id": "close.heading",
+    "section": "Closing",
+    "label": "Heading",
+    "text": "Add yours",
+    "context": "Centred close."
+  },
+  {
+    "id": "close.standfirst",
+    "section": "Closing",
+    "label": "Standfirst",
+    "text": "Empty directory to live URL. Your agent already knows the way.",
+    "context": "Under the closing heading."
+  },
+  {
+    "id": "close.cta.primary",
+    "section": "Closing",
+    "label": "Primary button",
+    "text": "Get started",
+    "context": "To /start/."
+  },
+  {
+    "id": "close.cta.secondary",
+    "section": "Closing",
+    "label": "Secondary button",
+    "text": "Pick a trust class",
+    "context": "To /trust/."
+  }
+]

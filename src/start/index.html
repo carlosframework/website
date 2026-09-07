@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CARLOS. Get started</title>
+<meta name="description" content="Empty directory to live URL. Two routes, three skills, and an agent that already knows the way.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a0c10" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="CARLOS. Get started">
+<meta property="og:description" content="Empty directory to live URL. Two routes, three skills, and an agent that already knows the way.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://carlosframework.com/start/">
+<link rel="stylesheet" href="/site.css?v=0">
+</head>
+<body>
+
+<header class="masthead">
+  <a class="mark" href="/"><svg class="wordmark" viewBox="11 11 518 118" width="79" height="18" fill="none" stroke="currentColor" stroke-width="18" role="img" aria-label="CARLOS"><path transform="translate(0,0)" d="M77,44 A20,20 0 0 0 57,24 H43 A20,20 0 0 0 23,44 V96 A20,20 0 0 0 43,116 H57 A20,20 0 0 0 77,96"/><path transform="translate(88,0)" d="M25,117 L45,23 H55 L75,117 M33,80 H67"/><path transform="translate(176,0)" d="M23,117 V23 H53 A23,23 0 0 1 53,69 H23 M50,69 L77,117"/><path transform="translate(264,0)" d="M23,23 V117 H77"/><path transform="translate(352,0)" d="M23,44 A20,20 0 0 1 43,24 H57 A20,20 0 0 1 77,44 V96 A20,20 0 0 1 57,116 H43 A20,20 0 0 1 23,96 Z"/><path transform="translate(440,0)" d="M77,39 A16,16 0 0 0 61,23 H39 A16,16 0 0 0 23,39 V54 A16,16 0 0 0 39,70 H61 A16,16 0 0 1 77,86 V101 A16,16 0 0 1 61,117 H39 A16,16 0 0 1 23,101 V98"/></svg></a>
+  <nav aria-label="Site">
+    <a href="/apps/">Apps</a>
+    <a href="/trust/">Trust</a>
+    <a href="/platform/">Platform</a>
+    <a href="/docs/">Docs</a>
+    <a href="/start/" aria-current="page">Get started</a>
+  </nav>
+</header>
+
+<div class="hero compact">
+  <p class="kicker">Get started</p>
+  <h1>Empty directory to a <span class="rise">live URL</span>.</h1>
+  <p class="lede">Two routes. One makes every decision for you. The other walks you through the four that matter. Both are skills: you read this page, your agent fetches the file.</p>
+  <p class="robot">Where an LLM has written in slop-voice, it is marked with a 🤖That's <a href="https://11factor.org/#x">factor X</a>.</p>
+</div>
+
+<main>
+
+<section id="ready">
+  <div class="head">
+    <h2>What you're starting with</h2>
+    <p class="standfirst">Extraction is real and unfinished. Worth saying before the first command.</p>
+  </div>
+  <div class="prose">
+    <p><a href="https://rastrillo.org">Rastrillo</a>, the web framework that gives a CARLOS app its shape, is adoptable today: filesystem routing, manifests, a component vocabulary, a dev watch loop, and a bootstrap that speaks the platform's activation contract. The <a href="/platform/">platform</a> runs the fleet on the <a href="/apps/">apps page</a>. The <code>carlos</code> CLI ships, promotes, deploys and canaries. The platform's own repo isn't public yet; the framework, the skills and this site are.</p>
+  </div>
+</section>
+
+<section id="routes">
+  <div class="head">
+    <h2>Two routes</h2>
+  </div>
+  <div class="routes">
+    <div class="route lead">
+      <h3>The recipe</h3>
+      <p>Empty directory to a live URL, every decision made: rastrillo, server-rendered HTML, <code>carlos deploy</code>. For your first app.</p>
+      <span class="data">SKILL · getting-started</span>
+      <a class="go" href="/.well-known/agent-skills/getting-started/SKILL.md">Read the skill</a>
+    </div>
+    <div class="route">
+      <h3>The menu</h3>
+      <p>The principles and the four decisions: trust model, app shape, hosting, identity, with each source app's reasoning. For an app you have opinions about, or one you're bringing across.</p>
+      <span class="data">SKILL · building-carlos-apps</span>
+      <a class="go" href="/.well-known/agent-skills/building-carlos-apps/SKILL.md">Read the skill</a>
+    </div>
+  </div>
+</section>
+
+<section id="agent">
+  <div class="head">
+    <h2>Give your agent the skill</h2>
+    <p class="standfirst">Published at a well-known URL, digest-verified. Any agent can fetch them. Claude Code installs them as a plugin.</p>
+  </div>
+  <div class="prose">
+    <p>The index is at <a href="/.well-known/agent-skills/index.json"><code>/.well-known/agent-skills/index.json</code></a>, per the Agent Skills Discovery draft. As a Claude Code plugin they're <code>carlos:getting-started</code>, <code>carlos:building-carlos-apps</code> and <code>carlos:delegate</code>, the last being operator shorthand for splitting a job across tiered subagents with a reviewer beside anything risky. Source and install instructions are in the <a href="https://github.com/carlosframework/skills">skills repository</a>.</p>
+  </div>
+</section>
+
+<section id="steps">
+  <div class="head">
+    <h2>Then, in order</h2>
+  </div>
+  <ol class="steps">
+    <li><b>Pick a trust class.</b> Start with the data you handle and declare what the host is left holding. <a href="/trust/">The classes</a>.</li>
+    <li><b>Build the app.</b> The skill carries the procedure; rastrillo carries the shape. <a href="https://rastrillo.org">rastrillo.org</a>.</li>
+    <li><b>Ship it.</b> <code>carlos deploy</code> builds, ships, promotes and waits for the live version. <a href="/docs/cli/">The CLI reference</a>.</li>
+    <li><b>Check it.</b> Confirm the URL answers with an <code>X-Carlos-Version</code> header, and that the class you declared is the class you shipped. <a href="/platform/">How the platform works</a>.</li>
+  </ol>
+</section>
+
+<section class="close">
+  <h2>Or have someone run it for you</h2>
+  <p class="standfirst">Carloku is the flagship deployment, hosted. Same architecture, same guarantees. Don't be a hero!</p>
+  <div class="actions">
+    <a class="btn primary" href="https://carloku.com">Go to carloku.com</a>
+    <a class="btn ghost" href="/platform/">Or run the platform yourself</a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>🤖 Written by an LLM (Claude), on the ideas, instruction, and editing of humans. AI-written text here is always marked and always disclosed; see <a href="https://11factor.org/#x">factor X</a>.</p>
+  <p><a href="/letters/">The six letters</a> · <a href="/apps/">Apps</a> · <a href="/trust/">Trust</a> · <a href="/start/">Get started</a> · <a href="https://use.carlosframework.com">For organisations</a> · <a href="https://migrate.carlosframework.com">For vendors</a></p>
+  <p><a href="https://github.com/carlosframework/website">Source for this site on GitHub</a>. Open, of course.</p>
+</footer>
+
+</body>
+</html>
