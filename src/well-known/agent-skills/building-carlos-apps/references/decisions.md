@@ -45,13 +45,13 @@ legitimate exactly when the leak is named; it is a violation when hidden.
   the social graph. Federation (ActivityPub/Bluesky) is an explicit,
   bounded, opt-in leak of the public class only; DM bridging is a
   permanent non-goal.
-- **Sealed single-tenant — Seapointish.** Data encrypted at rest, but
-  the instance holds the key in memory because unattended bank syncs
-  need plaintext with no human present. The README names the residual
-  risk out loud ("a compromised live host can read data") and the copy
-  never claims otherwise; the plaintext-grep test still runs, with one
-  dated, allowlisted exception. The shape for tools that must act on the
-  data autonomously.
+- **Sealed single-tenant — an internal finance ledger.** Data encrypted
+  at rest, but the instance holds the key in memory because unattended
+  bank syncs need plaintext with no human present. The README names the
+  residual risk out loud ("a compromised live host can read data") and
+  the copy never claims otherwise; the plaintext-grep test still runs,
+  with one dated, allowlisted exception. The shape for tools that must
+  act on the data autonomously.
 - **Server-side trust — Tito.** A ticketing platform holds buyer PII in
   plaintext already; there is no encrypted-blob requirement to inherit,
   and a six-person support team must be able to read an email address
@@ -99,7 +99,7 @@ grows it).
   page script-stripped, diff for every affordance) rather than a
   browser. Interactive components are real HTML first (a dropdown is
   `<details>/<summary>`). This is Tito, the platform console,
-  Seapointish, and every admin/CRUD/dashboard surface in the family.
+  and every admin/CRUD/dashboard surface in the family.
   It is also what hibernation likes: request/response apps sleep well.
 - **`client`: the app runs in the browser and owns its state.** Chosen
   when the product needs what server rendering cannot do: client-held
