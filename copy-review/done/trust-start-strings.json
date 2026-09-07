@@ -1,0 +1,310 @@
+[
+  {
+    "id": "trust.meta.title",
+    "section": "Trust page · tab",
+    "label": "Page title",
+    "text": "CARLOS. Trust classes",
+    "context": "Browser tab for /trust/."
+  },
+  {
+    "id": "trust.meta.description",
+    "section": "Trust page · tab",
+    "label": "Search description",
+    "text": "Six trust classes, S to C. Pick one, declare what your host can see, get placed accordingly.",
+    "context": "Search-result summary."
+  },
+  {
+    "id": "trust.hero.kicker",
+    "section": "Trust page · hero",
+    "label": "Kicker",
+    "text": "Trust classes",
+    "context": "Small mono label above the headline."
+  },
+  {
+    "id": "trust.hero.headline",
+    "section": "Trust page · hero",
+    "label": "Headline",
+    "text": "Know what a host can see.",
+    "context": "Page headline. 'can see' is coloured."
+  },
+  {
+    "id": "trust.hero.lede",
+    "section": "Trust page · hero",
+    "label": "Lede",
+    "text": "Pick a class up front. Declare what the host is left holding. Get placed where that's allowed. CARLOS doesn't choose your posture; it makes you say it out loud.",
+    "context": "Under the headline."
+  },
+  {
+    "id": "trust.classes.heading",
+    "section": "Trust page · classes",
+    "label": "Section heading",
+    "text": "The six classes",
+    "context": "Above the existing six-row class table. The class descriptions and examples themselves are unchanged from the current site and not in this review."
+  },
+  {
+    "id": "trust.classes.standfirst",
+    "section": "Trust page · classes",
+    "label": "Standfirst",
+    "text": "Ordered S ≤ A < B < C. The A variants are flavours of A, not grades.",
+    "context": "One line under the heading. The ordering is set in code."
+  },
+  {
+    "id": "trust.place.heading",
+    "section": "Trust page · placement",
+    "label": "Section heading",
+    "text": "Placement follows the class",
+    "context": "Second section."
+  },
+  {
+    "id": "trust.place.standfirst",
+    "section": "Trust page · placement",
+    "label": "Standfirst",
+    "text": "Nothing that sees gets placed where nobody is accountable for seeing.",
+    "context": "One line under the heading."
+  },
+  {
+    "id": "trust.place.p1",
+    "section": "Trust page · placement",
+    "label": "Paragraph 1",
+    "text": "Hosts rank by who controls the box. A workload runs only where the host is trusted enough for its class: C never lands on a shared pool; A can go anywhere, because there's nothing on it to see.",
+    "context": ""
+  },
+  {
+    "id": "trust.place.p2",
+    "section": "Trust page · placement",
+    "label": "Paragraph 2",
+    "text": "The class belongs to a workload, not a product. An E2EE app with an automation sidecar is two answers: the app is A, the sidecar is B, and each is placed on its own terms.",
+    "context": ""
+  },
+  {
+    "id": "trust.place.p3",
+    "section": "Trust page · placement",
+    "label": "Paragraph 3",
+    "text": "A declaration names the workload, its class, every plaintext surface, and where the keys live. Then the CARLOS test: publish the database and see what leaks. A leaks its declared residue and nothing more. B's cold copy leaks nothing. C leaks the data, and said so up front.",
+    "context": "The phrase 'publish the database and see what leaks' is set in italics."
+  },
+  {
+    "id": "trust.place.p4",
+    "section": "Trust page · placement",
+    "label": "Paragraph 4",
+    "text": "Examples show classes, not adoption. Nothing is certified against an external standard yet. What auditors get is a declaration they can test, not a paragraph they have to believe.",
+    "context": ""
+  },
+  {
+    "id": "trust.close.heading",
+    "section": "Trust page · close",
+    "label": "Heading",
+    "text": "See who declares what",
+    "context": "Centred close."
+  },
+  {
+    "id": "trust.close.standfirst",
+    "section": "Trust page · close",
+    "label": "Standfirst",
+    "text": "Every app in the gallery carries its class, or admits it hasn't published one.",
+    "context": ""
+  },
+  {
+    "id": "trust.close.cta.primary",
+    "section": "Trust page · close",
+    "label": "Primary button",
+    "text": "Browse the apps",
+    "context": "To /apps/."
+  },
+  {
+    "id": "trust.close.cta.secondary",
+    "section": "Trust page · close",
+    "label": "Secondary button",
+    "text": "The Secure letter",
+    "context": "To /letters/#secure."
+  },
+  {
+    "id": "start.meta.title",
+    "section": "Start page · tab",
+    "label": "Page title",
+    "text": "CARLOS. Get started",
+    "context": "Browser tab for /start/."
+  },
+  {
+    "id": "start.meta.description",
+    "section": "Start page · tab",
+    "label": "Search description",
+    "text": "Empty directory to live URL. Two routes, three skills, and an agent that already knows the way.",
+    "context": "Search-result summary."
+  },
+  {
+    "id": "start.hero.kicker",
+    "section": "Start page · hero",
+    "label": "Kicker",
+    "text": "Get started",
+    "context": "Small mono label."
+  },
+  {
+    "id": "start.hero.headline",
+    "section": "Start page · hero",
+    "label": "Headline",
+    "text": "Empty directory to a live URL.",
+    "context": "Page headline. 'live URL' is coloured."
+  },
+  {
+    "id": "start.hero.lede",
+    "section": "Start page · hero",
+    "label": "Lede",
+    "text": "Two routes. One makes every decision for you. The other walks you through the four that matter. Both are skills: you read this page, your agent fetches the file.",
+    "context": "Under the headline."
+  },
+  {
+    "id": "start.ready.heading",
+    "section": "Start page · readiness",
+    "label": "Section heading",
+    "text": "What you're starting with",
+    "context": "First section: an honest readiness note."
+  },
+  {
+    "id": "start.ready.standfirst",
+    "section": "Start page · readiness",
+    "label": "Standfirst",
+    "text": "Extraction is real and unfinished. Worth saying before the first command.",
+    "context": ""
+  },
+  {
+    "id": "start.ready.body",
+    "section": "Start page · readiness",
+    "label": "Body",
+    "text": "Rastrillo, the web framework that gives a CARLOS app its shape, is adoptable today: filesystem routing, manifests, a component vocabulary, a dev watch loop, and a bootstrap that speaks the platform's activation contract. The platform runs the fleet on the apps page. The carlos CLI ships, promotes, deploys and canaries. The platform's own repo isn't public yet; the framework, the skills and this site are.",
+    "context": "One paragraph. 'Rastrillo', 'apps page' and 'platform' are links; 'carlos' is set in code."
+  },
+  {
+    "id": "start.routes.heading",
+    "section": "Start page · routes",
+    "label": "Section heading",
+    "text": "Two routes",
+    "context": "Above two cards."
+  },
+  {
+    "id": "start.route1.heading",
+    "section": "Start page · routes",
+    "label": "Card 1 heading",
+    "text": "The recipe",
+    "context": "Highlighted card."
+  },
+  {
+    "id": "start.route1.body",
+    "section": "Start page · routes",
+    "label": "Card 1 body",
+    "text": "Empty directory to a live URL, every decision made: rastrillo, server-rendered HTML, carlos deploy. For your first app.",
+    "context": "'carlos deploy' is set in code."
+  },
+  {
+    "id": "start.route1.link",
+    "section": "Start page · routes",
+    "label": "Card 1 link",
+    "text": "Read the skill",
+    "context": "Arrow link to the published getting-started SKILL.md."
+  },
+  {
+    "id": "start.route2.heading",
+    "section": "Start page · routes",
+    "label": "Card 2 heading",
+    "text": "The menu",
+    "context": "Second card."
+  },
+  {
+    "id": "start.route2.body",
+    "section": "Start page · routes",
+    "label": "Card 2 body",
+    "text": "The principles and the four decisions: trust model, app shape, hosting, identity, with each source app's reasoning. For an app you have opinions about, or one you're bringing across.",
+    "context": ""
+  },
+  {
+    "id": "start.route2.link",
+    "section": "Start page · routes",
+    "label": "Card 2 link",
+    "text": "Read the skill",
+    "context": "Arrow link to the published building-carlos-apps SKILL.md."
+  },
+  {
+    "id": "start.agent.heading",
+    "section": "Start page · agent",
+    "label": "Section heading",
+    "text": "Give your agent the skill",
+    "context": "Third section."
+  },
+  {
+    "id": "start.agent.standfirst",
+    "section": "Start page · agent",
+    "label": "Standfirst",
+    "text": "Published at a well-known URL, digest-verified. Any agent can fetch them. Claude Code installs them as a plugin.",
+    "context": ""
+  },
+  {
+    "id": "start.agent.body",
+    "section": "Start page · agent",
+    "label": "Body",
+    "text": "The index is at /.well-known/agent-skills/index.json, per the Agent Skills Discovery draft. As a Claude Code plugin they're carlos:getting-started, carlos:building-carlos-apps and carlos:delegate, the last being operator shorthand for splitting a job across tiered subagents with a reviewer beside anything risky. Source and install instructions are in the skills repository.",
+    "context": "The index path and plugin names are set in code; 'skills repository' is a link."
+  },
+  {
+    "id": "start.steps.heading",
+    "section": "Start page · steps",
+    "label": "Section heading",
+    "text": "Then, in order",
+    "context": "Above a four-step numbered list."
+  },
+  {
+    "id": "start.step1",
+    "section": "Start page · steps",
+    "label": "Step 1",
+    "text": "Pick a trust class. Start with the data you handle and declare what the host is left holding.",
+    "context": "The first words are bold; 'The classes' link follows."
+  },
+  {
+    "id": "start.step2",
+    "section": "Start page · steps",
+    "label": "Step 2",
+    "text": "Build the app. The skill carries the procedure; rastrillo carries the shape.",
+    "context": "'rastrillo.org' link follows."
+  },
+  {
+    "id": "start.step3",
+    "section": "Start page · steps",
+    "label": "Step 3",
+    "text": "Ship it. carlos deploy builds, ships, promotes and waits for the live version.",
+    "context": "'carlos deploy' in code; 'The CLI reference' link follows."
+  },
+  {
+    "id": "start.step4",
+    "section": "Start page · steps",
+    "label": "Step 4",
+    "text": "Check it. Confirm the URL answers with an X-Carlos-Version header, and that the class you declared is the class you shipped.",
+    "context": "Header name in code; 'How the platform works' link follows."
+  },
+  {
+    "id": "start.close.heading",
+    "section": "Start page · close",
+    "label": "Heading",
+    "text": "Or have someone run it for you",
+    "context": "Centred close."
+  },
+  {
+    "id": "start.close.standfirst",
+    "section": "Start page · close",
+    "label": "Standfirst",
+    "text": "Carloku is the flagship deployment, hosted. Same architecture, same guarantees. Don't be a hero!",
+    "context": "Reuses your homepage line."
+  },
+  {
+    "id": "start.close.cta.primary",
+    "section": "Start page · close",
+    "label": "Primary button",
+    "text": "Go to carloku.com",
+    "context": ""
+  },
+  {
+    "id": "start.close.cta.secondary",
+    "section": "Start page · close",
+    "label": "Secondary button",
+    "text": "Or run the platform yourself",
+    "context": "To /platform/."
+  }
+]

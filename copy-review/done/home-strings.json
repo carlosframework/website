@@ -1,0 +1,384 @@
+[
+  {
+    "id": "meta.title",
+    "section": "Browser tab",
+    "label": "Page title",
+    "text": "CARLOS — lower your costs, own your software",
+    "context": "The browser tab and the search-result title for the homepage.",
+    "notes": "Under ~60 characters"
+  },
+  {
+    "id": "meta.description",
+    "section": "Browser tab",
+    "label": "Search description",
+    "text": "🤖 An application architecture extracted from five systems that kept rebuilding it. One person, one process, one database that sleeps into a bucket. Cost-efficient, Available, Replicated, Lightweight, Open, Secure.",
+    "context": "The two-line summary search engines show under the title. Keep the 🤖 marker; it is the site's factor X rule.",
+    "notes": "Under ~160 characters"
+  },
+  {
+    "id": "hero.headline",
+    "section": "Hero",
+    "label": "Headline",
+    "text": "Lower your costs. Own your software.",
+    "context": "The first thing anyone sees. Codex's proposal keeps your 'Lower your costs' and replaces the long second half with two words. One word in it is set in the teal accent.",
+    "notes": "The word 'Own' is coloured; keep a single verb to colour"
+  },
+  {
+    "id": "hero.lede",
+    "section": "Hero",
+    "label": "Lede",
+    "text": "Every person gets their own process and their own database. Idle apps sleep into a bucket and wake on the next request. The whole system is one static binary you can run yourself.",
+    "context": "The paragraph under the headline. Three short sentences: the isolation, the sleeping, the ownership. It replaces the old lede which also said 'encrypted' and 'nothing that phones home'."
+  },
+  {
+    "id": "hero.cta.primary",
+    "section": "Hero",
+    "label": "Primary button",
+    "text": "Get started",
+    "context": "Teal button under the lede. Goes to the new /start/ page."
+  },
+  {
+    "id": "hero.cta.secondary",
+    "section": "Hero",
+    "label": "Secondary button",
+    "text": "How the platform works",
+    "context": "Outlined button beside the primary. Goes to /platform/."
+  },
+  {
+    "id": "hero.robot",
+    "section": "Hero",
+    "label": "AI disclosure",
+    "text": "🤖 This page was written by an LLM, on the ideas, instruction, and editing of humans. AI-written text here is always marked, visibly, like this. That's factor X.",
+    "context": "The boxed disclosure under the buttons, unchanged from the current site. The words 'factor X' are a link."
+  },
+  {
+    "id": "home.heading",
+    "section": "Take your software home",
+    "label": "Section heading",
+    "text": "Take your software home",
+    "context": "The first section after the hero: the two pitch decks. This is the motif the decks share."
+  },
+  {
+    "id": "home.standfirst",
+    "section": "Take your software home",
+    "label": "Standfirst",
+    "text": "An instance you own: your data, your host, your choice of version, your right to leave.",
+    "context": "One line under the heading, before the two columns. The four rights from the decks."
+  },
+  {
+    "id": "home.org.label",
+    "section": "Take your software home",
+    "label": "Left column label",
+    "text": "FOR ORGANISATIONS",
+    "context": "Small mono label above the left column."
+  },
+  {
+    "id": "home.org.heading",
+    "section": "Take your software home",
+    "label": "Left column heading",
+    "text": "Run your company on it",
+    "context": "Heading of the left column, for a company deciding to adopt."
+  },
+  {
+    "id": "home.org.body",
+    "section": "Take your software home",
+    "label": "Left column body",
+    "text": "Chat, mail, office, code hosting and more, each one an instance your team owns, wherever you choose to run it.",
+    "context": "One sentence under the left heading."
+  },
+  {
+    "id": "home.org.link",
+    "section": "Take your software home",
+    "label": "Left column link",
+    "text": "Why you would adopt CARLOS",
+    "context": "Arrow link to use.carlosframework.com, the adopter deck."
+  },
+  {
+    "id": "home.vendor.label",
+    "section": "Take your software home",
+    "label": "Right column label",
+    "text": "FOR SOFTWARE VENDORS",
+    "context": "Small mono label above the right column."
+  },
+  {
+    "id": "home.vendor.heading",
+    "section": "Take your software home",
+    "label": "Right column heading",
+    "text": "Ship your product on it",
+    "context": "Heading of the right column, for a SaaS vendor."
+  },
+  {
+    "id": "home.vendor.body",
+    "section": "Take your software home",
+    "label": "Right column body",
+    "text": "Hosted and customer-run deployments from one codebase. One instance per customer. A fleet, not a fork.",
+    "context": "Two sentences under the right heading. The last four words are the vendor deck's motif."
+  },
+  {
+    "id": "home.vendor.link",
+    "section": "Take your software home",
+    "label": "Right column link",
+    "text": "Why you would migrate your product",
+    "context": "Arrow link to migrate.carlosframework.com, the vendor deck."
+  },
+  {
+    "id": "letters.heading",
+    "section": "The six letters",
+    "label": "Section heading",
+    "text": "What the letters buy you",
+    "context": "Kept from the current site. Above six one-line rows, one per letter, each linking to the full letters page."
+  },
+  {
+    "id": "letters.standfirst",
+    "section": "The six letters",
+    "label": "Standfirst",
+    "text": "Six promises. Under each one, the machinery that keeps it.",
+    "context": "One line under the heading."
+  },
+  {
+    "id": "letters.c",
+    "section": "The six letters",
+    "label": "C · Cost-efficient",
+    "text": "Idle instances stop running and park in object storage.",
+    "context": "The one-line summary beside the drawn C. The letter name 'Cost-efficient' sits before it."
+  },
+  {
+    "id": "letters.a",
+    "section": "The six letters",
+    "label": "A · Available",
+    "text": "A request for a sleeping instance wakes it and waits.",
+    "context": "Beside the drawn A."
+  },
+  {
+    "id": "letters.r",
+    "section": "The six letters",
+    "label": "R · Replicated",
+    "text": "Every database streams to object storage from the first byte.",
+    "context": "Beside the drawn R."
+  },
+  {
+    "id": "letters.l",
+    "section": "The six letters",
+    "label": "L · Lightweight",
+    "text": "One static binary, database compiled in, nothing else to install.",
+    "context": "Beside the drawn L."
+  },
+  {
+    "id": "letters.o",
+    "section": "The six letters",
+    "label": "O · Open",
+    "text": "No control plane, no phone-home. Handing over the binary hands over the product.",
+    "context": "Beside the drawn O."
+  },
+  {
+    "id": "letters.s",
+    "section": "The six letters",
+    "label": "S · Secure",
+    "text": "Every app declares what its host can see, and is placed accordingly.",
+    "context": "Beside the drawn S."
+  },
+  {
+    "id": "letters.more",
+    "section": "The six letters",
+    "label": "Link to full page",
+    "text": "The six letters in full",
+    "context": "Arrow link under the six rows, to /letters/, which is the old homepage's long-form letters content."
+  },
+  {
+    "id": "apps.heading",
+    "section": "App gallery teaser",
+    "label": "Section heading",
+    "text": "Running on CARLOS today",
+    "context": "Above six app rows. The full gallery is a page of its own."
+  },
+  {
+    "id": "apps.standfirst",
+    "section": "App gallery teaser",
+    "label": "Standfirst",
+    "text": "The apps the shape was extracted from, and the ones adopting it. Each names its purpose and how far along it is.",
+    "context": "One line under the heading."
+  },
+  {
+    "id": "apps.keymail",
+    "section": "App gallery teaser",
+    "label": "Keymail",
+    "text": "Email, but secure. The identity provider the family signs in with.",
+    "context": "One line beside the name. Status shown separately as 'in daily use'."
+  },
+  {
+    "id": "apps.woodstar",
+    "section": "App gallery teaser",
+    "label": "Woodstar",
+    "text": "A public microblog on the messenger model: account-less, server-blind.",
+    "context": "Status: in daily use."
+  },
+  {
+    "id": "apps.amadan",
+    "section": "App gallery teaser",
+    "label": "amadan",
+    "text": "Git hosting where the server cannot read your code.",
+    "context": "Status: in daily use."
+  },
+  {
+    "id": "apps.tito",
+    "section": "App gallery teaser",
+    "label": "Tito",
+    "text": "Ticketing for events, self-hosted in its own cloud account.",
+    "context": "Status: adopter · in daily use."
+  },
+  {
+    "id": "apps.oficina",
+    "section": "App gallery teaser",
+    "label": "Oficina",
+    "text": "Docs, sheets and a team memory, sealed per team.",
+    "context": "Status: usable."
+  },
+  {
+    "id": "apps.dineraya",
+    "section": "App gallery teaser",
+    "label": "Dineraya",
+    "text": "Non-custodial payments: nobody in the middle holds money.",
+    "context": "Status: foundations."
+  },
+  {
+    "id": "apps.more",
+    "section": "App gallery teaser",
+    "label": "Link to full page",
+    "text": "The full gallery, with goals and status",
+    "context": "Arrow link to /apps/."
+  },
+  {
+    "id": "trust.heading",
+    "section": "Trust blurb",
+    "label": "Section heading",
+    "text": "Know what a host can see",
+    "context": "Above a row of the six class badges S, A1, A2, A/pub, B, C."
+  },
+  {
+    "id": "trust.standfirst",
+    "section": "Trust blurb",
+    "label": "Standfirst",
+    "text": "Every app declares what it leaks, in one published letter, and runs only where the host is trusted enough to hold it.",
+    "context": "One line under the heading."
+  },
+  {
+    "id": "trust.more",
+    "section": "Trust blurb",
+    "label": "Link to full page",
+    "text": "The trust classes, explained",
+    "context": "Arrow link to /trust/."
+  },
+  {
+    "id": "run.heading",
+    "section": "Three ways to run it",
+    "label": "Section heading",
+    "text": "Three ways to run it",
+    "context": "Kept from the current site. Above three cards."
+  },
+  {
+    "id": "run.standfirst",
+    "section": "Three ways to run it",
+    "label": "Standfirst",
+    "text": "The same binary and the same pipeline in all three. What changes is whose account the boxes are in.",
+    "context": "Kept from the current site."
+  },
+  {
+    "id": "run.self.heading",
+    "section": "Three ways to run it",
+    "label": "Card 1 heading",
+    "text": "On your own hardware",
+    "context": "Kept."
+  },
+  {
+    "id": "run.self.body",
+    "section": "Three ways to run it",
+    "label": "Card 1 body",
+    "text": "One static binary, a bucket and DNS. No account to sign up for.",
+    "context": "Shortened from the current site's three sentences."
+  },
+  {
+    "id": "run.self.link",
+    "section": "Three ways to run it",
+    "label": "Card 1 link",
+    "text": "How the platform works",
+    "context": "Arrow link to /platform/."
+  },
+  {
+    "id": "run.cloud.heading",
+    "section": "Three ways to run it",
+    "label": "Card 2 heading",
+    "text": "In your own cloud",
+    "context": "Kept."
+  },
+  {
+    "id": "run.cloud.body",
+    "section": "Three ways to run it",
+    "label": "Card 2 body",
+    "text": "Your account, your buckets, your regions.",
+    "context": "Shortened."
+  },
+  {
+    "id": "run.cloud.link",
+    "section": "Three ways to run it",
+    "label": "Card 2 link",
+    "text": "Read the deployment model",
+    "context": "Arrow link to /platform/."
+  },
+  {
+    "id": "run.hosted.heading",
+    "section": "Three ways to run it",
+    "label": "Card 3 heading",
+    "text": "Or let Carloku run it",
+    "context": "Kept."
+  },
+  {
+    "id": "run.hosted.body",
+    "section": "Three ways to run it",
+    "label": "Card 3 body",
+    "text": "The flagship deployment, offered hosted. Nothing stops you taking it back.",
+    "context": "Shortened."
+  },
+  {
+    "id": "run.hosted.link",
+    "section": "Three ways to run it",
+    "label": "Card 3 link",
+    "text": "Go to carloku.com",
+    "context": "Arrow link to carloku.com."
+  },
+  {
+    "id": "close.heading",
+    "section": "Closing",
+    "label": "Heading",
+    "text": "Start building",
+    "context": "Centred closing section, replaces 'Software worth owning, at last'."
+  },
+  {
+    "id": "close.standfirst",
+    "section": "Closing",
+    "label": "Standfirst",
+    "text": "Empty directory to a live URL, with the decisions made for you. Or make them yourself. Either way, your agent can fetch the skill.",
+    "context": "Under the closing heading. Points at the two routes on the getting-started page."
+  },
+  {
+    "id": "close.cta.primary",
+    "section": "Closing",
+    "label": "Primary button",
+    "text": "Get started",
+    "context": "Teal button, to /start/."
+  },
+  {
+    "id": "close.cta.secondary",
+    "section": "Closing",
+    "label": "Secondary button",
+    "text": "The skills on GitHub",
+    "context": "Outlined button, to the skills repository."
+  },
+  {
+    "id": "footer.links",
+    "section": "Footer",
+    "label": "Site links line",
+    "text": "The six letters · Apps · Trust · Get started · For organisations · For vendors",
+    "context": "A new line of links in the footer. Each fragment between the dots is a link.",
+    "notes": "Keep the ' · ' separators"
+  }
+]

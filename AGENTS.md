@@ -17,8 +17,12 @@ framework whose first claim is "lightweight" does not get to ship a bundler to
 its own readers. Durable product context for design tooling lives in
 `PRODUCT.md`.
 
-`index.html` and `platform/index.html` are still written by hand and have no
-build step. `/docs` does: its pages come from markdown through Eleventy, the
+`index.html`, `platform/index.html` and the 2026-09 pages (`letters/`,
+`apps/`, `trust/`, `start/`) are written by hand and have no build step;
+each is an `addPassthroughCopy` entry in `eleventy.config.js`. Every
+user-facing string on those pages passed a copy review (the indexes and
+results are archived under `copy-review/done/`); rewrite copy only through
+another review. `/docs` does: its pages come from markdown through Eleventy, the
 same pipeline rastrillo.org uses, run here before you ship rather than on
 anyone's browser. A dozen docs pages sharing a sidebar are not something you
 hand-maintain as HTML, and the served site keeps every promise in the paragraph
