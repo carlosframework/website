@@ -38,6 +38,14 @@ hard way at least once; the incident is noted where it names the rule.
   Two of the three is not a merge — a green run on unapproved work waits,
   and an approval over a red run waits. Never commit to main. Deploy only
   merged main, and only when asked.
+- **"CI green" binds once CI exists, and a new repo's early work is to
+  make it exist.** A repo with no CI has no green to wait for: the
+  condition is not waived, it simply has nothing to read yet, so the first
+  merges of a new project land on done + approved. Standing up CI is one
+  of the first work items, not a prerequisite nobody can satisfy — and it
+  is the gate you already run locally, kept as one definition rather than
+  a second list that drifts, so debugging CI is running it. Once the repo
+  has CI all three bind absolutely and the carve-out is spent.
 - Commit subjects are area-prefixed prose that says why (`web: the front
   door is a homepage — pitch left, sign-in right`; `auth: delete the
   recovery passphrase, root and branch`). Comment the why, not the what.
@@ -85,8 +93,7 @@ The layers, in order:
    small `jstest_test.go`, so one command runs everything. `node --check`
    alone is not enough — it parses as CommonJS and swallows ES-module errors
    that crash Safari; check a `.mjs` copy and load it in a real engine.
-4. **uidump — dump, don't drive** (the seapointish pattern, adopted by
-   the platform console). An env-gated test (`UIDUMP_DIR` set, else
+4. **uidump — dump, don't drive** (adopted by the platform console). An env-gated test (`UIDUMP_DIR` set, else
    skipped) boots the real handler in-process over `httptest`, seeds a
    fixture world rich enough that every state has a subject, signs in,
    GETs every named screen, and writes each response body to disk with

@@ -1,6 +1,6 @@
 ---
 name: building-carlos-apps
-description: Use when building or designing an app on the CARLOS architecture (Cost-efficient, Available, Replicated, Lightweight, Open, Secure) or with rastrillo (the CARLOS web framework), bringing an existing app onto it, or weighing the family's open choices — full vs partial encryption, server-rendered vs client-owned shape, hosted vs self-hosted — the model extracted from Eleven Messenger, Keymail, Woodstar, Slopbox and Kass, adopted by Tito and Seapointish. For the zero-decisions happy path to a first live app, use getting-started instead.
+description: Use when building or designing an app on the CARLOS architecture (Cost-efficient, Available, Replicated, Lightweight, Open, Secure) or with rastrillo (the CARLOS web framework), bringing an existing app onto it, or weighing the family's open choices — full vs partial encryption, server-rendered vs client-owned shape, hosted vs self-hosted — the model extracted from Eleven Messenger, Keymail, Woodstar, Slopbox and Kass, adopted by Tito. For the zero-decisions happy path to a first live app, use getting-started instead.
 ---
 
 # 🤖 Building CARLOS apps
@@ -167,11 +167,11 @@ The ones the family invokes operationally:
 | Outbound email | `carlos email enable` — the platform mints the sending identity, publishes DKIM/SPF/DMARC, delivers SMTP credentials as env; never run an MTA or hold a cloud mail key — platform.md |
 | Scheduled work | `carlos schedule set` declares it; the app's part is a POST handler guarded by `carlos.Tick` — the instance is asleep, so never an in-process cron — platform.md |
 | Hosting | Carloku hosted (default) / customer fleets / self-hosted platform — decisions.md §3 |
-| Deploys | `carlos deploy`: ship + promote + watch `X-Carlos-Version` until live; verify against the thing you changed with the binary you built |
+| Deploys | `carlos deploy`: ship + promote + watch `X-Carlos-Version` until live; verify against the thing you changed with the binary you built. A static site is the same one command — `--kind static --host <h> <dir>`, which declares the route too — platform.md |
 | Identity | "Sign in with Keymail" / passkeys+PRF / magic link+TOTP by trust model — decisions.md §4 |
 | Trust | Server-blind by default; the spectrum and its named softenings — decisions.md §1 |
 | UI stance | Hide the machinery: no hostnames, keys, or crypto vocabulary in the default flow — "no nerdspeak"; calm UI, red for danger only, no toasts |
-| Process | Worktree per session, branch, regular pushed commits; squash-merge to main only when done, approved and CI green; review on a deployed canary, never localhost |
+| Process | Worktree per session, branch, regular pushed commits; squash-merge to main only when done, approved and CI green (CI green binds once the repo has CI — a new repo's first merges land on done + approved and add CI early); review on a deployed canary, never localhost |
 | Authorship | 🤖/👨 markers, `Co-Authored-By: Claude …` trailers, published prompt + carbon ledgers |
 
 ## Details
@@ -220,6 +220,9 @@ The ones the family invokes operationally:
 | Adding a framework/bundler "just for this screen" | The no-build-step rule is load-bearing (auditability, longevity). One more ES module, one concern. |
 | Choosing the client shape because it feels modern | The client shape is for client-held keys, live channels, and server-blind state — and it must self-impose the discipline the server shape gets free (decisions.md §2). |
 | Hand-rolling a router, certs, Litestream, or restart machinery | The platform's job. An app on the platform is a binary on a unix socket (`--socket`/`--db`; there is no `$PORT`). |
+| Giving a static site an instance | It has no process to run. The edge serves it off the channel pointer, so `carlos deploy --kind static --host <h> <dir>` is the whole deploy — `instances enable`/`create` is the binary recipe, and following it here builds a route that succeeds at every step and can never wake. |
+| Concluding you have no access because the console redirected you | A `curl` of the console 302s to a login page for everyone — a browser session is not what the CLI holds. `carlos auth whoami` is the only thing that answers the question, and it is the first command of any platform task. |
+| Guessing a channel name from the ladder in `--help` | Channels belong to the app. A new app has exactly one (`edge`), and `canary → edge → beta → stable` is the frozen legacy ladder for apps that declare no pipeline. `carlos channels` lists this app's; `carlos pipeline` orders them. |
 | Growing the biggest file/package | A new concern gets a new small module or package — never more growth of the biggest one. |
 | Destructive migration "to clean up" | Migrations are additive-only. New code over an old DB must always be safe. Never delete data to update. |
 | Trusting a backup that exists | "A backup you've never restored is a hope, not a backup." (Platform-run for platform apps; your job off-platform.) |
@@ -227,5 +230,6 @@ The ones the family invokes operationally:
 | Treating a promote as a deploy | Until the process cycles, the old binary serves. Platform-known units cycle automatically; hibernating tenants wake into the new build; a bespoke unit stays old until something restarts it. |
 | Reviewing on localhost | Review happens on a deployed canary, always. Shared hosts only ever run merged main. |
 | Skipping the post-deploy browser check | A JS syntax error takes the whole client down and only a real engine sees it (the keymail rule). |
+| Treating a day-one absolute as unsatisfiable and quietly skipping it | A gate a brand-new project cannot meet is a gate not written for day one. Name the bootstrap case in the rule and make satisfying it early work — a rule agents learn to step around stops working everywhere. |
 | Relitigating a settled decision in a drive-by | Settled decisions change with new facts, dated and attributed — not casually. |
 | A retired stack left owning DNS or deploy paths | It can silently undo a cutover (a legacy apply once reverted a live A record). Move the records; delete the verb that can report success while changing nothing. |

@@ -8,10 +8,37 @@ nothing but the CLI and a browser. If a task seems to need a box, either
 you are self-hosting and operating the platform itself, or you have found
 a product gap to file — never a workaround to build.
 
-Snapshot date 2026-08-24; verbs are stable, flag details evolve — trust
+Snapshot date 2026-09-02; verbs are stable, flag details evolve — trust
 `carlos <verb> -h` over this file. The CLI ships for macOS/Linux (brew,
 apt, static binaries) and Windows (client-only zip — no self-replace,
 `carlos update` defers to a fresh download).
+
+## Start with `carlos auth whoami`
+
+Before concluding you cannot reach a CARLOS deployment, run it:
+
+```
+carlos auth whoami                              # the default console
+carlos auth whoami --console https://<console>  # a specific one
+```
+
+It prints the identity, the terminal's label, the expiry, and every
+account with its sqid — which is also where you find the sqid your app's
+hostname needs.
+
+This is first because the obvious check is the misleading one. An agent's
+instinct is to `curl` the console and read the answer: the console will
+`302` you to a login page every time, because a browser session is not
+what the CLI holds. That redirect says nothing about whether you have
+access, and reading it as "no access" has already cost one session an
+afternoon and ended in a filed issue. **The CLI's credential is the only
+thing that answers the question.**
+
+Same for the deployment's identity: a self-hosted console is not
+`carloku.com`, and the console origin and the apps domain are different
+hostnames (Tito's are `carlos.tito.io` and `platform.tito.io`). If a
+project commits a `.carlos/config`, that names the console it belongs to;
+otherwise `--console` does.
 
 ## What the platform owns (never hand-roll these)
 
@@ -80,7 +107,9 @@ apt, static binaries) and Windows (client-only zip — no self-replace,
   Exec-backed and hibernating by default. The process contract is
   `<bin> --socket <path> --db <path>` on a unix socket — there is no
   `$PORT` — and every instance serves `GET /healthz` and
-  `GET /api/version`.
+  `GET /api/version`. **A static site has no instance** — the edge serves
+  it off the channel pointer, and giving one an instance produces a route
+  that can never wake ("Deploying a static site" below).
 - **`.carlos/config`** — two layers, global `~/.carlos/config` and
   per-project `./.carlos/config` (committed; nearest wins walking up).
   Holds console, account, app, kind, artifact — the reason zero-argument
@@ -98,15 +127,15 @@ apt, static binaries) and Windows (client-only zip — no self-replace,
 |---|---|
 | `carlos auth login\|whoami\|logout\|default` | Device-code login (approve in any signed-in browser); identity + memberships; per-project default console |
 | `carlos apps create\|place\|delete\|restore` | Claim an app; place it on a customer fleet; trash/restore |
-| `carlos deploy` | **Release new code — reach for this one.** ship + promote + watch `X-Carlos-Version` until live; zero-arg with a saved project config. `-channel` to land somewhere other than the entry channel (a canary); `-host` on a static app's first deploy |
+| `carlos deploy` | **Release new code — reach for this one.** ship + promote + watch `X-Carlos-Version` until live; zero-arg with a saved project config. `-channel` to land somewhere other than the entry channel (a canary). Also the WHOLE story for a static site: `-kind static -host <h> <dir>` declares the route as well as shipping it ("Deploying a static site") |
 | `carlos ship` | The ship half alone: publish a release *without* releasing it (`-kind binary\|static`, `-version`, `-notes`); rate-limited per app (~2/minute — a 429 carries `Retry-After`) |
-| `carlos promote` | The promote half alone: move an **already-shipped** version onto a channel (`-hotfix` to bypass a bake, recorded) — a ladder step or a re-point, not how you release new code |
+| `carlos promote` | The promote half alone: move an **already-shipped** version onto a channel (`-hotfix` to bypass a bake, recorded) — a ladder step or a re-point, not how you release new code. The channel is positional, and optional when the app has only one |
 | `carlos rollback` | Point a channel back at an earlier version |
 | `carlos pipeline` | Show or shape the app's release channels; `init -template edge-production\|full-ladder` replaces the single default channel with a starter pipeline |
 | `carlos channels` / `carlos releases` | What each channel serves / every shipped version; `releases retention` prunes old ones |
 | `carlos version target` | The semver family ships auto-increment under |
 | `carlos env` / `carlos secrets` | Plain vars / sealed secrets, layered per environment; `env sync` forces convergence; `secrets genkey` mints keypairs locally |
-| `carlos instances enable\|create\|list\|delete\|set-upstreams` | Opt an app in; declare/inspect/remove instances; repoint upstreams |
+| `carlos instances enable\|create\|list\|delete\|set-upstreams` | Opt an app in; declare/inspect/remove instances; repoint upstreams. For **binaries only** — a static site needs none of these, and `carlos deploy` declares what it does need |
 | `carlos restart` | Cycle an app's processes — no version or config change |
 | `carlos logs` | Merged app + platform + edge timeline (`-f` follows, `-grep`, `-since`) — no box access |
 | `carlos domains attach\|detach\|list` | Claim customer hostnames (`-wildcard`, `-catchall`); prints the DNS records to create; certs follow automatically |
@@ -123,6 +152,74 @@ Box-side verbs exist (`edge`, `agent`, `adopt`, `route`, `add`, `ops`,
 `bootstrap`) but they are the *operator's* surface for running a platform
 deployment — a member never types them, and an agent reaching for them on
 a member task has taken a wrong turn.
+
+## Deploying a static site
+
+A static site is one command, and the command is the same one binaries use:
+
+```
+carlos apps create --app mysite
+carlos deploy --app mysite --kind static --host mysite.<sqid>.oncarlos.com ./site
+```
+
+That ships the directory as an immutable release, promotes it to the app's
+entry channel, declares the route, and watches the URL until
+`X-Carlos-Version` reports the build. Nothing else is needed — not
+`carlos instances enable`, not `carlos instances create`, not a separate
+`carlos domains attach`.
+
+`--host` is required on the **first** static deploy and only that one. A
+static app has no instance record yet, so there is nothing to resolve the
+host from; that deploy writes the record, and afterwards plain `carlos
+deploy` resolves host and channel by itself. Give it a custom domain and
+the deploy attaches that too, printing the DNS records to publish.
+
+Expect the URL to take up to a minute after `promoted` prints. A static
+route trusts its resolved channel pointer for about 60 seconds, so the old
+page can outlive the promote by that long — `carlos deploy` already waits
+past one such window, and says so while it waits.
+
+### A static site has no instance, and must not be given one
+
+**This is the trap.** The verbs read like the binary recipe — enable an
+app for instances, create one, point it at a channel — and every step
+succeeds. The result cannot work.
+
+A static site is served by the edge straight off the channel pointer:
+there is no process, nothing hibernates, nothing wakes. An **instance** is
+a process the platform execs. A static release's manifest carries a site
+tarball and no build for any box's architecture, so an instance route on
+that channel finds nothing to run and fails every wake, permanently.
+
+Older platform builds reported that failure as *"nothing is promoted for
+this instance's channel"* — while `carlos channels` showed the promote
+sitting right there. Both statements were true and neither named the
+problem, which is the shape of the route, not the state of the channel.
+Current builds name it and refuse the create; if you meet the old message,
+this is what it means.
+
+The way out, on an app already in that state:
+
+```
+carlos instances delete --app mysite --host mysite.<sqid>.oncarlos.com
+carlos instances create --app mysite --host mysite.<sqid>.oncarlos.com --kind static --channel <ch>
+```
+
+The already-shipped release needs no re-ship — a static route reads the
+channel pointer, so the site serves within seconds of the record landing.
+
+### Channels belong to the app, not to the platform
+
+A new app is born with **one** channel, `edge` by default, and that one
+channel is its production. More are opt-in, declared by a pipeline, and
+named whatever the app calls them.
+
+So do not guess a channel name from the `canary → edge → beta → stable`
+ladder in `--help`: that is the frozen legacy ladder an app inherits only
+when it declares no pipeline. `carlos channels` lists what this app
+actually has and `carlos pipeline` shows the order. `carlos promote
+<version>` with no channel resolves it when the app has one, and names the
+app's real channels when it has several.
 
 ## Sending email
 
