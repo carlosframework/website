@@ -1,0 +1,450 @@
+[
+  {
+    "id": "hero.cta1",
+    "section": "Hero",
+    "label": "Primary button",
+    "text": "Use the apps",
+    "context": "Teal button under your new headline. Jumps down the page to the end-user section."
+  },
+  {
+    "id": "hero.cta2",
+    "section": "Hero",
+    "label": "Secondary button",
+    "text": "Build on it",
+    "context": "Outlined button. Jumps to the builder section at the bottom."
+  },
+  {
+    "id": "doors.standfirst",
+    "section": "Two doors",
+    "label": "Line above the two door cards",
+    "text": "Uncompromising flexibility for app builders, a new level of control for end-users.",
+    "context": "Your approved line from the last pass, placed here as the sentence that introduces the fork. Currently not rendered; say keep or drop."
+  },
+  {
+    "id": "door.use.label",
+    "section": "Two doors",
+    "label": "Left door · small label",
+    "text": "I WANT TO USE CARLOS APPS",
+    "context": "Mono label at the top of the left card."
+  },
+  {
+    "id": "door.use.heading",
+    "section": "Two doors",
+    "label": "Left door · heading",
+    "text": "Own the software you use.",
+    "context": ""
+  },
+  {
+    "id": "door.use.body",
+    "section": "Two doors",
+    "label": "Left door · body",
+    "text": "Chat, mail, office, code hosting. Yours to run, hosted or on your own box.",
+    "context": ""
+  },
+  {
+    "id": "door.use.go",
+    "section": "Two doors",
+    "label": "Left door · link",
+    "text": "Show me the apps",
+    "context": "Arrow link; jumps to The apps."
+  },
+  {
+    "id": "door.build.label",
+    "section": "Two doors",
+    "label": "Right door · small label",
+    "text": "I WANT TO BUILD CARLOS APPS",
+    "context": ""
+  },
+  {
+    "id": "door.build.heading",
+    "section": "Two doors",
+    "label": "Right door · heading",
+    "text": "Build software people can own.",
+    "context": ""
+  },
+  {
+    "id": "door.build.body",
+    "section": "Two doors",
+    "label": "Right door · body",
+    "text": "One binary, one database file, one instance per team. Empty directory to live URL.",
+    "context": ""
+  },
+  {
+    "id": "door.build.go",
+    "section": "Two doors",
+    "label": "Right door · link",
+    "text": "Show me how",
+    "context": "Arrow link; jumps to Build on it."
+  },
+  {
+    "id": "use.label",
+    "section": "End users · the apps",
+    "label": "Section label",
+    "text": "FOR PEOPLE WHO USE SOFTWARE",
+    "context": "Mono label above the heading; marks the start of the end-user half."
+  },
+  {
+    "id": "use.heading",
+    "section": "End users · the apps",
+    "label": "Heading",
+    "text": "The apps",
+    "context": ""
+  },
+  {
+    "id": "use.standfirst",
+    "section": "End users · the apps",
+    "label": "Standfirst",
+    "text": "Each one is an instance your team owns. Same app wherever it runs.",
+    "context": ""
+  },
+  {
+    "id": "use.eleven",
+    "section": "End users · the apps",
+    "label": "Eleven",
+    "text": "Team chat.",
+    "context": "Eleven now leads the teaser as the app most people know. Your lines for Keymail, Oficina, amadan, Woodstar and Ocho are carried over unchanged."
+  },
+  {
+    "id": "use.more",
+    "section": "End users · the apps",
+    "label": "Link",
+    "text": "The full gallery, with goals and status",
+    "context": ""
+  },
+  {
+    "id": "get.heading",
+    "section": "End users · how to get them",
+    "label": "Heading",
+    "text": "How to get them",
+    "context": "Three cards: hosted first, self-host second, the company pitch third."
+  },
+  {
+    "id": "get.standfirst",
+    "section": "End users · how to get them",
+    "label": "Standfirst",
+    "text": "Cloud, hybrid, or on-prem: it's all the same to CARLOS",
+    "context": "Your line, moved here from the old 'three ways to run it'."
+  },
+  {
+    "id": "get.hosted.heading",
+    "section": "End users · how to get them",
+    "label": "Card 1 heading (highlighted)",
+    "text": "Hosted, today",
+    "context": ""
+  },
+  {
+    "id": "get.hosted.body",
+    "section": "End users · how to get them",
+    "label": "Card 1 body",
+    "text": "Sign in to Carloku and switch on the apps your team needs. Nothing to install.",
+    "context": ""
+  },
+  {
+    "id": "get.hosted.tag",
+    "section": "End users · how to get them",
+    "label": "Card 1 tag",
+    "text": "FIRST STOP",
+    "context": "Mono tag on the card."
+  },
+  {
+    "id": "get.hosted.go",
+    "section": "End users · how to get them",
+    "label": "Card 1 link",
+    "text": "Go to carloku.com",
+    "context": ""
+  },
+  {
+    "id": "get.self.heading",
+    "section": "End users · how to get them",
+    "label": "Card 2 heading",
+    "text": "Your own box, when you want it",
+    "context": ""
+  },
+  {
+    "id": "get.self.body",
+    "section": "End users · how to get them",
+    "label": "Card 2 body",
+    "text": "One static binary, a bucket and DNS. Take the same apps home with you.",
+    "context": ""
+  },
+  {
+    "id": "get.self.tag",
+    "section": "End users · how to get them",
+    "label": "Card 2 tag",
+    "text": "SELF-HOSTED",
+    "context": ""
+  },
+  {
+    "id": "get.self.go",
+    "section": "End users · how to get them",
+    "label": "Card 2 link",
+    "text": "How the platform works",
+    "context": ""
+  },
+  {
+    "id": "get.company.heading",
+    "section": "End users · how to get them",
+    "label": "Card 3 heading",
+    "text": "For your whole company",
+    "context": ""
+  },
+  {
+    "id": "get.company.body",
+    "section": "End users · how to get them",
+    "label": "Card 3 body",
+    "text": "Why an organisation would run on CARLOS, in eighteen slides.",
+    "context": "Links to the adopter deck."
+  },
+  {
+    "id": "get.company.tag",
+    "section": "End users · how to get them",
+    "label": "Card 3 tag",
+    "text": "THE PITCH",
+    "context": ""
+  },
+  {
+    "id": "get.company.go",
+    "section": "End users · how to get them",
+    "label": "Card 3 link",
+    "text": "use.carlosframework.com",
+    "context": ""
+  },
+  {
+    "id": "trust.standfirst",
+    "section": "End users · trust",
+    "label": "Standfirst",
+    "text": "Every app carries a trust class, S to C. Publish the database and see what leaks.",
+    "context": "Replaces your 'App implementers can choose a trust class...' since this section now faces end users, not implementers. Restore yours if you prefer."
+  },
+  {
+    "id": "build.label",
+    "section": "Builders",
+    "label": "Section label",
+    "text": "FOR PEOPLE WHO BUILD SOFTWARE",
+    "context": "Mono label; marks the start of the builder half."
+  },
+  {
+    "id": "build.heading",
+    "section": "Builders",
+    "label": "Heading",
+    "text": "Build on it",
+    "context": ""
+  },
+  {
+    "id": "build.standfirst",
+    "section": "Builders",
+    "label": "Standfirst",
+    "text": "Six simple promises, one shape for every app, and an agent that already knows the way.",
+    "context": "Merges your 'Six simple promises' with the close line."
+  },
+  {
+    "id": "build.new.heading",
+    "section": "Builders",
+    "label": "Left column heading",
+    "text": "Start a new app",
+    "context": ""
+  },
+  {
+    "id": "build.new.body",
+    "section": "Builders",
+    "label": "Left column body",
+    "text": "Empty directory to a live URL. Rastrillo gives it the shape; the skill makes the decisions for you.",
+    "context": ""
+  },
+  {
+    "id": "build.new.go",
+    "section": "Builders",
+    "label": "Left column link",
+    "text": "Get started",
+    "context": "To /start/."
+  },
+  {
+    "id": "build.ship.heading",
+    "section": "Builders",
+    "label": "Right column heading",
+    "text": "Ship your product on it",
+    "context": ""
+  },
+  {
+    "id": "build.ship.body",
+    "section": "Builders",
+    "label": "Right column body",
+    "text": "Hosted and customer-run deployments from one codebase. One instance per customer. All out of the box.",
+    "context": "Your line, unchanged."
+  },
+  {
+    "id": "build.ship.go",
+    "section": "Builders",
+    "label": "Right column link",
+    "text": "Why you would migrate your product",
+    "context": "To the vendor deck."
+  },
+  {
+    "id": "build.more",
+    "section": "Builders",
+    "label": "Links line",
+    "text": "The six letters in full · How the platform works · The skills on GitHub",
+    "context": "Three arrow links under the six letters. Keep the ' · ' separators."
+  },
+  {
+    "id": "lic.heading",
+    "section": "Trust page · licensing",
+    "label": "Section heading",
+    "text": "Licensing is the other axis",
+    "context": "New section on /trust/, after placement. Introduces the five licence classes."
+  },
+  {
+    "id": "lic.standfirst",
+    "section": "Trust page · licensing",
+    "label": "Standfirst",
+    "text": "A trust class says what a host can see. A licence class says what a customer can do with the code. CARLOS dictates neither; it asks you to name both.",
+    "context": ""
+  },
+  {
+    "id": "lic.l1.name",
+    "section": "Trust page · licensing",
+    "label": "L1 name",
+    "text": "Libre",
+    "context": ""
+  },
+  {
+    "id": "lic.l1.what",
+    "section": "Trust page · licensing",
+    "label": "L1 description",
+    "text": "Free as in freedom and free of charge. Anyone may run, change and redistribute it. The operator earns from hosting or support, or not at all.",
+    "context": "Examples shown beneath: amadan, the framework and this site."
+  },
+  {
+    "id": "lic.l2.name",
+    "section": "Trust page · licensing",
+    "label": "L2 name",
+    "text": "Source-available, commercial",
+    "context": ""
+  },
+  {
+    "id": "lic.l2.what",
+    "section": "Trust page · licensing",
+    "label": "L2 description",
+    "text": "You can read it and self-host it; commercial use or redistribution needs a licence from the author.",
+    "context": "Examples: Slopbox; Eleven as intended. Note: Eleven's repository carries MPL-2.0 today, which is libre, so the page says 'as intended'."
+  },
+  {
+    "id": "lic.l3.name",
+    "section": "Trust page · licensing",
+    "label": "L3 name",
+    "text": "Open source, with a hosted offering",
+    "context": ""
+  },
+  {
+    "id": "lic.l3.what",
+    "section": "Trust page · licensing",
+    "label": "L3 description",
+    "text": "Fully open, and the author also runs it for you. The hosted service is the product; the code is the guarantee you can leave.",
+    "context": "Example: Oficina, as intended (no licence file yet)."
+  },
+  {
+    "id": "lic.l4.name",
+    "section": "Trust page · licensing",
+    "label": "L4 name",
+    "text": "Closed source, hosted only",
+    "context": ""
+  },
+  {
+    "id": "lic.l4.what",
+    "section": "Trust page · licensing",
+    "label": "L4 description",
+    "text": "The author runs it and does not ship the code. Ownership for the customer means their instance, their data and their trust class, not the binary.",
+    "context": "Example: a conventional SaaS moving onto CARLOS. Tony's app, unnamed."
+  },
+  {
+    "id": "lic.l5.name",
+    "section": "Trust page · licensing",
+    "label": "L5 name",
+    "text": "Closed source, hosted and on-prem",
+    "context": ""
+  },
+  {
+    "id": "lic.l5.what",
+    "section": "Trust page · licensing",
+    "label": "L5 description",
+    "text": "The author ships a binary the customer may run on their own boxes under licence, and also hosts it. One codebase, every deployment mode.",
+    "context": "Examples: Tito; Jelly, in development."
+  },
+  {
+    "id": "lic.note",
+    "section": "Trust page · licensing",
+    "label": "Closing note",
+    "text": "The two axes are independent. An L5 app can be class A; an L1 app can be class C. A gallery entry names both, or says which has not been published yet.",
+    "context": ""
+  },
+  {
+    "id": "remix.heading",
+    "section": "Trust page · remixability",
+    "label": "Section heading",
+    "text": "Remixability is the third",
+    "context": "Third section on /trust/, after licensing."
+  },
+  {
+    "id": "remix.standfirst",
+    "section": "Trust page · remixability",
+    "label": "Standfirst",
+    "text": "Trust says what a host can see. Licence says what a customer may do. Remixability says what an agent, or a person with a fork, can actually do today. Three flags, each yes or no.",
+    "context": ""
+  },
+  {
+    "id": "remix.fork.name",
+    "section": "Trust page · remixability",
+    "label": "Flag 1 name",
+    "text": "Forkable",
+    "context": "Shown as R·fork."
+  },
+  {
+    "id": "remix.fork.what",
+    "section": "Trust page · remixability",
+    "label": "Flag 1 description",
+    "text": "The source is available and a fork that stays close to upstream keeps working with the shared glue: sign-on, the edge, hibernation, the trust class. Drift far enough and you are on your own, which is fair.",
+    "context": "Example line beneath: follows from the licence, L1 to L3 yes, L4 and L5 no."
+  },
+  {
+    "id": "remix.drive.name",
+    "section": "Trust page · remixability",
+    "label": "Flag 2 name",
+    "text": "Agent-driveable",
+    "context": "R·drive."
+  },
+  {
+    "id": "remix.drive.what",
+    "section": "Trust page · remixability",
+    "label": "Flag 2 description",
+    "text": "The app opts actions in as typed tools, so an agent reaches the same handler a person does, through the same middleware, with a confirmation sentence on every write. The framework provides this; the app has to switch it on.",
+    "context": "Example line: the model supports it; no app has published tools yet. Verified today: no app in the family declares a rastrillo Tool."
+  },
+  {
+    "id": "remix.build.name",
+    "section": "Trust page · remixability",
+    "label": "Flag 3 name",
+    "text": "Agent-rebuildable",
+    "context": "R·build."
+  },
+  {
+    "id": "remix.build.what",
+    "section": "Trust page · remixability",
+    "label": "Flag 3 description",
+    "text": "The app publishes a skill at its well-known URL, so an agent can fork it, change it and redeploy it without a person reading the code first. The framework publishes two skills; each app owes its own.",
+    "context": "Example line: the model supports it; no app has published a skill yet. Verified today: keymail.dev, amadan.net, woodstar.app and oficina.works all 404 on /.well-known/agent-skills/."
+  },
+  {
+    "id": "remix.note",
+    "section": "Trust page · remixability",
+    "label": "Closing note",
+    "text": "All three are possible for every app in the family, because every app has the same shape. The gallery records which ones have done it, not which ones could.",
+    "context": ""
+  },
+  {
+    "id": "home.trust.standfirst3",
+    "section": "Home · trust",
+    "label": "Standfirst (revised again)",
+    "text": "Every app carries a trust class, S to C, a licence class, L1 to L5, and three remix flags. Publish the database and see what leaks.",
+    "context": "Replaces the earlier revision; now names all three axes."
+  }
+]

@@ -1,0 +1,485 @@
+[
+  {
+    "id": "home.hero.headline",
+    "section": "Home · hero",
+    "label": "Headline",
+    "text": "Lower your costs. Own your software.",
+    "context": "Approved last pass. Offered again only if you want a second go; leave as is otherwise. 'Own' is coloured."
+  },
+  {
+    "id": "home.hero.lede",
+    "section": "Home · hero",
+    "label": "Lede",
+    "text": "Isolate user data from other users, with single-process apps that scale to zero, deployed on a system built on single-binary processes as simple as the apps themselves.",
+    "context": "Your line from the last pass."
+  },
+  {
+    "id": "home.robot",
+    "section": "Home · hero",
+    "label": "AI disclosure",
+    "text": "Where an LLM has written in slop-voice, it is marked with a 🤖That's factor X.",
+    "context": "Your line, reused on every page. Note there is no space before 'That's'; say if that was deliberate."
+  },
+  {
+    "id": "home.home.standfirst",
+    "section": "Home · take it home",
+    "label": "Standfirst",
+    "text": "Uncompromising ownership for app builders and users. Simply deploy anywhere.",
+    "context": "Your line."
+  },
+  {
+    "id": "home.org.body",
+    "section": "Home · take it home",
+    "label": "Organisations body",
+    "text": "Chat, mail, office, code hosting and more, each one an instance your team owns, wherever you choose to run it.",
+    "context": "Unedited last pass."
+  },
+  {
+    "id": "home.vendor.body",
+    "section": "Home · take it home",
+    "label": "Vendors body",
+    "text": "Hosted and customer-run deployments from one codebase. One instance per customer. All out of the box.",
+    "context": "Your line."
+  },
+  {
+    "id": "home.letters.standfirst",
+    "section": "Home · letters",
+    "label": "Standfirst",
+    "text": "Six simple promises.",
+    "context": "Your line."
+  },
+  {
+    "id": "home.letter.c",
+    "section": "Home · letters",
+    "label": "Cost-efficient",
+    "text": "Lightweight processes cost pennies to run, and sleep when idle.",
+    "context": "One line beside the drawn letter."
+  },
+  {
+    "id": "home.letter.a",
+    "section": "Home · letters",
+    "label": "Available",
+    "text": "Millisecond wake times with host failover.",
+    "context": "One line beside the drawn letter."
+  },
+  {
+    "id": "home.letter.r",
+    "section": "Home · letters",
+    "label": "Replicated",
+    "text": "Every database streams to object storage from the first byte.",
+    "context": "One line beside the drawn letter."
+  },
+  {
+    "id": "home.letter.l",
+    "section": "Home · letters",
+    "label": "Lightweight",
+    "text": "Static, single-process binaries with embedded databases, system managed.",
+    "context": "One line beside the drawn letter."
+  },
+  {
+    "id": "home.letter.o",
+    "section": "Home · letters",
+    "label": "Open",
+    "text": "Open source, open infrastructure, and open data",
+    "context": "One line beside the drawn letter."
+  },
+  {
+    "id": "home.letter.s",
+    "section": "Home · letters",
+    "label": "Secure",
+    "text": "Data isolated by default, with end-to-end encryption encouraged",
+    "context": "One line beside the drawn letter."
+  },
+  {
+    "id": "home.apps.standfirst",
+    "section": "Home · apps",
+    "label": "Standfirst",
+    "text": "The OG CARLOS apps and their ancestors.",
+    "context": "Your line."
+  },
+  {
+    "id": "home.trust.standfirst",
+    "section": "Home · trust",
+    "label": "Standfirst",
+    "text": "App implementers can choose a trust class from the off depending on business requirements.",
+    "context": "Your line."
+  },
+  {
+    "id": "home.run.standfirst",
+    "section": "Home · run it",
+    "label": "Standfirst",
+    "text": "Cloud, hybrid, or on-prem: it's all the same to CARLOS",
+    "context": "Your line."
+  },
+  {
+    "id": "home.run.self",
+    "section": "Home · run it",
+    "label": "Self-hosted card",
+    "text": "One static binary, a bucket and DNS. No account to sign up for.",
+    "context": "Unedited last pass."
+  },
+  {
+    "id": "home.run.cloud",
+    "section": "Home · run it",
+    "label": "Own cloud card",
+    "text": "Your account, your buckets, your regions.",
+    "context": "Unedited last pass."
+  },
+  {
+    "id": "home.run.hosted",
+    "section": "Home · run it",
+    "label": "Carloku card",
+    "text": "The flagship self-service CARLOS PaaS. Don't be a hero!",
+    "context": "Your line."
+  },
+  {
+    "id": "home.close.standfirst",
+    "section": "Home · close",
+    "label": "Standfirst",
+    "text": "Intended to be a joy to use, with or without agents.",
+    "context": "Your line."
+  },
+  {
+    "id": "footer.factors",
+    "section": "Footer · every page",
+    "label": "Eleven Factors line",
+    "text": "CARLOS keeps the promises set out in The Eleven Factors, and is informed by building Eleven — the way the twelve factors were separate from Heroku, but informed by it.",
+    "context": "Footer on the homepage; other pages omit it. 'The Eleven Factors' and 'Eleven' are links."
+  },
+  {
+    "id": "footer.source",
+    "section": "Footer · every page",
+    "label": "Source line",
+    "text": "Source for this site on GitHub. Open, of course.",
+    "context": "Last footer line everywhere."
+  },
+  {
+    "id": "plat.title",
+    "section": "Platform · tab",
+    "label": "Page title",
+    "text": "The CARLOS platform — open source, self-hostable, and the engine under Carloku",
+    "context": "Browser tab. The only page still using an em-dash title; the others use 'CARLOS. X'."
+  },
+  {
+    "id": "plat.hero.headline",
+    "section": "Platform · hero",
+    "label": "Headline",
+    "text": "Scale to billions. Ship in seconds. Pay for the hours somebody used.",
+    "context": "Three claims. The first is the one the funding deck's critique called a scaling hypothesis, not a result."
+  },
+  {
+    "id": "plat.hero.lede",
+    "section": "Platform · hero",
+    "label": "Lede",
+    "text": "The CARLOS platform is the deployment substrate underneath every app on the framework. Every app starts with one channel, edge: run carlos deploy and it's live in seconds, no promotion step. Canary channels are there whenever you want a second opinion first, and a staged rollout — per-channel bake windows, a passkey, sign-off from more than one person — is one command away the day you want it, never before. Let idle apps sleep to a bucket for nothing and wake in milliseconds. It is open source and self-hostable — and it is also the engine under Carloku, if you would rather not run boxes.",
+    "context": "Five sentences, 95 words, under the headline. The wordiest lede on the site."
+  },
+  {
+    "id": "plat.mult.heading",
+    "section": "Platform · multipliers",
+    "label": "Section heading",
+    "text": "Every multiplier traces to a mechanism",
+    "context": "Above four big-number tiles."
+  },
+  {
+    "id": "plat.mult.standfirst",
+    "section": "Platform · multipliers",
+    "label": "Standfirst",
+    "text": "Not adjectives — line items. Each claim below names the machinery that produces it, so you can check it rather than believe it.",
+    "context": ""
+  },
+  {
+    "id": "plat.mult.1.head",
+    "section": "Platform · multipliers",
+    "label": "Tile 1 heading (10⁹ people)",
+    "text": "Scale to billions",
+    "context": "The tile's big figure is 10⁹ people."
+  },
+  {
+    "id": "plat.mult.1.body",
+    "section": "Platform · multipliers",
+    "label": "Tile 1 body",
+    "text": "Every person gets their own instance with its own database. A crash, a leak or a runaway query takes down one person's process; the next request restarts it and nobody else notices. Growing means adding boxes to the fleet, not architecture to your app.",
+    "context": ""
+  },
+  {
+    "id": "plat.mult.2.head",
+    "section": "Platform · multipliers",
+    "label": "Tile 2 heading (100× build speed)",
+    "text": "Build faster",
+    "context": ""
+  },
+  {
+    "id": "plat.mult.2.body",
+    "section": "Platform · multipliers",
+    "label": "Tile 2 body",
+    "text": "AI is the factory. Extravagant machines are spent at build time — at length, under tests that fail the build — to produce one lean artifact. The compute is spent once, at the factory; what ships stays small forever.",
+    "context": ""
+  },
+  {
+    "id": "plat.mult.3.head",
+    "section": "Platform · multipliers",
+    "label": "Tile 3 heading (1000× performance)",
+    "text": "Query without a network hop",
+    "context": ""
+  },
+  {
+    "id": "plat.mult.3.body",
+    "section": "Platform · multipliers",
+    "label": "Tile 3 body",
+    "text": "SQLite is compiled into the process, so a query is a function call and your data lives next to your compute: microseconds where a round trip costs milliseconds. Even a sleeping instance wakes in milliseconds.",
+    "context": ""
+  },
+  {
+    "id": "plat.mult.4.head",
+    "section": "Platform · multipliers",
+    "label": "Tile 4 heading (30× cheaper)",
+    "text": "Cheaper, and more efficient with it",
+    "context": ""
+  },
+  {
+    "id": "plat.mult.4.body",
+    "section": "Platform · multipliers",
+    "label": "Tile 4 body",
+    "text": "Most software is used a few hours a week and billed for all 168. On CARLOS an idle app hibernates to object storage — a few objects in a bucket, no process, no memory, costing nothing — and wakes on the next request. Less compute standing idle is also less energy burned for nothing.",
+    "context": ""
+  },
+  {
+    "id": "plat.ship.heading",
+    "section": "Platform · shipping",
+    "label": "Section heading",
+    "text": "From branch to live, without a rebuild",
+    "context": "Above the deploy rail diagram (canary/pr-142 → edge)."
+  },
+  {
+    "id": "plat.ship.standfirst",
+    "section": "Platform · shipping",
+    "label": "Standfirst",
+    "text": "One artifact, one pointer by default. What you tested is what ships, because it is the same bytes.",
+    "context": ""
+  },
+  {
+    "id": "plat.ship.1.head",
+    "section": "Platform · shipping",
+    "label": "Item heading",
+    "text": "A live URL for every branch",
+    "context": ""
+  },
+  {
+    "id": "plat.ship.1.body",
+    "section": "Platform · shipping",
+    "label": "Item body",
+    "text": "Push a branch and get a canary URL in seconds: a real deployment on the real platform, not a localhost preview. Send it to a teammate before the code review starts.",
+    "context": ""
+  },
+  {
+    "id": "plat.ship.2.head",
+    "section": "Platform · shipping",
+    "label": "Item heading",
+    "text": "One command to serving",
+    "context": ""
+  },
+  {
+    "id": "plat.ship.2.body",
+    "section": "Platform · shipping",
+    "label": "Item body",
+    "text": "carlos deploy ships, promotes, and returns only when the URL is provably serving the new build — the edge names the version it serves and the command checks. Exit 0 means refresh and it is there.",
+    "context": "'carlos deploy' is set in code."
+  },
+  {
+    "id": "plat.ship.3.head",
+    "section": "Platform · shipping",
+    "label": "Item heading",
+    "text": "A staged pipeline is one command, opt-in",
+    "context": ""
+  },
+  {
+    "id": "plat.ship.3.body",
+    "section": "Platform · shipping",
+    "label": "Item body",
+    "text": "carlos pipeline init --template edge-production gives an app more channels, each with its own bake window and approval rules; --template full-ladder is the old fixed canary → edge → beta → stable ladder, still there for anyone who wants it. Either way, promotion only ever points an existing channel at bytes you already shipped — nothing is rebuilt to get there.",
+    "context": "Commands set in code."
+  },
+  {
+    "id": "plat.ship.4.head",
+    "section": "Platform · shipping",
+    "label": "Item heading",
+    "text": "Rollback is a pointer move",
+    "context": ""
+  },
+  {
+    "id": "plat.ship.4.body",
+    "section": "Platform · shipping",
+    "label": "Item body",
+    "text": "Point the channel back at the previous release and the bleed stops. Immediate, no rebuild, no waiting. Going backwards is never new code.",
+    "context": ""
+  },
+  {
+    "id": "plat.trust.heading",
+    "section": "Platform · guarantees",
+    "label": "Section heading",
+    "text": "Safe to deploy, and safe to be deployed to",
+    "context": ""
+  },
+  {
+    "id": "plat.trust.standfirst",
+    "section": "Platform · guarantees",
+    "label": "Standfirst",
+    "text": "The default is live the moment you ship — the platform's job is to make that boring. Want a frightening step to guard against instead, on your own terms? That's a pipeline you opt into, not one you're stuck with.",
+    "context": ""
+  },
+  {
+    "id": "plat.trust.1.head",
+    "section": "Platform · guarantees",
+    "label": "Item heading",
+    "text": "A bake window, when you ask for one",
+    "context": ""
+  },
+  {
+    "id": "plat.trust.1.body",
+    "section": "Platform · guarantees",
+    "label": "Item body",
+    "text": "Give a channel --bake 72h and a new release must sit on it for that long before the channel's instances adopt it, so a compromised publisher cannot rush a poisoned build across your fleet. Deploys to an app's default edge channel carry no bake — they're live as soon as the header proves it — and canary channels never do either; the window is something you add per channel, through carlos pipeline. Rollback always skips the bake: pointing back at a hash that already served traffic takes effect immediately.",
+    "context": "Two paragraphs on the page; shown here as one string."
+  },
+  {
+    "id": "plat.trust.2.head",
+    "section": "Platform · guarantees",
+    "label": "Item heading",
+    "text": "Residency, enforced below your code",
+    "context": ""
+  },
+  {
+    "id": "plat.trust.2.body",
+    "section": "Platform · guarantees",
+    "label": "Item body",
+    "text": "Declare where your data lives — per app, or per customer instance — and a host outside that region will never claim it. There is no \"just this once during a failover\" path: no eligible host means the wake fails loudly instead of quietly relocating. Sleeping data rests in region-scoped buckets too, so residency covers rest as well as execution. Enforced by the platform, not promised in a policy PDF.",
+    "context": "Two paragraphs on the page."
+  },
+  {
+    "id": "plat.trust.3.head",
+    "section": "Platform · guarantees",
+    "label": "Item heading",
+    "text": "Placement follows declared trust, not just capacity",
+    "context": ""
+  },
+  {
+    "id": "plat.trust.3.body",
+    "section": "Platform · guarantees",
+    "label": "Item body",
+    "text": "Each workload publishes what a host can learn by running it, and the platform will not place it somewhere less trusted than that declaration requires. The classes are on the framework page.",
+    "context": "'The classes are on the framework page' should now point at /trust/; say what the link text should be."
+  },
+  {
+    "id": "plat.trust.4.head",
+    "section": "Platform · guarantees",
+    "label": "Item heading",
+    "text": "When it breaks, it says why",
+    "context": ""
+  },
+  {
+    "id": "plat.trust.4.body",
+    "section": "Platform · guarantees",
+    "label": "Item body",
+    "text": "carlos logs is one timeline: your app's own output merged with the platform's events about it — wakes, restarts, and the reason a wake failed — filterable, followable live with -f, and in the console. No server access required, because the answer comes to you.",
+    "context": ""
+  },
+  {
+    "id": "plat.trust.5.head",
+    "section": "Platform · guarantees",
+    "label": "Item heading",
+    "text": "Recurring work, on an app that sleeps",
+    "context": ""
+  },
+  {
+    "id": "plat.trust.5.body",
+    "section": "Platform · guarantees",
+    "label": "Item body",
+    "text": "A hibernating instance cannot run its own timer — the process is not there to fire it. So the platform keeps the clock. carlos schedule set declares the work once, -every 6h or a cron line in UTC, and at the due time the platform wakes the instance, POSTs the path you named with the token already in its environment, and holds it awake until your handler returns. A sync every six hours; reminders in the days before a date. 2xx means done, 5xx is retried with backoff, 4xx is your app declining and nothing retries. carlos schedule ls prints the next and last fire for every instance, so \"did it run?\" is a question you answer from your terminal.",
+    "context": "Two paragraphs on the page. Commands in code."
+  },
+  {
+    "id": "plat.whole.heading",
+    "section": "Platform · the whole platform",
+    "label": "Section heading",
+    "text": "The whole platform is",
+    "context": "Followed by the three-tile 1 binary + 1 bucket + DNS diagram."
+  },
+  {
+    "id": "plat.whole.standfirst",
+    "section": "Platform · the whole platform",
+    "label": "Standfirst",
+    "text": "That heading is not a lead-in to a longer list. It is the list.",
+    "context": ""
+  },
+  {
+    "id": "plat.whole.body",
+    "section": "Platform · the whole platform",
+    "label": "Body",
+    "text": "No proprietary control plane, no license server, no essential piece that exists only in someone else's account. Run it on our cloud because it is convenient. If you ever want to leave: copy the binary, take your bucket, point your DNS, and walk away with everything still running.",
+    "context": ""
+  },
+  {
+    "id": "plat.real.heading",
+    "section": "Platform · running today",
+    "label": "Section heading",
+    "text": "Real companies, real traffic",
+    "context": ""
+  },
+  {
+    "id": "plat.real.body",
+    "section": "Platform · running today",
+    "label": "Body",
+    "text": "Production tenants are live today — an event-ticketing company and a training platform among them — and the framework page lists what was answering when this site was last deployed.",
+    "context": "'the framework page' should now be the apps page."
+  },
+  {
+    "id": "plat.real.note",
+    "section": "Platform · running today",
+    "label": "Note",
+    "text": "Apps live at <sqid>.oncarlos.com, an address that never encodes region or host, so placement stays invisible; custom domains ride on top as aliases.",
+    "context": ""
+  },
+  {
+    "id": "plat.close.heading",
+    "section": "Platform · close",
+    "label": "Heading",
+    "text": "Ship something this afternoon",
+    "context": ""
+  },
+  {
+    "id": "plat.close.standfirst",
+    "section": "Platform · close",
+    "label": "Standfirst",
+    "text": "A canary URL is seconds away — on your boxes or on ours.",
+    "context": ""
+  },
+  {
+    "id": "plat.close.cta1",
+    "section": "Platform · close",
+    "label": "Primary button",
+    "text": "Get started",
+    "context": ""
+  },
+  {
+    "id": "plat.close.cta2",
+    "section": "Platform · close",
+    "label": "Secondary button",
+    "text": "Let Carloku host it",
+    "context": ""
+  },
+  {
+    "id": "plat.footer.1",
+    "section": "Platform · footer",
+    "label": "Line 1",
+    "text": "The platform runs apps built on the CARLOS framework, keeping the promises set out in The Eleven Factors. Carloku is the flagship deployment, offered hosted.",
+    "context": ""
+  },
+  {
+    "id": "plat.footer.2",
+    "section": "Platform · footer",
+    "label": "Line 2",
+    "text": "The source for this site is public on GitHub, and the platform's conventions are published as a Claude Code skill. The platform repository itself is not public yet.",
+    "context": ""
+  }
+]
