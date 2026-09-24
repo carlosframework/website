@@ -593,6 +593,7 @@ main > section.letters-intro .head { margin-bottom: 0; }
 .hero.compact .lede { margin-top: 1.25rem; max-width: 40rem; }
 .hero.compact .actions { margin-top: 1.75rem; }
 .hero.compact .robot { margin-top: 2rem; }
+.hero-context { margin-top: 1.5rem; max-width: 40rem; font-size: 1rem; line-height: 1.65; color: var(--ink-2); }
 .kicker {
   font-family: var(--font-mono); font-size: 0.775rem; letter-spacing: 0.08em;
   text-transform: uppercase; color: var(--accent); margin-bottom: 0.9rem;
@@ -700,6 +701,7 @@ main > section.letters-intro .head { margin-bottom: 0; }
 .attribute-directory { padding-block: 2rem var(--bay); }
 .attributes-page > .attribute-detail {
   padding-block: clamp(2rem, 5vw, 3.5rem);
+  padding-inline: clamp(1rem, 3vw, 1.5rem);
   scroll-margin-top: 1.5rem;
 }
 .attribute-detail-heading { display: flex; gap: 1rem; align-items: baseline; }
