@@ -1,6 +1,7 @@
-// 🤖 Build-time only — the served site ships no JavaScript.
+// 🤖 Build-time rendering; the AI disclaimer is the only browser script.
 import markdownIt from "markdown-it";
 import markdownItAnchor from "markdown-it-anchor";
+import { addDisclaimer } from "./hack/add-disclaimer.mjs";
 
 // slugify must match internal/docsite's Anchor in the platform repo
 // exactly, or an internal fragment link passes that repo's Go gate and
@@ -45,14 +46,18 @@ function sameFence(closing, opening) {
 }
 
 export default function (eleventyConfig) {
+  eleventyConfig.on("eleventy.after", async ({ dir }) => addDisclaimer(dir.output));
   eleventyConfig.addPassthroughCopy({ "src/index.html": "index.html" });
   eleventyConfig.addPassthroughCopy({ "src/platform": "platform" });
   eleventyConfig.addPassthroughCopy({ "src/rastrillo": "rastrillo" });
   eleventyConfig.addPassthroughCopy({ "src/letters": "letters" });
   eleventyConfig.addPassthroughCopy({ "src/apps": "apps" });
+  eleventyConfig.addPassthroughCopy({ "src/attributes": "attributes" });
   eleventyConfig.addPassthroughCopy({ "src/trust": "trust" });
   eleventyConfig.addPassthroughCopy({ "src/start": "start" });
   eleventyConfig.addPassthroughCopy({ "src/site.css": "site.css" });
+  eleventyConfig.addPassthroughCopy({ "src/ai-disclaimer.css": "ai-disclaimer.css" });
+  eleventyConfig.addPassthroughCopy({ "src/ai-disclaimer.js": "ai-disclaimer.js" });
   eleventyConfig.addPassthroughCopy({ "src/docs.css": "docs.css" });
   eleventyConfig.addPassthroughCopy({ "src/favicon.svg": "favicon.svg" });
 
@@ -174,7 +179,7 @@ export default function (eleventyConfig) {
 
   return {
     // "html" is deliberately excluded: index.html and platform/index.html
-    // are hand-written and must ship byte-identical. If html stayed a
+    // are hand-written, with the disclaimer added after build. If html stayed a
     // template format, Eleventy's default html engine (liquid) would
     // render them as templates in addition to the passthrough copies
     // above, and any literal "{{" in their inline SVG/script would break.

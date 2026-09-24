@@ -1,0 +1,9 @@
+{
+  "title": "Before you continue...",
+  "paragraphs": [
+    "CARLOS is an AI-enabled project, and all CARLOS software to date has been entirely produced using a combination of LLM-based coding products from Anthropic, OpenAI, and open-weight alternatives. Whilst CARLOS represents an approach to apply these products toward new standards of openness and release of corporate ownership of internet-based software and data, we realise that there are folks for whom use of these products is unacceptable. With that said, if folks will continue to use AI to produce software, our mission is to show that AI unlocks ways to produce better software for everyone.",
+    "One of the principles behind the project is full disclosure of AI use, and AI-written language, starting here."
+  ],
+  "continue": "Continue",
+  "reopen": "AI disclaimer"
+}

@@ -12,14 +12,19 @@ Keymail, Woodstar, Slopbox and Kass. Tito (always "Tito", never "Tito Go")
 is adopting CARLOS deliberately and is listed on the site as an adopter,
 not an extraction source — it doesn't count toward the "5 systems" stat. The pages are static and the
 stylesheet (`site.css`) is plain: what a visitor downloads is HTML and CSS,
-with no JavaScript and nothing fetched from anywhere. Keep it that way — a
-framework whose first claim is "lightweight" does not get to ship a bundler to
-its own readers. Durable product context for design tooling lives in
+with one local script for the AI disclaimer and no third-party resources.
+The disclaimer is an explicit user-requested exception (2026-09-24): show an
+overlay, remember Continue in that browser, and allow reopening it from the
+footer. Keep the rest of the site free of browser JavaScript and bundlers.
+Durable product context for design tooling lives in
 `PRODUCT.md`.
 
 `index.html`, `platform/index.html` and the 2026-09 pages (`letters/`,
-`apps/`, `trust/`, `start/`) are written by hand and have no build step;
-each is an `addPassthroughCopy` entry in `eleventy.config.js`. Every
+`apps/`, `trust/`, `start/`, `attributes/`) are written by hand;
+each is an `addPassthroughCopy` entry in `eleventy.config.js`. The build adds
+the shared AI disclaimer to every HTML page, including docs, through
+`hack/add-disclaimer.mjs`. Its human-authored copy lives in
+`src/_data/ai-disclaimer.json`. Every
 user-facing string on those pages passed a copy review (the indexes and
 results are archived under `copy-review/done/`); rewrite copy only through
 another review. `/docs` does: its pages come from markdown through Eleventy, the
@@ -53,8 +58,11 @@ person marker.**
 
 ## Conventions
 
-- **Nothing runs in the browser.** No frameworks, no fonts fetched from
-  anywhere, no analytics, no JavaScript. The `/docs` build is a devDependency
+- **Only the AI disclaimer runs in the browser.** No frameworks, remotely
+  fetched fonts or analytics. Continue saves `carlos.ai-disclaimer.v1` in
+  localStorage; storage failure must never prevent dismissal. With JavaScript
+  disabled, show the disclosure inline and leave the site usable.
+  The `/docs` build is a devDependency
   that runs at authoring time; `_site/` is gitignored and never committed.
 - **Light and dark** via `prefers-color-scheme` — keep both working when
   touching styles.
