@@ -50,6 +50,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/rastrillo": "rastrillo" });
   eleventyConfig.addPassthroughCopy({ "src/letters": "letters" });
   eleventyConfig.addPassthroughCopy({ "src/apps": "apps" });
+  eleventyConfig.addPassthroughCopy({ "src/attributes": "attributes" });
   eleventyConfig.addPassthroughCopy({ "src/trust": "trust" });
   eleventyConfig.addPassthroughCopy({ "src/start": "start" });
   eleventyConfig.addPassthroughCopy({ "src/site.css": "site.css" });
