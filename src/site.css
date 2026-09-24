@@ -1,6 +1,6 @@
 /* 🤖 carlosframework.com — one hand-written stylesheet for every page.
-   No build step, no dependencies, no fetched fonts, no JavaScript: the site
-   ships under the same rules as the architecture it describes. Pages set only
+   No dependencies or fetched fonts. The AI disclaimer has its own script
+   and stylesheet. Pages set only
    their own accent hues in a small inline block. */
 
 /* ---------------------------------------------------------------- tokens -- */
