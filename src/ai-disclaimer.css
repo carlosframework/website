@@ -13,7 +13,11 @@
   box-shadow: var(--shadow-2);
   font: inherit;
 }
-.ai-disclaimer::backdrop { background: rgb(0 0 0 / 72%); }
+.ai-disclaimer::backdrop {
+  background: rgb(0 0 0 / 60%);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
 html:has(.ai-disclaimer[open]) { overflow: hidden; }
 .ai-disclaimer h2, .ai-disclaimer-fallback h2 {
   margin: 0 0 1.25rem;
