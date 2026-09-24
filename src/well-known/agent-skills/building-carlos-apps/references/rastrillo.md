@@ -116,6 +116,7 @@ README. On an older CLI, copy the five files from `examples/notes`.
   mid-flight. `jobs` is for work a *request* started and a person is
   watching; work that has to happen at a time nobody is waiting at is
   the platform's tick — see below.
+
 - Scheduled work (v0.19.0+): the `carlos` package is your side of the
   platform's tick. `carlos.Tick(r)` verifies the bearer against
   `$CARLOS_ADMIN_TOKEN` in constant time and `carlos.TickOccurrence(r)`
@@ -124,6 +125,42 @@ README. On an older CLI, copy the five files from `examples/notes`.
   socket. Declaring the recurring ones is a CLI job, not a code one
   (`carlos schedule set`) — platform.md carries the contract and the
   traps.
+
+## Design system and app CSS
+
+Use Rastrillo's design system as the default foundation for app screens.
+Before styling, read `docs/site/templates.md`, `docs/site/forms.md` and
+`docs/site/reference/ui.md` in the Rastrillo version the app uses. These
+cover the partials, component classes and supported variants; each partial
+also documents its data contract in its template file. Use the installed
+version's vocabulary rather than guessing classes or copying older markup.
+
+- Load the shared `tokens.css` before the app stylesheet. `rastrillo new`
+  copies it from `ui.TokensCSS()` into the app's `static/` directory; it
+  contains component styles as well as tokens. Keep that base intact by
+  default, with branding and layout in a separate app stylesheet.
+- Compose screens from `ui` partials and their documented containers. For
+  forms, use `field-text`, `field-textarea` or `field-select` inside
+  `<form class="rst-form">`, followed by `form-foot`. Buttons use the
+  documented `rst-btn` classes and size/variant modifiers for that version.
+- Keep the CSS above Rastrillo thin: app-specific layouts, scoped styles
+  for missing components, and a small set of deliberate token overrides.
+  Reuse `--rst-*` tokens for shared visual values. Avoid a second palette,
+  spacing scale, or button/input system, broad element resets, and repeated
+  overrides of shared components. Check for an existing variant first.
+- Preserve the shared focus, disabled, error and responsive behavior. Check
+  light and dark themes and keyboard navigation when adding overrides;
+  app branding must not erase those states or reduce contrast.
+- The CSS copy is vendored, not refreshed by a Go module upgrade. Review
+  and refresh it alongside Rastrillo upgrades, keeping app overrides
+  separate. The scaffold's `vendored_test.go` detects drift; an intentional
+  fork needs a reason and a matching test update, not a failing test left
+  behind.
+
+A repeated workaround for a shared component is a candidate for an
+upstream Rastrillo change. An explicit design brief or an existing app's
+design system can justify another foundation; name that choice rather than
+silently replacing the default.
 
 ## Manifests are the declarative path
 
@@ -148,7 +185,11 @@ handlers.
 
 1. `examples/notes` — the front-door example: accounts, sessions,
    CSRF, flash, owner-scoped resources, a background export job, and a
-   two-user isolation test suite. This is the shape to imitate.
+   two-user isolation test suite. This is the shape to imitate — its
+   screens included, but only from the version that uses the `ui`
+   vocabulary. Before that its hand-written pages were bare
+   `<label><input>` pairs with no stylesheet loaded at all, and being
+   named here as the shape to imitate is how that spread.
 2. `examples/tickets` — the declarative (manifest) path, per resource.
 
 Deploying: stamp

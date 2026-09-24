@@ -36,6 +36,7 @@ The pieces, named once:
 |---|---|---|
 | Language / framework | Go + rastrillo, one static binary | The family stack; the framework enforces the SQLite and money rules for you |
 | App shape | Server-rendered HTML, zero-JS baseline | The family default; the other shape is a decision (building-carlos-apps) |
+| Design system | Rastrillo UI and tokens, with a thin app CSS layer | Reuse shared controls and themes; custom CSS covers app layout and branding |
 | Storage | SQLite via GORM (`rastrillo/db`) | cgo-free driver, WAL pragma order, writer/reader pools — `db.Open` owns all of it; migrations via `AutoMigrate`, additive-only |
 | Amounts | integer cents (`form.ParseCents`) | A float never touches an amount |
 | Hosting | Carloku, `<app>.<sqid>.oncarlos.com` | Zero infra to run; certs, replication, hibernation all platform-side |
@@ -73,10 +74,12 @@ Create an account at `https://console.carloku.com` (passkey sign-in
 through Keymail — no password), then connect the terminal:
 
 ```sh
-carlos auth login -console https://console.carloku.com
+carlos auth login --console https://console.carloku.com
 ```
 
-The CLI prints a short code; approve it in the signed-in browser. Skip
+Flags are written `--flag` (`-a`, `-c`, `-e`, `-v` are the short forms);
+the single-dash spellings still parse. The CLI prints a short code;
+approve it in the signed-in browser. Skip
 this and nothing breaks — the first command that needs a login offers to
 run it right there. `carlos auth whoami` shows who you are and your
 account's **sqid** (a short public id like `bdf` — it appears in your
@@ -85,11 +88,11 @@ app's hostname; it is not a secret).
 ## Step 1 — claim the app
 
 ```sh
-carlos apps create -app myapp
+carlos apps create --app myapp
 ```
 
 App names are unique per account, not globally. With exactly one app in
-the account, later commands infer `-app`; passing it explicitly is never
+the account, later commands infer `--app`; passing it explicitly is never
 wrong.
 
 **Static site?** You are nearly done — skip to "The static path" below.
@@ -150,23 +153,35 @@ your binary accepts `--socket <path> --db <path>` and serves
 instances listen on unix sockets the platform hands them. Do not
 hand-roll flag parsing.
 
+For the screens, use Rastrillo's `ui` partials and component classes. Load
+its vendored `tokens.css` before a small app stylesheet; use that layer for
+app layout, token overrides and components Rastrillo does not provide.
+Read [the design-system guidance](../building-carlos-apps/references/rastrillo.md#design-system-and-app-css)
+before writing templates or CSS, and follow the docs for the app's installed
+Rastrillo version. Keep shared controls and their interaction states intact.
+
 ## Step 3 — first deploy
 
 Provision the instance (once), build for the boxes, deploy:
 
 ```sh
-carlos instances enable -app myapp          # opt-in; console pins your <sqid> domain
-carlos instances create -app myapp -host myapp.<sqid>.oncarlos.com -channel edge
+carlos instances enable --app myapp          # opt-in; console pins your <sqid> domain
+carlos instances create --app myapp --host myapp.<sqid>.oncarlos.com --channel edge
 # substitute your real sqid (carlos auth whoami shows it) — the host is typed in full.
-# -channel is optional since 2026-08-31 (a first instance follows the app's pipeline
+# --channel is optional since 2026-08-31 (a first instance follows the app's pipeline
 # entry, not stable), and naming it explicitly is never wrong.
 
 GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build \
   -ldflags "-X github.com/carlosframework/rastrillo.BuildVersion=$(git rev-parse --short HEAD)" \
   -o myapp-linux-arm64 ./cmd/myapp
 
-carlos deploy -app myapp ./myapp-linux-arm64
+carlos deploy --app myapp --message "Publish the first working app" ./myapp-linux-arm64
 ```
+
+Agents pass `--message` on deploys and other mutations that support it. Describe
+what is being changed in one concise sentence; the Activity entry records the
+version and target separately. Do not wait for the interactive prompt during an
+automated run. See [Activity descriptions](../building-carlos-apps/references/platform.md#describe-changes-in-activity).
 
 The platform's boxes are **linux/arm64** — build exactly that, statically
 (`CGO_ENABLED=0`; cgo is why the framework uses `modernc.org/sqlite`).
@@ -185,14 +200,14 @@ arguments.
 No instance, no binary — deploy the directory:
 
 ```sh
-carlos deploy -app myapp -kind static -host myapp.<sqid>.oncarlos.com ./public
+carlos deploy --app myapp --kind static --host myapp.<sqid>.oncarlos.com ./public
 ```
 
-`-host` is required on the **first** static deploy and only that one: a
+`--host` is required on the **first** static deploy and only that one: a
 static app has no instance record yet, so there is nothing to resolve the
 host and channel from. That deploy attaches the host and writes the
 record; afterwards `carlos deploy` from the project dir resolves both on
-its own. Omitting `-host` on a first deploy is a refusal, not a default.
+its own. Omitting `--host` on a first deploy is a refusal, not a default.
 
 **Do not run `carlos instances enable` or `create` here.** "No instance"
 is literal: a static site is served by the edge straight off the channel
@@ -207,8 +222,8 @@ The deploy's own `live` line is the primary proof. To re-verify by hand:
 
 ```sh
 curl -sI https://myapp.<sqid>.oncarlos.com | grep -i x-carlos-version
-carlos channels -app myapp     # what each channel currently serves
-carlos logs -app myapp -f      # merged app + platform timeline, no box access
+carlos channels --app myapp     # what each channel currently serves
+carlos logs --app myapp -f      # merged app + platform timeline, no box access
 ```
 
 Two traps, both paid for:
@@ -225,14 +240,19 @@ Two traps, both paid for:
 
 | Want | Command |
 |---|---|
-| Release again | `carlos deploy` (zero-arg, from the project dir) |
-| Config var | `carlos env set -app myapp KEY=value` (converges in seconds) |
-| Secret | `carlos secrets set -app myapp KEY=value` (sealed, never printed) |
-| Tail logs | `carlos logs -app myapp -f` |
-| Bounce the process | `carlos restart -app myapp` |
-| Undo a release | `carlos rollback -app myapp edge` |
-| List releases | `carlos releases -app myapp` |
-| Custom domain | `carlos domains attach -app myapp www.example.com` — it tells you the DNS records to create; certs are automatic once DNS points at the platform |
+| Release again | `carlos deploy --message "Fix invoice rounding"` (from the project dir) |
+| Config var | `carlos env set --app myapp --message "Update the app setting" KEY=value` (converges in seconds) |
+| Secret | `carlos secrets set --app myapp KEY=value` (sealed, never printed) |
+| Tail logs | `carlos logs --app myapp -f` |
+| Bounce the process | `carlos restart --app myapp --message "Restart after changing configuration"` |
+| Undo a release | `carlos rollback --app myapp edge` |
+| List releases | `carlos releases --app myapp` |
+| Custom domain | `carlos domains attach --app myapp www.example.com` — it tells you the DNS records to create; certs are automatic once DNS points at the platform |
+| Review a branch | `carlos canary --app myapp ./myapp-linux-arm64` — a branch-only channel and URL that cannot disturb production. If the app carries config, pass `--environment`, or the canary host serves GETs and fails every form |
+| Who is visiting | `carlos analytics --app myapp --set-count edge`, then `--range 7d` — counted at the edge: no JavaScript, no cookie, no stored IP, so don't add an analytics script |
+| What is breaking | `carlos errors --app myapp --since 24h` — your `error` log lines plus the 5xx the edge saw, grouped, no wiring at all |
+| Keep it private | `carlos gate set --app myapp` — one shared password in front of the hostname, for a prototype nobody should read yet |
+| Feature switch | `carlos features set --app myapp beta-ui=v2` — the platform serves it, only your app reads it, and it lands with no restart |
 
 Everything above is a console-mediated write that boxes converge within
 seconds. There is no restart-by-SSH, no cert ceremony, no Litestream
