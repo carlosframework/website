@@ -31,7 +31,7 @@ a first app live, decide everything for me", use the sibling skill
 **carlos:getting-started** — it is this skill with all four decision axes
 pre-answered with the defaults.
 
-## Where this sits now (2026-09-07)
+## Where this sits now (2026-09-27)
 
 The family's conventions have progressively become running infrastructure.
 Read this skill alongside three facts:
@@ -44,14 +44,19 @@ Read this skill alongside three facts:
   so are **canaries** (`carlos canary`), **timetables**
   (`carlos schedule`), **errors and analytics** counted at the edge with
   no SDK, a **password gate** in front of a hostname, **feature flags**,
-  and **latency DNS steering**. Reach for a platform verb before building
-  any of them into an app.
+  and **latency DNS steering** — and since September, **server-held
+  credentials** (`carlos services`) so a signup flow can create a
+  customer's instance itself, **path routes** so one hostname can serve
+  each customer from their own instance, a **STUN/TURN relay**
+  (`carlos relay`), and **self-serve object storage** (apply once per
+  account, then `carlos store create`). Reach for a platform verb before
+  building any of them into an app.
   **[references/platform.md](references/platform.md)** is the member-side
   reference — concepts, the full verb table, and the deploy truths.
 - **Carloku** (carloku.com) is the hosted deployment of that platform —
   the default hosting answer, with a free tier. Carloku is the product
   brand; the CLI is always `carlos`.
-- **Rastrillo** is the CARLOS web framework (v0.17.0; repo at
+- **Rastrillo** is the CARLOS web framework (v0.27.0; repo at
   `github.com/rastrilloorg/rastrillo`, module path still
   `github.com/carlosframework/rastrillo`): a middle layer of known
   libraries — GORM models, chi routes, SQLite-backed sessions, identity
@@ -184,7 +189,7 @@ The ones the family invokes operationally:
 | JS discipline | 300-line module cap enforced by test, ratchet-down only; VanJS (vendored) the one sanctioned reactive dependency |
 | Routing, TLS, replication, hibernation, restarts | The platform's job — see platform.md; hand-rolled only off-platform (blueprint.md) |
 | Periodic work | `carlos schedule` — a time and a path; each fire is a POST to a route the app already serves, over its own socket. Never cron, never a second worker. A schedule tighter than the idle window stops the instance hibernating, and that is billed — platform.md |
-| Object storage | `carlos store create` declares a bucket, an operator grants it, credentials arrive as env; `carlos store scan` is opt-in virus scanning, off by default. It reconciles — it counts the objects it has NOT looked at — so ask for both numbers. Server-blindness wins over it: a client-encrypted store gets no coverage claim, because nothing can read the bytes — platform.md |
+| Object storage | Once per account, `carlos store apply` and a deployment operator approves; then `carlos store create` declares a bucket and credentials arrive as env; `carlos store scan` is opt-in virus scanning, off by default. It reconciles — it counts the objects it has NOT looked at — so ask for both numbers. Server-blindness wins over it: a client-encrypted store gets no coverage claim, because nothing can read the bytes — platform.md |
 | Errors and analytics | `carlos errors` needs no wiring and collects from day one (tagged log lines + edge-seen 5xx); `carlos analytics` counts at the edge with no JavaScript, no cookie, no stored IP, and is opt-in per app or account. Do not add a third-party analytics script to a CARLOS app — platform.md |
 | Canaries | `carlos canary` — a branch-only channel and hostname, outside every pipeline, seven-day lease. Review there, never on localhost. Pass `--environment` if the app carries config, or every form submission on the canary host fails — platform.md |
 | Config environments | `carlos env --environment` writes a named bundle; a route is bound to one via the instance record (`instances set-environment`), then `carlos restart --environment` cycles exactly what reads it — platform.md |
@@ -192,6 +197,10 @@ The ones the family invokes operationally:
 | Hostname-level password | `carlos gate` — one shared password at the edge in front of an app's hostnames, for a prototype or a private static site. A curtain over a hostname, never a substitute for the app's own accounts — platform.md |
 | Outbound email | `carlos email enable` — the platform mints the sending identity, publishes DKIM/SPF/DMARC, delivers SMTP credentials as env; never run an MTA or hold a cloud mail key — platform.md |
 | Scheduled work | `carlos schedule set` declares it; the app's part is a POST handler guarded by `carlos.Tick` — the instance is asleep, so never an in-process cron — platform.md |
+| A customer per instance | The signup app holds an `instance`-role credential (`carlos services create --role instance --app <tenant-app>`) and `POST`s `/api/cli/apps/<account>/<tenant-app>/instances` — customers are instances, never Carloku accounts. The credential is app-wide, so it lives on the signup app only — platform.md "Provisioning instances from your own app" |
+| One hostname, many instances | Path routes: the first path segment of a claimed hostname points at another route in the same account, on the same box. One hostname is one origin — platform.md "One hostname, many instances" |
+| Central apps (sign-in, directory, home) | Stateless: no SQLite of their own, records in object storage, so they run anywhere and lose nothing when moved |
+| WebRTC | `carlos relay enable` — the platform's STUN/TURN, delivered as `CARLOS_RELAY`; never a third-party TURN service — platform.md |
 | Hosting | Carloku hosted (default) / customer fleets / self-hosted platform — decisions.md §3 |
 | Deploys | `carlos deploy`: ship + promote + watch `X-Carlos-Version` until live; verify against the thing you changed with the binary you built. A static site is the same one command — `--kind static --host <h> <dir>`, which declares the route too — platform.md |
 | Activity descriptions | Pass a concise `--message` on supported mutations: say what changes and why. The console records the exact target separately. Agents supply the message even when prompts are disabled — platform.md |
@@ -248,6 +257,8 @@ The ones the family invokes operationally:
 |---|---|
 | Adding a framework/bundler "just for this screen" | The no-build-step rule is load-bearing (auditability, longevity). One more ES module, one concern. |
 | Choosing the client shape because it feels modern | The client shape is for client-held keys, live channels, and server-blind state — and it must self-impose the discipline the server shape gets free (decisions.md §2). |
+| Creating a Carloku account per customer, or signing up customers with a person's CLI login | Accounts are *your* tenancy on the platform; customers are instances of your app. A signup flow holds a service credential (`carlos services`) and calls the instances API — platform.md |
+| Giving every tenant its own hostname because "the edge routes by Host only" | It no longer does: path routes split one claimed hostname by its first segment, within one account and one box — platform.md |
 | Hand-rolling a router, certs, Litestream, or restart machinery | The platform's job. An app on the platform is a binary on a unix socket (`--socket`/`--db`; there is no `$PORT`). |
 | Giving a static site an instance | It has no process to run. The edge serves it off the channel pointer, so `carlos deploy --kind static --host <h> <dir>` is the whole deploy — `instances enable`/`create` is the binary recipe, and following it here builds a route that succeeds at every step and can never wake. |
 | Concluding you have no access because the console redirected you | A `curl` of the console 302s to a login page for everyone — a browser session is not what the CLI holds. `carlos auth whoami` is the only thing that answers the question, and it is the first command of any platform task. |
