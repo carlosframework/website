@@ -129,7 +129,9 @@ sees it.
 
 **Platform cost differs too.** A server-shape app is one route. A
 client-shape product like Woodstar is several cooperating binaries with
-in-app path fan-out (the edge routes by Host only), WebSocket upgrades
+in-app path fan-out (one proxy in front of its binaries; the edge's path
+routes split a hostname only by its first segment, and only onto whole
+routes — platform.md), WebSocket upgrades
 and SSE proxied through two hops (verify the 101 through the real edge,
 never assume it), wildcard customer domains via ACME delegation, and a
 held socket that interacts with hibernation. All supported — none free.

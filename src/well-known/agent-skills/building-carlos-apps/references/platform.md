@@ -8,8 +8,11 @@ nothing but the CLI and a browser. If a task seems to need a box, either
 you are self-hosting and operating the platform itself, or you have found
 a product gap to file — never a workaround to build.
 
-Snapshot date 2026-09-07; verbs are stable, flag details evolve — trust
-`carlos <verb> -h` over this file. The CLI ships for macOS/Linux (brew,
+Snapshot date 2026-09-27, describing what Carloku's console serves (the
+platform as of 2026-09-12). Verbs are stable, flag details evolve — trust
+`carlos <verb> -h` over this file, and remember a newer CLI can offer a flag
+the console you are talking to does not have yet ("Landed, not yet on
+Carloku" at the end). The CLI ships for macOS/Linux (brew,
 apt, static binaries) and Windows (client-only zip — no self-replace,
 `carlos update` defers to a fresh download).
 
@@ -156,6 +159,21 @@ otherwise `--console` does.
   channels sit outside every pipeline, so a build that has ridden one
   still enters the pipeline fresh. Seven-day lease, refreshed on every
   re-promote. It is a URL, not a traffic split.
+- **Service credential** — a bearer token a *server* holds rather than a
+  person: a CI job that ships, a signup flow that creates an instance per
+  customer. `carlos services create --role <r> --app <app> <name>` mints
+  one; reach is fixed at mint and bound to one account and (with `--app`)
+  one app. Roles, narrowest first: `publish` (ship releases), `instance`
+  (create, delete, repoint and move the app's instances, attach its
+  domains, write its path routes, read its logs, errors and analytics),
+  `operate`, and `admin` (which includes minting store IAM users — a real
+  handover). No role can run `carlos instances enable` or mint another
+  credential. "Provisioning instances from your own app" below.
+- **Path routes** — one hostname split by its first path segment:
+  `example.com/acme` served by one route, `example.com/globex` by another,
+  everything else by the hostname's own route. A prefix *points at* an
+  existing route and borrows its channel, config, hibernation and billing;
+  it defines nothing of its own. "One hostname, many instances" below.
 - **`.carlos/config`** — two layers, global `~/.carlos/config` and
   per-project `./.carlos/config` (committed; nearest wins walking up).
   Holds console, account, app, kind, artifact — the reason zero-argument
@@ -212,12 +230,14 @@ ship and promote steps.
 | `carlos errors` | One row per distinct error, newest first — `error`-tagged log lines plus edge-seen 5xx, no wiring at all. `--fp <fingerprint>` expands a group; `--set-level warn` widens what counts |
 | `carlos analytics` | Page views, daily visitors, bytes, top pages/referers/events, counted at the edge. `--set-count edge` turns it on; `--range today\|7d\|30d` |
 | `carlos logs` | Merged app + platform + edge timeline (`-f` follows, `--grep`, `--since`) — no box access |
-| `carlos domains attach\|detach\|list` | Claim customer hostnames (`--wildcard`, `--catchall`); prints the DNS records to create; certs follow automatically. Since 2026-08-27 the platform orders and renews those certs itself, and `list` joins the fleet's readings sweep, so DNS state, certificate expiry and delegation are readable from the terminal — a certificate the platform has given up on now says so instead of sitting pending forever |
-| `carlos store create\|status\|rotate\|scan` | Declare object storage; credentials arrive as env; member-driven key rotation. `scan` is opt-in virus scanning over the bucket's objects (`request`/`status` are yours, `grant`/`revoke`/`sweep`/`enforce` a deployment operator's) — and a scanner cannot read ciphertext, so a client-encrypted store is marked not applicable rather than given a coverage claim |
+| `carlos domains attach\|detach\|list\|paths` | `paths <host>` prints the hostname's published path-route map (written through the API — "One hostname, many instances"). Claim customer hostnames (`--wildcard`, `--catchall`); prints the DNS records to create; certs follow automatically. Since 2026-08-27 the platform orders and renews those certs itself, and `list` joins the fleet's readings sweep, so DNS state, certificate expiry and delegation are readable from the terminal — a certificate the platform has given up on now says so instead of sitting pending forever |
+| `carlos store apply\|create\|status\|rotate\|scan` | Object storage. **Once per account, first:** an owner runs `store apply --account <a> --note "<why>"` and a deployment operator approves it — until then `create` has nothing to provision into, and `status` says the account is unapproved or pending. After approval `create` is the whole member workflow (unlimited stores, usage metered); credentials arrive as env; `rotate` is two-phase (`--finish` retires the old key). `scan` is opt-in virus scanning over the bucket's objects (`request`/`status` are yours, `grant`/`revoke`/`sweep`/`enforce` a deployment operator's) — and a scanner cannot read ciphertext, so a client-encrypted store is marked not applicable rather than given a coverage claim |
 | `carlos email enable\|status\|test\|domains\|credentials\|rotate` | Declare sending; provision a verified domain; SMTP credentials arrive as env (`pause`/`resume` are a deployment operator's) |
+| `carlos relay enable\|status\|disable` | The platform's own STUN/TURN relay for an app's WebRTC calls. `enable` delivers `CARLOS_RELAY` (base64 JSON: per-region ICE URLs, a key, a username suffix) and the app mints a TURN credential per call from the key; `status` shows issue, pickup and per-region health. `enable` refuses, with a sentence, on a deployment that runs no relay. Never run coturn or buy a TURN service |
+| `carlos services create\|ls\|rotate\|revoke` | Server-held credentials (`--role publish\|instance\|operate\|service\|admin`, `--app` to bind one app); the secret prints once; `rotate` refuses the old secret on its next call, `revoke` stops the credential outright |
 | `carlos schedule ls\|set\|rm\|run` | Declare recurring work per app (`--every 6h` or `--cron "0 8 * * *"` → a `POST` to a path your app serves); `ls` shows next/last per instance; `run` fires one now |
 | `carlos ledger append\|publish\|verify` | Open hash-chained per-app ledgers (the transparency machinery) |
-| `carlos accounts create\|list\|migrate` | Mint/list accounts; move an app between them |
+| `carlos accounts create\|list\|migrate` | Mint/list accounts; move an app between them. An account is *your* tenancy on the platform — never create one per customer of your app (customers are instances: "Provisioning instances from your own app") |
 | `carlos skills` | List the deployment's published agent skills (`/.well-known/agent-skills/index.json`) and fetch one, digest-verified, to stdout |
 | `carlos fleets create\|add-box\|rotate-token\|…` | Bring-your-own-boxes fleets that dial the console |
 | `carlos update` | Update the CLI binary itself (signature-verified; defers to brew/apt) |
@@ -227,6 +247,97 @@ Box-side verbs exist (`edge`, `agent`, `adopt`, `route`, `add`, `ops`,
 `bootstrap`) but they are the *operator's* surface for running a platform
 deployment — a member never types them, and an agent reaching for them on
 a member task has taken a wrong turn.
+
+## Provisioning instances from your own app
+
+A product where every customer gets their own instance creates those
+instances itself, at signup, through the same console API the CLI uses.
+Nothing here needs a box, and nothing here is a workaround:
+
+1. **A person enables the app once** — `carlos instances enable --app
+   <tenant-app>`. This writes the manifest that bounds which domain, pool
+   and regions any instance may be created in, and no credential can do
+   it.
+2. **Mint the credential** — `carlos services create --role instance --app
+   <tenant-app> signup`. Store it with `carlos secrets set` on the app
+   that runs signup, **never on the tenant app itself**: every tenant
+   instance would then hold a token able to delete its siblings.
+3. **Create on signup** — `POST /api/cli/apps/<account>/<tenant-app>/instances`
+   with `Authorization: Bearer <credential>` and a JSON body; `host` is
+   required (one DNS label plus the manifest's domain), `region`,
+   `channel`, `environment` and `message` (the Activity description) are
+   optional. The console writes the
+   record and announces it, and a box mints the route within seconds.
+4. **Wait for the real thing** before sending the person there: poll
+   `https://<host>/api/version` for a 200 (a sub-500 answer is not
+   evidence), behind a zero-JS "getting your space ready" page that
+   refreshes itself.
+
+Give every label a random suffix (`<slug>-<6 random base32 chars>`, the
+label being the host's first DNS segment). That makes a collision with
+somebody else's instance a first-call event, so the one retry below can
+read its 409 without guessing.
+
+The answers to handle, from the apps that run this:
+
+| Status | Meaning | Do |
+|---|---|---|
+| `201` | Created | Wait for `/api/version`, then hand off |
+| `409` | That host already exists (or a sibling app owns the label) | Never treat it as yours: pick a new label. On a *retry of your own timed-out call*, a 409 means the first call worked |
+| `429` | The credential's own rate limit (it is separate from any person's, so a signup burst never starves your promotes) | Show a sentence and a retry; never loop |
+| `502` / timeout | The console could not complete the write | Retry once with the **same** host |
+| `400` | Bad body, or a host that is not one label plus the manifest's domain | A bug on your side; fail loudly |
+| `401` / `404` | Bad credential, or the wrong account or app (every miss is the same 404) | A configuration bug; fail loudly |
+
+Also on the same credential: `GET .../instances` (list), `GET`, `PATCH`
+(repoint addrs/probe) and `DELETE .../instances/<host>`, and
+`POST/PUT .../domains` for customer hostnames. **Deleting an instance
+removes its record, never its data** — the parked database and blobs are
+left in place on purpose, and the call is idempotent.
+
+**The known gap:** the `instance` role is app-wide. One credential can
+create, delete or move *every* instance of the app, not only the ones it
+made. That is why it lives on the signup app alone, and why a signup app
+compromise must be named in your published trade-offs. A narrower,
+create-only credential is a filed platform request — do not build your own
+token broker around it.
+
+## One hostname, many instances
+
+Path routes let one hostname — your product's own domain — serve each
+customer from their own instance, so `example.com/acme` and
+`example.com/globex` are two processes and two databases behind one
+address. The hostname's own route keeps everything else (`/`, sign-in,
+marketing).
+
+- The hostname must be one the app holds: `carlos domains attach --app
+  <hub-app> example.com` first.
+- The map is written **whole** through the API, by a person or by the
+  hub app's `instance`/`publish` credential:
+  `PUT /api/cli/apps/<account>/<hub-app>/domains/example.com/paths` with
+  `{"paths": {"acme": "acme.<tenant-domain>", "globex": "globex.<tenant-domain>"}}`.
+  Keys are one bare path segment (no slash); values are hostnames of
+  existing routes. Publish the full map from your own records every time —
+  a lost delta desyncs silently, a whole republish repairs. `{"paths": {}}`
+  clears it; a body without the `paths` wrapper is refused, so a typo can
+  never wipe the map.
+- **Targets must belong to the same account** (they may be another app of
+  that account — a hub app pointing at tenant-app instances is the
+  intended shape).
+- **Targets must live on the same box as the hostname's own route.** A
+  target homed elsewhere is silently ignored and its prefix falls through
+  to the hostname's route. That caps a path-routed product at one box
+  today; cross-box path targets are a filed platform request.
+- A write goes live in about five seconds. `carlos domains paths --app
+  <hub-app> example.com` prints what was published; `carlos routes`
+  shows what the box actually applied.
+- The upstream receives the original path (`/acme/...`) unchanged, and the
+  target route is what is billed, versioned and woken.
+- **One hostname is one browser origin.** Cookies, storage and script
+  are shared across every prefix, so every tenant's pages can act on the
+  hub's session. That is fine while every tenant runs your app's code; if
+  tenants serve HTML their own customers wrote, give each tenant its own
+  hostname instead.
 
 ## Deploying a static site
 
@@ -598,6 +709,17 @@ specific time; a daily schedule whose handler asks its own database
 - **Stamp your build version.** For rastrillo apps,
   `-ldflags "-X github.com/carlosframework/rastrillo.BuildVersion=<sha>"`
   — or every release's `/api/version` reports `dev`.
+
+## Landed, not yet on Carloku
+
+Merged to the platform after 2026-09-12 and not yet served by Carloku's
+console, so a flag for them may exist in your CLI and still be refused:
+per-instance private storage (`carlos instances enable --private-storage`,
+and `store create --environment`), read replicas near buyers
+(`instances create --role replica --replicas`), `carlos email events` and
+`events push` (bounce and complaint webhooks), instance config overlays,
+and the Availability tab. Build nothing to stand in for them; check
+`carlos <verb> -h` against the console and wait.
 
 ## Self-hosting the platform
 
