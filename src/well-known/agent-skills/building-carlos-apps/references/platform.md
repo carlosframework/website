@@ -600,7 +600,7 @@ The app's whole part is a handler on that path:
 ```go
 // POST /jobs/sync
 func handleSync(w http.ResponseWriter, r *http.Request) {
-	if !carlos.Tick(r) {           // github.com/carlosframework/rastrillo/carlos
+	if !carlos.Tick(r) {           // amadan.net/rastrillo/rastrillo/carlos
 		http.Error(w, "forbidden", http.StatusForbidden)
 		return
 	}
@@ -707,7 +707,7 @@ specific time; a daily schedule whose handler asks its own database
   merging behind yours cancels your run and ships a commit *containing*
   yours.
 - **Stamp your build version.** For rastrillo apps,
-  `-ldflags "-X github.com/carlosframework/rastrillo.BuildVersion=<sha>"`
+  `-ldflags "-X amadan.net/rastrillo/rastrillo.BuildVersion=<sha>"`
   — or every release's `/api/version` reports `dev`.
 
 ## Landed, not yet on Carloku
