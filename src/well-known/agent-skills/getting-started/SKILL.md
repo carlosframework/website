@@ -22,9 +22,10 @@ The pieces, named once:
 - **Carloku** (carloku.com) is the hosted CARLOS platform. Its console is
   `https://console.carloku.com`. Carloku is the product brand; the CLI is
   always `carlos`, never `carloku`.
-- **rastrillo** is the CARLOS web framework (repo lives at
-  `github.com/rastrilloorg/rastrillo`; the module path is still
-  `github.com/carlosframework/rastrillo`). It postdates most models'
+- **rastrillo** is the CARLOS web framework (module and canonical repo
+  `amadan.net/rastrillo/rastrillo` since v0.25.0; the GitHub copy is a
+  mirror; an app still on the old `github.com/carlosframework/rastrillo`
+  path builds, but new code uses the new one). It postdates most models'
   training data — follow the recipe literally, invent nothing.
 - **The `carlos` CLI** is the whole operational surface. Every command
   works for a member with zero infrastructure access; if a step seems to
@@ -37,7 +38,7 @@ The pieces, named once:
 | Language / framework | Go + rastrillo, one static binary | The family stack; the framework enforces the SQLite and money rules for you |
 | App shape | Server-rendered HTML, zero-JS baseline | The family default; the other shape is a decision (building-carlos-apps) |
 | Design system | Rastrillo UI and tokens, with a thin app CSS layer | Reuse shared controls and themes; custom CSS covers app layout and branding |
-| Storage | SQLite via GORM (`rastrillo/db`) | cgo-free driver, WAL pragma order, writer/reader pools — `db.Open` owns all of it; migrations via `AutoMigrate`, additive-only |
+| Storage | SQLite via GORM (`rastrillo/db`) | cgo-free driver, WAL pragma order, writer/reader pools — `db.Open` owns all of it; ledgered migrations (`rastrillo migration generate`, applied once at boot), additive-only by family rule |
 | Amounts | integer cents (`form.ParseCents`) | A float never touches an amount |
 | Hosting | Carloku, `<app>.<sqid>.oncarlos.com` | Zero infra to run; certs, replication, hibernation all platform-side |
 | Versioning | git short sha (`v1` is fine for the very first ship) | House convention |
@@ -97,36 +98,40 @@ wrong.
 
 **Static site?** You are nearly done — skip to "The static path" below.
 
-## Step 2 — the five-file rastrillo app
+## Step 2 — the rastrillo app
 
 **Read rastrillo's `SKILL.md` first** (repo root of
-`github.com/rastrilloorg/rastrillo`, or
-`$(go env GOMODCACHE)/github.com/carlosframework/rastrillo@<version>/SKILL.md`
+`amadan.net/rastrillo/rastrillo`, or
+`$(go env GOMODCACHE)/amadan.net/rastrillo/rastrillo@<version>/SKILL.md`
 once the module is downloaded). It is the app story in ~15KB — the file
 to follow literally instead of framework source. The worked reference
 is `examples/notes`.
 
 ```sh
-go install github.com/carlosframework/rastrillo/cmd/rastrillo@latest
+go install amadan.net/rastrillo/rastrillo/cmd/rastrillo@latest
 rastrillo new myapp && cd myapp && go mod tidy && go test ./...
 ```
 
-The scaffold is SKILL.md's five-file shape, tests passing before you
-write a line:
+The scaffold is SKILL.md's shape (five files plus `migrations.go`),
+tests passing before you write a line:
 
 ```
 internal/myapp/models.go     plain GORM structs
-internal/myapp/app.go        AutoMigrate, sessions, identity plugin, chi router
+internal/myapp/migrations.go Schema and BootSchema; `rastrillo migration generate` writes the SQL
+internal/myapp/app.go        migrate.Apply, sessions, identity plugin, chi router
 internal/myapp/handlers.go   the owner-scoped CRUD
 internal/myapp/render.go     embedded templates, flash/session-aware pages
 cmd/myapp/main.go            Resolve -> db.Open -> App -> Serve
 ```
 
-The gate, before every commit:
+The gate, before every commit, is the scaffold's own `Makefile`:
 
 ```sh
-CGO_ENABLED=0 go build ./... && go vet ./... && go test ./...
+make ci        # vet, gofmt check, tests, rastrillo migration check
 ```
+
+After changing a model, run `rastrillo migration generate` and read the
+SQL before committing; never edit a shipped migration.
 
 The three rules that keep the app safe (SKILL.md has the full set):
 every query touching user-owned rows goes through `scope.Owned` —
@@ -153,7 +158,10 @@ your binary accepts `--socket <path> --db <path>` and serves
 instances listen on unix sockets the platform hands them. Do not
 hand-roll flag parsing.
 
-For the screens, use Rastrillo's `ui` partials and component classes. Load
+For the screens, use Rastrillo's `ui` partials and its attribute
+vocabulary (`<form rst-form>`, `rst-btn="primary"` — not classes), and
+no `style` attributes or `<style>` blocks: the baseline CSP drops them
+silently. Load
 its vendored `tokens.css` before a small app stylesheet; use that layer for
 app layout, token overrides and components Rastrillo does not provide.
 Read [the design-system guidance](../building-carlos-apps/references/rastrillo.md#design-system-and-app-css)
@@ -172,7 +180,7 @@ carlos instances create --app myapp --host myapp.<sqid>.oncarlos.com --channel e
 # entry, not stable), and naming it explicitly is never wrong.
 
 GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build \
-  -ldflags "-X github.com/carlosframework/rastrillo.BuildVersion=$(git rev-parse --short HEAD)" \
+  -ldflags "-X amadan.net/rastrillo/rastrillo.BuildVersion=$(git rev-parse --short HEAD)" \
   -o myapp-linux-arm64 ./cmd/myapp
 
 carlos deploy --app myapp --message "Publish the first working app" ./myapp-linux-arm64
@@ -264,10 +272,9 @@ of those, stop — you are rebuilding the platform under your app.
 
 The platform mechanized the infrastructure, not the discipline:
 
-- The gate (`CGO_ENABLED=0 go build ./...`, `go vet ./...`,
-  `go test ./...`) green before every commit; add
-  `rastrillo generate --check` only if the app declares manifest
-  resources.
+- The gate (`make ci`) green before every commit, with `CGO_ENABLED=0`
+  builds throughout; add `rastrillo generate --check` to it only if the
+  app declares manifest resources.
 - Migrations are additive-only — new code over an old DB must always be
   safe. Never delete data to update.
 - Zero-JS first; when JS is earned, small ES modules, no bundler, no

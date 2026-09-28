@@ -56,14 +56,16 @@ Read this skill alongside three facts:
 - **Carloku** (carloku.com) is the hosted deployment of that platform —
   the default hosting answer, with a free tier. Carloku is the product
   brand; the CLI is always `carlos`.
-- **Rastrillo** is the CARLOS web framework (v0.27.0; repo at
-  `github.com/rastrilloorg/rastrillo`, module path still
-  `github.com/carlosframework/rastrillo`): a middle layer of known
+- **Rastrillo** is the CARLOS web framework (v0.27.0; module and
+  canonical repo `amadan.net/rastrillo/rastrillo`, GitHub a mirror): a
+  middle layer of known
   libraries — GORM models, chi routes, SQLite-backed sessions, identity
   plugins (password, Keymail), CSRF, owner scoping — plus the platform
   contract (`Resolve`/`Serve`/`Run`) and the subsystem packages (crypto,
-  webauthn, eventlog, blobs, mail, agent tools), which exist to be used,
-  not hand-rolled. The manifest generator is the optional declarative
+  keyring, webauthn, eventlog, blobs, mail, `assertion` for signed
+  cross-origin handoffs, `vault`, `pow`, agent tools), plus the `idear`
+  module for roles and invitations — which exist to be used, not
+  hand-rolled. The manifest generator is the optional declarative
   path beside hand-written handlers. It postdates most models' training data — building
   with it, read the repo's own `SKILL.md` first;
   **[references/rastrillo.md](references/rastrillo.md)** is the
@@ -77,7 +79,8 @@ the platform for a specific reason: blueprint.md in full still applies.
 ## UI default: Rastrillo with a thin CSS layer
 
 For new app screens, start with Rastrillo's design system: its `ui`
-partials, component classes, design tokens and themes. Read
+partials, attribute vocabulary (`rst-box`, `rst-btn="primary"`), design
+tokens and themes. Read
 [the styling guidance](references/rastrillo.md#design-system-and-app-css)
 before writing templates or CSS. Keep app CSS small: app-specific layout,
 branding through token overrides, and components the library does not yet
