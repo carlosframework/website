@@ -148,7 +148,7 @@ if (exists(changelogPage)) {
       .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(Number(d)))
       .replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
   const addressRe = /[a-z0-9._%+~-]+@[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}/i;
-  const privateRe = /^\/carlosframework\/(platform|platform-infrastructure|carloku[a-z-]*)(\/|$)/i;
+  const privateRe = /^\/carlosframework\/(platform|platform-infrastructure|carloku[a-z-]*)(\.git)?(\/|$)/i;
   const visible = decode(html.replace(/<(script|style)[\s\S]*?<\/\1>/gi, " ").replace(/<[^>]+>/g, ""));
   const seen = visible.match(addressRe);
   if (seen) fail(`platform/changelog: shows the address ${seen[0]}`);
@@ -164,7 +164,7 @@ if (exists(changelogPage)) {
     if (u.protocol === "mailto:" || addressRe.test(decodeURIComponent(u.href))) {
       fail(`platform/changelog: links an address (${raw})`);
     }
-    if (/^(www\.)?github\.com$/i.test(u.hostname) && privateRe.test(decodeURIComponent(u.pathname))) {
+    if (/(^|\.)github(usercontent)?\.com\.?$/i.test(u.hostname) && privateRe.test(decodeURIComponent(u.pathname))) {
       fail(`platform/changelog: links the private repo ${u.href}`);
     }
   }
