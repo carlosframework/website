@@ -138,16 +138,36 @@ if (exists(changelogPage)) {
   }
   // Nothing on the public page may be an email address or point into a
   // private repo, however it was encoded on the way in. The platform
-  // repo's gate checks the data; this checks what the browser gets.
-  const decoded = html
-    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
-    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(Number(d)))
-    .replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">")
-    .replace(/%([0-9a-f]{2})/gi, (_, h) => String.fromCharCode(parseInt(h, 16)));
-  const address = decoded.match(/[a-z0-9._%+~-]+@[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}/i);
-  if (address) fail(`platform/changelog: publishes the address ${address[0]}`);
-  const priv = decoded.match(/github\.com\/carlosframework\/(platform|platform-infrastructure|carloku[a-z-]*)\b/i);
-  if (priv) fail(`platform/changelog: links the private repo ${priv[0]}`);
+  // repo's gate checks the data; this checks what the browser gets: the
+  // text a reader sees (tags stripped, so "ops<strong>@</strong>x.org"
+  // reads as the address it is) and every link as the browser resolves
+  // it (so "carlosframework/./platform" is the private repo).
+  const decode = (t) =>
+    t
+      .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+      .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(Number(d)))
+      .replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+  const addressRe = /[a-z0-9._%+~-]+@[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}/i;
+  const privateRe = /^\/carlosframework\/(platform|platform-infrastructure|carloku[a-z-]*)(\/|$)/i;
+  const visible = decode(html.replace(/<(script|style)[\s\S]*?<\/\1>/gi, " ").replace(/<[^>]+>/g, ""));
+  const seen = visible.match(addressRe);
+  if (seen) fail(`platform/changelog: shows the address ${seen[0]}`);
+  for (const m of html.matchAll(/\b(?:href|src|action)="([^"]*)"/gi)) {
+    const raw = decode(m[1]);
+    let u;
+    try {
+      u = new URL(raw, "https://carlosframework.com/platform/changelog/");
+    } catch {
+      fail(`platform/changelog: unparseable link ${raw}`);
+      continue;
+    }
+    if (u.protocol === "mailto:" || addressRe.test(decodeURIComponent(u.href))) {
+      fail(`platform/changelog: links an address (${raw})`);
+    }
+    if (/^(www\.)?github\.com$/i.test(u.hostname) && privateRe.test(decodeURIComponent(u.pathname))) {
+      fail(`platform/changelog: links the private repo ${u.href}`);
+    }
+  }
 }
 
 for (const p of [...pages, changelogPage].filter(exists)) {
