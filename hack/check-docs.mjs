@@ -52,6 +52,7 @@ const exists = (p) => {
 const requiredSitePaths = [
   "index.html",
   "platform/index.html",
+  "platform/changelog/index.html",
   "rastrillo/index.html",
   "site.css",
   "docs.css",
@@ -116,7 +117,22 @@ const pageFor = (href) => {
   return join(docs, rel, "index.html");
 };
 
-for (const p of pages) {
+// The platform changelog links into the docs from outside them, so its
+// links are held to the same rule. Its own section ids are checked too:
+// every release in the vendored data must have one.
+const changelogPage = join(site, "platform", "changelog", "index.html");
+if (exists(changelogPage)) {
+  const html = readFileSync(changelogPage, "utf8");
+  idsFor.set(changelogPage, new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1])));
+  const data = JSON.parse(readFileSync("src/_data/docschangelog.json", "utf8"));
+  if (!Array.isArray(data.releases) || data.releases.length === 0) fail("docschangelog.json lists no releases");
+  for (const r of data.releases ?? []) {
+    const id = r.tag.replace(/\./g, "-");
+    if (!idsFor.get(changelogPage).has(id)) fail(`platform/changelog: no section id="${id}" for ${r.tag}`);
+  }
+}
+
+for (const p of [...pages, changelogPage].filter(exists)) {
   const html = readFileSync(p, "utf8");
   const where = relative(site, p);
   for (const m of html.matchAll(docsHref)) {

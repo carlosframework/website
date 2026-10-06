@@ -139,6 +139,21 @@ export default function (eleventyConfig) {
 
   eleventyConfig.addFilter("docsSlugify", slugify);
 
+  // The platform changelog (/platform/changelog/). Its release notes are
+  // markdown from the published releases; they render through their own
+  // instance with raw HTML off, since nothing in a release body should
+  // reach the page as markup.
+  const notesMd = markdownIt({ html: false, linkify: false, typographer: false });
+  eleventyConfig.addFilter("notesMd", (src) => notesMd.render(String(src ?? "")));
+  eleventyConfig.addFilter("notesMdInline", (src) => notesMd.renderInline(String(src ?? "")));
+  // "v0.24.2" -> "v0-24-2": a section id that reads as the tag.
+  eleventyConfig.addFilter("releaseId", (tag) => String(tag).replace(/\./g, "-"));
+  // "/docs/cli#carlos-db" -> "carlos db"; "/docs/cli" -> "cli".
+  eleventyConfig.addFilter("docsLabel", (href) => {
+    const [page, frag] = String(href).replace(/^\/docs\/?/, "").split("#");
+    return (frag || page || "docs").replace(/-/g, " ");
+  });
+
   // A page's own "# " title. The vendored markdown carries no front
   // matter — it is the platform repo's file, byte for byte — so the
   // title is read from the source rather than declared twice.
