@@ -129,7 +129,25 @@ if (exists(changelogPage)) {
   for (const r of data.releases ?? []) {
     const id = r.tag.replace(/\./g, "-");
     if (!idsFor.get(changelogPage).has(id)) fail(`platform/changelog: no section id="${id}" for ${r.tag}`);
+    // The template renders exactly two forms of notes; any other value
+    // would drop a release's notes and still build.
+    const n = r.notes;
+    if (n && !((n.form === "bullets" && n.sections?.length) || (n.form === "markdown" && n.md))) {
+      fail(`platform/changelog: ${r.tag} has notes the page cannot render (form ${JSON.stringify(n.form)})`);
+    }
   }
+  // Nothing on the public page may be an email address or point into a
+  // private repo, however it was encoded on the way in. The platform
+  // repo's gate checks the data; this checks what the browser gets.
+  const decoded = html
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(Number(d)))
+    .replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .replace(/%([0-9a-f]{2})/gi, (_, h) => String.fromCharCode(parseInt(h, 16)));
+  const address = decoded.match(/[a-z0-9._%+~-]+@[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}/i);
+  if (address) fail(`platform/changelog: publishes the address ${address[0]}`);
+  const priv = decoded.match(/github\.com\/carlosframework\/(platform|platform-infrastructure|carloku[a-z-]*)\b/i);
+  if (priv) fail(`platform/changelog: links the private repo ${priv[0]}`);
 }
 
 for (const p of [...pages, changelogPage].filter(exists)) {

@@ -1120,10 +1120,7 @@
               ]
             },
             {
-              "person": "Tony Wood",
-              "agents": [
-                "claude"
-              ]
+              "person": "Tony Wood"
             }
           ]
         }
@@ -2483,9 +2480,7 @@
       "sha": "16593de5eb27ba96f74423520e4728008059f990",
       "published": true,
       "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.18.0",
-      "notes": {
-        "form": "markdown"
-      },
+      "notes": null,
       "changes": [
         {
           "sha": "16593de5eb27ba96f74423520e4728008059f990",
