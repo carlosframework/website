@@ -136,10 +136,13 @@ first, or pick another name.
 
 `carlos apps delete` moves an app to the Trash. Every route drops, custom
 domains included, the name stays reserved, and you have thirty days to
-`carlos apps restore` it. Restoring brings back releases, channels and the
-production flag exactly as they were, but no routes at all — not even the
-platform apex — so plan on adding those again. Delete is refused while the
-app is flagged production; clear the flag first.
+`carlos apps restore` it, or three for a temporary app. Restoring brings back
+releases, channels and the production flag exactly as they were, but no
+routes at all, not even the platform apex, so plan on adding those again.
+A temporary app is different: its instance records are kept in the Trash, so
+its hosts put its routes back on their next pass after a restore, with nothing
+to add by hand. Delete is refused while the app is flagged production. Clear
+the flag first.
 
 `--place fleet/<name>` at create, or `carlos apps place --target fleet/<name>`
 later, puts the app's routes and instances on a fleet your account owns.
@@ -169,6 +172,17 @@ Pass `-` instead of a path to clear it and go back to watching the header. It
 is worth setting on anything you deploy often. Without it, a green deploy tells
 you the release was adopted, not that the process running the old one ever
 restarted — and those look identical from outside.
+
+A temporary app is one `carlos deploy --temporary` created. When its time is
+up it moves to the Trash, and it is purged 3 days later instead of 30.
+`carlos apps ttl` moves its expiry, anywhere from an hour to 30 days from now.
+`carlos apps keep` makes it permanent, and it keeps its `tmp-` name.
+
+```sh
+carlos apps list
+carlos apps ttl --app tmp-docs 5d
+carlos apps keep --app tmp-docs
+```
 
 ### carlos ship
 
@@ -256,6 +270,17 @@ When `carlos deploy` creates your first app, it sends your timezone so the
 console can pick the region nearest you, and prints the choice. `--region
 <code>` chooses instead. On an app that already exists, `--region` must
 match the app's region, or deploy stops before shipping anything.
+
+`--temporary` creates a new app for a static site that cleans up after
+itself. It is named `tmp-` plus six random letters and digits, or
+`tmp-<name>` with `--app <name>`, and lives 7 days unless `--ttl` says
+otherwise (1h to 30d). `--ttl` on its own implies `--temporary`. A temporary
+app is served only at its own platform address, so `--host` and
+`--kind binary` are refused with it, and an account holds at most 20 of them.
+
+```sh
+carlos deploy --temporary --ttl 3d ./dist
+```
 
 #### Deploying one checkout to several places
 
@@ -850,6 +875,14 @@ owns the whole zone. A deployment that hosts apps for other people sets
 refuses every name under the apps domain and under its own hostname, because
 those names belong to the operator and not to a tenant.
 
+On a platform hostname, an app can set cookies for its own hostname or for
+its own account's platform domain (`<your-account>.<apps-domain>`), so your
+apps can share a cookie. Browsers would otherwise let an app set a cookie
+for the whole apps domain, and every other account's apps would get it. So
+when a cookie's `Domain` names anything wider, or another account, the edge
+removes the `Domain` and the cookie only goes back to the hostname that set
+it. Custom domains are left as they are.
+
 #### One name per instance: `*.<parent>`
 
 For an app with instances, attaching `*.<parent>` gives every instance a
@@ -999,6 +1032,61 @@ carlos analytics --app hello --range 7d
 `--range` is `today`, `7d` or `30d`; multi-day visitor totals are daily
 visitors summed. The same view is the Analytics tab on the app's dashboard,
 and the switch is on the Settings tab too.
+
+When the deployment has a GeoIP database, page views are also counted by
+country. A visitor the database could not place counts as `unknown`. The
+Analytics tab credits the database the counts came from.
+
+### Headers your app receives
+
+On a deployment with a GeoIP database, every request the edge passes to your
+app carries the visitor's rough location:
+
+| Header | Value |
+|---|---|
+| `X-Carlos-Geo-Country` | the country, as an ISO 3166-1 code such as `IE` |
+| `X-Carlos-Geo-Subdivision` | the state or province, as an ISO 3166-2 code such as `US-WA`. Only some databases have these |
+| `X-Carlos-Geo-Lat`, `X-Carlos-Geo-Lon` | a point, to two decimal places |
+| `X-Carlos-Geo-Source` | which database answered, such as `DBIP-City-Lite` |
+
+Any of them can be missing. They are all missing when the deployment has no
+database, when the database has no answer for the address, and on calls
+through the edge-local door, where the caller is a server rather than a
+visitor. Treat a missing header as "unknown", never as an error.
+
+The point is an area, not a position. These databases place an address to
+the right city at best, and often only to a region or a country.
+
+The edge removes any `X-Carlos-Geo-` header a visitor sends, so the values
+your app sees are always the platform's. The visitor's address is still in
+`X-Forwarded-For` if you need it.
+
+If you cache a page that differs by country, send `Vary:
+X-Carlos-Geo-Country`. The edge keeps at most eight variants of one URL, so a
+page with visitors from many countries will be served from cache less often.
+Don't vary on the coordinates: almost every visitor would get their own
+variant.
+
+**Credit the database.** If your app shows visitors anything worked out from
+these headers, it must credit the database `X-Carlos-Geo-Source` names:
+
+- `DBIP-…`: "IP Geolocation by DB-IP", linked to https://db-ip.com
+- `GeoLite2-…`: "This product includes GeoLite2 data created by MaxMind,
+  available from https://www.maxmind.com"
+
+### carlos geo
+
+```sh
+carlos geo 81.2.69.142 --app hello
+carlos geo 81.2.69.142 --app hello --json
+```
+
+The same answer the `X-Carlos-Geo-` headers carry, for an address that is
+not the current request: one from a log, a batch job or a webhook. It prints
+the country, subdivision, point and source, and the credit the database
+requires. An address the database can't place says so. Apps call the same
+door with their instance token:
+`GET /api/cli/apps/<account>/<app>/geo?ip=<address>`, at most 60 a minute.
 
 ### carlos store
 
@@ -1612,6 +1700,45 @@ a grant. The grant carries no secret material but has to travel with the key,
 because a scoped key on its own signs pointers nothing will accept. Only the
 root key can mint a grant, which is what stops a scoped key widening itself.
 
+### carlos proof
+
+Makes and carries the proofs a box can require before it adopts a build. A
+proof is signed by a proving deployment (dev, usually) and says it ran these
+exact bytes healthily. A box whose proof policy lists an app adopts a new
+build of it only with a proof, or when it has run those bytes well itself.
+
+```sh
+carlos proof keygen
+```
+
+`keygen` runs as root on the proving box. It writes a fresh signing key to
+`/etc/carlos/proving.key`, readable by root only (`--out` puts it somewhere
+else), and prints the public half. That public half goes into the `require`
+entry of each requiring box's `/etc/carlos/proof-policy.json`. It never
+overwrites a key that is already there.
+
+```sh
+carlos proof get --app console --sha256 <sha256> > proof.json
+```
+
+`get` reads a build's proof from the proving deployment's bucket and prints
+it. `--sha256` is the build's artifact hash. `--prover` picks whose proof,
+when there is more than one. When there is no proof yet, it says how long the
+build has been live on the proving box, if it has been seen there.
+
+```sh
+carlos proof put --app console proof.json
+```
+
+`put` writes that proof into the requiring deployment's bucket, where its
+boxes look for it. It checks the proof's shape but not its signature. The
+requiring box checks that against the key in its policy. Putting the same
+proof twice is fine. A different proof for the same build and prover is
+refused.
+
+`get` and `put` work only with `CARLOS_DEPLOYMENT_BUCKET` or
+`CARLOS_DEPLOYMENT_DIR` set, because a proof lives only in a bucket.
+
 ### carlos economics
 
 Records one month's AWS bill so the console's economics dashboard has a real
@@ -1730,7 +1857,7 @@ list is for people who roll releases without owning the account. It covers
 console signs an uploaded build with the deployment key and every box runs it,
 so only an owner can ship one.
 
-A box that has isolated instances refuses to install a platform release from before the instance layout, whether by update or rollback, until its layout has been reverted and every instance reports `flat`.
+A box that has isolated instances refuses to install a platform release from before the instance layout, whether by update or rollback, until its layout has been reverted and every instance reports `flat`. The box judges the candidate by the units it ships and, when the candidate's version is a release number, by that number against the first release on which isolated instances run; a locally built binary named by a commit is judged by its units alone. The console refuses the same move before it reaches a box: `update` to a named release from before the layout, or `rollback` onto one, is refused while any box reports an instance that is `nested`, `fenced` or `conflict`, or has not reported its layout at all.
 
 ```sh
 carlos system update --channel canary
@@ -1739,11 +1866,43 @@ carlos system update --channel stable --spread 10m
 carlos system rollback --channel stable
 ```
 
-A box is put on canary with `CARLOS_SYSTEM_CHANNEL=canary` in its host.env.
+#### Instance layout
+
+Every instance the activator runs used to live in one shared directory as one user, where it could read its neighbours' files. `layout migrate` moves them out: each instance gets its own directory and, from its next wake, its own mount and pid namespace, where it sees its own files and nothing else. An instance that is asleep is moved at once; one that is awake is left for up to an hour to go to sleep, then stopped briefly and moved. `--force` skips the hour. `--box` scopes the request to one box, so a fleet moves one box at a time with `carlos status --layout` showing each box's rows turn `nested`. Once a box's layout is `nested`, a newly provisioned instance on it starts out `nested`; it is never created in the shared directory first.
+
+`layout migrate` is refused while any box in scope runs a platform release from before the layout, so a fleet is rolled forward first and migrated second.
+
+You rarely need `migrate` at all. With no intent recorded, a box uses the nested layout by default as soon as its isolation is ready (the probe passes), and moves its instances on its own, with the same hour of grace for an awake one. `carlos status --layout` marks such a box `(nested by default)`, and says why a box the default has not reached is still flat. To keep box-by-box control, record `migrate --box` or `revert` first; a recorded intent always wins. A deployment that is not ready for this at all puts `CARLOS_LAYOUT_DEFAULT=flat` in each box's host.env.
+
+`layout revert` moves them back. The order for rolling the platform back to a release from before the layout is: `layout revert`, wait until `carlos status --layout` shows every instance `flat`, then `system rollback`. The console will not move a channel pointer onto such a release while any box reports otherwise, and a revert is refused while a maintenance worker is attached to a box in scope. `layout status` prints the recorded intent; what each box has done is `carlos status --layout`.
+
+```sh
+carlos system layout migrate --box kass-1
+carlos status --layout
+carlos system layout migrate
+carlos system layout revert --force
+carlos system layout status
+```
+
+Ops account owners and `CARLOS_SYSTEM_OPERATORS`, like `update` and `rollback`.
+
+A box is put on canary with `CARLOS_SYSTEM_CHANNEL=canary` in its host.env, and opts out of the nested instance layout by default with `CARLOS_LAYOUT_DEFAULT=flat` there.
 Boxes that have not reported a platform yet count as stable. `carlos system
 apply` is the root oneshot behind `carlos-system-update.service`; it is not
 for operators. The console is an app — update it with `carlos deploy --app
 console`.
+
+#### Host lifecycle guard
+
+`carlos system guard-arm` is a root-only deployment command that installs and
+arms the persistent host lifecycle checker. Supply `--policy`, `--identity`
+and `--enrollment`; console hosts also supply `--console` with the root-owned
+console executable and its `.prev` recovery image in place.
+
+`carlos system guard-exec` is the root service entry point for checking an
+image before starting `apply`, `recover`, `edge` or `console`. Once armed,
+the local floor remains enforced independently of `CARLOS_HOST_CLAIM`.
+The member command remains `carlos ops host resolve`.
 
 #### Deployment-wide object scanning
 
@@ -1769,6 +1928,52 @@ where no scan can run.
 Deployment operators only (`CARLOS_STORE_OPERATORS`). Enabling scans nothing by
 itself — a member still requests scanning for their app and an operator still
 grants it per store.
+
+#### Platform GeoIP
+
+```sh
+carlos system geoip publish dbip-city-lite-2026-10.mmdb
+carlos system geoip status
+carlos system geoip off
+```
+
+`publish` sends a MaxMind-format database, DB-IP Lite or GeoLite2, to the
+console. The console checks it, stores it in the deployment bucket, and every
+edge picks it up within 12 minutes with no restart. From then on, every
+request to every app carries the headers described under
+[Headers your app receives](#headers-your-app-receives), and analytics count
+page views by country. `publish` refuses a file that isn't a valid database,
+has no country data, or is a GeoLite2 database already past its 30 days. It
+also refuses one with under half the current database's nodes, which usually
+means a truncated file. `-force` overrides that last check only.
+
+`status` shows the published database and every box: whether it runs a build
+that removes forged geo headers, and whether it has the current database.
+Its last line says `ready` only when every box does. Publish a database only
+after the whole fleet is ready, and tell apps about the headers only after
+that. Until every box has been updated, an older box passes a visitor's
+forged headers straight through.
+
+A box that has been retired but still has an edges record keeps `status` from
+saying `ready`. Deleting its record (`control/edges/<label>.json`) retires it.
+
+`off` removes the database. Every edge stops sending the headers within 12
+minutes.
+
+**Keeping it current.** Set `CONSOLE_GEOIP_FEED` on the console and it fetches each new edition itself, checking once a day. `dbip-city-lite` is the free default and needs nothing else. For MaxMind, also set `CONSOLE_GEOIP_MAXMIND_ACCOUNT` and `CONSOLE_GEOIP_MAXMIND_KEY`: `geolite2-city` is MaxMind's free edition and `geoip2-city` its paid one. Each also comes as a `-country` edition, which is smaller and has no coordinates. MaxMind calls GeoLite2 unsuitable for commercial use, and its licence limits passing the data on, which serving it to apps may count as. Read it before choosing GeoLite2 for a commercial deployment.
+
+**The licence is yours to keep.** DB-IP Lite is licensed under CC BY 4.0
+(https://db-ip.com/db/lite.php), so pages that show its data must credit it.
+The Analytics tab does this for you, and apps are told to do the same.
+GeoLite2 comes under MaxMind's GeoLite EULA
+(https://www.maxmind.com/en/geolite/eula), which also requires replacing the
+database within 30 days of a newer release. The platform enforces that by
+dropping a GeoLite2 database 30 days after it was built. Before you publish
+GeoLite2, apply the deployment-buckets module version that expires deleted
+GeoIP files after a day; the bucket is versioned, and otherwise old copies
+would linger.
+
+Ops account owners and `CARLOS_SYSTEM_OPERATORS`.
 
 ## On the host
 
@@ -1828,10 +2033,13 @@ process. Not for operators: there is nothing to type.
 ### carlos instance-exec
 
 The first thing an isolated instance unit runs. It reads the launch file
-the agent wrote into the instance's directory and execs the host's live
+the agent wrote into the instance's directory and starts the host's live
 link with exactly the arguments and environment in it, refusing anything
-that is not the platform's own live link. `ExecStart=` of the three
-instance templates.
+that is not the platform's own live link. It then stays on as the
+instance's first process: it passes stop signals on to the app, cleans up
+exited processes, and exits with the app's status, so an app with no
+signal handling still stops cleanly. `ExecStart=` of the three instance
+templates.
 
 ### carlos instance-exit
 

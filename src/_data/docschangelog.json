@@ -3,6 +3,542 @@
   "repo": "https://amadan.net/carlos/platform",
   "releases": [
     {
+      "tag": "v0.25.0",
+      "date": "2026-10-07",
+      "sha": "2b2cc879a669b850bf8ec410b13d20673709477d",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.25.0",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Each instance runs in its own box.** Instances the platform starts on demand used to share one user and one data directory on a box, so one app could read another app's files. From this release, a box whose isolation checks pass moves every such instance into its own directory and its own mount and process namespace, where it sees its own files and nothing else. A sleeping instance moves at once; an awake one gets an hour to go to sleep, then is stopped briefly and moved. New instances on that box start out isolated. `carlos status --layout` shows where each box is.",
+                "branches": [
+                  "tenant-iso-default-nested",
+                  "tenant-iso-layout"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-status"
+                ]
+              },
+              {
+                "md": "**`carlos system layout`** lets an operator choose instead: `migrate --box <label>` moves one box at a time, and `revert` moves everything back. `status` prints what is recorded.",
+                "branches": [
+                  "tenant-iso-plan5"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-system"
+                ]
+              },
+              {
+                "md": "**Instances get CPU and IO limits** beside their memory cap, see only their own app's build, and can't reach loopback or private addresses on the box except its DNS resolver. New starts are refused while the disk is nearly full.",
+                "branches": [
+                  "tenant-iso-hardening"
+                ]
+              },
+              {
+                "md": "**Custom domains can require proof.** On a deployment that sets `CONSOLE_DOMAIN_PROOF=true`, `carlos domains attach` reserves the name and prints a TXT record, and the name isn't served until `carlos domains verify` finds it. Names under another account's platform domain are refused everywhere.",
+                "branches": [
+                  "tenant-iso-domains"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-domains"
+                ]
+              },
+              {
+                "md": "**Only a platform operator can add an upstream address** to an instance. Upstreams an instance already has keep working, and can be kept, reordered or removed.",
+                "branches": [
+                  "tenant-iso-routes"
+                ]
+              },
+              {
+                "md": "**Cookies stay within their account.** On a platform hostname, a cookie whose `Domain` reaches beyond the app's own account is made host-only by the edge.",
+                "branches": [
+                  "tenant-iso-cookies"
+                ]
+              },
+              {
+                "md": "**Instance catch-all domains.** `carlos domains attach --app <a> '*.<parent>'` gives every instance of the app a public name, `<slug>.<parent>`, with no per-instance claim or DNS.",
+                "branches": [
+                  "instance-catchall"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-domains"
+                ]
+              },
+              {
+                "md": "**`carlos email test` sends HTML too.** The test message is now multipart, with a plain-text and an HTML part, so it shows that HTML mail gets through. Apps can send any MIME message over their credential.",
+                "branches": [
+                  "multipart-email-support"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-email"
+                ]
+              },
+              {
+                "md": "**Smaller fixes.** Re-attaching a static site's own hostname to flip `--wildcard` or `--catchall` no longer turns its route into an alias of itself. A box no longer places a certificate order every hour for a platform domain whose DNS zone its provider doesn't hold.",
+                "branches": [
+                  "first-route-wildcard",
+                  "wildcard-zone-check"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Instances move to the nested layout on their own.** This is the first release on which isolated instances run. With no layout intent recorded, every box whose isolation probe passes starts moving its instances on the first change it sees after this release lands. Awake instances get an hour, then are stopped and moved. A move refused for a reason a tenant could have caused (a planted hard link, a symlinked directory) keeps that instance stopped until an operator clears it; `carlos status --layout` names it. **To keep control,** record `carlos system layout revert` before you roll, then `carlos system layout migrate --box <label>` one box at a time, or put `CARLOS_LAYOUT_DEFAULT=flat` in a box's host.env to leave that box alone.",
+                "branches": [
+                  "tenant-iso-default-nested"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-status",
+                  "/docs/cli#carlos-system"
+                ]
+              },
+              {
+                "md": "**Before rolling, check one box:** `systemctl start carlos-instance-probe.service` then read `/run/carlos-control/probe.out`. It must say `ready: true`. Landlock must be in the booted kernel's `lsm=` list, and `/etc/resolv.conf` (or resolved's upstream list) must name a resolver that isn't on loopback. A box that fails any of these stays flat and says why.",
+                "branches": [
+                  "tenant-iso-layout",
+                  "tenant-iso-hardening"
+                ]
+              },
+              {
+                "md": "**Roll the boxes before the console.** The console now trusts a loopback `X-Forwarded-For` only when the edge has signed it, and switches to requiring the signature after it first sees one. Domain proof needs boxes that understand pending claims.",
+                "branches": [
+                  "tenant-iso-routes"
+                ]
+              },
+              {
+                "md": "**Rolling back** to a release before v0.25.0 is refused while any box has nested instances. Run `carlos system layout revert`, wait until `carlos status --layout` shows every instance `flat`, then roll back.",
+                "branches": [
+                  "tenant-iso-plan5"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-system",
+                  "/docs/cli#carlos-status"
+                ]
+              },
+              {
+                "md": "**Settings worth turning on** for a deployment that hosts other people's apps: `CONSOLE_DOMAIN_PROOF=true` and `CONSOLE_RESERVE_PLATFORM_DOMAINS=true` on the console, after the boxes have rolled. `CONSOLE_SECRETS_ENVELOPE_V2=true` makes new secrets bound to their account and app; set it only once every box runs this release.",
+                "branches": [
+                  "tenant-iso-domains"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "2b2cc879a669b850bf8ec410b13d20673709477d",
+          "date": "2026-10-07",
+          "subject": "Isolated exec: nested is the default layout on a ready box; CARLOS_LAYOUT_DEFAULT=flat opts out (#126)",
+          "branch": "tenant-iso-default-nested",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/tenant-iso-default-nested",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 126,
+              "title": "activator: exec-backed instances share one uid and one flat DataDir — cross-tenant and cross-app",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#instance-layout"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "337b106216099ae7be9df3019b0ce6f9b6d816c3",
+          "date": "2026-10-07",
+          "subject": "Region HA contracts for the claim (L13) and moves sessions, dormant",
+          "branch": "region-ha-contracts",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/region-ha-contracts",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "383fae0864c784cd1166e429db76638644cdb993",
+          "date": "2026-10-06",
+          "subject": "Edge: tenant cookies can't reach beyond their own account; never cache a trailer Set-Cookie (#217)",
+          "branch": "tenant-iso-cookies",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/tenant-iso-cookies",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 217,
+              "title": "oncarlos.com is not on the Public Suffix List: tenants share cookies and count as same-site",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-domains"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "f5ef8e3631a9185954e3b96886a914f1a11278b5",
+          "date": "2026-10-06",
+          "subject": "Isolated exec, plan 5: the console door and carlos system layout; nested minting; downgrade guards with LayoutFloor v0.25.0 (#126)",
+          "branch": "tenant-iso-plan5",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/tenant-iso-plan5",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 126,
+              "title": "activator: exec-backed instances share one uid and one flat DataDir — cross-tenant and cross-app",
+              "state": "open"
+            },
+            {
+              "id": 132,
+              "title": "Authenticate maintenance workers and bind result publication",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#the-platform-s-own-binary",
+            "/docs/cli#instance-layout"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "84c80eba62407164546e5f70da1505e83ce7371b",
+          "date": "2026-10-06",
+          "subject": "hostbox: verify box identity with boxid.Verifier.Enroll (main build fix)",
+          "branch": "fix/hostbox-boxid-enroll",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fix%2Fhostbox-boxid-enroll",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "d649d8d44f0db98b4fb3e8cd813c3b02652b52b0",
+          "date": "2026-10-06",
+          "subject": "hostwrite: the inert selection interface for host-specific writers (claim Plan 6 Task 2)",
+          "branch": "feat/hostclaim-box",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/feat%2Fhostclaim-box",
+          "commits": 12,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude",
+                "codex"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "3e12133ff47671eb67858ee6560e4a2c28c2495b",
+          "date": "2026-10-06",
+          "subject": "Region HA spec 1 rev 5.4 and plan 1b: claim readers and evidence, dormant",
+          "branch": "design-region-ha-rev5",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/design-region-ha-rev5",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 236,
+              "title": "Host claim Plan 8: three decisions for Paul (floor release, declare-lost attestation, actor roster)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "1c43c2ce82f621c6ac84a623db54f0ef63075603",
+          "date": "2026-10-06",
+          "subject": "Routes: only operators add instance upstreams; the console trusts loopback X-Forwarded-For only with the edge's host-bound proof (#214 items 4-5, #50)",
+          "branch": "tenant-iso-routes",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/tenant-iso-routes",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 50,
+              "title": "member-stated TCP upstreams: decide the trust policy for addrs on the console door",
+              "state": "open"
+            },
+            {
+              "id": 170,
+              "title": "Reconcile's OnRecords hands over a partial record map without saying so",
+              "state": "open"
+            },
+            {
+              "id": 214,
+              "title": "Isolation the nested layout does not give: CPU/IO/disk limits, shared network, readable binaries, private route addrs, trusted XFF",
+              "state": "closed"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-instances"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "9bed97b50f08f78cd3eefefe30a154ad58b05b0d",
+          "date": "2026-10-06",
+          "subject": "Domains: opt-in proof of control; account namespaces are their own; fleet boxes see only their own claim bodies (#215)",
+          "branch": "tenant-iso-domains",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/tenant-iso-domains",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 209,
+              "title": "domains attach: no supported way to put the platform's own apex (carloku.com) on a console app",
+              "state": "closed"
+            },
+            {
+              "id": 215,
+              "title": "Custom domain claims need proof of control: dangling-DNS takeover, squatting, unreserved account namespaces, claims readable fleet-wide",
+              "state": "closed"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-domains"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "09814f7f35c0ba7188ad4be8204cbfed8f67efd7",
+          "date": "2026-10-06",
+          "subject": "Nested instances: CPU/IO limits, a disk floor, own-build-only /opt/carlos, no loopback or private egress, private IPC and Landlock-scoped abstract sockets (#214 items 1-3, #178)",
+          "branch": "tenant-iso-hardening",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/tenant-iso-hardening",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 178,
+              "title": "isolated exec: POSIX mqueues and abstract unix sockets are still shared between instances",
+              "state": "closed"
+            },
+            {
+              "id": 214,
+              "title": "Isolation the nested layout does not give: CPU/IO/disk limits, shared network, readable binaries, private route addrs, trusted XFF",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "01f890ce4ab6c057ed25ed51634f7b10bc3fcfcc",
+          "date": "2026-10-06",
+          "subject": "Isolated exec, plan 4: the nested layout and carlos layout migrate/revert (#126)",
+          "branch": "tenant-iso-layout",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/tenant-iso-layout",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 126,
+              "title": "activator: exec-backed instances share one uid and one flat DataDir — cross-tenant and cross-app",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-status",
+            "/docs/cli#the-platform-s-own-binary"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "7143c7e00747f5d216a4ac75d5efc654d563421e",
+          "date": "2026-10-06",
+          "subject": "email test: send multipart/alternative, plain and HTML",
+          "branch": "multipart-email-support",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/multipart-email-support",
+          "commits": 1,
+          "docs": [
+            "/docs/cli#carlos-email"
+          ],
+          "credit": [
+            {
+              "person": "James Adam",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "67547f5a610469d6a869923bc5bf4c2775c6d9e6",
+          "date": "2026-10-06",
+          "subject": "hostclaim: a created incarnation's first admission declares nothing (moves 7.17 note 2)",
+          "branch": "fix/hostclaim-r717",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fix%2Fhostclaim-r717",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "1d1a6f131533becea704bb3de3c3522402c34ef0",
+          "date": "2026-10-06",
+          "subject": "Merge instance-catchall: *.<parent> serves each instance at <label>.<parent> (#233)",
+          "branch": "instance-catchall",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/instance-catchall",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 233,
+              "title": "Instance catch-alls: serve each instance of an app at <label>.<parent>",
+              "state": "closed"
+            }
+          ],
+          "docs": [
+            "/docs/cli#one-name-per-instance-parent"
+          ],
+          "credit": [
+            {
+              "person": "James Adam",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "e8d0328dea6fa5474ed432b34b577fd57f2b8c8e",
+          "date": "2026-10-06",
+          "subject": "Merge first-route-wildcard: a first-route claim stays first-route on a route-less re-attach (#238)",
+          "branch": "first-route-wildcard",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/first-route-wildcard",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 238,
+              "title": "domains attach --wildcard turns a first-route claim into a self-alias that detach no longer cleans up",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "James Adam",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "58be381129188e4cc52e79d8fc56985596f6d78c",
+          "date": "2026-10-06",
+          "subject": "Merge wildcard-zone-check: check the DNS-01 zone before placing a wildcard order (#237)",
+          "branch": "wildcard-zone-check",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/wildcard-zone-check",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 237,
+              "title": "Wildcard manager places hourly ACME orders for parents its DNS provider has no zone for",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "James Adam",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "c7e595be4a0291492fe5a37d3c375e910eceba72",
+          "date": "2026-10-06",
+          "subject": "park, hostclaim: scopes stay in their own namespace; the legacy session-0 loss identity (joint round 16)",
+          "branch": "fix/hostclaim-r16",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fix%2Fhostclaim-r16",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude",
+                "codex"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v0.24.2",
       "date": "2026-10-06",
       "sha": "7f403a77aa3f8bd615b79bf28596197920b8077e",
@@ -1087,7 +1623,7 @@
             {
               "id": 201,
               "title": "Move Tito's console from cf02a4d5-tito back onto main",
-              "state": "open"
+              "state": "closed"
             }
           ],
           "docs": [

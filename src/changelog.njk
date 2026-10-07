@@ -136,9 +136,9 @@ eleventyExcludeFromCollections: true
 <div class="hero">
   <h1>Changelog</h1>
 
-  <p class="lede">Every release of the platform, newest first. Under each release's notes is every change that landed in it: one line per merged branch, linked to its branch and discussions on Amadan, where the platform is developed, and naming the people and agents who did the work.</p>
+  <p class="lede">All the latest updates to CARLOS platform, auto-generated from its git history.</p>
 
-  <p class="note">The change lines are quoted from the history as they were written. Every change from v0.19.0 on links to its branch. Before that, most work was merged on GitHub, where the repository is private, so those changes link only to their commit.</p>
+  <p class="note">With the obvious assistance from the robots.</p>
 
   <p class="robot">🤖 This page was written by an LLM, on the ideas, instruction, and editing of humans. AI-written text here is always marked, visibly, like this. That's <a href="https://11factor.org/#x">factor X</a>.</p>
 
@@ -152,7 +152,7 @@ eleventyExcludeFromCollections: true
 <section class="release" id="{{ r.tag | releaseId }}">
   <div class="head">
     <h2><a href="#{{ r.tag | releaseId }}">{{ r.tag }}</a></h2>
-    <p class="meta"><time datetime="{{ r.date }}">{{ r.date }}</time> · {% if r.published %}<a href="{{ r.notes_url }}">Release notes and downloads</a>{% else %}Tagged, never published{% endif %}</p>
+    <p class="meta"><time datetime="{{ r.date }}">{{ r.date }}</time> · {% if r.published %}<a href="{{ r.notes_url }}">Release notes and downloads</a>{% else %}Tagged but not published{% endif %}</p>
   </div>
 
   {%- if r.notes %}
