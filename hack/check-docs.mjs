@@ -52,6 +52,7 @@ const exists = (p) => {
 const requiredSitePaths = [
   "index.html",
   "platform/index.html",
+  "platform/changelog/index.html",
   "rastrillo/index.html",
   "site.css",
   "docs.css",
@@ -116,7 +117,60 @@ const pageFor = (href) => {
   return join(docs, rel, "index.html");
 };
 
-for (const p of pages) {
+// The platform changelog links into the docs from outside them, so its
+// links are held to the same rule. Its own section ids are checked too:
+// every release in the vendored data must have one.
+const changelogPage = join(site, "platform", "changelog", "index.html");
+if (exists(changelogPage)) {
+  const html = readFileSync(changelogPage, "utf8");
+  idsFor.set(changelogPage, new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1])));
+  const data = JSON.parse(readFileSync("src/_data/docschangelog.json", "utf8"));
+  if (!Array.isArray(data.releases) || data.releases.length === 0) fail("docschangelog.json lists no releases");
+  for (const r of data.releases ?? []) {
+    const id = r.tag.replace(/\./g, "-");
+    if (!idsFor.get(changelogPage).has(id)) fail(`platform/changelog: no section id="${id}" for ${r.tag}`);
+    // The template renders exactly two forms of notes; any other value
+    // would drop a release's notes and still build.
+    const n = r.notes;
+    if (n && !((n.form === "bullets" && n.sections?.length) || (n.form === "markdown" && n.md))) {
+      fail(`platform/changelog: ${r.tag} has notes the page cannot render (form ${JSON.stringify(n.form)})`);
+    }
+  }
+  // Nothing on the public page may be an email address or point into a
+  // private repo, however it was encoded on the way in. The platform
+  // repo's gate checks the data; this checks what the browser gets: the
+  // text a reader sees (tags stripped, so "ops<strong>@</strong>x.org"
+  // reads as the address it is) and every link as the browser resolves
+  // it (so "carlosframework/./platform" is the private repo).
+  const decode = (t) =>
+    t
+      .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+      .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(Number(d)))
+      .replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+  const addressRe = /[a-z0-9._%+~-]+@[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}/i;
+  const privateRe = /^\/carlosframework\/(platform|platform-infrastructure|carloku[a-z-]*)(\.git)?(\/|$)/i;
+  const visible = decode(html.replace(/<(script|style)[\s\S]*?<\/\1>/gi, " ").replace(/<[^>]+>/g, ""));
+  const seen = visible.match(addressRe);
+  if (seen) fail(`platform/changelog: shows the address ${seen[0]}`);
+  for (const m of html.matchAll(/\b(?:href|src|action)="([^"]*)"/gi)) {
+    const raw = decode(m[1]);
+    let u;
+    try {
+      u = new URL(raw, "https://carlosframework.com/platform/changelog/");
+    } catch {
+      fail(`platform/changelog: unparseable link ${raw}`);
+      continue;
+    }
+    if (u.protocol === "mailto:" || addressRe.test(decodeURIComponent(u.href))) {
+      fail(`platform/changelog: links an address (${raw})`);
+    }
+    if (/(^|\.)github(usercontent)?\.com\.?$/i.test(u.hostname) && privateRe.test(decodeURIComponent(u.pathname))) {
+      fail(`platform/changelog: links the private repo ${u.href}`);
+    }
+  }
+}
+
+for (const p of [...pages, changelogPage].filter(exists)) {
   const html = readFileSync(p, "utf8");
   const where = relative(site, p);
   for (const m of html.matchAll(docsHref)) {

@@ -1,0 +1,121 @@
+[
+  {
+    "id": "meta.title",
+    "section": "Page metadata",
+    "label": "Browser tab title",
+    "text": "Changelog · the CARLOS platform",
+    "context": "The title in the browser tab and in search results for the new changelog page at carlosframework.com/platform/changelog.",
+    "notes": "Matches the platform page's title pattern."
+  },
+  {
+    "id": "meta.description",
+    "section": "Page metadata",
+    "label": "Search description",
+    "text": "🤖 Every release of the CARLOS platform, every change that landed in it, and who did the work.",
+    "context": "The summary search engines show under the page title. The site marks AI-written text with a robot, including here, as the platform page does.",
+    "notes": "Keep the leading 🤖."
+  },
+  {
+    "id": "meta.og_description",
+    "section": "Page metadata",
+    "label": "Link preview description",
+    "text": "Every release of the CARLOS platform, every change that landed in it, and who did the work.",
+    "context": "The summary shown when someone pastes the link into Slack or social media."
+  },
+  {
+    "id": "hero.headline",
+    "section": "Top of the page",
+    "label": "Headline",
+    "text": "Changelog",
+    "context": "The big heading at the top of the page, under the site's navigation."
+  },
+  {
+    "id": "hero.lede",
+    "section": "Top of the page",
+    "label": "Introduction",
+    "text": "Every release of the platform, newest first. Under each release's notes is every change that landed in it: one line per merged branch, linked to its branch and discussions on Amadan, where the platform is developed, and naming the people and agents who did the work.",
+    "context": "The paragraph under the headline. It tells a reader what each part of the page is: the releases, their notes, and the list of changes under each, and where the links go."
+  },
+  {
+    "id": "hero.note",
+    "section": "Top of the page",
+    "label": "Small print about the change lines",
+    "text": "The change lines are quoted from the history as they were written. Every change from v0.19.0 on links to its branch. Before that, most work was merged on GitHub, where the repository is private, so those changes link only to their commit.",
+    "context": "Smaller text under the introduction. It explains why the change lines read like commit messages (they are), and why older releases have fewer links.",
+    "notes": "Facts: every change from v0.19.0 on has a branch link; before that most do not."
+  },
+  {
+    "id": "toc.label",
+    "section": "Top of the page",
+    "label": "Release list label (for screen readers)",
+    "text": "Releases",
+    "context": "Not shown on screen. Screen readers announce it for the row of release numbers that jump down the page."
+  },
+  {
+    "id": "release.notes_link",
+    "section": "Each release",
+    "label": "Link to the published release",
+    "text": "Release notes and downloads",
+    "context": "Beside each release's date, linking to its page on GitHub releases, where the full notes and the binaries are."
+  },
+  {
+    "id": "release.unpublished",
+    "section": "Each release",
+    "label": "Release that was never published",
+    "text": "Tagged, never published",
+    "context": "Shown instead of the link above for the two versions (v0.2.0 and v0.22.1) that were tagged but never released."
+  },
+  {
+    "id": "release.markdown_summary",
+    "section": "Each release",
+    "label": "Fold for older release notes",
+    "text": "Release notes",
+    "context": "Older releases (before v0.19.0) have long free-form notes, folded away. This is the label you click to open them."
+  },
+  {
+    "id": "release.changes_heading",
+    "section": "Each release",
+    "label": "Changes heading",
+    "text": "Changes",
+    "context": "The heading above each release's list of changes, followed by how many there are."
+  },
+  {
+    "id": "release.empty",
+    "section": "Each release",
+    "label": "No changes",
+    "text": "No changes of its own.",
+    "context": "Shown under Changes for a release that added nothing new. No release shows it today, but a re-tag would."
+  },
+  {
+    "id": "release.more",
+    "section": "Each release",
+    "label": "Fold for long change lists",
+    "text": "{n} more",
+    "context": "A release with more than 25 changes shows the first 25 and folds the rest. This is the label, with the number of hidden changes in place of {n}.",
+    "notes": "{n} is replaced by a number."
+  },
+  {
+    "id": "change.credit_with",
+    "section": "Each change",
+    "label": "Credit joiner",
+    "text": "with",
+    "context": "Joins a person and the agents who worked with them in each change's credit line: \"Paul Campbell with claude, codex\".",
+    "notes": "One word."
+  },
+  {
+    "id": "platform.footer_link",
+    "section": "Platform page",
+    "label": "Link to the changelog",
+    "text": "What changed in each release, and who did the work, is in the <a href=\"/platform/changelog/\">changelog</a>.",
+    "context": "A new line in the footer of carlosframework.com/platform, the only link to the changelog from elsewhere on the site.",
+    "notes": "Keep the link markup around the word you want linked."
+  },
+  {
+    "id": "readme.release_step",
+    "section": "Platform README",
+    "label": "Release recipe step 10",
+    "text": "**Changelog.** In a full checkout of `main`, with `gh` and `amadan` signed in, run `git fetch origin --tags '+refs/amadan/closed/*:refs/amadan/closed/*'`, then `go run ./cmd/changelog`. Map each of the new release's bullets to the branches behind it in `docs/site/changelog-links.json`, keyed by the bullet's bold lead, and run it again. Land `docs/site/changelog.json` and the links file on a branch. Then, in `carlosframework/website`, run `node hack/sync-docs.mjs <checkout>` and ship the site the way its AGENTS.md describes. The page is carlosframework.com/platform/changelog.",
+    "context": "A new last step in the platform README's \"Releasing the platform\" recipe, which operators follow to cut a release. It says how to update the changelog after a release is published.",
+    "notes": "Markdown. Keep the commands exactly."
+  }
+]

@@ -1,0 +1,150 @@
+{
+  "action": "approve",
+  "guidance": null,
+  "strings": [
+    {
+      "id": "meta.title",
+      "text": "Changelog · the CARLOS platform",
+      "original": "Changelog · the CARLOS platform",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "meta.description",
+      "text": "🤖 Every release of the CARLOS platform, every change that landed in it, and who did the work.",
+      "original": "🤖 Every release of the CARLOS platform, every change that landed in it, and who did the work.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "meta.og_description",
+      "text": "Every release of the CARLOS platform, every change that landed in it, and who did the work.",
+      "original": "Every release of the CARLOS platform, every change that landed in it, and who did the work.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "hero.headline",
+      "text": "Changelog",
+      "original": "Changelog",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "hero.lede",
+      "text": "All the latest updates to CARLOS platform, auto-generated from its git history.",
+      "original": "Every release of the platform, newest first. Under each release's notes is every change that landed in it: one line per merged branch, linked to its branch and discussions on Amadan, where the platform is developed, and naming the people and agents who did the work.",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": true
+    },
+    {
+      "id": "hero.note",
+      "text": "With the obvious assistance from the robots.",
+      "original": "The change lines are quoted from the history as they were written. Every change from v0.19.0 on links to its branch. Before that, most work was merged on GitHub, where the repository is private, so those changes link only to their commit.",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": true
+    },
+    {
+      "id": "toc.label",
+      "text": "Releases",
+      "original": "Releases",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "release.notes_link",
+      "text": "Release notes and downloads",
+      "original": "Release notes and downloads",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "release.unpublished",
+      "text": "Tagged but not published",
+      "original": "Tagged, never published",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": true
+    },
+    {
+      "id": "release.markdown_summary",
+      "text": "Release notes",
+      "original": "Release notes",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "release.changes_heading",
+      "text": "Changes",
+      "original": "Changes",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "release.empty",
+      "text": "No changes of its own.",
+      "original": "No changes of its own.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "release.more",
+      "text": "{n} more",
+      "original": "{n} more",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "change.credit_with",
+      "text": "with",
+      "original": "with",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "platform.footer_link",
+      "text": "What changed in each release, and who did the work, is in the <a href=\"/platform/changelog/\">changelog</a>.",
+      "original": "What changed in each release, and who did the work, is in the <a href=\"/platform/changelog/\">changelog</a>.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "readme.release_step",
+      "text": "**Changelog.** In a full checkout of `main`, with `gh` and `amadan` signed in, run `git fetch origin --tags '+refs/amadan/closed/*:refs/amadan/closed/*'`, then `go run ./cmd/changelog`. Map each of the new release's bullets to the branches behind it in `docs/site/changelog-links.json`, keyed by the bullet's bold lead, and run it again. Land `docs/site/changelog.json` and the links file on a branch. Then, in `carlosframework/website`, run `node hack/sync-docs.mjs <checkout>` and ship the site the way its AGENTS.md describes. The page is carlosframework.com/platform/changelog.",
+      "original": "**Changelog.** In a full checkout of `main`, with `gh` and `amadan` signed in, run `git fetch origin --tags '+refs/amadan/closed/*:refs/amadan/closed/*'`, then `go run ./cmd/changelog`. Map each of the new release's bullets to the branches behind it in `docs/site/changelog-links.json`, keyed by the bullet's bold lead, and run it again. Land `docs/site/changelog.json` and the links file on a branch. Then, in `carlosframework/website`, run `node hack/sync-docs.mjs <checkout>` and ship the site the way its AGENTS.md describes. The page is carlosframework.com/platform/changelog.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    }
+  ]
+}
