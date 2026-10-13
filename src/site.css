@@ -773,11 +773,26 @@ main > section.letters-intro .head { margin-bottom: 0; }
 
 main > section#attributes { padding-top: 1.5rem; }
 
-.carlos-stack { max-width: 40rem; margin: 2rem 0; }
-.carlos-stack figcaption { text-align: center; margin-bottom: 1rem; font-size: 0.9rem; }
-.carlos-stack figcaption a { color: var(--ink-2); text-underline-offset: 0.2em; }
-.carlos-stack ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.65rem; }
-.carlos-stack li { margin: 0; }
-.carlos-stack li a { display: block; padding: 1.1rem 1.4rem; border: 1px solid var(--rule); border-left: 4px solid var(--accent); border-radius: 0.55rem; background: var(--surface); color: var(--ink); font-weight: 600; line-height: 1.4; text-decoration: none; }
+.hero-with-stack { display: grid; gap: 1.5rem; align-items: start; }
+.hero-introduction { min-width: 0; }
+.carlos-stack { position: relative; isolation: isolate; width: 100%; max-width: 30rem; margin: 1rem auto 2rem; padding: 1rem; }
+.carlos-stack::before { content: ""; position: absolute; z-index: -1; top: 3rem; bottom: 2rem; left: 50%; border-left: 2px dashed var(--rule); transform: rotate(-8deg); }
+.carlos-stack::after { content: ""; position: absolute; right: 0.2rem; top: 0.7rem; width: 1.4rem; height: 1.4rem; background: var(--accent); clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); transform: rotate(15deg); }
+.carlos-stack figcaption { text-align: center; margin-bottom: 2rem; font-size: 0.9rem; transform: rotate(-3deg); }
+.carlos-stack figcaption a { display: inline-block; padding: 0.45rem 0.9rem; border: 1px dashed var(--accent); border-radius: 999px; background: var(--bg); color: var(--ink-2); text-underline-offset: 0.2em; }
+.carlos-stack ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.25rem; }
+.carlos-stack li { margin: 0; --stack-tilt: -3deg; }
+.carlos-stack li:nth-child(2) { --stack-tilt: 2deg; margin-inline: 0.4rem; }
+.carlos-stack li:nth-child(3) { --stack-tilt: -1.5deg; margin-inline: 0.8rem; }
+.carlos-stack li a { display: flex; align-items: center; gap: 1rem; padding: 1.3rem; border: 1px solid var(--rule); border-bottom: 4px solid var(--accent); border-radius: 1rem 0.65rem 1rem 0.65rem; background: var(--surface); color: var(--ink); font-weight: 600; line-height: 1.4; text-decoration: none; box-shadow: 4px 5px 0 var(--accent-soft); transform: rotate(var(--stack-tilt)); }
+.carlos-stack li svg { flex: none; color: var(--accent); }
 .carlos-stack li:first-child a { background: var(--accent-soft); }
-.carlos-stack li a:hover { border-color: var(--accent); }
+.carlos-stack li a:is(:hover, :focus-visible) { border-color: var(--accent); }
+@media (prefers-reduced-motion: no-preference) {
+  .carlos-stack li a { transition: transform 180ms ease, box-shadow 180ms ease; }
+  .carlos-stack li a:is(:hover, :focus-visible) { transform: translateY(-4px) rotate(0); box-shadow: 6px 9px 0 var(--accent-soft); }
+}
+@media (min-width: 64rem) {
+  .hero-with-stack { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 4rem); }
+  .hero-with-stack .carlos-stack { margin-top: 1.5rem; }
+}
