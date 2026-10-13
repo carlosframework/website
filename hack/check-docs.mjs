@@ -126,6 +126,7 @@ if (exists(changelogPage)) {
   idsFor.set(changelogPage, new Set([...html.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1])));
   const data = JSON.parse(readFileSync("src/_data/docschangelog.json", "utf8"));
   if (!Array.isArray(data.releases) || data.releases.length === 0) fail("docschangelog.json lists no releases");
+  let withItems = 0;
   for (const r of data.releases ?? []) {
     const id = r.tag.replace(/\./g, "-");
     if (!idsFor.get(changelogPage).has(id)) fail(`platform/changelog: no section id="${id}" for ${r.tag}`);
@@ -135,6 +136,22 @@ if (exists(changelogPage)) {
     if (n && !((n.form === "bullets" && n.sections?.length) || (n.form === "markdown" && n.md))) {
       fail(`platform/changelog: ${r.tag} has notes the page cannot render (form ${JSON.stringify(n.form)})`);
     }
+    // A bullet's nested items are optional; when present each is a
+    // markdown string, and the template renders them as one sub-list.
+    for (const s of n?.sections ?? []) {
+      for (const b of s.bullets ?? []) {
+        if (b.items === undefined) continue;
+        if (!Array.isArray(b.items) || b.items.some((it) => typeof it !== "string")) {
+          fail(`platform/changelog: ${r.tag} has a bullet whose items are not a list of strings`);
+        } else if (b.items.length) {
+          withItems++;
+        }
+      }
+    }
+  }
+  const subLists = (html.match(/<ul class="sub">/g) ?? []).length;
+  if (subLists !== withItems) {
+    fail(`platform/changelog: ${withItems} bullets carry nested items but the page renders ${subLists} sub-lists`);
   }
   // Nothing on the public page may be an email address or point into a
   // private repo, however it was encoded on the way in. The platform

@@ -46,6 +46,9 @@ eleventyExcludeFromCollections: true
     {%- for href in b.docs %} <a class="doc" href="{{ href }}">{{ href | docsLabel }}</a>{% endfor -%}
   </span>
   {%- endif %}
+  {%- if b.items and b.items.length %}
+  <ul class="sub">{% for it in b.items %}<li>{{ it | notesMdInline | safe }}</li>{% endfor %}</ul>
+  {%- endif %}
 </li>
 {%- endmacro -%}
 <!doctype html>
@@ -91,6 +94,7 @@ eleventyExcludeFromCollections: true
   .notes { max-width: 46rem; }
   .notes > ul { padding-left: 1.1rem; display: grid; gap: 0.7rem; }
   .notes li { color: var(--ink-2); }
+  .notes ul.sub { padding-left: 1.1rem; display: grid; gap: 0.45rem; margin-top: 0.55rem; }
   .notes details { margin-top: 1.25rem; }
   .notes details > ul { padding-left: 1.1rem; display: grid; gap: 0.7rem; margin-top: 0.85rem; }
   .notes summary { cursor: pointer; font-weight: 600; color: var(--ink); }

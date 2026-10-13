@@ -164,6 +164,13 @@
               },
               {
                 "md": "**Before any box rolls, run the instance key checks.** This release writes a `CARLOS_INSTANCE_KEY` into each instance's `<host>.env` the first time it starts, and starts a replica only with its home's key.",
+                "items": [
+                  "On every box, `find <data> -maxdepth 1 -name '*.env' -type l` must print nothing. A `<host>.env` that is a symlink now fails that instance's start. Stop the instance, replace the link with the real file, and treat the token in it as leaked.",
+                  "On every box with a replica (`sqlite3 <data>/registry.db \"select host from routes where replica=1\"`), compare each replica's key with its home's. A key is the last `CARLOS_INSTANCE_KEY` line of `<host>.env`, or of `<host>.config.env` when `<host>.env` has none, in the data directory for a flat instance or the instance's own directory for an isolated one. Where the two match, add `<replica-host>=<sha256 of the key>` to `/etc/carlos/replica-home-keys` on the replica's box before it rolls. Write the whole list to a temporary file in `/etc/carlos`, make it root:carlos 0640, and rename it into place. Where they differ, the replica is refused after the roll. Tell its owner first.",
+                  "A replica with no key keeps starting where it has a control socket, but its legacy sidecar and any worker row of its own stop at the roll. List them on each box with a replica, and tell their owners.",
+                  "Check the agent can read the list: `sudo -u <agent user> test -r /etc/carlos/replica-home-keys && echo ok` must print `ok`.",
+                  "After the roll, `journalctl -u carlos-edge --since '<roll time>' | grep 'agent: instance keys:'` must show `0 failed`."
+                ],
                 "branches": [
                   "instance-key-provision",
                   "instance-key-build"
@@ -178,7 +185,20 @@
                 ]
               },
               {
-                "md": "**Every dormant switch stays off.** Leave each of these unset, and run none of the commands named, until its own rollout is approved."
+                "md": "**Every dormant switch stays off.** Leave each of these unset, and run none of the commands named, until its own rollout is approved.",
+                "items": [
+                  "`CARLOS_SWAP` on every box. Two builds at once still has open items, and only the exact word `overlap` arms it.",
+                  "`CARLOS_MOVES_PHASE1` on the console and every box. Don't publish a moves protocol floor (`control/moves-protocol.json`) either.",
+                  "`CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS` and `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS` on the console and every box, and `CARLOS_CONSOLE_ID` on the console. Don't run `carlos system guard-arm` or `carlos system journal-migrate`.",
+                  "`CARLOS_REGION_HA` on every box.",
+                  "`CONSOLE_APP_REGIONS` and `CARLOS_TEMPORARY_APPS` on the console.",
+                  "`CARLOS_REQUIRE_POINTER_DIGEST` on every box. Don't run `carlos channels digests on` yet."
+                ],
+                "docs": [
+                  "/docs/cli#carlos-system",
+                  "/docs/cli#carlos-system-journal-migrate",
+                  "/docs/cli#carlos-channels-digests"
+                ]
               },
               {
                 "md": "**Host claims: every roster reader first.** Binaries older than this release reject a signed roster that names a home region. So before anyone publishes the home designation, every reader of `control/host-actors.json` must run this release: every console, every box's agent and root services, the update and rollback tools, and any offline or recovery binary. The designation is write-once, and this roll doesn't publish it.",
