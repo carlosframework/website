@@ -3,6 +3,79 @@
   "repo": "https://amadan.net/carlos/platform",
   "releases": [
     {
+      "tag": "v0.26.1",
+      "date": "2026-10-13",
+      "sha": "9aaeace220780db1a844595f2d8f690bf2cba375",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.26.1",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**A box with many instances no longer fails the update.** v0.26.0 gave every instance on a box its key before the edge started, with one bucket read per instance. On a box with over a hundred instances that took longer than the 20 seconds the update allows, so the box rolled back after about half a minute of failed requests. The keys are now written in the background once the edge is serving, and the update no longer waits for them."
+              },
+              {
+                "md": "**Nothing changes for people using the CLI.**"
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.**"
+              },
+              {
+                "md": "**Coming from v0.25.x, read the [v0.26.0 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.26.0) first.** They all still apply, and that includes any box that rolled back from v0.26.0. Restart `carlos-instance-control.service` on each box after it updates, run the instance key checks before any box rolls, and check what root's AWS settings rely on (#267)."
+              },
+              {
+                "md": "**Wait for the instance key line.** `agent: instance keys:` now comes after `hibernation activator armed`, up to about a minute after the agent starts. Wait for it before you check for `0 failed`. It also counts rows skipped because a move or a layout change held the host. Those get their key at their next start."
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_SWAP`, `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS` and `CARLOS_REQUIRE_POINTER_DIGEST` unset, and don't run `carlos channels digests on`. The v0.26.0 notes say where each one is set.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "9aaeace220780db1a844595f2d8f690bf2cba375",
+          "date": "2026-10-13",
+          "subject": "console test: the layout guard's at-floor update asks for a version the vendor feed can never publish",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "b8ddad180a6a9da7553b8e7210c9bc1e8db5e7df",
+          "date": "2026-10-13",
+          "subject": "agent: run the instance-key backfill after Start, off the edge's path (v0.26.1)",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v0.26.0",
       "date": "2026-10-13",
       "sha": "09c5a4a5f30690d99a3d5c6ef4af2d8bea99a741",
