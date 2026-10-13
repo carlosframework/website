@@ -184,6 +184,29 @@ carlos apps ttl --app tmp-docs 5d
 carlos apps keep --app tmp-docs
 ```
 
+`carlos apps set` changes how the app's running instances take a new build:
+
+```sh
+carlos apps set hello --swap hold
+carlos apps set hello --swap-concurrency 3
+```
+
+With `--swap overlap`, the default, the new build starts beside the old one
+and takes over once it answers its health check, so no request waits. With
+`--swap hold`, the old one stops first, and requests wait until the new one
+is up. `--swap-concurrency` is how many instances may swap at once on one
+box, after the first one has stayed up for ten seconds; it starts at 1. Any
+member of the app can change both, here or on the app's settings page in the
+console.
+
+`carlos apps set` also controls the update settings an instance may change:
+
+```sh
+carlos apps set shop --instance-control updates,pin --default-updates manual
+```
+
+--instance-control names the settings an instance may change itself once instances can act for themselves. --default-updates and --default-major apply wherever an instance has not chosen; --default-channel is the channel new instances are created on.
+
 ### carlos ship
 
 Publishes a release. The artifact is hashed, stored under its content
@@ -236,7 +259,17 @@ Ship, promote, and then wait until the app's URL actually serves the new
 build. Reach for this one by default; ship and promote separately when you
 want the gap between them.
 
-What it watches is worth knowing, because the two answers differ. If the app
+Deploy then watches each box roll the build out. An awake instance counts
+once the new build has passed its health check and taken over; on each box
+the first one must also stay up for ten seconds before the rest follow. An
+asleep instance counts once its box has installed the build, and starts it on
+its next request. If the build fails on a box, that box stops rolling it out,
+its other instances stay on the build they were serving, and deploy names the
+failure and exits with an error.
+
+Where a box does not report its rollout yet, deploy watches the app's URL
+instead, and what it watches there is worth knowing, because the two answers
+differ. If the app
 declares a build probe, deploy asks the app's own process which build it is
 running, and `live` means the process cycled. If it does not, deploy watches
 the `X-Carlos-Version` header — and the edge stamps that from the route row
@@ -266,6 +299,21 @@ having no instances to resolve a channel from.
 carlos deploy --app website --kind static --host www.example.com ./dist
 ```
 
+`--swap hold` ships a release that stops each instance before starting the
+new build, for a migration the previous build cannot share the database
+with. It applies to that release only; `carlos apps set --swap hold` makes it
+the rule for the app.
+
+To try a build that failed again, once you have fixed what it depended on,
+promote it again with `--retry`. Every box where it failed tries it again:
+
+```sh
+carlos promote --app hello --retry a1b2c3d edge
+```
+
+Without `--retry`, promoting a build that is already on the channel does
+nothing.
+
 When `carlos deploy` creates your first app, it sends your timezone so the
 console can pick the region nearest you, and prints the choice. `--region
 <code>` chooses instead. On an app that already exists, `--region` must
@@ -281,6 +329,22 @@ app is served only at its own platform address, so `--host` and
 ```sh
 carlos deploy --temporary --ttl 3d ./dist
 ```
+
+#### Two builds at once
+
+When a new build reaches an awake instance, it starts beside the old one,
+and for a few seconds both run. They share the instance's database and its
+scheduled work. The new build's migrations run while the old build is still
+serving, so both builds must work with the database in between:
+
+- Add in one release and remove in a later one. A new column, table or index
+  goes in one release; dropping the old one waits for the next.
+- Keep the names of scheduled work (`carlos schedule`) the same across the
+  two builds.
+
+When a release cannot follow these rules, ship it with `--swap hold`, or set
+the app to `hold` with `carlos apps set`. Each instance then stops before the
+new build starts, and requests wait until it is up.
 
 #### Deploying one checkout to several places
 
@@ -459,6 +523,14 @@ Both say how recent the copy is: the last transaction it holds, and when
 that transaction was written. A sleeping instance's copy is as recent as its
 last sync before it went to sleep. A busy instance can be ahead of its copy.
 
+To read the database as it was at an earlier time, add `--at` with a time
+in RFC 3339 form, such as `--at 2026-10-07T14:00:00Z`. The copy holds every
+change replicated before that time. It can be a little older than the time
+you give, never newer, and the command says which transaction it stopped
+at. How far back you can go depends on how much history the platform keeps
+for the instance. Ask for a time earlier than that and the command names
+the oldest time you can use instead.
+
 The copy is read-only. A query that tries to change it fails with SQLite's
 own error, `attempt to write a readonly database`. That is on purpose.
 Changing a copy would change nothing on the instance, and a command that
@@ -511,6 +583,22 @@ release earned one at stable.
 carlos channels --app hello
 ```
 
+### carlos channels resign
+
+Re-signs a channel's current pointer with the sha256 of each build's manifest, so boxes that insist on digests accept it. It shows every digest first and signs only when you type yes. Use it on a channel nobody has promoted to since digests were turned on. It refuses until `carlos channels digests on` has been run for the account.
+
+```sh
+carlos channels resign --app hello stable
+```
+
+### carlos channels digests
+
+Shows whether channel pointers carry manifest digests, and lists the channels that still do not. on and off are for platform operators: on tells upgraded writers to sign digests, and off stops them while a writer is being fixed. Turn it on only after every console, CLI and deploy script that promotes has been upgraded.
+
+```sh
+carlos channels digests
+```
+
 ### carlos pipeline
 
 Shows an app's release channels and the rules for moving a version through
@@ -544,12 +632,14 @@ to run".
 carlos releases --app hello
 ```
 
-There is one sub-verb. `carlos releases retention --keep 20` sets an ambient
+There are two sub-verbs. `carlos releases retention --keep 20` sets an ambient
 prune policy, and `--dry-run` shows you what it would remove before you commit
 to it. The safety list always wins over the number: channel pointers,
 rollback history, tagged releases, anything inside the bake window, and each
 box's own adopted versions are never pruned, so nothing promoted or recent
 disappears by policy. `--off` goes back to keeping everything.
+
+`carlos releases authorize <app> <version>` is for operators. It shows a build's manifest and file digests and, when you type yes, signs a promotion record for exactly those bytes. Every promotion writes one; this is for a build promoted before records existed, so an instance can be pinned to it or recovered onto it on a box that does not already have it.
 
 ### carlos version
 
@@ -644,6 +734,18 @@ every few minutes, and asleep instances are measured too. A dash means no box
 has measured it: the instance is not running anywhere yet, it has not created
 its database, or it keeps its data somewhere CARLOS does not manage.
 
+`carlos instances list` shows two builds for each instance: the one installed
+on its box, and the one serving its requests. They differ while a new build
+rolls out, while an asleep instance waits for its next request, and after a
+build has failed on that box. The REASON column says which.
+
+`carlos instances retry` clears the failure hold on one instance, so the
+build that failed there is tried again, as a canary:
+
+```sh
+carlos instances retry --app hello shop-1.hello.example.com
+```
+
 `--environment <e>` on `create`, and `set-environment` on a route that
 already exists, bind one instance to one of the app's named config bundles.
 This matters most for a route standing **alongside** a live one. Config is
@@ -673,6 +775,31 @@ with DNS latency routing still pointing buyers at the home. A replica never
 holds the account's authoritative data, and until a batch of orders drains
 home it holds order data in its own region — so the placement set is an
 explicit decision on the home's record, never a default.
+
+#### What an instance is started with
+
+A hibernating instance is started by the box when a request arrives for it,
+as `<your binary> --socket <path> --db <path>`: the unix socket to serve on,
+and the SQLite database that is yours. On a box with the nested layout its
+working directory is its own data directory, the one the database is in, so
+a relative path such as `./data/blobs` lands beside the database and inside
+the instance's namespace. (Under the flat layout it was `/`, so the same path
+landed in the shared `/data`; `layout migrate` leaves such shared directories
+where they are and names them in the agent log for an operator to place.)
+Its environment is your app's config bundle, with the instance's own
+`<host>.env` layered on top, plus a few variables the platform sets and that
+no bundle can override:
+
+| Variable | Value |
+|---|---|
+| `CARLOS_HOST` | the instance's hostname, exactly as in `carlos instances list`. Read this, never the socket's file name, which says nothing about the host on an isolated box |
+| `CARLOS_REGION` | the box's region code, such as `ie` |
+| `CARLOS_CONTROL_SOCKET` | the socket the platform listens on for your app's purge and scheduling calls |
+| `CARLOS_PURGE` | `header` when the edge honours a `Carlos-Purge` response header |
+| `CARLOS_ADMIN_TOKEN` | a secret shared with this one instance: the platform presents it when it calls your app, and your app presents it on `CARLOS_CONTROL_SOCKET` |
+
+A seed (the `--seed` command of `carlos instances enable`) runs with the same
+environment, `CARLOS_HOST` included, and no control socket.
 
 #### Storage of its own, for every instance
 
@@ -740,6 +867,22 @@ it lists that box's own registry routes, backing and owning unit included.
 Off the box, [carlos routes](/docs/cli#carlos-routes) answers the same
 question through the console.
 
+### carlos instances set
+
+Sets how one instance takes new builds: auto or manual updates, the channel, a major version to stay on (stable only), or an exact build to pin. An empty value clears a setting, so the app's default applies again.
+
+```sh
+carlos instances set a.shop.example.com --updates manual
+```
+
+### carlos instances update
+
+Asks the instance's box to install the newest build it considers ready, even with manual updates. The box chooses the build, and it runs on the next start. --fast-track skips the safety delay; only account owners can use it.
+
+```sh
+carlos instances update a.shop.example.com
+```
+
 ### carlos sidecars
 
 A sidecar is a member that nothing can dial: a process the platform runs for
@@ -785,9 +928,9 @@ network, the other a requirement of the work. Where they disagree the more
 restrictive reading wins.
 
 Because a sidecar has no URL, there is no `X-Carlos-Version` header to read
-it back from, so `carlos sidecars ls` shows the version a sidecar reported
-for itself against the version its channel points at. One that has never
-reported reads as unknown rather than as current.
+it back from, so `carlos sidecars ls` shows the build its box last started
+for each sidecar, beside the version its channel points at. One that has not
+started on any box reads as unknown rather than as current.
 
 ### carlos steering
 
@@ -1845,9 +1988,9 @@ owns.
 
 `update` promotes a public release (or, with `--file`, a binary you built) to
 `canary` or `stable`; every box on that channel fetches it through its normal
-store, verifies it against the signed pointer, installs it, restarts its edge,
-and rolls back to the previous binary if the new one does not come up and stay
-up. `status` shows each box's platform, channel, running build, the channel's
+store, verifies it against the signed pointer, installs it, restarts its
+instance-control service and then its edge, and rolls back to the previous
+binary if the new one does not come up and stay up. `status` shows each box's platform, channel, running build, the channel's
 target, and the last apply outcome with its reason. `rollback` points a channel
 back at the release before this one, and every box on it rolls back the same
 way it rolled forward. All three talk to your console. You need to be an owner
@@ -1866,11 +2009,28 @@ carlos system update --channel stable --spread 10m
 carlos system rollback --channel stable
 ```
 
+#### Cancel an unpublished activation
+
+If an unpublished platform update holds its channel, an ops account owner or
+system operator can cancel that reservation:
+
+```sh
+carlos system cancel-activation --channel stable --activation ACTIVATION_ID
+```
+
+Use the activation ID from the refused update or rollback. The command confirms
+before cancelling; use `--yes` for an already reviewed automation. Cancellation
+prevents a delayed publication from taking effect. It does not change a box's
+release. A published activation stays held until its boxes complete or valid
+fencing evidence excludes them.
+
 #### Instance layout
 
 Every instance the activator runs used to live in one shared directory as one user, where it could read its neighbours' files. `layout migrate` moves them out: each instance gets its own directory and, from its next wake, its own mount and pid namespace, where it sees its own files and nothing else. An instance that is asleep is moved at once; one that is awake is left for up to an hour to go to sleep, then stopped briefly and moved. `--force` skips the hour. `--box` scopes the request to one box, so a fleet moves one box at a time with `carlos status --layout` showing each box's rows turn `nested`. Once a box's layout is `nested`, a newly provisioned instance on it starts out `nested`; it is never created in the shared directory first.
 
 `layout migrate` is refused while any box in scope runs a platform release from before the layout, so a fleet is rolled forward first and migrated second.
+
+What moves with an instance is everything in the box's data directory that carries its hostname: its database and the platform's files beside it, and anything the app made for itself under that name, such as a `<host>/` directory holding its keys or a `<host>-blobs` store. They land in the instance's directory under the same names, which is where an app that derives paths from its database path now looks. An entry that cannot be moved safely, such as a file hard-linked from outside the instance's own files, or a symlink, stops the move with its name in the reason, and the instance is held until it is cleared. A directory that carries no hostname, such as a `blobs` directory that several apps wrote into with the working directory `/`, is not moved: the box cannot tell whose it is. The agent log names those once a move has happened; an operator moves what an app owns into that app's instance directory by hand, and it comes along on any later revert or migration. A file named like another instance's platform files (`other.example.com.env`, `other.example.com.db`), including one left by an instance that has since been deleted or moved away, is never taken; the log names it. `revert` brings the same names back. What an app wrote relative to its working directory while nested (a `data/blobs` under its instance directory) is not among them: it stays in the instance's directory, where the flat app does not look, but nothing is lost. An instance that was moved before the platform carried entries along still has them in the shared directory; `carlos status --layout` and the agent log say so on every pass until an operator moves them.
 
 You rarely need `migrate` at all. With no intent recorded, a box uses the nested layout by default as soon as its isolation is ready (the probe passes), and moves its instances on its own, with the same hour of grace for an awake one. `carlos status --layout` marks such a box `(nested by default)`, and says why a box the default has not reached is still flat. To keep box-by-box control, record `migrate --box` or `revert` first; a recorded intent always wins. A deployment that is not ready for this at all puts `CARLOS_LAYOUT_DEFAULT=flat` in each box's host.env.
 
@@ -1903,6 +2063,10 @@ console executable and its `.prev` recovery image in place.
 image before starting `apply`, `recover`, `edge` or `console`. Once armed,
 the local floor remains enforced independently of `CARLOS_HOST_CLAIM`.
 The member command remains `carlos ops host resolve`.
+
+#### carlos system journal-migrate
+
+Before starting claim-enabled services on a box with legacy journals, stop the edge and agent. Run `carlos system journal-migrate` as root with `CARLOS_HOST_CLAIM=1` and the deployment environment loaded. The command imports journals only when signed root stop evidence verifies them. It leaves the original files in place. After migration, root ignores changed legacy files and logs an alert. Keep the migration marker.
 
 #### Deployment-wide object scanning
 
@@ -1975,6 +2139,48 @@ would linger.
 
 Ops account owners and `CARLOS_SYSTEM_OPERATORS`.
 
+### carlos move
+
+Moves one instance to another region. The instance keeps serving while its
+data is copied, then goes offline for the cut. If the new region cannot start
+it, the move takes it back to where it was, on its own.
+
+Moves are off unless the console runs with `CARLOS_MOVES_PHASE1` on. Against
+any other console, `carlos move` sends nothing. Run it as yourself, not as
+root.
+
+```sh
+carlos move --host <host> --to <region> [--manual-cut] [--no-wait]
+carlos move status  --host <host> [--wait]
+carlos move cut     --host <host>
+carlos move abort   --host <host>
+carlos move resolve --host <host> --retry
+carlos move resolve --host <host> --declare-lost <box>
+```
+
+`carlos move`, `cut`, `abort` and `resolve` wait until the move ends unless
+you pass `--no-wait`. `carlos move status` reads the move once; with `--wait`
+it waits too, which picks a wait back up after a disconnect. `--manual-cut`
+stops once the move is ready, and `carlos move cut` starts the cut.
+`--app` and `--account` name the instance's app and account, as for
+`carlos instances`.
+
+`--declare-lost <box>` declares the move's target box lost, for a box that
+will not come back. It needs the console's host claim. It reads the box
+through your own AWS credentials and refuses unless AWS shows it stopped or
+terminated. It says what the declaration loses, and you type the host name
+to confirm.
+
+| exit code | meaning |
+|---|---|
+| `0` | the move finished, the console accepted a command given `--no-wait`, or `status` found the move still under way |
+| `3` | the move rolled back or was aborted |
+| `4` | the move needs an operator: it is stuck, waiting for a box, or ready for a manual cut, or its outcome was not recorded |
+| `5` | refused, by the console or before anything was sent |
+| `1` | the console could not be reached, or answered with an error |
+
+Operators who are members of the instance's account.
+
 ## On the host
 
 These are what systemd starts. You will rarely type them, but knowing what
@@ -2029,6 +2235,14 @@ it when the agent connects; it starts, stops and sweeps the
 its slice before a start, and runs the isolation probe at start and every
 five minutes. It accepts a connection only from the edge unit's own main
 process. Not for operators: there is nothing to type.
+
+It stays up once the first wake has started it, so it has to be restarted
+whenever the platform binary changes; `carlos system update` does that, and
+a hand roll must too. A box checks both ends: the service refuses to be
+ready while the binary it runs is no longer `/opt/carlos/carlos`, and the
+agent refuses to wake isolated instances while the service reports another
+build than its own, or none. Either way the reason in `carlos logs` ends
+with `restart carlos-instance-control.service`.
 
 ### carlos instance-exec
 
