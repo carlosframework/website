@@ -770,3 +770,5 @@ main > section.letters-intro .head { margin-bottom: 0; }
 .attribute-category .attribute-detail { border-top: 1px solid var(--rule); }
 .attribute-category .attribute-detail:first-of-type { margin-top: 1.5rem; }
 .attribute-legacy-anchor { display: block; scroll-margin-top: 1.5rem; }
+
+main > section#attributes { padding-top: 1.5rem; }
