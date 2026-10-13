@@ -772,3 +772,12 @@ main > section.letters-intro .head { margin-bottom: 0; }
 .attribute-legacy-anchor { display: block; scroll-margin-top: 1.5rem; }
 
 main > section#attributes { padding-top: 1.5rem; }
+
+.carlos-stack { max-width: 40rem; margin: 2rem 0; }
+.carlos-stack figcaption { text-align: center; margin-bottom: 1rem; font-size: 0.9rem; }
+.carlos-stack figcaption a { color: var(--ink-2); text-underline-offset: 0.2em; }
+.carlos-stack ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.65rem; }
+.carlos-stack li { margin: 0; }
+.carlos-stack li a { display: block; padding: 1.1rem 1.4rem; border: 1px solid var(--rule); border-left: 4px solid var(--accent); border-radius: 0.55rem; background: var(--surface); color: var(--ink); font-weight: 600; line-height: 1.4; text-decoration: none; }
+.carlos-stack li:first-child a { background: var(--accent-soft); }
+.carlos-stack li a:hover { border-color: var(--accent); }
