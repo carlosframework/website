@@ -3,6 +3,372 @@
   "repo": "https://amadan.net/carlos/platform",
   "releases": [
     {
+      "tag": "v0.27.2",
+      "date": "2026-10-14",
+      "sha": "ebddcfc6f4c55a6239d07faa6b46d3773186327b",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.27.2",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Two builds at once keeps each build's socket name.** Where a deployment turns on two builds at once, each build's socket now has the same file name it has with the switch off, in a directory of its own. An app that works out its own address from its socket's name now starts the same way either way. Before, such an app saw a different name for the new build and refused to start. Nothing changes where the switch is off, which is every deployment by default.",
+                "branches": [
+                  "zdd-gen-socket-names"
+                ]
+              },
+              {
+                "md": "**Nothing changes for people using the CLI.**"
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.**"
+              },
+              {
+                "md": "**Coming from v0.26.x, read the [v0.27.0](https://github.com/carlosframework/releases/releases/tag/v0.27.0) and [v0.27.1](https://github.com/carlosframework/releases/releases/tag/v0.27.1) operator notes first.** They all still apply."
+              },
+              {
+                "md": "**A long host name keeps stop-then-start updates.** With two builds at once on, a host on a flat box whose name is longer than 59 bytes is updated the old way: stopped, then started on the new build. Its socket path would otherwise be too long.",
+                "branches": [
+                  "zdd-gen-socket-names"
+                ]
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_SWAP`, `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS` and `CARLOS_REQUIRE_POINTER_DIGEST` unset, and don't run `carlos channels digests on`. With `CARLOS_HOST_CLAIM` set, instance control now refuses to start until a later release.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "ebddcfc6f4c55a6239d07faa6b46d3773186327b",
+          "date": "2026-10-14",
+          "subject": "zdd rev 19 amendment: generation sockets keep the flag-off file name",
+          "branch": "zdd-gen-socket-names",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/zdd-gen-socket-names",
+          "commits": 5,
+          "discussions": [
+            {
+              "id": 272,
+              "title": "Zero-downtime deploys: owed before CARLOS_SWAP can go on",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "d2f58fd330726e461b1022edfc9e4c4688696dd1",
+          "date": "2026-10-13",
+          "subject": "startup-largebox-test-281",
+          "branch": "startup-largebox-test-281",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/startup-largebox-test-281",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "21d91fd6087aa1ef7a21f35fc9188b263e3d0529",
+          "date": "2026-10-13",
+          "subject": "host: rootinventory_test.go is linux-only",
+          "branch": "fix-cross-test-compile",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fix-cross-test-compile",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.27.1",
+      "date": "2026-10-13",
+      "sha": "6dfbff103985e1e81899f2e611b1afff0ddb3769",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.27.1",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**A box with many instances no longer fails its update while it starts.** On a box with over a hundred instances, v0.27.0's update could take longer than the 20 seconds it allows, because the edge waited for the agent to check every instance first. The box then rolled back after about 45 seconds of failed requests. The edge now starts serving straight away. Requests for an instance wait up to 30 seconds for that check to finish, then get the usual answer that the instance is waking.",
+                "branches": [
+                  "hotfix-startup-sweep-281"
+                ]
+              },
+              {
+                "md": "**Nothing changes for people using the CLI.**"
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.**"
+              },
+              {
+                "md": "**Coming from v0.26.x, read the [v0.27.0 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.27.0) first.** They all still apply."
+              },
+              {
+                "md": "**After each box updates, check that it finished starting.** The update's 20-second check now passes once the edge serves, before the agent has checked every instance. So also check the box's journal for `agent: hibernation activator armed`, and that one request to a sleeping instance succeeds."
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_SWAP`, `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS` and `CARLOS_REQUIRE_POINTER_DIGEST` unset, and don't run `carlos channels digests on`. With `CARLOS_HOST_CLAIM` set, instance control now refuses to start until a later release.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "6dfbff103985e1e81899f2e611b1afff0ddb3769",
+          "date": "2026-10-13",
+          "subject": "hotfix #281: the edge no longer waits on the startup sweep and recovery",
+          "branch": "hotfix-startup-sweep-281",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/hotfix-startup-sweep-281",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 281,
+              "title": "Agent startup is not bounded under the 20s update gate: sweep and recovery still run before the edge listens",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.27.0",
+      "date": "2026-10-13",
+      "sha": "f4cf27dd0c48eac32d7b4beaec77686752ca6cff",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.27.0",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Root keeps its own record of each box's releases.** A box's root process now keeps the builds it has seen run healthy, and the build each service ran before its current one, in directories only root can write. Before, it read them from places the platform's own service could write. Restarts, rollbacks and recovering from a bad build work exactly as they did.",
+                "branches": [
+                  "feat/claim-root-trusted-state"
+                ]
+              },
+              {
+                "md": "**Nothing changes for people using the CLI.**"
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.**"
+              },
+              {
+                "md": "**Coming from v0.25.x, read the [v0.26.0 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.26.0) and the [v0.26.1 notes](https://github.com/carlosframework/releases/releases/tag/v0.26.1) first.** They all still apply."
+              },
+              {
+                "md": "**Before rolling, check two things on each box.** `/`, `/var` and `/var/lib` must be owned by root and not writable by group or others, and `/var/lib/carlos-claims` must not exist. If either check fails, root can't update a service that has its own unit, such as the console, on that box, and logs `repoint failed: permission denied` on every pass."
+              },
+              {
+                "md": "**Health history starts empty.** Root no longer reads the health history the service kept before this release. Don't add a `require` or `prove` entry for a service to `/etc/carlos/proof-policy.json` until both its current build and the one before it have been seen healthy since the roll. Otherwise rolling back to the earlier build waits for a proof."
+              },
+              {
+                "md": "**One earlier build per service is kept.** `/opt/carlos/previous/<host>` points at the build each service ran before its current one, and the box keeps that build when it prunes old versions. Disk use can grow by up to one build per service."
+              },
+              {
+                "md": "**`carlos __cgexec` can appear in `ps`.** Each new instance process now starts through a short-lived helper that places it in its cgroup before it runs. For a few milliseconds `ps` can show `carlos __cgexec` as a child of the agent. Monitoring, or a `pkill` that matches \"carlos\" in a command line, can catch it.",
+                "branches": [
+                  "zdd-flag-readiness-3"
+                ]
+              },
+              {
+                "md": "**After the roll, check placement on each box.** `journalctl -u carlos-edge --since '<roll time>' | grep 'placement before exec failed'` should print nothing. A line there means a process was moved into its cgroup after it started instead. That affects resource accounting, not serving.",
+                "branches": [
+                  "zdd-flag-readiness-3"
+                ]
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_SWAP`, `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS` and `CARLOS_REQUIRE_POINTER_DIGEST` unset, and don't run `carlos channels digests on`. With `CARLOS_HOST_CLAIM` set, instance control now refuses to start until a later release.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "f4cf27dd0c48eac32d7b4beaec77686752ca6cff",
+          "date": "2026-10-13",
+          "subject": "changelog: v0.26.1 (release step 10)",
+          "branch": "changelog-v0.26.1",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/changelog-v0.26.1",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "2e00b17e18f49cd391b2c6890f8abd68bbdeba23",
+          "date": "2026-10-13",
+          "subject": "plan: zdd flag readiness round 3 (draft)",
+          "branch": "zdd-flag-readiness-3",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/zdd-flag-readiness-3",
+          "commits": 23,
+          "discussions": [
+            {
+              "id": 272,
+              "title": "Zero-downtime deploys: owed before CARLOS_SWAP can go on",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "645a7d0541cc77bbf52523f88a901f720ceaf64a",
+          "date": "2026-10-13",
+          "subject": "claim Plan 14 Part 1 (#280): root-trusted state foundations, families B, C and D",
+          "branch": "feat/claim-root-trusted-state",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/feat%2Fclaim-root-trusted-state",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "codex"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "34a4328f7d29cfed7b5404cec39cef616e115a26",
+          "date": "2026-10-13",
+          "subject": "hotfix-instance-key-gate",
+          "branch": "hotfix-instance-key-gate",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/hotfix-instance-key-gate",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "ba52d5efe55a4a8a78acaa0af9d500e803aeb4c0",
+          "date": "2026-10-13",
+          "subject": "plan: zero-downtime flag readiness, round 2 (draft for Astra's review)",
+          "branch": "zdd-flag-readiness-2",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/zdd-flag-readiness-2",
+          "commits": 48,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "67698c9c016e1f34fbb4a337ebc833380d023937",
+          "date": "2026-10-13",
+          "subject": "changelog-nested-bullets",
+          "branch": "changelog-nested-bullets",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/changelog-nested-bullets",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "729e85080ff0891fc8c622367dc52a5d27823c8a",
+          "date": "2026-10-13",
+          "subject": "changelog-v0.26.0",
+          "branch": "changelog-v0.26.0",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/changelog-v0.26.0",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v0.26.1",
       "date": "2026-10-13",
       "sha": "9aaeace220780db1a844595f2d8f690bf2cba375",
