@@ -789,7 +789,6 @@ main > section#attributes { padding-top: 1.5rem; }
 .architecture-tools strong { font-size: 0.95rem; }
 .architecture-tools span { font-size: 0.85rem; color: var(--ink-2); }
 .architecture-model:hover, .architecture-tools a:hover { border-color: var(--accent); text-decoration: none; }
-.architecture-principles { display: block; margin-top: 1rem; text-align: center; font-size: 0.85rem; color: var(--ink-2); text-underline-offset: 0.2em; }
 @media (min-width: 64rem) {
   .hero-with-stack { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 4rem); }
   .hero-with-stack .carlos-stack { margin-top: 0.5rem; }
