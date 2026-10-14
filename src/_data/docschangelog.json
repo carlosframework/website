@@ -3,6 +3,164 @@
   "repo": "https://amadan.net/carlos/platform",
   "releases": [
     {
+      "tag": "v0.27.3",
+      "date": "2026-10-14",
+      "sha": "e15ad6be618aeea85b19b5b8cab42df6d75a8af8",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.27.3",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Restarting the edge no longer leaves an instance unreachable for 15 minutes.** If the edge stopped while an instance was waking, the instance could stay locked until its lease expired, and every request to it was refused for up to 15 minutes. The stopping edge now cancels the wake, makes sure it has stopped, and lets the lease go. If it cannot confirm the stop, it keeps the lease, as before.",
+                "branches": [
+                  "fix-shutdown-lease-292"
+                ]
+              },
+              {
+                "md": "**New accounts never get a reserved address.** An account's address is part of every app's hostname. Account creation now skips any address that spells a name the platform uses itself, such as dev, edge or www. Existing accounts keep theirs.",
+                "branches": [
+                  "reserved-sqids-285"
+                ]
+              },
+              {
+                "md": "**Nothing else changes for people using the CLI.**"
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.**"
+              },
+              {
+                "md": "**Coming from v0.26.x, read the [v0.27.0](https://github.com/carlosframework/releases/releases/tag/v0.27.0), [v0.27.1](https://github.com/carlosframework/releases/releases/tag/v0.27.1) and [v0.27.2](https://github.com/carlosframework/releases/releases/tag/v0.27.2) operator notes first.** They all still apply."
+              },
+              {
+                "md": "**Instance control restarts with this update.** This release changes `carlos-instance-control`, so it has to restart on each box. `carlos system update` does that on its own. A box updated any other way needs `systemctl restart carlos-instance-control` afterwards.",
+                "branches": [
+                  "fix-shutdown-lease-292"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-system"
+                ]
+              },
+              {
+                "md": "**Roll the console as well as the boxes.** Only a console on this release skips reserved account addresses when it creates an account.",
+                "branches": [
+                  "reserved-sqids-285"
+                ]
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_SWAP`, `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS` and `CARLOS_REQUIRE_POINTER_DIGEST` unset, and don't run `carlos channels digests on`. With `CARLOS_HOST_CLAIM` set, instance control now refuses to start until a later release.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "e15ad6be618aeea85b19b5b8cab42df6d75a8af8",
+          "date": "2026-10-14",
+          "subject": "activator: Shutdown aborts a waking entry and gives its lease back with swaps off (#292)",
+          "branch": "fix-shutdown-lease-292",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fix-shutdown-lease-292",
+          "commits": 7,
+          "discussions": [
+            {
+              "id": 272,
+              "title": "Zero-downtime deploys: owed before CARLOS_SWAP can go on",
+              "state": "open"
+            },
+            {
+              "id": 292,
+              "title": "Edge restart: the stopping agent recycles an instance and strands its lease for 15 minutes",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "fc70bc754dec1c2fe2f04d14d77f716b4180a7df",
+          "date": "2026-10-14",
+          "subject": "reserved-sqids-285",
+          "branch": "reserved-sqids-285",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/reserved-sqids-285",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "8b5c75610c0c169d2213f7bb71a68b01b7dda96a",
+          "date": "2026-10-14",
+          "subject": "changelog-v0.27.x: v0.27.0, v0.27.1 and v0.27.2 (README release step 10)",
+          "branch": "changelog-v0.27",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/changelog-v0.27",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "a3bfa662250917557faed570efcc67c8c788254a",
+          "date": "2026-10-14",
+          "subject": "rehearsal-p0-two-box",
+          "branch": "rehearsal-p0-two-box",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/rehearsal-p0-two-box",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "4e577fdef0c840e7868013d936c7471a1fc42d7b",
+          "date": "2026-10-14",
+          "subject": "readme-roll-order",
+          "branch": "readme-roll-order",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/readme-roll-order",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v0.27.2",
       "date": "2026-10-14",
       "sha": "ebddcfc6f4c55a6239d07faa6b46d3773186327b",
