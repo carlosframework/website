@@ -776,7 +776,6 @@ main > section#attributes { padding-top: 1.5rem; }
 .hero-with-stack { display: grid; gap: 1.5rem; align-items: start; }
 .hero-introduction { min-width: 0; }
 .carlos-stack { width: 100%; max-width: 30rem; margin: 1rem auto 2rem; }
-.carlos-stack figcaption { max-width: 25rem; margin: 0 auto 1.25rem; text-align: center; font-size: 1rem; font-weight: 600; color: var(--ink-2); }
 .architecture-model { display: flex; flex-direction: column; align-items: center; padding: 1.4rem 1rem; border: 1px solid var(--accent); border-radius: 1rem; background: var(--accent-soft); color: var(--ink); text-align: center; text-decoration: none; }
 .architecture-model > strong { font-size: 1.7rem; letter-spacing: -0.03em; }
 .architecture-model > span { font-size: 0.95rem; color: var(--ink-2); }
