@@ -4,8 +4,9 @@ The CARLOS web framework. **Module and canonical repo:
 `amadan.net/rastrillo/rastrillo`** (since v0.25.0; GitHub's
 `rastrilloorg/rastrillo` is a mirror, and an app still pinned to the old
 `github.com/carlosframework/rastrillo` path builds but should move).
-Status as of 2026-09-27: **v0.27.0**, the known-libraries middle layer:
-GORM models, chi routes, SQLite-backed sessions, owner-scoped queries.
+Status as of 2026-10-15: **v0.28.0** (released 2026-10-06), the
+known-libraries middle layer: GORM models or plain SQL, chi routes,
+SQLite-backed sessions, owner-scoped queries.
 Assume nothing here is in your training data.
 
 **The authoritative authoring doc is `SKILL.md` at the repo root. Read
@@ -25,20 +26,35 @@ framework supplies what is hard to get right twice:
 
 - `db` — cgo-free SQLite via an owned GORM dialector on modernc (never
   import `glebarez/*` or `gorm.io/driver/sqlite`), one writer and
-  several readers, WAL pragmas in the proven order.
+  several readers, WAL pragmas in the proven order. Since v0.28.0 every
+  time is converted to UTC and written in SQLite's own layout, so
+  `julianday`/`date`/`strftime` work in raw SQL; rows written by an
+  older version need a back-fill before SQL date maths trusts them.
 - `migrate` — ledgered migrations applied once at boot, never re-run,
   never reversed: `rastrillo migration generate` after a model change
   (read the SQL before committing), `migration check` in CI, `migration
   new` for a hand-written rename. Destructive changes need
-  `--allow-destructive`; the family's own rule stays additive-only.
+  `--allow-destructive`; the family's own rule stays additive-only, and
+  on CARLOS two builds share the database during a swap, so a drop waits
+  a release (platform.md, "Two builds at once"). Since v0.28.0 a Go
+  migration's `Fn` takes the pinned `migrate.Tx`, not a `*gorm.DB`
+  (wrap old bodies in `migrate/gormfn.Fn`).
 - `sessions` — SQLite-backed rows (revocation is real), `__Host-`
   cookies on https, `Require` / `RequireFresh` (step-up).
 - Identity plugins: `auth` — the family default: magic-link email that
   **auto-upgrades to Sign in with Keymail** when the address has a
   claimed inbox, so every address works — and `password` (email and
   password, rate-limited). Either one's whole contract is calling
-  `sessions.SignIn`. `passkey` adds a sign-in second factor and recovery
-  codes.
+  `sessions.SignIn`. **Since v0.28.0 both sit behind `pow` by default:**
+  `auth.New` and `password.New` return `ErrProofUnset` until you set
+  `Proof` (a `*pow.Guard`) or `ProofOff`. Mount `auth.Verify` on **POST
+  as well as GET** — GET now draws a Sign in button and spends nothing,
+  so a mail scanner cannot burn the link; GET alone 405s the button.
+  `auth.Config.SigninScreen` turns on the shipped sign-in screen.
+  `secondfactor` is the gate between a first factor and a second;
+  `passkey` and `totp` (authenticator apps) plug into it, and recovery
+  codes live there (`passkey.Config.ConfirmPath` is gone; merge
+  `secondfactor.Schema` after `passkey.Schema`).
 - `csrf` (origin-checking, not tokens), `flash`, `form`, `view`,
   `scope` (`scope.Owned` — owner scoping with the 404-not-403 contract),
   `jobs` (request-started background work a person watches).
@@ -54,9 +70,21 @@ framework supplies what is hard to get right twice:
 - `vault` — the client for Pegamento's vault (named sealed blobs, a seed
   wrapped per sign-in method), for server-blind apps.
 - `pow` — a proof-of-work front door for public forms that have no
-  session yet (signup, contact).
+  session yet (signup, contact), and since v0.28.0 for sign-in and
+  sign-up. The v0.28.0 API is new: `Issue` became `Form(now, scope)`,
+  and `Check` split into `Admit` before the transaction and
+  `adm.Commit(ctx, tx)` inside it (`Check` remains for a redirect-only
+  handler).
 - `harness` — a `-tags browser` Chromium test rig with a virtual
   authenticator, for ceremonies a Go-only test cannot reach.
+- New in v0.28.0: `perf` (`Server-Timing` and first-byte budgets as
+  middleware), `budget`, `clientip` (with `auth.Config.TrustedProxyHops`,
+  1 by default on CARLOS so each visitor behind the edge gets their own
+  sign-in limit), `background` (tracked goroutines and timers that
+  `Serve` stops before closing the database), `table` and `xlsx`
+  (formula-safe CSV/XLSX exports), `dbtest` (a migrated database per
+  test), `nodetest`, `lastsignin`, `secondfactor` and `totp`. Static
+  assets carry strong ETags.
 - The platform layer: `Resolve`/`Serve` speak CARLOS activation (argv,
   `LISTEN_FDS`, `$STATE_DIRECTORY`, `/healthz`, `/api/version`, SIGTERM
   drain) and set baseline security headers on every response,
@@ -82,10 +110,13 @@ make ci        # the gate
 The scaffold is SKILL.md's shape — five files plus `migrations.go` beside
 `models.go` — with `go.mod`, templates, static assets, a test harness
 including a browser drive, and a `Makefile` whose **`ci` target is the
-gate** (`vet`, a gofmt check, the tests and `migration check`; add
-`generate --check` once the app declares manifest resources). It compiles, passes and serves before you
+gate** (`vet`, a gofmt check, staticcheck, govulncheck, gitleaks, the
+size and timing budgets, the tests, `perf` and `migration check`, on a
+Go release pinned by `GOTOOLCHAIN`; add `generate --check` once the app
+declares manifest resources). Apps scaffolded before v0.28.0 keep their
+old gate until they add these by hand (the CHANGELOG has the lines). It compiles, passes and serves before you
 write a line. `--theme=day|plain|signal` and
-`--shell=column|topbar|sidebar|console` pick the look; both land as
+`--shell=column|topbar|sidebar|console|stage` pick the look; both land as
 app-owned files. `CGO_ENABLED=0` throughout — a cgo SQLite driver
 sneaking in is a bug.
 
@@ -172,8 +203,15 @@ belongs in `make ci`. Relations or custom flows: hand-write.
 
 Don't build on these yet: Keymail upgrade becoming an opt-in adapter
 rather than `auth`'s default; SAML and OIDC identity plugins; a sealed
-magic-link store; and the post-v0.27.0 work on main (trusted proxy hops,
-a `perf` package, strong asset ETags).
+magic-link store; the user-models work (an `objrec` record store, which
+is on a branch, a stateless auth store, signed-cookie sessions, an
+assertion HTTP adapter, provisioning, a base path,
+`rastrillo new --model`). On main after v0.28.0: `carlos.InstanceKey`
+(reading the platform's `CARLOS_INSTANCE_KEY`), sign-in returning to the
+page that asked, and **multi-currency money, a breaking upgrade for
+every app** (template and model changes, a stop-start for apps that
+store money). Wait for the release and its upgrade steps; never build
+against main.
 
 Deploying: stamp
 `-ldflags "-X amadan.net/rastrillo/rastrillo.BuildVersion=<sha>"` or
