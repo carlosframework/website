@@ -1,6 +1,6 @@
 ---
 name: building-carlos-apps
-description: Use when building or designing an app on the CARLOS architecture (Cost-efficient, Available, Replicated, Lightweight, Open, Secure) or with rastrillo (the CARLOS web framework), bringing an existing app onto it, deciding what one instance is (per person, team, customer, repo, or one shared instance; a signup that creates instances; a home or hub; SaaS customers who want on-prem), choosing a trust class (S, A1, A2, A/pub, B, C), or weighing the family's other open choices: app shape, hosting, identity. For the zero-decisions happy path to a first live app, use getting-started instead.
+description: Use when building or designing an app on the CARLOS architecture (Cost-efficient, Available, Replicated, Lightweight, Open, Secure) or with rastrillo (the CARLOS web framework), bringing an existing app onto it, deciding what one instance is (per person, team, customer, repo, or one shared instance; a signup that creates instances; a home or hub; reporting across tenants; SaaS customers who want on-prem), choosing a trust class (S, A1, A2, A/pub, B, C), or weighing the family's other open choices: app shape, hosting, identity. For the zero-decisions happy path to a first live app, use getting-started instead.
 ---
 
 # 🤖 Building CARLOS apps
@@ -50,7 +50,9 @@ in this skill, and every benefit on carlosframework.com, hangs off them.
    boundary is the app's choice; there is no default. Choose the smallest
    unit that owns data together, fails together and leaves together.
    Sharing is membership in someone's instance, never a copy. Never
-   tenancy by a `tenant_id` column in one shared file.
+   tenancy by a `tenant_id` column in one shared file. Totals across
+   tenants come from facts the centre owns or witnesses and fixed-shape
+   records instances push, never from opening tenant databases.
 2. **How do people reach it?** One instance with in-app accounts, a
    simple home that lists your instances, a hub that puts every tenant
    under one domain, or a blind home for end-to-end encrypted apps.
