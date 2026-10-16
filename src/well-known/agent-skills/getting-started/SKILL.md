@@ -16,9 +16,11 @@ defaults below and does not stop to ask.
 The pieces, named once:
 
 - **CARLOS** is the application architecture (carlosframework.com): one
-  static Go binary, one fully-isolated instance per account (own process,
-  own SQLite file, own unix socket, own hostname), many instances on one
-  small box, every database continuously replicated to object storage.
+  static Go binary, one fully-isolated instance per tenant (own process,
+  own SQLite file, own unix socket), many instances on one small box,
+  every database continuously replicated to object storage and idle
+  instances hibernating to it. A first app is one instance; what a tenant
+  is in a bigger product is building-carlos-apps' first decision.
 - **Carloku** (carloku.com) is the hosted CARLOS platform. Its console is
   `https://console.carloku.com`. Carloku is the product brand; the CLI is
   always `carlos`, never `carloku`.
@@ -43,7 +45,8 @@ The pieces, named once:
 | Hosting | Carloku, `<app>.<sqid>.oncarlos.com` | Zero infra to run; certs, replication, hibernation all platform-side |
 | Versioning | git short sha (`v1` is fine for the very first ship) | House convention |
 | Channel | `edge` | A new app is born with a single channel of that name — **edge IS production** (Paul, 2026-08-19; release pipelines v2 builds it in). Bake windows, passkeys, and approvals are per-channel opt-ins you add later via a pipeline |
-| Trust model | Honest server: app data is server-readable, and the README says so | See "The one decision you must still record" below |
+| Tenancy | One instance for the whole app, with in-app accounts (model A) | The simplest boundary; the escalation trigger below says when it is wrong |
+| Trust model | Honest server, class C: app data is server-readable, and the README says so | See "The one decision you must still record" below |
 
 ## The one decision you must still record
 
@@ -54,14 +57,19 @@ package import: key custody, recovery, and search all become product
 surface. The honest default for a first app is
 **server-readable data, declared**: one line
 in the README under "Honest trade-offs" saying the server can read app
-data, dated. That satisfies the family's deviation rule (every deviation
-enumerated, justified, published).
+data, dated, with the class letter (C; a static site is S). That
+satisfies the family's deviation rule (every deviation enumerated,
+justified, published).
 
 **Escalation trigger, not optional:** if the app will hold private
 personal content — messages, health data, anything a person would call
 theirs — stop here and read carlos:building-carlos-apps ("The
-decisions") before writing code. Trust models are chosen on day one,
-not retrofitted.
+decisions") before writing code. The same goes if **more than one
+customer, team or person will each own separate data** (a signup that
+gives each one their own space, a SaaS, a forge with organisations):
+read carlos:building-carlos-apps' tenancy reference first, because one
+shared instance with a customer column is the one shape CARLOS exists to
+avoid. Tenancy and trust are chosen on day one, not retrofitted.
 
 ## Step 0 — install and sign in
 
@@ -127,7 +135,7 @@ cmd/myapp/main.go            Resolve -> db.Open -> App -> Serve
 The gate, before every commit, is the scaffold's own `Makefile`:
 
 ```sh
-make ci        # vet, gofmt check, tests, rastrillo migration check
+make ci        # vet, gofmt, staticcheck, govulncheck, gitleaks, tests, budgets, migration check
 ```
 
 After changing a model, run `rastrillo migration generate` and read the
@@ -197,8 +205,10 @@ The platform's boxes are **linux/arm64** — build exactly that, statically
 `carlos deploy` is ship + promote + watch in one motion: it uploads an
 immutable release, promotes it to your app's entry channel (`edge` —
 for a fresh app, edge is production; the old three-rung ladder is now
-an opt-in pipeline), then polls until the URL's `X-Carlos-Version`
-header reports the shipped build, and prints `live https://…`. On first
+an opt-in pipeline), then follows the rollout box by box (on Carloku;
+elsewhere it watches the URL) until the new build serves, and prints `live https://…`. Set `carlos apps build-probe
+--app myapp /api/version` once so it asks the process which build it
+runs rather than trusting the `X-Carlos-Version` header. On first
 run it offers to remember the artifact path in `.carlos/config`
 (commit that file); after that, releasing is just `carlos deploy`, no
 arguments.
@@ -258,7 +268,7 @@ Two traps, both paid for:
 | Custom domain | `carlos domains attach --app myapp www.example.com` — it tells you the DNS records to create; certs are automatic once DNS points at the platform |
 | Review a branch | `carlos canary --app myapp ./myapp-linux-arm64` — a branch-only channel and URL that cannot disturb production. If the app carries config, pass `--environment`, or the canary host serves GETs and fails every form |
 | Who is visiting | `carlos analytics --app myapp --set-count edge`, then `--range 7d` — counted at the edge: no JavaScript, no cookie, no stored IP, so don't add an analytics script |
-| What is breaking | `carlos errors --app myapp --since 24h` — your `error` log lines plus the 5xx the edge saw, grouped, no wiring at all |
+| What is breaking | `carlos errors --app myapp --since 24h` — your `error` log lines, grouped, no wiring at all. The 502/503/504s the edge saw are `carlos availability --app myapp` |
 | Keep it private | `carlos gate set --app myapp` — one shared password in front of the hostname, for a prototype nobody should read yet |
 | Feature switch | `carlos features set --app myapp beta-ui=v2` — the platform serves it, only your app reads it, and it lands with no restart |
 
@@ -312,6 +322,8 @@ capability this recipe skips, such as sending email (`carlos email enable`)
 or work that has to happen on a clock (`carlos schedule set` — an idle
 instance cannot run its own timer), both in platform.md, or **a product
 where each customer gets their own instance** (a signup flow that
-creates instances, one domain split by path) — switch to **carlos:building-carlos-apps**. It holds the decision axes,
+creates instances, one domain split by path) — switch to **carlos:building-carlos-apps**. It starts with tenancy (what
+one instance is, the user models, the trust classes, and the benefits
+each earns), then holds the decision axes,
 the family evidence for each option, and the deeper references this
 recipe deliberately skips.

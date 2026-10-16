@@ -8,11 +8,11 @@ nothing but the CLI and a browser. If a task seems to need a box, either
 you are self-hosting and operating the platform itself, or you have found
 a product gap to file — never a workaround to build.
 
-Snapshot date 2026-09-27, describing what Carloku's console serves (the
-platform as of 2026-09-12). Verbs are stable, flag details evolve — trust
-`carlos <verb> -h` over this file, and remember a newer CLI can offer a flag
-the console you are talking to does not have yet ("Landed, not yet on
-Carloku" at the end). The CLI ships for macOS/Linux (brew,
+Snapshot date 2026-10-15, describing what Carloku serves: platform
+v0.27.3, released 2026-10-14. Verbs are stable, flag details evolve — trust
+`carlos <verb> -h` over this file, and remember a CLI can offer a flag the
+console you are talking to has switched off or does not have yet
+("Switched off, or not released" at the end). The CLI ships for macOS/Linux (brew,
 apt, static binaries) and Windows (client-only zip — no self-replace,
 `carlos update` defers to a fresh download).
 
@@ -70,9 +70,12 @@ otherwise `--console` does.
 - **Config delivery** — `carlos env` / `carlos secrets` writes converge
   onto boxes within seconds (a serial bump, 2s poll). No ssh-delivered
   EnvironmentFiles.
-- **Deploy verification** — the edge stamps `X-Carlos-Version` per
-  versioned route (only after the instance actually restarted);
-  `carlos deploy` watches it.
+- **Deploy verification** — `carlos deploy` follows the rollout box by
+  box where boxes report it (they do on Carloku), and otherwise watches
+  the URL: the app's build probe if it declares one
+  (`carlos apps build-probe`), else the `X-Carlos-Version` header, which
+  the edge stamps from the route row the moment adoption lands, whether
+  or not the process has restarted yet.
 - **Outbound email** — the platform mints a sending identity on a domain,
   publishes DKIM/SPF/DMARC where it controls the zone, and delivers working
   SMTP credentials as config. Apps never hold an AWS key and nobody runs an
@@ -81,9 +84,10 @@ otherwise `--console` does.
   POSTs a tick to a path in your app at the time it is due, waking a
   hibernating instance to run it. No in-app scheduler, no cron line on a
   box. See "Scheduled work" below.
-- **Errors and analytics** — the edge and the log stream feed both, with
-  no SDK, no JavaScript, no cookie and no stored IP. Errors collect from
-  the day an app ships; analytics is opt-in. See "Watching an app" below.
+- **Errors, availability and analytics** — the edge and the log stream
+  feed all three, with no SDK, no JavaScript, no cookie and no stored IP.
+  Errors and availability collect from the day an app ships; analytics is
+  opt-in. See "Watching an app" below.
 - **Password gate** — `carlos gate` puts one shared password in front of
   an app's hostnames, enforced at the edge ahead of the cache and the
   activator, so the app behind it never sees the cookie. A curtain over a
@@ -117,9 +121,10 @@ otherwise `--console` does.
   platform namespace outside any pipeline: always allowed, zero bake,
   per-session dead ends. Apps with no pipeline keep the legacy frozen
   ladder (`edge → beta → stable`, holds 0/24h/72h, unconditional
-  passkey on stable — reaching stable cuts a semver tag; `--hotfix`
-  bypasses, recorded). Box-side, bake changes **ratchet**: a shorter
-  window is honoured only after the previously-known window has elapsed
+  passkey on stable — reaching stable cuts a semver tag). `--hotfix`, the
+  bake bypass, is an operator act on the direct-bucket path only: the
+  console refuses it by name, so a member never has it. Box-side, bake
+  changes **ratchet**: a shorter window is honoured only after the previously-known window has elapsed
   once on the box's own clock, so a compromised console session cannot
   collapse a hold and ship in the same hour.
 - **Production flag** — legacy: superseded by per-channel pipeline rules
@@ -133,12 +138,26 @@ otherwise `--console` does.
   Exec-backed and hibernating by default. The process contract is
   `<bin> --socket <path> --db <path>` on a unix socket — there is no
   `$PORT` — and every instance serves `GET /healthz` and
-  `GET /api/version`. Every exec child is handed `CARLOS_REGION`, the
-  placement code of the box it runs on (`ie`, `au`, …), so an app that
-  wants to know where it is can read it rather than guess; it also runs
-  under a memory ceiling the platform sets from the staged manifest, so
-  an app that grows past its tier is OOM-killed and restarted rather than
-  allowed to take the box's other tenants with it. **A static site has no
+  `GET /api/version`. Every exec child is handed `CARLOS_HOST`, its
+  hostname exactly as `carlos instances list` shows it — **read it, never
+  the socket's file name**, which says nothing about the host on an
+  isolated box — and `CARLOS_REGION`, the placement code of the box it
+  runs on (`ie`, `au`, …), so an app that wants to know where it is can
+  read it rather than guess. Since v0.26.0 the platform also writes a
+  `CARLOS_INSTANCE_KEY` into the instance's own env before its first
+  start: a per-instance secret key for sealing the instance's own data.
+  It is not an API token and opens no platform door. On a box that has
+  isolated its instances (v0.25.0), each instance runs in a box of its
+  own: its own directory and namespaces, seeing only its own app's build,
+  under a memory ceiling set from the staged manifest plus CPU and IO
+  limits, and
+  with **no access to loopback or private addresses on the box** except
+  its DNS resolver — so an app cannot reach a sibling over `127.0.0.1`,
+  and one that grows past its tier is OOM-killed and restarted rather
+  than allowed to take the box's other tenants with it. On such a box the
+  working directory is the instance's data directory, the one its
+  database is in, so a relative path like `./data/blobs` lands beside
+  the database. **A static site has no
   instance** — the edge serves it off the channel pointer, and giving one
   an instance produces a route that can never wake ("Deploying a static
   site" below).
@@ -154,8 +173,9 @@ otherwise `--console` does.
   cycles exactly the routes that read one.
 - **Canary** — `carlos canary` stands a second instance beside production
   on a channel and hostname belonging to one branch: `canary/<slug>` and
-  `<slug>.<app>.<sqid>.<domain>`, the slug defaulting to the git branch.
-  Promotion into a canary is never refused and costs no rung — canary
+  `<slug>-<app>.<sqid>.<domain>` (one label since v0.24.0, so slug and
+  app together are at most 63 characters), the slug defaulting to the git
+  branch. Promotion into a canary is never refused and costs no rung — canary
   channels sit outside every pipeline, so a build that has ridden one
   still enters the pipeline fresh. Seven-day lease, refreshed on every
   re-promote. It is a URL, not a traffic split.
@@ -163,12 +183,19 @@ otherwise `--console` does.
   person: a CI job that ships, a signup flow that creates an instance per
   customer. `carlos services create --role <r> --app <app> <name>` mints
   one; reach is fixed at mint and bound to one account and (with `--app`)
-  one app. Roles, narrowest first: `publish` (ship releases), `instance`
-  (create, delete, repoint and move the app's instances, attach its
-  domains, write its path routes, read its logs, errors and analytics),
-  `operate`, and `admin` (which includes minting store IAM users — a real
-  handover). No role can run `carlos instances enable` or mint another
-  credential. "Provisioning instances from your own app" below.
+  one app. Roles, narrowest first: `deploy` (for CI: ships, and promotes
+  or rolls back only the rungs named at mint —
+  `services create --role deploy --app <app> --rungs canary,edge ci`,
+  never `stable`, and only `canary/<name>` channels on an app that
+  declares a pipeline; no hotfix, no app creation, so a new app's first deploy
+  still needs a person; CI sets `CARLOS_SERVICE_TOKEN` and
+  `CARLOS_CONSOLE` and runs `carlos deploy` as usual), `publish` (ship
+  releases), `instance` (create, delete, repoint and move the app's
+  instances, attach its domains, write its path routes, read its logs,
+  errors and analytics), `operate`, and `admin` (which includes minting
+  store IAM users — a real handover). No role can run
+  `carlos instances enable` or mint another credential. "Provisioning
+  instances from your own app" below.
 - **Path routes** — one hostname split by its first path segment:
   `example.com/acme` served by one route, `example.com/globex` by another,
   everything else by the hostname's own route. A prefix *points at* an
@@ -177,11 +204,13 @@ otherwise `--console` does.
 - **`.carlos/config`** — two layers, global `~/.carlos/config` and
   per-project `./.carlos/config` (committed; nearest wins walking up).
   Holds console, account, app, kind, artifact — the reason zero-argument
-  `carlos deploy` works. Project values are honored only when the file's
+  `carlos deploy` works — and optionally named `destinations`, one per
+  console or app a checkout deploys to, picked with `-d <name>` on any
+  verb that takes `--console` (`carlos config destinations` edits them). Project values are honored only when the file's
   console matches the session's, so a committed config cannot silently
   redirect someone else's credentials.
 - **Default addresses** — `<app>.<sqid>.<apps-domain>` (on the hosted
-  platform, `oncarlos.com`); canary form `<canary>.<app>.<sqid>.<domain>`.
+  platform, `oncarlos.com`); canary form `<canary>-<app>.<sqid>.<domain>`.
   Minted **alias** hosts intentionally carry no `X-Carlos-Version` —
   verify on the canonical host.
 
@@ -211,30 +240,35 @@ ship and promote steps.
 | Verb | What it does |
 |---|---|
 | `carlos auth login\|whoami\|logout\|default` | Device-code login (approve in any signed-in browser); identity + memberships; per-project default console |
-| `carlos apps create\|place\|delete\|restore` | Claim an app; place it on a customer fleet; trash/restore |
-| `carlos deploy` | **Release new code — reach for this one.** ship + promote + watch `X-Carlos-Version` until live; zero-arg with a saved project config. `--channel` to land somewhere other than the entry channel (a canary). Also the WHOLE story for a static site: `--kind static --host <h> <dir>` declares the route as well as shipping it ("Deploying a static site") |
-| `carlos ship` | The ship half alone: publish a release *without* releasing it (`--kind binary\|static`, `--version`, `--notes`); rate-limited per app (~2/minute — a 429 carries `Retry-After`) |
-| `carlos promote` | The promote half alone: move an **already-shipped** version onto a channel (`--hotfix` to bypass a bake, recorded) — a ladder step or a re-point, not how you release new code. The channel is positional, and optional when the app has only one |
+| `carlos apps create\|list\|place\|set\|build-probe\|delete\|restore` | Claim an app (a name whose platform address is already held is refused, and `tmp-` names are reserved); `list` every app, the Trash included; place it on a customer fleet; `set --swap overlap\|hold` and `--swap-concurrency` choose how its instances take a new build ("Two builds at once"); `build-probe /api/version` makes `deploy` ask the process which build it runs rather than trust the header — worth setting on anything you deploy often; trash/restore |
+| `carlos deploy` | **Release new code — reach for this one.** ship + promote + watch until the new build serves; zero-arg with a saved project config, `-d <name>` for a named destination. Follows the rollout box by box and names a box where the build failed. `--channel` to land somewhere other than the entry channel (a canary); `--swap hold` for a release that cannot run beside its predecessor. Also the WHOLE story for a static site: `--kind static --host <h> <dir>` declares the route as well as shipping it ("Deploying a static site") |
+| `carlos ship` | The ship half alone: publish a release *without* releasing it (`--kind binary\|static`, `--version`, `--notes`); refuses a Go binary whose main package differs from the app's last release unless you pass `--program-change` (deploy has no such flag: ship, then promote); rate-limited per app (~2/minute — a 429 carries `Retry-After`) |
+| `carlos promote` | The promote half alone: move an **already-shipped** version onto a channel — a ladder step or a re-point, not how you release new code. The channel is positional, and optional when the app has only one. `--retry` re-tries a build that failed on some box, once you have fixed what it depended on. (`--hotfix` is refused by the console: an operator's direct-bucket act) |
 | `carlos canary` | Deploy onto a branch-only channel + hostname, waiting on the canary URL's own `X-Carlos-Version`; `ls` / `rm`. **Reach for `--environment`** if the app carries config — see "Standing a canary beside production" |
 | `carlos rollback` | Point a channel back at an earlier version |
 | `carlos pipeline` | Show or shape the app's release channels; `init --template edge-production\|full-ladder` replaces the single default channel with a starter pipeline |
 | `carlos channels` / `carlos releases` | What each channel serves / every shipped version; `releases retention` prunes old ones |
 | `carlos version target` | The semver family ships auto-increment under |
 | `carlos env` / `carlos secrets` | Plain vars / sealed secrets, layered per environment; `env sync` forces convergence; `secrets genkey` mints keypairs locally |
-| `carlos instances enable\|create\|list\|delete\|set-upstreams\|set-channel\|set-environment` | Opt an app in; declare/inspect/remove instances; repoint upstreams; move a route onto another channel or config bundle. `--health running\|asleep\|not-responding` narrows a listing, which is usually what you want when something is wrong. For **binaries only** — a static site needs none of these, and `carlos deploy` declares what it does need |
+| `carlos instances enable\|create\|list\|delete\|set-upstreams\|set-channel\|set-environment\|set\|update\|retry\|door-key` | Opt an app in (`enable --private-storage` gives every later instance its own environment and bucket); declare/inspect/remove instances; reorder or remove upstreams (**adding** an upstream address is operator-only since v0.25.0); move a route onto another channel or config bundle. `list` shows INSTALLED and SERVING builds and a REASON when they differ; `retry <host>` clears a failed build's hold on one instance; `set <host> --updates manual\|--pin <build>` and `update <host>` steer how one instance takes builds; `create --role replica --region <r>` makes a replica near buyers, holding a one-way copy of the live instance's data (the live instance names allowed regions with `--replicas` at its own create); `door-key` manages keys for the edge-local door, which a box operator must turn on. `--health running\|asleep\|not-responding` narrows a listing, which is usually what you want when something is wrong. For **binaries only** — a static site needs none of these, and `carlos deploy` declares what it does need |
 | `carlos restart` | Cycle an app's processes — no version or config change. `--host` narrows to one route, `--environment` to every route reading that bundle (the request that follows a `secrets set`), `--dry-run` prints the set. Sleeping instances are left asleep |
 | `carlos routes` | The app's routes through the console: upstream, channel, config environment, replication rung. It reads the console's own box, and says so on a multi-box fleet |
 | `carlos steering` | `latency` opts a host into a per-edge latency DNS record; `off` returns it to one static answer. Shared-pool instances only in v1 |
 | `carlos features set\|list` | The app's own feature flags — the platform stores and serves them, only the app interprets them. Lands on the instance's next `deployment`-block poll: no restart, no env edit, no box file. `key=` clears |
 | `carlos gate set\|list\|clear` | One shared password in front of the app's hostnames, custom domains included. `set` reads stdin when `--password` is absent; changing or clearing signs every visitor out |
-| `carlos errors` | One row per distinct error, newest first — `error`-tagged log lines plus edge-seen 5xx, no wiring at all. `--fp <fingerprint>` expands a group; `--set-level warn` widens what counts |
+| `carlos errors` | One row per distinct error, newest first — `error`-tagged log lines plus the 500s the app itself answered, no wiring at all. `--fp <fingerprint>` expands a group; `--set-level warn` widens what counts |
+| `carlos availability` | Every 502, 503 and 504 the edge saw (the instance could not answer), grouped by cause, plus failed wakes and exits; one outage is one row. `--fp` expands a cause to each request. The Availability tab beside Errors |
 | `carlos analytics` | Page views, daily visitors, bytes, top pages/referers/events, counted at the edge. `--set-count edge` turns it on; `--range today\|7d\|30d` |
 | `carlos logs` | Merged app + platform + edge timeline (`-f` follows, `--grep`, `--since`) — no box access |
-| `carlos domains attach\|detach\|list\|paths` | `paths <host>` prints the hostname's published path-route map (written through the API — "One hostname, many instances"). Claim customer hostnames (`--wildcard`, `--catchall`); prints the DNS records to create; certs follow automatically. Since 2026-08-27 the platform orders and renews those certs itself, and `list` joins the fleet's readings sweep, so DNS state, certificate expiry and delegation are readable from the terminal — a certificate the platform has given up on now says so instead of sitting pending forever |
-| `carlos store apply\|create\|status\|rotate\|scan` | Object storage. **Once per account, first:** an owner runs `store apply --account <a> --note "<why>"` and a deployment operator approves it — until then `create` has nothing to provision into, and `status` says the account is unapproved or pending. After approval `create` is the whole member workflow (unlimited stores, usage metered); credentials arrive as env; `rotate` is two-phase (`--finish` retires the old key). `scan` is opt-in virus scanning over the bucket's objects (`request`/`status` are yours, `grant`/`revoke`/`sweep`/`enforce` a deployment operator's) — and a scanner cannot read ciphertext, so a client-encrypted store is marked not applicable rather than given a coverage claim |
-| `carlos email enable\|status\|test\|domains\|credentials\|rotate` | Declare sending; provision a verified domain; SMTP credentials arrive as env (`pause`/`resume` are a deployment operator's) |
+| `carlos db pull\|query` | A read-only copy of an instance's database, restored from its replica on your machine; the live one is never touched. `--at <RFC 3339 time>` reads it as it was then (sleeping instances keep seven days of history). `--instance` when the app has several |
+| `carlos geo <address>` | What the `X-Carlos-Geo-*` headers would say for any address, with the credit the database requires |
+| `carlos sidecars enable\|create\|ls\|wake\|logs\|rm` | A process the platform runs for the app with no socket, hostname or DNS: a bot holding a connection out, a worker. Woken only by its schedule or `wake` |
+| `carlos config destinations` | Name the places one checkout deploys to in `.carlos/config`; `-d <name>` picks one |
+| `carlos domains attach\|detach\|verify\|list\|paths` | `attach --app <a> '*.<parent>'` (quoted) gives every instance a name `<label>.<parent>` with no per-instance claim; `<parent>` must be attached first and a `*` DNS record must point at the deployment. `verify` finds the TXT record a deployment that requires domain proof asks for. `paths <host>` prints the hostname's published path-route map (written through the API — "One hostname, many instances"). Claim customer hostnames (`--wildcard`, `--catchall`); prints the DNS records to create; certs follow automatically. Since 2026-08-27 the platform orders and renews those certs itself, and `list` joins the fleet's readings sweep, so DNS state, certificate expiry and delegation are readable from the terminal — a certificate the platform has given up on now says so instead of sitting pending forever |
+| `carlos store apply\|create\|status\|rotate\|scan` | Object storage. **Once per account, first:** an owner runs `store apply --account <a> --note "<why>"` and a deployment operator approves it — until then `create` has nothing to provision into, and `status` says the account is unapproved or pending. After approval `create` is the whole member workflow (unlimited stores, usage metered); `--environment <e>` gives one config bundle its own bucket and credential; credentials arrive as env; `rotate` is two-phase (`--finish` retires the old key). `scan` is opt-in virus scanning over the bucket's objects (`request`/`status` are yours, `grant`/`revoke`/`sweep`/`enforce` a deployment operator's) — and a scanner cannot read ciphertext, so a client-encrypted store is marked not applicable rather than given a coverage claim |
+| `carlos email enable\|status\|test\|domains\|events\|credentials\|rotate` | Declare sending; provision a verified domain (`domains rm` frees one); SMTP credentials arrive as env; `events` shows what became of each message for 30 days, `events push --path` posts them to the app, signed (`pause`/`resume` are a deployment operator's) |
 | `carlos relay enable\|status\|disable` | The platform's own STUN/TURN relay for an app's WebRTC calls. `enable` delivers `CARLOS_RELAY` (base64 JSON: per-region ICE URLs, a key, a username suffix) and the app mints a TURN credential per call from the key; `status` shows issue, pickup and per-region health. `enable` refuses, with a sentence, on a deployment that runs no relay. Never run coturn or buy a TURN service |
-| `carlos services create\|ls\|rotate\|revoke` | Server-held credentials (`--role publish\|instance\|operate\|service\|admin`, `--app` to bind one app); the secret prints once; `rotate` refuses the old secret on its next call, `revoke` stops the credential outright |
+| `carlos services create\|ls\|rotate\|revoke` | Server-held credentials (`--role deploy\|publish\|instance\|operate\|service\|admin`, `--app` to bind one app, `--rungs` for `deploy`); the secret prints once; `rotate` refuses the old secret on its next call, `revoke` stops the credential outright |
 | `carlos schedule ls\|set\|rm\|run` | Declare recurring work per app (`--every 6h` or `--cron "0 8 * * *"` → a `POST` to a path your app serves); `ls` shows next/last per instance; `run` fires one now |
 | `carlos ledger append\|publish\|verify` | Open hash-chained per-app ledgers (the transparency machinery) |
 | `carlos accounts create\|list\|migrate` | Mint/list accounts; move an app between them. An account is *your* tenancy on the platform — never create one per customer of your app (customers are instances: "Provisioning instances from your own app") |
@@ -257,7 +291,11 @@ Nothing here needs a box, and nothing here is a workaround:
 1. **A person enables the app once** — `carlos instances enable --app
    <tenant-app>`. This writes the manifest that bounds which domain, pool
    and regions any instance may be created in, and no credential can do
-   it.
+   it. Add `--private-storage` and every instance created afterwards
+   gets a config environment named after its host's first label with an
+   object store bound to it, provisioned by the ordinary create call (the
+   account needs an approved `store apply` first, and nothing is torn
+   down when an instance is deleted).
 2. **Mint the credential** — `carlos services create --role instance --app
    <tenant-app> signup`. Store it with `carlos secrets set` on the app
    that runs signup, **never on the tenant app itself**: every tenant
@@ -290,7 +328,8 @@ The answers to handle, from the apps that run this:
 | `401` / `404` | Bad credential, or the wrong account or app (every miss is the same 404) | A configuration bug; fail loudly |
 
 Also on the same credential: `GET .../instances` (list), `GET`, `PATCH`
-(repoint addrs/probe) and `DELETE .../instances/<host>`, and
+(reorder or remove addrs, set the probe — adding an upstream address is
+operator-only since v0.25.0) and `DELETE .../instances/<host>`, and
 `POST/PUT .../domains` for customer hostnames. **Deleting an instance
 removes its record, never its data** — the parked database and blobs are
 left in place on purpose, and the call is idempotent.
@@ -418,10 +457,10 @@ carlos canary --app jam ./jam
 
 The name defaults to the slugified git branch, so branch `new-queue`
 gives channel `canary/new-queue` and host
-`new-queue.jam.<sqid>.oncarlos.com`. An explicit `--name` is validated
+`new-queue-jam.<sqid>.oncarlos.com`. An explicit `--name` is validated
 rather than quietly repaired, because the same string has to serve as
-both a channel segment and a hostname label: lowercase letters, digits,
-dashes. `carlos canary ls` shows each canary's host, what it serves,
+both a channel segment and part of a hostname label: lowercase letters,
+digits, dashes, and at most 63 characters with the app name. `carlos canary ls` shows each canary's host, what it serves,
 which config bundle it is bound to and what is left of its seven-day
 lease; `rm` deletes the instance record and the host stops being served.
 The channel lapses on its own.
@@ -437,7 +476,7 @@ against, magic-link and callback URLs, a WebAuthn RP ID, the cookie
 fails every form submission. Write the bundle first, then bind it:
 
 ```
-carlos env --app jam --environment jam-canary JAM_ORIGIN=https://new-queue.jam.<sqid>.oncarlos.com
+carlos env --app jam --environment jam-canary JAM_ORIGIN=https://new-queue-jam.<sqid>.oncarlos.com
 carlos canary --app jam --environment jam-canary ./jam
 ```
 
@@ -446,23 +485,35 @@ just a canary — `carlos instances create --environment`, or
 `carlos instances set-environment` on a route that already exists,
 followed by a restart to pick the values up.
 
-## Watching an app: errors and analytics
+## Watching an app: errors, availability and analytics
 
-Both read from the terminal or the app's dashboard tabs. **Errors collect
-from the day the app ships** — nothing to turn on. **Analytics is off
+All three read from the terminal or the app's dashboard tabs. **Errors
+and availability collect from the day the app ships** — nothing to turn
+on. **Analytics is off
 until you switch it on** (a deliberate ruling, 2026-09-07: counting
 visitors is the app's call, not the platform's).
 
 ```
 carlos errors --app hello --since 24h
+carlos availability --app hello --since 24h
 carlos analytics --app hello --set-count edge
 carlos analytics --app hello --range 7d
 ```
 
 `carlos errors` needs no wiring at all: it groups `error`-tagged log
-lines (or `warn` too, with `--set-level warn`) together with the 5xx
-responses the edge saw, one row per distinct error with a count and a
+lines (or `warn` too, with `--set-level warn`) together with the 500s
+the app itself answered, one row per distinct error with a count and a
 location. `--fp <fingerprint>` expands one group to its occurrences.
+
+`carlos availability` (since v0.22.0) holds what used to sit in errors:
+every 502, 503 and 504 the edge saw, meaning the instance could not
+answer, grouped by cause (refused, closed mid-request, timed out, no box
+connected, or the app's own 503), with failed wakes and exits beside
+them. One outage is one row however many pages it hit; `--fp` expands a
+cause to each request and path. A visitor who gives up after five
+seconds or more without response headers is filed as an outage, so an
+endpoint that holds its headers by design, like a long poll, shows a
+standing row there, and that row is expected.
 
 `carlos analytics` counts at the edge as it serves the app: page views,
 daily visitors, bytes served, top pages, top referers, named events —
@@ -470,6 +521,8 @@ daily visitors, bytes served, top pages, top referers, named events —
 has no business reaching for a third-party analytics script. Visitors are
 a sketch, so a multi-day total is daily visitors summed rather than a
 deduplicated unique count. The switch is per-app or account-wide.
+Where the deployment publishes a GeoIP database, page views are counted
+by country too.
 
 Neither replaces `carlos logs`, still the merged app + platform + edge
 timeline (`-f`, `--grep`, `--since`, `--stream app`, `--host`) with no
@@ -681,22 +734,82 @@ specific time; a daily schedule whose handler asks its own database
   control socket at all: `ScheduleAt` returns `ErrNotOnCarlos`, which
   boot code should treat as "skip", not as a failure.
 
+## Two builds at once
+
+Since v0.26.0, where the deployment has switched it on (Carloku did on
+2026-10-14; the v0.27.3 default is off, and then a build is taken by
+restart and `deploy` watches the URL instead of each box's rollout), a
+new build reaching an awake instance starts beside the old one and takes over once it passes
+its health check, so no request waits (`--swap overlap`, the default).
+For a few seconds both builds run against the same database and the same
+scheduled work, and the new build's migrations run while the old one
+still serves. That makes two rules part of every release:
+
+- **Migrations stay additive across two consecutive releases.** Add a
+  column, table or index in one release; drop the old one in a later
+  release, once no running build reads it. A rename is an add now and a
+  drop later.
+- **Schedule names stay the same across the two builds**
+  (`carlos schedule`).
+
+A release that cannot follow them ships with `--swap hold` on
+`carlos deploy` or `carlos ship`: each instance stops before its new
+build starts, and requests wait a few seconds for it.
+`carlos apps set <app> --swap hold` makes that the app's rule, and
+`--swap-concurrency` is how many instances on one box swap at once,
+after the first has stayed up for ten seconds. If a build fails on a box,
+that box stops rolling it out, its other instances stay on the build they
+were serving, and `carlos deploy` names the failure and exits non-zero;
+`carlos instances list` shows it under REASON. Fix the cause, then
+`carlos promote --retry <version> <channel>` (every box) or
+`carlos instances retry <host>` (one instance).
+
+## Visitor location headers
+
+On a deployment that publishes a GeoIP database (since v0.25.1),
+every request the edge passes to an app carries the visitor's rough
+location: `X-Carlos-Geo-Country` (ISO 3166-1, `IE`),
+`X-Carlos-Geo-Subdivision` (ISO 3166-2, only some databases),
+`X-Carlos-Geo-Lat` / `-Lon` (two decimals: an area, not a position) and
+`X-Carlos-Geo-Source` (which database answered). Any of them can be
+missing: treat that as unknown, never as an error. The edge strips any a
+visitor sends, so the values are always the platform's. A cached page
+that differs by country sends `Vary: X-Carlos-Geo-Country`; never vary on
+the coordinates.
+
+**An app that shows a visitor anything worked out from these headers
+must credit the database `X-Carlos-Geo-Source` names** — `DBIP-…`:
+"IP Geolocation by DB-IP", linked to https://db-ip.com; `GeoLite2-…`:
+"This product includes GeoLite2 data created by MaxMind, available from
+https://www.maxmind.com". For an address that is not the current
+request (a log line, a webhook), `carlos geo <address> --app <a>`, or
+from an app `GET /api/cli/apps/<account>/<app>/geo?ip=<address>`, at
+most 60 a minute. That call needs an `instance`-role token, which is
+app-wide (it can also create, repoint and delete every sibling
+instance), so make it only from a central app that already holds one;
+never deliver that token to a tenant app's instances just to look up an
+address. Tenant instances use the request headers.
+
 ## Deploy truths (each paid for at least once)
 
 - **`carlos deploy` is the release motion**: ship, promote to the entry
-  channel (or the channel the app's instances follow), then watch the URL
-  until the header reports the shipped build. "Held for bake" on a
+  channel (or the channel the app's instances follow), then follow each
+  box's rollout (or, where a box does not report one, watch the URL)
+  until the shipped build is serving. "Held for bake" on a
   channel that declares one is the system working, not failing.
-- **A promote is not a deploy** until the process cycles. The platform
-  restarts unit-stamped routes and wakes hibernating tenants into the new
-  build (a session in flight keeps the old binary until its instance
-  idles — that is the bake, not a failure). A bespoke long-running unit
+- **A promote is not a deploy** until the process cycles. An awake
+  instance starts the new build within seconds of its box adopting it
+  (beside the old one where two builds at once is on), an asleep one
+  takes it on its next request, and unit-stamped routes are restarted.
+  A bespoke long-running unit
   outside the platform's knowledge stays old until *something* restarts
   it — know which of the three your app is.
 - **Verify against the thing you changed, with the binary you built.**
   A 200 is not proof: an app-shell route returns 200 HTML for
   `/api/version` and will happily "verify" any build ever shipped. The
-  `X-Carlos-Version` header on the canonical host is the proof; stale
+  proof is the build the process itself reports: set
+  `carlos apps build-probe`, or read `X-Carlos-Version` on the canonical
+  host knowing the edge stamps it before the process has cycled; stale
   DNS and stale local binaries have both produced false "verified"
   reports.
 - **Review on a canary, not on localhost.** `carlos canary` cannot
@@ -710,15 +823,22 @@ specific time; a daily schedule whose handler asks its own database
   `-ldflags "-X amadan.net/rastrillo/rastrillo.BuildVersion=<sha>"`
   — or every release's `/api/version` reports `dev`.
 
-## Landed, not yet on Carloku
+## Switched off, or not released
 
-Merged to the platform after 2026-09-12 and not yet served by Carloku's
-console, so a flag for them may exist in your CLI and still be refused:
-per-instance private storage (`carlos instances enable --private-storage`,
-and `store create --environment`), read replicas near buyers
-(`instances create --role replica --replicas`), `carlos email events` and
-`events push` (bounce and complaint webhooks), instance config overlays,
-and the Availability tab. Build nothing to stand in for them; check
+Released, switched off on Carloku — the CLI has the flag, the console
+declines or ignores it, and nothing should be built to stand in for
+them: app residency (`--region` on `apps create`, `deploy` and `canary`
+since v0.23.0; the console starts the app in its home region and says
+so), instance moves (`carlos move`, v0.26.0; it sends nothing), and
+temporary static sites (`deploy --temporary` / `--ttl`, `apps ttl|keep`,
+v0.25.1). Names starting `tmp-` are reserved whether or not temporary
+sites are on.
+
+Merged after v0.27.3, not released: `carlos run` (one command of your
+app against one instance) and seeded instances
+(`instances create --from`, `instances import`). Not built: an
+instance-bound token in place of the app-wide `instance` role, a
+create-only provisioning role, and cross-box path targets. Check
 `carlos <verb> -h` against the console and wait.
 
 ## Self-hosting the platform

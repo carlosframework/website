@@ -1,6 +1,8 @@
 # 🤖 The decisions — trust, shape, hosting, identity
 
-The four axes every CARLOS app settles on day one. Each section gives the
+The four axes every CARLOS app settles on day one, after tenancy (what
+one instance is and how people reach it: tenancy.md, which comes first
+because it decides the blast radius of every answer here). Each section gives the
 family's real positions with the reasons their own docs record — offer
 these as choices with trade-offs, not as one right answer. Whatever is
 chosen: **date it, attribute it, record the rejected alternative, and
@@ -18,7 +20,11 @@ legitimate exactly when the leak is named; it is a violation when hidden.
 
 **The positions, with their recorded reasons:**
 
-- **E2EE content, plaintext routing metadata — Keymail.** Bodies and
+Each position below carries its trust class (S, A1, A2, A/pub, B, C;
+tenancy.md §3), declared per workload. Slopbox is the A1 case: padded,
+fixed-size blobs and encrypted names, so only transport shape leaks.
+
+- **E2EE content, plaintext routing metadata — Keymail (A2).** Bodies and
   subjects are ciphertext; from/to/date/folder are readable, published
   as a trade-off ("like SMTP envelopes"). Its named softenings show what
   honest partial looks like: inbound ordinary email is plaintext
@@ -29,7 +35,8 @@ legitimate exactly when the leak is named; it is a violation when hidden.
   searchable encryption rejected — the client legitimately holds
   plaintext and keys, so the index is client-side and the server learns
   nothing new.
-- **E2EE content, blind identity, public reference data — Kass.** A
+- **E2EE content, blind identity, public reference data — Kass (A2;
+  its agent sidecar is C).** A
   training log is medical-adjacent, so user content is sealed — but the
   exercise database is public reference data embedded in the binary,
   deliberately unencrypted, and the identity registry stores email only
@@ -38,21 +45,21 @@ legitimate exactly when the leak is named; it is a violation when hidden.
   set: *the schema could be published as the privacy policy* — leak the
   whole registry and the worst anyone learns is roughly how many people
   signed up, and when.
-- **Split by content class — Woodstar.** Public posts are plaintext on
+- **Split by content class — Woodstar (A2 + A/pub).** Public posts are plaintext on
   the server (they are public; encrypting them would be theater), DMs
   are sealed end-to-end, and private state — follows, petnames, drafts,
   settings — is server-blind encrypted blobs, so the server never learns
   the social graph. Federation (ActivityPub/Bluesky) is an explicit,
   bounded, opt-in leak of the public class only; DM bridging is a
   permanent non-goal.
-- **Sealed single-tenant — an internal finance ledger.** Data encrypted
+- **Sealed single-tenant — an internal finance ledger (B).** Data encrypted
   at rest, but the instance holds the key in memory because unattended
   bank syncs need plaintext with no human present. The README names the
   residual risk out loud ("a compromised live host can read data") and
   the copy never claims otherwise; the plaintext-grep test still runs,
   with one dated, allowlisted exception. The shape for tools that must
   act on the data autonomously.
-- **Server-side trust — Tito.** A ticketing platform holds buyer PII in
+- **Server-side trust — Tito (C).** A ticketing platform holds buyer PII in
   plaintext already; there is no encrypted-blob requirement to inherit,
   and a six-person support team must be able to read an email address
   (Vicky's rule: every decision is weighed by the support load it
@@ -153,6 +160,13 @@ settings pages can stay server-shape beside its client-shape editor.
   (a permanent tiny Try tier; a budget-funded free pool that degrades
   generosity, never availability). Nothing about the other axes locks
   you out of moving later.
+- **Vendors: one codebase, hosted and customer-run.** With one instance
+  per customer, an on-prem request stops being a fork: the customer's
+  instance runs on their boxes and bucket (a customer fleet) or their own
+  platform, following your release channel. Tito proves the self-hosted
+  half in three regions; no vendor has yet shipped to customers this way
+  (Jelly is in development). Publish a licence class (L1 to L5,
+  tenancy.md §3) so customers know what they may run.
 - **Customer fleets — your boxes, the hosted control plane.** `carlos
   fleets` attaches boxes you own (a Pi, an office server, edge devices)
   to your account; apps place onto them with `carlos apps place`. Pay
