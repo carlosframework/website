@@ -3,6 +3,440 @@
   "repo": "https://amadan.net/carlos/platform",
   "releases": [
     {
+      "tag": "v0.28.0",
+      "date": "2026-10-17",
+      "sha": "260653783857088d6ba940101191c599974f8caa",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.0",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**`carlos run` runs one of your app's commands against one instance.** `carlos run --app shop --instance www.example.com -- <command>` runs it as that instance, with its environment and database, and prints the output as it arrives. `--file` uploads files with the run, up to 64 MB in total. `--timeout` sets how long it may take, 30 minutes by default and up to 6 hours. `--follow <id>` reattaches to a run already started. It needs an instance on the nested layout.",
+                "branches": [
+                  "carlos-run"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-run"
+                ]
+              },
+              {
+                "md": "**New instances can start from a copy of another instance's database.** `carlos instances create --from <host>` copies the source's replica, so the source keeps serving. `carlos instances import` brings an instance the platform never ran onto it, from a snapshot of its database. Both refuse until your operator turns them on.",
+                "branches": [
+                  "seeded-instances"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-instances"
+                ]
+              },
+              {
+                "md": "**The download is smaller again.** The linux/arm64 binary is about 46 MB, down from about 78 MB.",
+                "branches": [
+                  "fix-binary-size-275"
+                ]
+              },
+              {
+                "md": "**Nothing else changes for people using the CLI.**"
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then every console.** A run is refused until the console that records it is on this release.",
+                "branches": [
+                  "carlos-run"
+                ]
+              },
+              {
+                "md": "**Coming from v0.26.x, read the [v0.27.0](https://github.com/carlosframework/releases/releases/tag/v0.27.0) to [v0.27.3](https://github.com/carlosframework/releases/releases/tag/v0.27.3) operator notes first.** They all still apply."
+              },
+              {
+                "md": "**Instance control restarts with this update.** `carlos system update` does that on its own. A box updated any other way needs `systemctl restart carlos-instance-control` afterwards.",
+                "docs": [
+                  "/docs/cli#carlos-system"
+                ]
+              },
+              {
+                "md": "**Give the console room for run uploads.** The console holds a run's uploaded files, up to 64 MB per run, in its temporary directory until the box takes them.",
+                "branches": [
+                  "carlos-run"
+                ]
+              },
+              {
+                "md": "**Seeded instances stay off until you publish the seeds floor.** `carlos instances create --from` and `carlos instances import` refuse until `carlos system seeds-floor publish` names a release every box runs. Publishing it is one way: from then on no box recovers to an older build. Leave it unpublished until you have decided to turn seeding on.",
+                "branches": [
+                  "seeded-instances"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-instances",
+                  "/docs/cli#carlos-system"
+                ]
+              },
+              {
+                "md": "**The host claim is still off.** This release carries the claim's protected host state and the `carlos system claims` activation commands, but nothing uses them while `CARLOS_HOST_CLAIM` is unset. Errors from a route that has no app are now filed so the claim's checks can read the bucket.",
+                "branches": [
+                  "feat/claim-root-trusted-state-p3",
+                  "feat/claim-files-backfill"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-system-claims"
+                ]
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_SWAP`, `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS` and `CARLOS_REQUIRE_POINTER_DIGEST` unset, and don't run `carlos channels digests on`.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "260653783857088d6ba940101191c599974f8caa",
+          "date": "2026-10-17",
+          "subject": "WIP claim Plan 14 foundations (not for merge): descriptor-backed root state, root-owned D3 health history, release lock, floor reconstruction and migration preflight helpers, constructor census, root-read census with the legacy freeze",
+          "branch": "feat/claim-root-trusted-state-p3",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/feat%2Fclaim-root-trusted-state-p3",
+          "commits": 102,
+          "docs": [
+            "/docs/cli#carlos-proof-history",
+            "/docs/cli#carlos-system-claims"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude",
+                "codex"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "6834659c9f0d5453051902c72ca24539562cd010",
+          "date": "2026-10-16",
+          "subject": "region HA spec 2 (two-box regions), rev 1 draft, and its Astra brief",
+          "branch": "region-ha-2a-build",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/region-ha-2a-build",
+          "commits": 63,
+          "discussions": [
+            {
+              "id": 299,
+              "title": "Provider-neutral box identity, so multi-box regions work without AWS",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#box-and-group-roles"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "e8e961dd423f03399ec7922f3cd7100defb0af62",
+          "date": "2026-10-16",
+          "subject": "fix-empty-app-key",
+          "branch": "fix-empty-app-key",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fix-empty-app-key",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "e963691d5571fcca926a454d7c485657681c4fcc",
+          "date": "2026-10-16",
+          "subject": "runbook-home2-sha",
+          "branch": "runbook-home2-sha",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/runbook-home2-sha",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "a89e35caaf969492d10d93c556a2ef303f2bc679",
+          "date": "2026-10-16",
+          "subject": "moves-home-part2-plan",
+          "branch": "moves-home-part2-plan",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/moves-home-part2-plan",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "ee35dee27b68a2280d69d4954154e67e75f699bd",
+          "date": "2026-10-16",
+          "subject": "Prompts:",
+          "branch": "feat/claim-files-backfill",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/feat%2Fclaim-files-backfill",
+          "commits": 32,
+          "discussions": [
+            {
+              "id": 250,
+              "title": "Host floor guard: fix these before anyone runs guard-arm (Opus review of Plans 8/8b)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "70e57449fc8d8106e8e5ef729cc5df85f84ad7be",
+          "date": "2026-10-15",
+          "subject": "moves-overcap-cut",
+          "branch": "moves-overcap-cut",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/moves-overcap-cut",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "a5003aba7b1786e96073d6d23438a40c042c3c03",
+          "date": "2026-10-15",
+          "subject": "docs-rehearsal-dev-uk-secrets-key",
+          "branch": "docs-rehearsal-dev-uk-secrets-key",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/docs-rehearsal-dev-uk-secrets-key",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "9f17062aec02421b8c0eb540650754cac778a637",
+          "date": "2026-10-15",
+          "subject": "docs-rehearsal-dev-uk-bootstrap",
+          "branch": "docs-rehearsal-dev-uk-bootstrap",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/docs-rehearsal-dev-uk-bootstrap",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "5f4ace8b841036f273b10ce0eb26430e85a83db0",
+          "date": "2026-10-15",
+          "subject": "hostfiles: the path cap applies to live entries only (LiveEntriesWithinCap), so a manifest written before the cap that holds a tombstone or skipped entry past it stays readable, and a moves recovery that selects it is not stranded (#236, moves' review of a8cebad)",
+          "branch": "hostfiles-cap-live-entries",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/hostfiles-cap-live-entries",
+          "commits": 16,
+          "discussions": [
+            {
+              "id": 236,
+              "title": "Host claim Plan 8: three decisions for Paul (floor release, declare-lost attestation, actor roster)",
+              "state": "open"
+            },
+            {
+              "id": 250,
+              "title": "Host floor guard: fix these before anyone runs guard-arm (Opus review of Plans 8/8b)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "f97898f1224f08f7da5ee4e12d9f39ce04b083a6",
+          "date": "2026-10-15",
+          "subject": "copy gate: the seeded-instances deck, pinned (Plan 1 Task 1)",
+          "branch": "seeded-instances",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/seeded-instances",
+          "commits": 96,
+          "discussions": [
+            {
+              "id": 292,
+              "title": "Edge restart: the stopping agent recycles an instance and strands its lease for 15 minutes",
+              "state": "closed"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-instances",
+            "/docs/cli#the-seeds-floor",
+            "/docs/cli#legacy-route-assignments"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "37ab10c5fe5937d6b9699cc158669bdb3dc3a1a9",
+          "date": "2026-10-15",
+          "subject": "specs: carlos run (#259) and instances seeded from a database (#260, #261)",
+          "branch": "carlos-run",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/carlos-run",
+          "commits": 73,
+          "discussions": [
+            {
+              "id": 259,
+              "title": "carlos run: a member runs an app command against one instance, without root on the box",
+              "state": "open"
+            },
+            {
+              "id": 260,
+              "title": "carlos instances create --from <host>: a new instance seeded from another's replica copy (same app, same account)",
+              "state": "open"
+            },
+            {
+              "id": 261,
+              "title": "Schedule the adoption door (instance-moves §9, G9) after the nested-layout rollout: every controld titogo instance converts to platform-run",
+              "state": "open"
+            },
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 294,
+              "title": "carlos run: the cmd role is outside #292's start/stop fence in instance control",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-run",
+            "/docs/cli#what-an-instance-is-started-with",
+            "/docs/cli#carlos-instance-exec",
+            "/docs/cli#carlos-instance-exit"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "1c5718f695c72e47bd4a3b13b0abfde49ae765f3",
+          "date": "2026-10-15",
+          "subject": "activator: write a cold wake's build-state record at its exec (#272)",
+          "branch": "zdd-owed-items",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/zdd-owed-items",
+          "commits": 6,
+          "discussions": [
+            {
+              "id": 250,
+              "title": "Host floor guard: fix these before anyone runs guard-arm (Opus review of Plans 8/8b)",
+              "state": "open"
+            },
+            {
+              "id": 272,
+              "title": "Zero-downtime deploys: owed before CARLOS_SWAP can go on",
+              "state": "open"
+            },
+            {
+              "id": 292,
+              "title": "Edge restart: the stopping agent recycles an instance and strands its lease for 15 minutes",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "132cf996ee438fd9760a5920307608559acb9720",
+          "date": "2026-10-14",
+          "subject": "binary-size-275: store SDK method values, not clients, in interfaces; add a size ceiling",
+          "branch": "fix-binary-size-275",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fix-binary-size-275",
+          "commits": 3,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "2683f16acaf7a47124c1140ed53c54fa432e72ea",
+          "date": "2026-10-14",
+          "subject": "Prompts:",
+          "branch": "changelog-v0.27.3",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/changelog-v0.27.3",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v0.27.3",
       "date": "2026-10-14",
       "sha": "e15ad6be618aeea85b19b5b8cab42df6d75a8af8",

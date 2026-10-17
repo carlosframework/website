@@ -541,6 +541,26 @@ instances that sleep have a replica. An instance on your own fleet, in
 another region, or in a pool cannot be read this way, and the command says
 which.
 
+### carlos run
+
+Runs one command of your app against one instance, as that instance: the same build, user, directories, database and environment it serves with. Output streams back to your terminal about a second behind, and carlos exits with the command's own status.
+
+```sh
+carlos run --app shop --instance shop.example.com --file orders.csv -- import orders.csv
+```
+
+Any person who is a member of the account can run a command. A service credential cannot.
+
+Each --file is uploaded with the request and placed, under its own name, in the directory CARLOS_RUN_DIR names. Together they can come to 64 MB. The directory is deleted when the run ends.
+
+The command runs for at most 30 minutes unless you pass --timeout, up to 6 hours. Ctrl-C cancels it on the box. A second Ctrl-C stops waiting, and the cancel still happens. If your terminal goes away the run carries on, and carlos run --app <app> --instance <host> --follow <id> picks its output up again. carlos prints that command when the run starts. Output is kept until carlos has read all of it, and for 24 hours at most.
+
+A hibernating instance is woken first. A live one keeps serving, and the command opens the same database beside it. One run at a time per instance. carlos run needs the instance's box on the nested layout, and it is refused while the instance is moving.
+
+carlos run exits with the command's own status, 128 plus the signal number when a signal ended it, 124 when it timed out, 125 when it was interrupted or the instance let go of it without a result, 130 when you cancelled it, 3 when the box refused it or did not pick it up within 60 seconds, and 2 when the console refused it.
+
+Arguments are kept in the account's audit log, with who ran them. Never put a secret in an argument. Pass it in a --file, or keep it in the instance's environment.
+
 ### carlos schedule
 
 Gives an app a timetable. A schedule is a time and a path: at each fire the
@@ -776,6 +796,21 @@ holds the account's authoritative data, and until a batch of orders drains
 home it holds order data in its own region — so the placement set is an
 explicit decision on the home's record, never a default.
 
+To start a new instance from a copy of another instance's database, add --from. The copy comes from the source's replica, so the source keeps serving. Both instances belong to the same app and account, and the copy stays in the source's region; run carlos move afterwards to put it somewhere else. The new instance gets its own environment, never the source's, and an empty private store when the app uses one. Add --at with a transaction id to copy an earlier point in the source's history.
+
+```sh
+carlos instances create --app shop --host canary.example.com --from www.example.com
+carlos instances create --app shop --host canary.example.com --from www.example.com --at 4211
+```
+
+carlos instances import moves an instance the platform never ran onto the platform. Stop the old process, take a consistent snapshot of its database (VACUUM INTO works), and run the import with the address of the route it replaces. The console checks the file, the box swaps the route on its next pass, and from then until you commit, the host answers only requests that carry the verify token. With --verify, the CLI requests that path with the token and commits on a 2xx or aborts otherwise. Without it, the CLI prints the token and the two commands to finish by hand. Aborting puts the old route back exactly as it was.
+
+```sh
+carlos instances import --app shop --host main.shop.example.com --file main.db --replaces 127.0.0.1:8401 --verify /up
+carlos instances import commit --app shop --host main.shop.example.com
+carlos instances import abort --app shop --host main.shop.example.com
+```
+
 #### What an instance is started with
 
 A hibernating instance is started by the box when a request arrives for it,
@@ -800,6 +835,16 @@ no bundle can override:
 
 A seed (the `--seed` command of `carlos instances enable`) runs with the same
 environment, `CARLOS_HOST` included, and no control socket.
+
+A command started with carlos run gets the same environment, without CARLOS_CONTROL_SOCKET or CARLOS_PURGE, and three variables of its own:
+
+| Variable | Value |
+|---|---|
+| `CARLOS_DB` | the instance's database, the path --db names when the instance starts |
+| `CARLOS_RUN_ID` | this run's id |
+| `CARLOS_RUN_DIR` | a directory holding the files passed with --file, under their own names. Always set, even with no files. Deleted after the run |
+
+Its arguments are exactly what followed --, after your binary. The platform adds nothing. It runs in the instance's data directory. On a cancel, a timeout or an instance stop it gets SIGTERM, then SIGKILL 20 seconds later.
 
 #### Storage of its own, for every instance
 
@@ -1882,6 +1927,49 @@ refused.
 `get` and `put` work only with `CARLOS_DEPLOYMENT_BUCKET` or
 `CARLOS_DEPLOYMENT_DIR` set, because a proof lives only in a bucket.
 
+#### carlos proof history
+
+Read or reconstruct a box's root release history. These operator commands use
+`CARLOS_DEPLOYMENT_BUCKET` (or `CARLOS_DEPLOYMENT_DIR` for a local store),
+`CARLOS_RELEASE_PUBKEY` and the deployment root signing key in
+`CARLOS_RELEASE_KEY`. Scoped signing keys cannot authorize this work.
+
+```sh
+carlos proof history status --bucket <bucket> --box <box> --enrollment <id> --account <sqid> --app <app> --host <host> --state status.json
+```
+
+The command saves its signed request before delivery, then waits up to 30
+seconds for a signed response from the enrolled box. The JSON response includes
+category completeness, revisions, pending reconstruction and retained recovery
+outcomes. A successful status read does not mean migration is complete.
+
+To reconstruct history, prepare a JSON `HistoryReconstruction` decision using
+the identity, revision, app revision, bake revision and host sources from that
+response. Set `schema` to `1`, `kind` to `carlos-release-history`, a unique
+`operation` and the current `issued_at` time. Name every affected host and its
+revision and refusals. Explicitly state the historical `production`,
+`production_set_at` and `holds` bounds; hold windows use nanoseconds. Review
+those decisions before signing. For an interrupted reconstruction, `replaces`
+must name the exact `pending_digest`. Root retains the pending decision's denies.
+
+```sh
+carlos proof history reconstruct --bucket <bucket> --box <box> --enrollment <id> --account <sqid> --app <app> --host <host> --input decision.json --state reconstruction.json
+carlos proof history resume --bucket <bucket> --state reconstruction.json
+```
+
+`reconstruct` succeeds only after the box confirms the exact signed decision.
+It does not retire independent recovery outcomes or establish a fresh install.
+`retire` takes the same flags with a `HistoryRecoveryRetirement` decision:
+`schema: 1`, `kind: carlos-release-recovery-retirement`, `identity`, `operation`,
+`issued_at`, `binding`, `source`, `attempt_id`, `outcome_digest`, `verified_id`
+and `verified_digest`. The witness must be a later root-verified success.
+Pending originals and unrelated outcomes remain restrictive.
+
+Use a new `--state` file for each decision. Keep it if the command times out or
+is interrupted. `resume` reuses the saved authorization and challenge without
+a signing key. It does not refresh their 24-hour validity. `--wait` changes the
+readback wait. A delivery acknowledgement alone never reports completion.
+
 ### carlos economics
 
 Records one month's AWS bill so the console's economics dashboard has a real
@@ -2064,6 +2152,14 @@ image before starting `apply`, `recover`, `edge` or `console`. Once armed,
 the local floor remains enforced independently of `CARLOS_HOST_CLAIM`.
 The member command remains `carlos ops host resolve`.
 
+#### carlos system claims
+
+`carlos system claims` prepares the dev claim mechanics trial. Run `help` for the commands and required inputs. `run` executes one revision-checked phase from a protected plan on the trusted signing host; `inspect` returns the verified roster and its signed envelope. Box installers run as root. Add `--dry-run` to preview an operation.
+
+`install-control` installs only instance-control and reloads systemd. `console-config` uses a separate console environment file and leaves host execution claims off. Neither installer starts its service.
+
+After starting the guarded console, run `console-report` on its box as root. It checks the signed roster, guard, systemd process and running executable, then records that process in the existing private box report. It refuses stale box evidence and leaves the report’s timestamp unchanged. Run it again after a console restart and immediately before floor publication; the next agent report may replace the process entry.
+
 #### carlos system journal-migrate
 
 Before starting claim-enabled services on a box with legacy journals, stop the edge and agent. Run `carlos system journal-migrate` as root with `CARLOS_HOST_CLAIM=1` and the deployment environment loaded. The command imports journals only when signed root stop evidence verifies them. It leaves the original files in place. After migration, root ignores changed legacy files and logs an alert. Keep the migration marker.
@@ -2136,6 +2232,35 @@ dropping a GeoLite2 database 30 days after it was built. Before you publish
 GeoLite2, apply the deployment-buckets module version that expires deleted
 GeoIP files after a day; the bucket is versioned, and otherwise old copies
 would linger.
+
+Ops account owners and `CARLOS_SYSTEM_OPERATORS`.
+
+#### The seeds floor
+
+carlos system seeds-floor publish sets the first release whose boxes can place a seed. Publish it once every box runs that release. Each box arms it within the hour, and from then on a box never recovers to an older build. Until every box in a region has armed it, carlos instances create --from and carlos instances import refuse there.
+
+```sh
+carlos system seeds-floor publish --min-release v0.27.0
+```
+
+#### Legacy route assignments
+
+carlos system legacy-routes assign says which account and app the routes an operator filed by hand belong to. A route added with carlos add in direct mode is filed under the operator account, so its app name alone does not say whose it is. An import takes over such a route only when an assignment maps its name to the importing app. A name has one assignment, and it cannot change while an import under it is in progress, from when its old process is marked stopped until it is committed or aborted.
+
+```sh
+carlos system legacy-routes assign --name shop --to bac/shop
+```
+
+#### Box and group roles
+
+carlos system box role says whether new instances may be placed on a box. A box with the default role can take them. A legacy or platform box keeps the instances it has and takes no new ones: no new instance, relocation or move lands on it. carlos system group role sets the role of every box a region's group has enrolled, and of every box it enrolls later. Both work only on a console with region HA on.
+
+Do not set a role until every box and console in the deployment runs a release that knows about roles. A box on an older release cannot read a roster that carries one.
+
+```sh
+carlos system box role i-0123456789abcdef0 legacy
+carlos system group role ie default
+```
 
 Ops account owners and `CARLOS_SYSTEM_OPERATORS`.
 
@@ -2252,12 +2377,12 @@ link with exactly the arguments and environment in it, refusing anything
 that is not the platform's own live link. It then stays on as the
 instance's first process: it passes stop signals on to the app, cleans up
 exited processes, and exits with the app's status, so an app with no
-signal handling still stops cleanly. `ExecStart=` of the three instance
-templates.
+signal handling still stops cleanly.
+`ExecStart=` of the four instance templates.
 
 ### carlos instance-exit
 
-`ExecStopPost=` of the three instance templates. It leaves an advisory
+`ExecStopPost=` of the four instance templates. It leaves an advisory
 exit record in the instance's run directory from the four variables
 systemd provides; the agent proves termination from the unit's state and
 its cgroup, not from this file.
