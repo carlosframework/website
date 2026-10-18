@@ -11,6 +11,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { parse as parseYAML } from "yaml";
 
 const site = "_site";
 const root = join(site, ".well-known", "agent-skills");
@@ -64,6 +65,31 @@ if (index) {
     const raw = readFileSync(built);
     const digest = "sha256:" + createHash("sha256").update(raw).digest("hex");
     if (digest !== entry.digest) fail(`${where}: digest does not match built ${entry.url}`);
+    // 2b. The frontmatter is YAML a strict parser accepts, and says what
+    //     the index says. Agents load a skill by parsing it: an unquoted
+    //     ": " in a value is a parse error that drops the whole skill
+    //     (skills #39), and a duplicate key silently picks one value.
+    const fm = String(raw).match(/^---\n([\s\S]*?)\n---\n/);
+    if (!fm) {
+      fail(`${where}: SKILL.md has no frontmatter block`);
+    } else {
+      let meta;
+      try {
+        meta = parseYAML(fm[1], { uniqueKeys: true, prettyErrors: false });
+      } catch (e) {
+        fail(`${where}: frontmatter is not valid YAML: ${String(e.message).split("\n")[0]}`);
+      }
+      if (meta !== undefined) {
+        if (typeof meta?.name !== "string" || meta.name !== entry.name) {
+          fail(`${where}: frontmatter name ${JSON.stringify(meta?.name)} is not the index name`);
+        }
+        if (typeof meta?.description !== "string" || !meta.description.trim()) {
+          fail(`${where}: frontmatter description is missing or not a string`);
+        } else if (meta.description !== entry.description) {
+          fail(`${where}: frontmatter description differs from the index`);
+        }
+      }
+    }
     // 3. The skill's own relative links (references/…) resolve next to
     //    it, so an agent that fetched SKILL.md over HTTP can follow them.
     const dir = join(site, entry.url, "..");

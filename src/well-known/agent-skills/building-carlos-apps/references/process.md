@@ -34,7 +34,10 @@ hard way at least once; the incident is noted where it names the rule.
   there, and a session that ends with unpushed work has lost it as far as
   everyone else is concerned. Keep the PR small and focused.
 - **Squash-merge to main when all three hold: the work is done, a human has
-  approved it, and CI is green** (`gh pr merge --squash --delete-branch`).
+  approved it, and CI is green** (`gh pr merge --squash --delete-branch`
+  on GitHub; on amadan, where the branch is the pull request,
+  `amadan branch merge` makes a merge commit and `-squash` lands one
+  commit; never squash by hand there, or the branch shows as deleted).
   Two of the three is not a merge — a green run on unapproved work waits,
   and an approval over a red run waits. Never commit to main. Deploy only
   merged main, and only when asked.

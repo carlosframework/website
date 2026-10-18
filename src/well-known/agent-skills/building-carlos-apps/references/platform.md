@@ -8,8 +8,8 @@ nothing but the CLI and a browser. If a task seems to need a box, either
 you are self-hosting and operating the platform itself, or you have found
 a product gap to file — never a workaround to build.
 
-Snapshot date 2026-10-15, describing what Carloku serves: platform
-v0.27.3, released 2026-10-14. Verbs are stable, flag details evolve — trust
+Snapshot date 2026-10-18, describing what Carloku serves: platform
+v0.28.0, released 2026-10-17. Verbs are stable, flag details evolve — trust
 `carlos <verb> -h` over this file, and remember a CLI can offer a flag the
 console you are talking to has switched off or does not have yet
 ("Switched off, or not released" at the end). The CLI ships for macOS/Linux (brew,
@@ -261,6 +261,7 @@ ship and promote steps.
 | `carlos analytics` | Page views, daily visitors, bytes, top pages/referers/events, counted at the edge. `--set-count edge` turns it on; `--range today\|7d\|30d` |
 | `carlos logs` | Merged app + platform + edge timeline (`-f` follows, `--grep`, `--since`) — no box access |
 | `carlos db pull\|query` | A read-only copy of an instance's database, restored from its replica on your machine; the live one is never touched. `--at <RFC 3339 time>` reads it as it was then (sleeping instances keep seven days of history). `--instance` when the app has several |
+| `carlos run --app <a> --instance <host> -- <command>` | Run one of your app's own commands as that instance, with its environment and database, output streamed as it arrives (v0.28.0). `--file` uploads files with the run (64 MB in total), `--timeout` (30 minutes by default, up to 6 hours), `--follow <id>` reattaches. A sleeping instance is woken; a live one keeps serving beside it; one run at a time per instance, refused while it moves or if its box is not yet on the nested layout. The way to run a one-off task against production without a box |
 | `carlos geo <address>` | What the `X-Carlos-Geo-*` headers would say for any address, with the credit the database requires |
 | `carlos sidecars enable\|create\|ls\|wake\|logs\|rm` | A process the platform runs for the app with no socket, hostname or DNS: a bot holding a connection out, a worker. Woken only by its schedule or `wake` |
 | `carlos config destinations` | Name the places one checkout deploys to in `.carlos/config`; `-d <name>` picks one |
@@ -737,7 +738,7 @@ specific time; a daily schedule whose handler asks its own database
 ## Two builds at once
 
 Since v0.26.0, where the deployment has switched it on (Carloku did on
-2026-10-14; the v0.27.3 default is off, and then a build is taken by
+2026-10-14; the release default is off, and then a build is taken by
 restart and `deploy` watches the URL instead of each box's rollout), a
 new build reaching an awake instance starts beside the old one and takes over once it passes
 its health check, so no request waits (`--swap overlap`, the default).
@@ -834,9 +835,10 @@ temporary static sites (`deploy --temporary` / `--ttl`, `apps ttl|keep`,
 v0.25.1). Names starting `tmp-` are reserved whether or not temporary
 sites are on.
 
-Merged after v0.27.3, not released: `carlos run` (one command of your
-app against one instance) and seeded instances
-(`instances create --from`, `instances import`). Not built: an
+Released in v0.28.0 but refused until an operator turns them on:
+seeded instances (`instances create --from <host>` starts a new
+instance from a copy of another's database; `instances import` brings
+in one the platform never ran). Not built: an
 instance-bound token in place of the app-wide `instance` role, a
 create-only provisioning role, and cross-box path targets. Check
 `carlos <verb> -h` against the console and wait.

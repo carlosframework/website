@@ -155,11 +155,11 @@ settings pages can stay server-shape beside its client-shape editor.
 ## 3. Hosting — Carloku, your boxes, or your platform
 
 - **Carloku (hosted) — the default.** Zero infra: the getting-started
-  path. Pay per app (baseline + instance-hours; hibernating apps cost
-  ~the baseline; egress/storage metered separately). Free rungs exist
-  (a permanent tiny Try tier; a budget-funded free pool that degrades
-  generosity, never availability). Nothing about the other axes locks
-  you out of moving later.
+  path. The pricing design is per app (baseline + instance-hours;
+  hibernating apps cost ~the baseline; egress/storage metered
+  separately; free rungs), but no price list is published yet
+  (2026-10-18): don't quote prices or promise a free tier. Nothing about
+  the other axes locks you out of moving later.
 - **Vendors: one codebase, hosted and customer-run.** With one instance
   per customer, an on-prem request stops being a fork: the customer's
   instance runs on their boxes and bucket (a customer fleet) or their own

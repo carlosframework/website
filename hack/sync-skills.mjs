@@ -22,6 +22,7 @@ import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
+import { parse as parseYAML } from "yaml";
 
 const [, , checkout, ...flags] = process.argv;
 const check = flags.includes("--check");
@@ -64,16 +65,22 @@ try {
   console.error(`warning: could not read a sha from ${checkout}`);
 }
 
-// Single-line values only, like the spec's own reference implementation:
-// both fields are one long line in practice, and not building a YAML
-// parser is the point.
+// The frontmatter is parsed as YAML, strictly (unique keys), the same way
+// check-skills.mjs and any consumer parse it: a hand-rolled line split
+// would publish a quoted description with its quotes, and would accept
+// frontmatter a real parser rejects (skills #39).
 function frontmatter(raw, file) {
   const m = /^---\n([\s\S]*?)\n---\n/.exec(raw);
   if (!m) throw new Error(`${file}: no frontmatter`);
-  const out = {};
-  for (const line of m[1].split("\n")) {
-    const i = line.indexOf(": ");
-    if (i > 0) out[line.slice(0, i)] = line.slice(i + 2);
+  let out;
+  try {
+    out = parseYAML(m[1], { uniqueKeys: true, prettyErrors: false });
+  } catch (e) {
+    throw new Error(`${file}: frontmatter is not valid YAML: ${String(e.message).split("\n")[0]}`);
+  }
+  if (!out || typeof out !== "object") throw new Error(`${file}: frontmatter is not a mapping`);
+  for (const k of ["name", "description"]) {
+    if (typeof out[k] !== "string" || !out[k].trim()) throw new Error(`${file}: frontmatter ${k} is missing or not a string`);
   }
   return out;
 }

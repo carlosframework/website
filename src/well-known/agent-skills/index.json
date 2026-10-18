@@ -5,16 +5,16 @@
     {
       "name": "getting-started",
       "type": "skill-md",
-      "description": "Use when someone wants a new app on CARLOS built and live with minimum decisions — \"start a CARLOS app\", \"put this on carloku\", a first deploy to an oncarlos.com URL, or when an agent needs the family's default stack (rastrillo + the carlos CLI) as a recipe rather than a menu. Not for weighing trust models, app shapes, or hosting options — that is building-carlos-apps.",
+      "description": "Use when someone wants a new app on CARLOS built and live with minimum decisions — \"start a CARLOS app\", \"put this on carloku\", a first deploy to an oncarlos.com URL, code hosted on amadan, or when an agent needs the family's default stack (rastrillo, amadan, the carlos CLI) as a recipe rather than a menu. Not for weighing trust models, app shapes, or hosting options — that is building-carlos-apps.",
       "url": "/.well-known/agent-skills/getting-started/SKILL.md",
-      "digest": "sha256:2db9cce7dc81868e8117708d5f7e82162184d99b3b4b1ae02d43a55bbfb9d7d3"
+      "digest": "sha256:7a36edc89d7dcc4439f5eccbb29e5f6f282b97f5bed99474b2aa9e24f97c532b"
     },
     {
       "name": "building-carlos-apps",
       "type": "skill-md",
       "description": "Use when building or designing an app on the CARLOS architecture (Cost-efficient, Available, Replicated, Lightweight, Open, Secure) or with rastrillo (the CARLOS web framework), bringing an existing app onto it, deciding what one instance is (per person, team, customer, repo, or one shared instance; a signup that creates instances; a home or hub; reporting across tenants; SaaS customers who want on-prem), choosing a trust class (S, A1, A2, A/pub, B, C), or weighing the family's other open choices (app shape, hosting, identity). For the zero-decisions happy path to a first live app, use getting-started instead.",
       "url": "/.well-known/agent-skills/building-carlos-apps/SKILL.md",
-      "digest": "sha256:d3bc137bc51be1054f97fe6c6fceb8bcc706c85d38d3273de7018062a14663bd"
+      "digest": "sha256:d4781686a0b1f6e33146152eadb28a99d99a6cefb02efe61843895524af3c7a8"
     }
   ]
 }
