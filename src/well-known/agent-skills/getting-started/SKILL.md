@@ -88,16 +88,42 @@ one message, rather than discovering them one at a time:
 2. **Sign in to the Carloku console** (`https://console.carloku.com`).
    That first sign-in is the account.
 3. **Approve the `carlos auth login` code** in that browser (Step 0).
-4. **On amadan:** sign in, claim a namespace, and create the agent's
-   account and token with `amadan agent create`. An agent never works
-   as its operator.
-5. **Start an amadan CI runner** on a machine they control (`amadan
-   runner`), before the first push. amadan runs no runners itself.
+4. **On amadan:** sign in on the web and claim a namespace, log the CLI
+   in (`amadan auth login -hub https://amadan.net`), then create the
+   agent's account, give it the namespace and mint its token: `amadan
+   agent create <name>`, `amadan agent grant <name> <ns>`, `amadan agent
+   token create <name>` (amadan.net/docs/agents). The agent works with
+   `AMADAN_HOME` pointing at those credentials, checks itself with
+   `amadan auth whoami`, and never works as its operator.
+5. **Run an amadan CI runner** for the repo (amadan runs none itself).
+   A bare `amadan runner` serves every repo its identity can reach and
+   runs each job **as that user with no sandbox**, so recommend a
+   dedicated machine or OS account, scoped and isolated:
+   `amadan runner -repo <ns>/myapp -isolate bwrap` (Linux, bubblewrap
+   installed). Anyone who can push to the repo can run code there; never
+   point a runner at a repo whose writers you wouldn't hand a shell. The
+   machine needs Go and network access: the scaffold's `make ci` fetches
+   its pinned tools with `go run` (amadan.net/docs/ci).
 6. **DNS**, only for a custom domain: the record `carlos domains attach`
    prints.
 7. **Approve anything billable.** There is no public Carloku price list
    yet (2026-10-18), so check with the person before object storage,
    email sending, or a schedule that keeps an instance awake.
+
+And ask, in the same message, the questions that change the build:
+
+- **One place, or a product many sign up to?** One gym, one club, one
+  team is this recipe. A product where each customer gets their own
+  space is building-carlos-apps' tenancy chapter first.
+- **How do people sign in?** The default is a magic link by email,
+  which needs email sending on a live app (Step 2). Email and password
+  is the alternative that needs no email.
+- **Does anything happen on a clock** (reminders, a nightly job)? That
+  is `carlos schedule` (building-carlos-apps, platform.md).
+- **Does it take money?** Payments are not in this recipe; stop and
+  read building-carlos-apps.
+- **Names:** the app name, the amadan namespace and repo, and any
+  custom domain.
 
 ## Step 0 — install and sign in
 
@@ -106,12 +132,14 @@ three CLIs:
 
 ```sh
 brew install carlosframework/tap/carlos
-# no brew (Linux): the static binary, checked against the release's sums
-curl -fsSLO https://github.com/carlosframework/releases/releases/latest/download/carlos-linux-amd64
-curl -fsSLO https://github.com/carlosframework/releases/releases/latest/download/SHA256SUMS.txt
-sha256sum --ignore-missing -c SHA256SUMS.txt
-install -m 0755 carlos-linux-amd64 ~/.local/bin/carlos   # any dir on PATH; no sudo needed
-# (arm64: carlos-linux-arm64; macOS: carlos-darwin-<arch>)
+# no brew (Linux): one pinned release, installed only if its sum checks out
+V=$(curl -fsSLI -o /dev/null -w '%{url_effective}' \
+      https://github.com/carlosframework/releases/releases/latest | sed 's#.*/##')
+B=carlos-linux-amd64   # or carlos-linux-arm64; macOS: carlos-darwin-<arch>
+U=https://github.com/carlosframework/releases/releases/download/$V
+curl -fsSLO "$U/$B" && curl -fsSLO "$U/SHA256SUMS.txt" \
+  && sha256sum --ignore-missing -c SHA256SUMS.txt \
+  && install -m 0755 "$B" ~/.local/bin/carlos     # any dir on PATH; no sudo
 
 go install amadan.net/rastrillo/rastrillo/cmd/rastrillo@latest
 go install amadan.net/amadan/amadan/cmd/amadan@latest
@@ -195,7 +223,12 @@ identity plugin — the family default is `auth` (magic-link email that
 auto-upgrades to sign-in-with-Keymail when the address has a claimed
 inbox; works for every address), with `password` (email+password,
 rate-limited) as the classic alternative — and either one is a few
-lines in `app.go`; guard routes with `sess.Require`.
+lines in `app.go`; guard routes with `sess.Require`. **On a live app the
+magic link has to be sent**: `carlos email enable --app myapp` (after
+the person approves) delivers `CARLOS_SMTP_*` to the instance, and
+`Mailer: mail.FromEnv("CARLOS", logger)` in the `auth` config uses it.
+Leave the mailer unset and every link goes only to the log, which is a
+development convenience, not sign-in.
 
 (The manifest generator — `rastrillo new`, `manifest/*.toml`,
 `rastrillo generate` — is the optional declarative path: declare a
@@ -231,21 +264,35 @@ carries, and the worktree-and-branch habit. Work as that account, with
 
 ```sh
 amadan repo create <ns>/myapp -tier private    # tiers: amadan.net/docs/tiers
-git init -b main && git add -A && git commit -m "Scaffold myapp"
+git init -b main
+git config user.name  <name>                   # the agent's identity, before the first commit:
+git config user.email <name>~<operator keymail>  # repo-local, so it never borrows the person's
+git add -A && git commit -m "Scaffold myapp"
 git remote add origin https://amadan.net/<ns>/myapp
-git push -u origin main                        # a private repo takes the token as the git password
 ```
 
-That first push of the scaffold is the one commit straight to main.
+**Then wait for CI before pushing.** amadan queues a job only if a
+runner has already polled *that* repo, and a runner discovers a new
+repo within about a minute (one started with `-repo <ns>/myapp`
+polls it from the start). Push too early and that commit never gets a
+job. `amadan ci status <ns>/myapp` says whether a runner serves it.
+
+```sh
+amadan ci status <ns>/myapp                    # a runner must serve it first
+git push -u origin main
+```
+
+git asks for a password on a private repo: give it the agent's token
+(the username is ignored) through a credential helper, never in the
+remote URL. That first push of the scaffold is the one commit straight
+to main.
 After it, every change starts with
 `amadan start <branch> -prompt - -summary "..."`: worktree, branch,
 your git identity, push and description in one step. On amadan the
 branch **is** the pull request; there is no separate step to open one.
 
-CI needs no config: the runner runs the scaffold's `make ci`
-(`.amadan/ci.d/` if you want named steps; amadan.net/docs/ci). **The
-person's runner must already be up** (`amadan runner`) when you push,
-or no job is ever queued and nothing says so.
+CI needs no config: the runner runs the scaffold's `.amadan/ci.d/`
+steps, the same gate as `make ci` (amadan.net/docs/ci).
 
 Deploying stays a command you run (Step 3). If the person wants CI to
 deploy, that is a `deploy`-role service credential (building-carlos-apps,

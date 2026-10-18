@@ -93,7 +93,8 @@ Read this skill alongside three facts:
   **[references/platform.md](references/platform.md)** is the member-side
   reference — concepts, the full verb table, and the deploy truths.
 - **Carloku** (carloku.com) is the hosted deployment of that platform —
-  the default hosting answer, with a free tier. Carloku is the product
+  the default hosting answer (its price list is not published yet,
+  2026-10-18; don't quote prices). Carloku is the product
   brand; the CLI is always `carlos`.
 - **Rastrillo** is the CARLOS web framework (v0.28.0; module and
   canonical repo `amadan.net/rastrillo/rastrillo`, GitHub a mirror): a

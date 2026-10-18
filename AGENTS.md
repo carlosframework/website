@@ -179,7 +179,9 @@ node hack/sync-skills.mjs ~/github.com/carlosframework/skills --check   # verify
 
 `npm run check` also runs `hack/check-skills.mjs` over `_site/` after
 the build: every index entry's url has a built file whose bytes hash to
-the entry's digest, every relative link inside a served `SKILL.md`
+the entry's digest, every served SKILL.md's frontmatter parses as strict
+YAML (unique keys, via the `yaml` dev dependency) and names the same
+name and description as the index, every relative link inside a served `SKILL.md`
 resolves, and every carlosframework.com link in `llms.txt` points at a
 built file.
 

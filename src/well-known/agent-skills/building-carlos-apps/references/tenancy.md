@@ -7,7 +7,7 @@ data home. Settle it on day one and write it down as a **tenancy
 declaration** (§6). Changing it later is a data migration across every
 instance, not an edit.
 
-Status as of 2026-10-15. Carloku serves platform v0.27.3; rastrillo is
+Status as of 2026-10-18. Carloku serves platform v0.28.0; rastrillo is
 v0.28.0. Where a piece below is designed but not shipped, it says so.
 
 ## 1. The boundary: what is one instance?
