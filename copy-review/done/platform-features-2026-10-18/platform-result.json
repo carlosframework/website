@@ -1,0 +1,96 @@
+{
+  "action": "approve",
+  "guidance": null,
+  "strings": [
+    {
+      "id": "s01",
+      "text": "<h1>CARLOS platform</h1><p>\nCARLOS platform is an open-source, web application deployment platform for single-process web apps. CARLOS runs on your own infrastructure or via a PaaS provider, like <a href=\"https://carloku.com\" target=\"_blank\">Carloku</a>.</p>",
+      "original": "<h1>CARLOS platform</h1><p>\nCARLOS platform is an open-source, web application deployment platform for single-process web apps. CARLOS running on your own infrastructure or via a PaaS provider, like <a href=\"https://carloku.com\" target=\"_blank\">Carloku</a>.</p>",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "s02",
+      "text": "<h2>Multi-region, multi-host out of the box</h2><p>CARLOS runs single-tenant, full-stack web applications as self-contained processes. This means deploying to hosts running on any provider or network, anywhere on the world becomes as simple as copying files.</p>",
+      "original": "<h2>Multi-region, multi-host out of the box</h2><p>CARLOS runs single-tenant, full-stack web applications as self-contained processes. This means deploying to hosts running on any provider or network, anywhere on the world becomes as simple as copying files.</p>",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "s03",
+      "text": "<h2>Single-tenant apps</h2><p>The first step of building a CARLOS app is choosing the tenant boundary. A tenant can be a team, a profile, a repo etc. Tenants can run independently, alongside centralised \"glue\" infrastructure, or as part of a set of interdependent services.</p>",
+      "original": "<h2>Single-tenant apps</h2><p>The first step of building a CARLOS app is choosing the tenant boundary. A tenant can be a team, a profile, a repo etc. Tenants can run indepdently, alongside centralised \"glue\" infrastructure, or as part of a set of interdependent services.</p>",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "s04",
+      "text": "<h2>Releases and automation</h2><p>You can deploy through the command-line interface (CLI) or application programming interface (API). People or agents can drive deployments, with zero-downtime swaps, release channels, rollback, logs and scheduled jobs available through the platform.</p>",
+      "original": "<h2>Releases and automation</h2><p>You can deploy through the command-line interface (CLI) or application programming interface (API). People or agents can drive deployments, with release channels, rollback, logs and scheduled jobs available through the platform.</p>",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "s05",
+      "text": "<h2>Hibernation built in</h2><p>Hibernating apps mean that instances not in use don't use any compute or memory. Typical apps flash back to life in an imperceptible <500ms, and continuously streamed data is always backed up, always current.</p>",
+      "original": "<h2>Hibernation built in</h2><p>Hibernating apps mean that instances not in use don't use any compute or memory. Typical apps flash back to life in an imperceptible <500ms, and continuously streamed data is always backed up, always current.</p>",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "features.0",
+      "text": "<h2>Shipping</h2><ul><li><strong>Release channels:</strong> Move versions through named channels.</li><li><strong>Fast deploys:</strong> Apply release changes quickly.</li><li><strong>Staggered fleet rollouts:</strong> Update groups of machines in stages.</li><li><strong>Production canary releases:</strong> Test releases on separate production URLs.</li><li><strong>Rollback:</strong> Return an application to its previous release.</li><li><strong>Pipeline bake windows and sign-offs:</strong> Require a waiting period or approval before a release advances.</li></ul>",
+      "original": "<h2>Shipping</h2><ul><li><strong>Release channels:</strong> Move versions through named channels.</li><li><strong>Fast deploys:</strong> Apply release changes quickly.</li><li><strong>Staggered fleet rollouts:</strong> Update groups of machines in stages.</li><li><strong>Production canary releases:</strong> Test releases on separate production URLs.</li><li><strong>Rollback:</strong> Return an application to its previous release.</li><li><strong>Pipeline bake windows and sign-offs:</strong> Require a waiting period or approval before a release advances.</li></ul>",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "features.1",
+      "text": "<h2>Running</h2><ul><li><strong>High availability:</strong> Keep apps available when a host fails.</li><li><strong>Zero-downtime updates:</strong> Update applications without planned downtime.</li><li><strong>Regional moves:</strong> Move an application between regions.</li><li><strong>Multi-region placement:</strong> Run an application in more than one region.</li><li><strong>Multi-provider and self-hosted fleets:</strong> Use multiple providers or self-hosted fleets.</li><li><strong>Hibernation:</strong> Sleep services and wake them when requests arrive.</li></ul>",
+      "original": "<h2>Running</h2><ul><li><strong>High availability:</strong> Keep apps available when a host fails.</li><li><strong>Zero-downtime updates:</strong> Update applications without planned downtime.</li><li><strong>Regional moves:</strong> Move an application between regions.</li><li><strong>Multi-region placement:</strong> Run an application in more than one region.</li><li><strong>Multi-provider and self-hosted fleets:</strong> Use multiple providers or self-hosted fleets.</li><li><strong>Hibernation:</strong> Sleep services and wake them when requests arrive.</li></ul>",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "features.2",
+      "text": "<h2>App services</h2><ul><li><strong>Email sending:</strong> Send email through a configured backend, with verified domains and delivery events.</li><li><strong>Custom domains:</strong> Attach your own hostnames to applications.</li><li><strong>Automatic TLS certificates:</strong> Issue certificates automatically for custom domains.</li><li><strong>Object storage:</strong> Use a configured backend after operator approval.</li><li><strong>Scheduled jobs:</strong> Call an application path on a schedule.</li><li><strong>Environment configuration and secrets:</strong> Set runtime configuration and protected values.</li></ul>",
+      "original": "<h2>App services</h2><ul><li><strong>Email sending:</strong> Send email through a configured backend, with verified domains and delivery events.</li><li><strong>Custom domains:</strong> Attach your own hostnames to applications.</li><li><strong>Automatic TLS certificates:</strong> Issue certificates automatically for custom domains.</li><li><strong>Object storage:</strong> Use a configured backend after operator approval.</li><li><strong>Scheduled jobs:</strong> Call an application path on a schedule.</li><li><strong>Environment configuration and secrets:</strong> Set runtime configuration and protected values.</li></ul>",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "features.3",
+      "text": "<h2>Operating</h2><ul><li><strong>CLI and API automation:</strong> Manage apps from scripts, agents or your terminal.</li><li><strong>Unified logs:</strong> Collect application and platform logs in one place.</li><li><strong>Grouped errors:</strong> Group errors from app logs and HTTP 5xx responses.</li><li><strong>Optional edge analytics:</strong> Count visits without cookies when enabled.</li><li><strong>Feature flags:</strong> Change app-defined settings without a new release.</li><li><strong>Scoped service credentials:</strong> Limit automation credentials to named permissions.</li></ul>",
+      "original": "<h2>Operating</h2><ul><li><strong>CLI and API automation:</strong> Manage apps from scripts, agents or your terminal.</li><li><strong>Unified logs:</strong> Collect application and platform logs in one place.</li><li><strong>Grouped errors:</strong> Group errors from app logs and HTTP 5xx responses.</li><li><strong>Optional edge analytics:</strong> Count visits without cookies when enabled.</li><li><strong>Feature flags:</strong> Change app-defined settings without a new release.</li><li><strong>Scoped service credentials:</strong> Limit automation credentials to named permissions.</li></ul>",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "controls",
+      "text": "<a href=\"https://carlosframework.com/\">CARLOS</a><span>🤖 Platform page draft</span><div><label for=\"illustrated\">Illustrated</label><label for=\"rows\">Rows</label><label for=\"compact\">Compact</label></div>",
+      "original": "<a href=\"https://carlosframework.com/\">CARLOS</a><span>🤖 Platform page draft</span><div><label for=\"illustrated\">Illustrated</label><label for=\"rows\">Rows</label><label for=\"compact\">Compact</label></div>",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    }
+  ]
+}
