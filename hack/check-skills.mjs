@@ -64,6 +64,33 @@ if (index) {
     const raw = readFileSync(built);
     const digest = "sha256:" + createHash("sha256").update(raw).digest("hex");
     if (digest !== entry.digest) fail(`${where}: digest does not match built ${entry.url}`);
+    // 2b. The frontmatter is YAML a strict parser accepts. Agents load a
+    //     skill by parsing it, and an unquoted value holding ": " or " #"
+    //     is a parse error that drops the whole skill (skills #39). No
+    //     YAML dependency: the frontmatter is flat `key: value` lines, so
+    //     the check is the plain-scalar rule itself.
+    const fm = String(raw).match(/^---\n([\s\S]*?)\n---\n/);
+    if (!fm) {
+      fail(`${where}: SKILL.md has no frontmatter block`);
+    } else {
+      const keys = new Set();
+      for (const line of fm[1].split("\n")) {
+        const kv = line.match(/^([a-z][a-z0-9_-]*):\s(.*)$/);
+        if (!kv) {
+          fail(`${where}: frontmatter line is not \`key: value\`: ${JSON.stringify(line)}`);
+          continue;
+        }
+        const [, key, value] = kv;
+        keys.add(key);
+        const quoted = /^"(?:[^"\\]|\\.)*"$|^'(?:[^']|'')*'$/.test(value);
+        if (!quoted && (/: |\s#/.test(value) || /^[\[\]{}&*!|>'"%@`,?:-]\s?/.test(value))) {
+          fail(`${where}: frontmatter ${key} is an unquoted value YAML rejects (": ", " #", or a leading indicator); quote it or reword`);
+        }
+      }
+      for (const k of ["name", "description"]) {
+        if (!keys.has(k)) fail(`${where}: frontmatter has no ${k}`);
+      }
+    }
     // 3. The skill's own relative links (references/…) resolve next to
     //    it, so an agent that fetched SKILL.md over HTTP can follow them.
     const dir = join(site, entry.url, "..");

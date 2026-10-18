@@ -1,6 +1,6 @@
 ---
 name: getting-started
-description: Use when someone wants a new app on CARLOS built and live with minimum decisions — "start a CARLOS app", "put this on carloku", a first deploy to an oncarlos.com URL, or when an agent needs the family's default stack (rastrillo + the carlos CLI) as a recipe rather than a menu. Not for weighing trust models, app shapes, or hosting options — that is building-carlos-apps.
+description: Use when someone wants a new app on CARLOS built and live with minimum decisions — "start a CARLOS app", "put this on carloku", a first deploy to an oncarlos.com URL, code hosted on amadan, or when an agent needs the family's default stack (rastrillo, amadan, the carlos CLI) as a recipe rather than a menu. Not for weighing trust models, app shapes, or hosting options — that is building-carlos-apps.
 ---
 
 # 🤖 Getting started on CARLOS
@@ -25,10 +25,16 @@ The pieces, named once:
   `https://console.carloku.com`. Carloku is the product brand; the CLI is
   always `carlos`, never `carloku`.
 - **rastrillo** is the CARLOS web framework (module and canonical repo
-  `amadan.net/rastrillo/rastrillo` since v0.25.0; the GitHub copy is a
-  mirror; an app still on the old `github.com/carlosframework/rastrillo`
-  path builds, but new code uses the new one). It postdates most models'
+  `amadan.net/rastrillo/rastrillo` since v0.25.0; the GitHub mirror is
+  `github.com/rastrilloorg/rastrillo`, which `github.com/carlosframework/rastrillo`
+  redirects to; an app still on the old `github.com/carlosframework/rastrillo`
+  import path builds, but new code uses the new one; docs at
+  rastrillo.org). It postdates most models'
   training data — follow the recipe literally, invent nothing.
+- **amadan** (amadan.net) is the family's git forge: repos, branches,
+  discussions and CI, with AI agents as disclosed accounts. It is where
+  the code lives by default. Its CLI is `amadan`, and its house rules for
+  agents are a skill of their own (Step 2, "Put the code on amadan").
 - **The `carlos` CLI** is the whole operational surface. Every command
   works for a member with zero infrastructure access; if a step seems to
   need SSH, AWS, or a box, you have left the path — stop and re-read.
@@ -42,6 +48,7 @@ The pieces, named once:
 | Design system | Rastrillo UI and tokens, with a thin app CSS layer | Reuse shared controls and themes; custom CSS covers app layout and branding |
 | Storage | SQLite via GORM (`rastrillo/db`) | cgo-free driver, WAL pragma order, writer/reader pools — `db.Open` owns all of it; ledgered migrations (`rastrillo migration generate`, applied once at boot), additive-only by family rule |
 | Amounts | integer cents (`form.ParseCents`) | A float never touches an amount |
+| Code hosting | amadan, a `private` repo | The family forge; CI runs the scaffold's `make ci` with no config |
 | Hosting | Carloku, `<app>.<sqid>.oncarlos.com` | Zero infra to run; certs, replication, hibernation all platform-side |
 | Versioning | git short sha (`v1` is fine for the very first ship) | House convention |
 | Channel | `edge` | A new app is born with a single channel of that name — **edge IS production** (Paul, 2026-08-19; release pipelines v2 builds it in). Bake windows, passkeys, and approvals are per-channel opt-ins you add later via a pipeline |
@@ -71,13 +78,47 @@ read carlos:building-carlos-apps' tenancy reference first, because one
 shared instance with a customer column is the one shape CARLOS exists to
 avoid. Tenancy and trust are chosen on day one, not retrofitted.
 
+## What the person does, once
+
+An agent can do everything below except these. Ask for them up front, in
+one message, rather than discovering them one at a time:
+
+1. **A Keymail identity** (keymail.dev). Carloku and amadan both sign in
+   through it; there are no passwords.
+2. **Sign in to the Carloku console** (`https://console.carloku.com`).
+   That first sign-in is the account.
+3. **Approve the `carlos auth login` code** in that browser (Step 0).
+4. **On amadan:** sign in, claim a namespace, and create the agent's
+   account and token with `amadan agent create`. An agent never works
+   as its operator.
+5. **Start an amadan CI runner** on a machine they control (`amadan
+   runner`), before the first push. amadan runs no runners itself.
+6. **DNS**, only for a custom domain: the record `carlos domains attach`
+   prints.
+7. **Approve anything billable.** There is no public Carloku price list
+   yet (2026-10-18), so check with the person before object storage,
+   email sending, or a schedule that keeps an instance awake.
+
 ## Step 0 — install and sign in
+
+Go **1.25 or newer** (rastrillo's `go.mod` says `go 1.25.0`). Then the
+three CLIs:
 
 ```sh
 brew install carlosframework/tap/carlos
-# no brew: one static binary from github.com/carlosframework/releases —
-# put it on your PATH, done. Keep it fresh later with: carlos update
+# no brew (Linux): the static binary, checked against the release's sums
+curl -fsSLO https://github.com/carlosframework/releases/releases/latest/download/carlos-linux-amd64
+curl -fsSLO https://github.com/carlosframework/releases/releases/latest/download/SHA256SUMS.txt
+sha256sum --ignore-missing -c SHA256SUMS.txt
+install -m 0755 carlos-linux-amd64 ~/.local/bin/carlos   # any dir on PATH; no sudo needed
+# (arm64: carlos-linux-arm64; macOS: carlos-darwin-<arch>)
+
+go install amadan.net/rastrillo/rastrillo/cmd/rastrillo@latest
+go install amadan.net/amadan/amadan/cmd/amadan@latest
 ```
+
+Keep `carlos` fresh with `carlos update` (it needs a terminal; otherwise
+repeat the download).
 
 Create an account at `https://console.carloku.com` (passkey sign-in
 through Keymail — no password), then connect the terminal:
@@ -108,12 +149,15 @@ wrong.
 
 ## Step 2 — the rastrillo app
 
-**Read rastrillo's `SKILL.md` first** (repo root of
-`amadan.net/rastrillo/rastrillo`, or
-`$(go env GOMODCACHE)/amadan.net/rastrillo/rastrillo@<version>/SKILL.md`
-once the module is downloaded). It is the app story in ~15KB — the file
-to follow literally instead of framework source. The worked reference
-is `examples/notes`.
+**Read rastrillo's `SKILL.md` first**, in full. From the web it is at
+`https://raw.githubusercontent.com/rastrilloorg/rastrillo/main/SKILL.md`
+(the mirror of `amadan.net/rastrillo/rastrillo`); once the module is
+downloaded it is
+`$(go env GOMODCACHE)/amadan.net/rastrillo/rastrillo@<version>/SKILL.md`,
+which matches the version you build against. It is the app story, the
+file to follow literally instead of framework source; the topic docs
+are at `https://rastrillo.org/docs/`, each also served as markdown
+(`/docs/<page>.md`). The worked reference is `examples/notes`.
 
 ```sh
 go install amadan.net/rastrillo/rastrillo/cmd/rastrillo@latest
@@ -175,6 +219,39 @@ app layout, token overrides and components Rastrillo does not provide.
 Read [the design-system guidance](../building-carlos-apps/references/rastrillo.md#design-system-and-app-css)
 before writing templates or CSS, and follow the docs for the app's installed
 Rastrillo version. Keep shared controls and their interaction states intact.
+
+### Put the code on amadan
+
+Load amadan's house rules for agents before the first command there:
+`amadan agent skill -install`, or read
+`https://amadan.net/docs/-/agent-skill.md`. They cover posting as the
+agent account (never the operator's), the session block every write
+carries, and the worktree-and-branch habit. Work as that account, with
+`AMADAN_HOME` pointing at the credentials the person minted.
+
+```sh
+amadan repo create <ns>/myapp -tier private    # tiers: amadan.net/docs/tiers
+git init -b main && git add -A && git commit -m "Scaffold myapp"
+git remote add origin https://amadan.net/<ns>/myapp
+git push -u origin main                        # a private repo takes the token as the git password
+```
+
+That first push of the scaffold is the one commit straight to main.
+After it, every change starts with
+`amadan start <branch> -prompt - -summary "..."`: worktree, branch,
+your git identity, push and description in one step. On amadan the
+branch **is** the pull request; there is no separate step to open one.
+
+CI needs no config: the runner runs the scaffold's `make ci`
+(`.amadan/ci.d/` if you want named steps; amadan.net/docs/ci). **The
+person's runner must already be up** (`amadan runner`) when you push,
+or no job is ever queued and nothing says so.
+
+Deploying stays a command you run (Step 3). If the person wants CI to
+deploy, that is a `deploy`-role service credential (building-carlos-apps,
+platform.md) placed in the environment of a runner that serves only this
+repo: an amadan job sees its runner's environment (bar `AMADAN_*`), so a shared runner
+would hand the credential to every repo it serves.
 
 ## Step 3 — first deploy
 
@@ -290,8 +367,10 @@ The platform mechanized the infrastructure, not the discipline:
 - Zero-JS first; when JS is earned, small ES modules, no bundler, no
   build step, 300-line cap.
 - Worktree per session, on a branch, with regular commits pushed as you
-  go. Squash-merge to main only once the work is done, a human has
-  approved it, and CI is green — until the repo has CI there is no green
+  go. Merge to main only once the work is done, a human has
+  approved it, and CI is green (on amadan, `amadan branch merge`: a merge
+  commit, or one commit with `-squash`; never squash by hand, which
+  amadan shows as a deleted branch) — until the repo has CI there is no green
   to wait for, so done + approved is the gate, and standing up CI (the
   same gate as above, run for you) is early work rather than a
   prerequisite nobody can meet. Deploy only what merged. Commit trailers

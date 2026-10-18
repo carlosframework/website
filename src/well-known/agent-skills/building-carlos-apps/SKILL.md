@@ -252,7 +252,7 @@ The ones the family invokes operationally:
 | Identity | "Sign in with Keymail" / passkeys+PRF / magic link+TOTP by trust model — decisions.md §4 |
 | Trust | A class per workload, S to C; server-blind by default; every softening named and grep-tested. Placement by class is designed, not enforced — tenancy.md §3, decisions.md §1 |
 | UI stance | Hide the machinery: no hostnames, keys, or crypto vocabulary in the default flow — "no nerdspeak"; calm UI, red for danger only, no toasts |
-| Process | Worktree per session, branch, regular pushed commits; squash-merge to main only when done, approved and CI green (CI green binds once the repo has CI — a new repo's first merges land on done + approved and add CI early); review on a deployed canary, never localhost |
+| Process | Code on amadan by default (its agent house rules: `amadan agent skill -install`); worktree per session, branch, regular pushed commits; merge to main (`amadan branch merge`, optionally `-squash`) only when done, approved and CI green (CI green binds once the repo has CI — a new repo's first merges land on done + approved and add CI early); review on a deployed canary, never localhost |
 | Authorship | 🤖/👨 markers, `Co-Authored-By: Claude …` trailers, published prompt + carbon ledgers |
 
 ## Details
