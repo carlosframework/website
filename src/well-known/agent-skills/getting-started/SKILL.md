@@ -92,15 +92,21 @@ one message, rather than discovering them one at a time:
    in (`amadan auth login -hub https://amadan.net`), then create the
    agent's account, give it the namespace and mint its token: `amadan
    agent create <name>`, `amadan agent grant <name> <ns>`, `amadan agent
-   token create <name>` (amadan.net/docs/agents). The agent works with
-   `AMADAN_HOME` pointing at those credentials, checks itself with
-   `amadan auth whoami`, and never works as its operator.
+   token create <name>` (amadan.net/docs/agents). The token is shown
+   once; the operator configures it into the agent's own amadan home
+   (`AMADAN_HOME`). amadan's docs don't yet say how that file is laid
+   out, so if `AMADAN_HOME=<dir> amadan auth whoami` doesn't answer with
+   the agent's `<name>~<keymail>` identity, stop and ask rather than
+   working as the operator.
 5. **Run an amadan CI runner** for the repo (amadan runs none itself).
    A bare `amadan runner` serves every repo its identity can reach and
    runs each job **as that user with no sandbox**, so recommend a
-   dedicated machine or OS account, scoped and isolated:
-   `amadan runner -repo <ns>/myapp -isolate bwrap` (Linux, bubblewrap
-   installed). Anyone who can push to the repo can run code there; never
+   dedicated machine or OS account with its own runner identity (an
+   agent account granted only the runner role: `amadan agent grant
+   <runner> <ns> -role runner`, with its own `AMADAN_HOME`), scoped and
+   isolated: `amadan runner -repo <ns>/myapp -isolate bwrap` (Linux,
+   bubblewrap installed). Start it once the repo exists (Step 2), since a
+   `-repo` runner only learns names at start. Anyone who can push to the repo can run code there; never
    point a runner at a repo whose writers you wouldn't hand a shell. The
    machine needs Go and network access: the scaffold's `make ci` fetches
    its pinned tools with `go run` (amadan.net/docs/ci).
@@ -271,15 +277,17 @@ git add -A && git commit -m "Scaffold myapp"
 git remote add origin https://amadan.net/<ns>/myapp
 ```
 
-**Then wait for CI before pushing.** amadan queues a job only if a
-runner has already polled *that* repo, and a runner discovers a new
-repo within about a minute (one started with `-repo <ns>/myapp`
-polls it from the start). Push too early and that commit never gets a
-job. `amadan ci status <ns>/myapp` says whether a runner serves it.
+**Then have the person start the runner, and only then push.** amadan
+queues a job only if a runner has already polled *that* repo: a runner
+started with `-repo <ns>/myapp` polls it from the start, and one without
+`-repo` picks a new repo up within about a minute. Push before that and
+the commit gets no job. If it happens, `amadan ci status` on the commit
+says "No runner serves this repo"; pushing the same commit again does
+nothing, so push a new commit once the runner is up.
 
 ```sh
-amadan ci status <ns>/myapp                    # a runner must serve it first
-git push -u origin main
+git push -u origin main                        # after the runner is up
+amadan ci status <ns>/myapp                    # the job, or why there is none
 ```
 
 git asks for a password on a private repo: give it the agent's token
