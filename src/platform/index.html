@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The CARLOS platform — open source, self-hostable, and the engine under Carloku</title>
-<meta name="description" content="🤖 carlos deploy ships an immutable release straight to your app's one edge channel — live in seconds, no promotion step. Stage a rollout with bake windows and approvals only if you opt in. Let idle apps sleep to a bucket and wake in milliseconds. The whole platform is one binary you can run yourself.">
+<title>CARLOS platform</title>
+<meta name="description" content="CARLOS platform is an open-source, web application deployment platform for single-process web apps. CARLOS runs on your own infrastructure or via a PaaS provider, like Carloku.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0a0c10" media="(prefers-color-scheme: dark)">
-<meta property="og:title" content="The CARLOS platform">
-<meta property="og:description" content="Open source, self-hostable, and the engine under Carloku. One binary, one bucket, DNS.">
+<meta property="og:title" content="CARLOS platform">
+<meta property="og:description" content="CARLOS platform is an open-source, web application deployment platform for single-process web apps. CARLOS runs on your own infrastructure or via a PaaS provider, like Carloku.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://carlosframework.com/platform/">
 <link rel="stylesheet" href="/site.css?v=0">
@@ -29,24 +29,9 @@
     }
   }
 </style>
+<link rel="stylesheet" href="/platform/guide.css?v=0">
 </head>
 <body>
-<!--
-THESIS: The deployment substrate shown as machinery, not as adjectives — every
-multiplier carries the mechanism that produces it, refusing the pricing-page
-habit of asserting scale and leaving the reader to trust it.
-OWN-WORLD: The homepage's world in its sibling accent (#0d5f88 / #59bfe8):
-near-black and paper grounds, hairline rules, Neo-Grotesque voice, a drawn SVG
-wordmark, mono reserved for data and identifiers. The Industrial stack appears
-only on the multiplier figures, as an enhancement that degrades to the sans.
-STORY: A team deciding where to ship sees the pipeline, the residency and bake
-guarantees, and the whole dependency list; then chooses self-hosting or Carloku.
-FIRST VIEWPORT: Masthead with platform marked current, the four-multiplier claim
-at 4.4rem, lede, two actions — get started, and Carloku as the hosted route.
-FORM: The category standard, taken deliberately as the standing exit. Seed key 294f9859.
-FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
--->
-
 <header class="masthead">
   <a class="mark" href="/"><svg class="wordmark" viewBox="11 11 518 118" width="79" height="18" fill="none" stroke="currentColor" stroke-width="18" role="img" aria-label="CARLOS"><path transform="translate(0,0)" d="M77,44 A20,20 0 0 0 57,24 H43 A20,20 0 0 0 23,44 V96 A20,20 0 0 0 43,116 H57 A20,20 0 0 0 77,96"/><path transform="translate(88,0)" d="M25,117 L45,23 H55 L75,117 M33,80 H67"/><path transform="translate(176,0)" d="M23,117 V23 H53 A23,23 0 0 1 53,69 H23 M50,69 L77,117"/><path transform="translate(264,0)" d="M23,23 V117 H77"/><path transform="translate(352,0)" d="M23,44 A20,20 0 0 1 43,24 H57 A20,20 0 0 1 77,44 V96 A20,20 0 0 1 57,116 H43 A20,20 0 0 1 23,96 Z"/><path transform="translate(440,0)" d="M77,39 A16,16 0 0 0 61,23 H39 A16,16 0 0 0 23,39 V54 A16,16 0 0 0 39,70 H61 A16,16 0 0 1 77,86 V101 A16,16 0 0 1 61,117 H39 A16,16 0 0 1 23,101 V98"/></svg></a>
   <nav aria-label="Site">
@@ -57,172 +42,18 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     <a href="/start/">Get started</a>
   </nav>
 </header>
-
-<div class="hero">
-  <h1>Scale to billions. Ship in seconds. Pay for the hours somebody used.</h1>
-
-  <p class="lede">The CARLOS platform is the deployment substrate underneath every app on the framework. Every app starts with one channel, <code>edge</code>: run <code>carlos deploy</code> and it's live in seconds, no promotion step. Canary channels are there whenever you want a second opinion first, and a staged rollout — per-channel bake windows, a passkey, sign-off from more than one person — is one command away the day you want it, never before. Let idle apps sleep to a bucket for nothing and wake in milliseconds. It is open source and self-hostable — and it is also the engine under <a href="https://carloku.com">Carloku</a>, if you would rather not run boxes.</p>
-
-  <div class="actions">
-    <a class="btn primary" href="https://platform.carlosframework.com">Get started</a>
-    <a class="btn ghost" href="https://carloku.com">See the hosted platform</a>
-  </div>
-
-  <p class="robot">🤖 This page was written by an LLM, on the ideas, instruction, and editing of humans. AI-written text here is always marked, visibly, like this. That's <a href="https://11factor.org/#x">factor X</a>.</p>
-</div>
-
-<main>
-
-<section id="claims">
-  <div class="head">
-    <h2>Every multiplier traces to a mechanism</h2>
-    <p class="standfirst">Not adjectives — line items. Each claim below names the machinery that produces it, so you can check it rather than believe it.</p>
-  </div>
-
-  <div class="ledger">
-    <div class="entry claim">
-      <span class="figure">10<sup>9</sup><small>people</small></span>
-      <div class="body">
-        <h3>Scale to billions</h3>
-        <p>Every person gets their own instance with its own database. A crash, a leak or a runaway query takes down one person's process; the next request restarts it and nobody else notices. Growing means adding boxes to the fleet, not architecture to your app.</p>
-        <p class="receipt"><b>mechanism:</b> per-person instances · blast radius of one · add boxes, not architecture</p>
-      </div>
-    </div>
-    <div class="entry claim">
-      <span class="figure">100&times;<small>build speed</small></span>
-      <div class="body">
-        <h3>Build faster</h3>
-        <p>AI is the factory. Extravagant machines are spent at build time — at length, under tests that fail the build — to produce one lean artifact. The compute is spent once, at the factory; what ships stays small forever.</p>
-        <p class="receipt"><b>mechanism:</b> extravagant machines in · one lean artifact out</p>
-      </div>
-    </div>
-    <div class="entry claim">
-      <span class="figure">1000&times;<small>performance</small></span>
-      <div class="body">
-        <h3>Query without a network hop</h3>
-        <p>SQLite is compiled into the process, so a query is a function call and your data lives next to your compute: microseconds where a round trip costs milliseconds. Even a sleeping instance wakes in milliseconds.</p>
-        <p class="receipt"><b>mechanism:</b> a query is a function call, not a round trip</p>
-      </div>
-    </div>
-    <div class="entry claim">
-      <span class="figure">30&times;<small>cheaper</small></span>
-      <div class="body">
-        <h3>Cheaper, and more efficient with it</h3>
-        <p>Most software is used a few hours a week and billed for all 168. On CARLOS an idle app hibernates to object storage — a few objects in a bucket, no process, no memory, costing nothing — and wakes on the next request. Less compute standing idle is also less energy burned for nothing.</p>
-        <p class="receipt"><b>mechanism:</b> pay for the hours used, not all 168</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="ship">
-  <div class="head">
-    <h2>From branch to live, without a rebuild</h2>
-    <p class="standfirst">One artifact, one pointer by default. What you tested is what ships, because it is the same bytes.</p>
-  </div>
-
-  <div class="rail" role="img" aria-label="Deploy rail: the release f3c9d1 moves from a canary channel to edge, the app's one channel, live immediately and without being rebuilt.">
-    <span class="stop"><b>canary/pr-142</b><span class="sha">f3c9d1</span></span>
-    <span class="to" aria-hidden="true">→</span>
-    <span class="stop final"><b>edge</b><span class="sha">f3c9d1</span></span>
-    <span class="foot">DEPLOY LANDS HERE, NO PROMOTION STEP · MORE CHANNELS ARE OPT-IN</span>
-  </div>
-
-  <div class="pair" style="margin-top:2.25rem">
-    <div>
-      <h3>A live URL for every branch</h3>
-      <p>Push a branch and get a canary URL in seconds: a real deployment on the real platform, not a localhost preview. Send it to a teammate before the code review starts.</p>
-    </div>
-    <div>
-      <h3>One command to serving</h3>
-      <p><code>carlos deploy</code> ships, promotes, and returns only when the URL is provably serving the new build — the edge names the version it serves and the command checks. Exit 0 means refresh and it is there.</p>
-    </div>
-    <div>
-      <h3>A staged pipeline is one command, opt-in</h3>
-      <p><code>carlos pipeline init --template edge-production</code> gives an app more channels, each with its own bake window and approval rules; <code>--template full-ladder</code> is the old fixed canary → edge → beta → stable ladder, still there for anyone who wants it. Either way, promotion only ever points an existing channel at bytes you already shipped — nothing is rebuilt to get there.</p>
-    </div>
-    <div>
-      <h3>Rollback is a pointer move</h3>
-      <p>Point the channel back at the previous release and the bleed stops. Immediate, no rebuild, no waiting. Going backwards is never new code.</p>
-    </div>
-  </div>
-</section>
-
-<section id="trust">
-  <div class="head">
-    <h2>Safe to deploy, and safe to be deployed to</h2>
-    <p class="standfirst">The default is live the moment you ship — the platform's job is to make that boring. Want a frightening step to guard against instead, on your own terms? That's a pipeline you opt into, not one you're stuck with.</p>
-  </div>
-
-  <div class="pair">
-    <div>
-      <h3>A bake window, when you ask for one</h3>
-      <p>Give a channel <code>--bake 72h</code> and a new release must sit on it for that long before the channel's instances adopt it, so a compromised publisher cannot rush a poisoned build across your fleet. Deploys to an app's default <code>edge</code> channel carry no bake — they're live as soon as the header proves it — and canary channels never do either; the window is something you add per channel, through <code>carlos pipeline</code>.</p>
-      <p>Rollback always skips the bake: pointing back at a hash that already served traffic takes effect immediately.</p>
-    </div>
-    <div>
-      <h3>Residency, enforced below your code</h3>
-      <p>Declare where your data lives — per app, or per customer instance — and a host outside that region will never claim it. There is no "just this once during a failover" path: no eligible host means the wake fails loudly instead of quietly relocating.</p>
-      <p>Sleeping data rests in region-scoped buckets too, so residency covers rest as well as execution. Enforced by the platform, not promised in a policy PDF.</p>
-    </div>
-    <div>
-      <h3>Placement follows declared trust, not just capacity</h3>
-      <p>Each workload publishes what a host can learn by running it, and the platform will not place it somewhere less trusted than that declaration requires. <a href="/#classes">The classes are on the framework page</a>.</p>
-    </div>
-    <div>
-      <h3>When it breaks, it says why</h3>
-      <p><code>carlos logs</code> is one timeline: your app's own output merged with the platform's events about it — wakes, restarts, and the reason a wake failed — filterable, followable live with <code>-f</code>, and in the console. No server access required, because the answer comes to you.</p>
-    </div>
-    <div>
-      <h3>Recurring work, on an app that sleeps</h3>
-      <p>A hibernating instance cannot run its own timer — the process is not there to fire it. So the platform keeps the clock. <code>carlos schedule set</code> declares the work once, <code>-every 6h</code> or a cron line in UTC, and at the due time the platform wakes the instance, POSTs the path you named with the token already in its environment, and holds it awake until your handler returns. A sync every six hours; reminders in the days before a date.</p>
-      <p>2xx means done, 5xx is retried with backoff, 4xx is your app declining and nothing retries. <code>carlos schedule ls</code> prints the next and last fire for every instance, so "did it run?" is a question you answer from your terminal.</p>
-    </div>
-  </div>
-</section>
-
-<section id="own">
-  <div class="head">
-    <h2>The whole platform is</h2>
-    <p class="standfirst">That heading is not a lead-in to a longer list. It is the list.</p>
-  </div>
-
-  <div class="parts">
-    <span class="part"><b>1 binary</b><span>every role, one file</span></span>
-    <span class="and" aria-hidden="true">+</span>
-    <span class="part"><b>1 bucket</b><span>all durable state</span></span>
-    <span class="and" aria-hidden="true">+</span>
-    <span class="part"><b>DNS</b><span>your domain</span></span>
-  </div>
-
-  <p class="note" style="margin-top:1.75rem;max-width:46rem">No proprietary control plane, no license server, no essential piece that exists only in someone else's account. Run it on our cloud because it is convenient. If you ever want to leave: copy the binary, take your bucket, point your DNS, and walk away with everything still running.</p>
-</section>
-
-<section id="proof">
-  <div class="head">
-    <h2>Real companies, real traffic</h2>
-    <p class="standfirst">Production tenants are live today — an event-ticketing company and a training platform among them — and <a href="/#fleet">the framework page lists what was answering when this site was last deployed</a>.</p>
-  </div>
-  <p class="prose">Apps live at <code>&lt;sqid&gt;.oncarlos.com</code>, an address that never encodes region or host, so placement stays invisible; custom domains ride on top as aliases.</p>
-</section>
-
-<section id="start" class="close">
-  <h2>Ship something this afternoon</h2>
-  <p class="standfirst">A canary URL is seconds away — on your boxes or on ours.</p>
-  <div class="actions">
-    <a class="btn primary" href="https://platform.carlosframework.com">Get started</a>
-    <a class="btn ghost" href="https://carloku.com">Let Carloku host it</a>
-  </div>
-</section>
-
-</main>
-
+<!-- 👨 Approved platform page copy -->
+<main class="platform-guide"><div class="intro"><div><h1>CARLOS platform</h1><p>
+CARLOS platform is an open-source, web application deployment platform for single-process web apps. CARLOS runs on your own infrastructure or via a PaaS provider, like <a href="https://carloku.com" target="_blank">Carloku</a>.</p></div></div><div class="capabilities"><article class="capability"><div class="drawing"><svg viewBox="0 0 360 145" width="360" height="145" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="66" cy="60" r="47" stroke-dasharray="3 6"/><rect x="33" y="38" width="66" height="44" rx="7"/><path d="M33 51h66M45 66h42m-42 10h26"/><circle cx="180" cy="90" r="47" stroke-dasharray="3 6"/><rect x="147" y="68" width="66" height="44" rx="7"/><path d="M147 81h66M159 96h42m-42 10h26"/><circle cx="294" cy="60" r="47" stroke-dasharray="3 6"/><rect x="261" y="38" width="66" height="44" rx="7"/><path d="M261 51h66M273 66h42m-42 10h26"/></svg></div><div><h2>Multi-region, multi-host out of the box</h2><p>CARLOS runs single-tenant, full-stack web applications as self-contained processes. This means deploying to hosts running on any provider or network, anywhere on the world becomes as simple as copying files.</p></div></article><article class="capability"><div class="drawing"><svg viewBox="0 0 360 145" width="360" height="145" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect class="wire" x="15" y="18" width="104" height="112" rx="10" stroke-dasharray="4 5"/><rect x="25" y="39" width="86" height="52" rx="7"/><path d="M25 52h86M37 67h62m-62 10h46"/><ellipse cx="68" cy="108" rx="19" ry="7"/><rect class="wire" x="128" y="18" width="104" height="112" rx="10" stroke-dasharray="4 5"/><rect x="138" y="39" width="86" height="52" rx="7"/><path d="M138 52h86M150 67h62m-62 10h46"/><ellipse cx="181" cy="108" rx="19" ry="7"/><rect class="wire" x="241" y="18" width="104" height="112" rx="10" stroke-dasharray="4 5"/><rect x="251" y="39" width="86" height="52" rx="7"/><path d="M251 52h86M263 67h62m-62 10h46"/><ellipse cx="294" cy="108" rx="19" ry="7"/></svg></div><div><h2>Single-tenant apps</h2><p>The first step of building a CARLOS app is choosing the tenant boundary. A tenant can be a team, a profile, a repo etc. Tenants can run independently, alongside centralised "glue" infrastructure, or as part of a set of interdependent services.</p></div></article><article class="capability"><div class="drawing"><svg viewBox="0 0 360 145" width="360" height="145" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="20" y="46" width="86" height="52" rx="7"/><path d="M20 59h86M32 74h62m-62 10h46"/><rect x="138" y="46" width="86" height="52" rx="7"/><path d="M138 59h86M150 74h62m-62 10h46"/><rect x="255" y="46" width="86" height="52" rx="7"/><path d="M255 59h86M267 74h62m-62 10h46"/></svg></div><div><h2>Releases and automation</h2><p>You can deploy through the command-line interface (CLI) or application programming interface (API). People or agents can drive deployments, with zero-downtime swaps, release channels, rollback, logs and scheduled jobs available through the platform.</p></div></article><article class="capability"><div class="drawing"><svg viewBox="0 0 360 145" width="360" height="145" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M77 35a45 45 0 1 0 30 77 49 49 0 0 1-30-77Z"/><rect x="185" y="45" width="135" height="70" rx="7"/><path d="M185 58h135M197 73h111m-111 10h95"/></svg></div><div><h2>Hibernation built in</h2><p>Hibernating apps mean that instances not in use don't use any compute or memory. Typical apps flash back to life in an imperceptible <500ms, and continuously streamed data is always backed up, always current.</p></div></article></div><div class="feature-groups"><!-- 👨 -->
+<section class="feature-group"><h2>Shipping</h2><ul><li><strong>Release channels:</strong> Move versions through named channels.</li><li><strong>Fast deploys:</strong> Apply release changes quickly.</li><li><strong>Staggered fleet rollouts:</strong> Update groups of machines in stages.</li><li><strong>Production canary releases:</strong> Test releases on separate production URLs.</li><li><strong>Rollback:</strong> Return an application to its previous release.</li><li><strong>Pipeline bake windows and sign-offs:</strong> Require a waiting period or approval before a release advances.</li></ul></section><!-- 👨 -->
+<section class="feature-group"><h2>Running</h2><ul><li><strong>High availability:</strong> Keep apps available when a host fails.</li><li><strong>Zero-downtime updates:</strong> Update applications without planned downtime.</li><li><strong>Regional moves:</strong> Move an application between regions.</li><li><strong>Multi-region placement:</strong> Run an application in more than one region.</li><li><strong>Multi-provider and self-hosted fleets:</strong> Use multiple providers or self-hosted fleets.</li><li><strong>Hibernation:</strong> Sleep services and wake them when requests arrive.</li></ul></section><!-- 👨 -->
+<section class="feature-group"><h2>App services</h2><ul><li><strong>Email sending:</strong> Send email through a configured backend, with verified domains and delivery events.</li><li><strong>Custom domains:</strong> Attach your own hostnames to applications.</li><li><strong>Automatic TLS certificates:</strong> Issue certificates automatically for custom domains.</li><li><strong>Object storage:</strong> Use a configured backend after operator approval.</li><li><strong>Scheduled jobs:</strong> Call an application path on a schedule.</li><li><strong>Environment configuration and secrets:</strong> Set runtime configuration and protected values.</li></ul></section><!-- 👨 -->
+<section class="feature-group"><h2>Operating</h2><ul><li><strong>CLI and API automation:</strong> Manage apps from scripts, agents or your terminal.</li><li><strong>Unified logs:</strong> Collect application and platform logs in one place.</li><li><strong>Grouped errors:</strong> Group errors from app logs and HTTP 5xx responses.</li><li><strong>Optional edge analytics:</strong> Count visits without cookies when enabled.</li><li><strong>Feature flags:</strong> Change app-defined settings without a new release.</li><li><strong>Scoped service credentials:</strong> Limit automation credentials to named permissions.</li></ul></section></div></main>
 <footer>
   <p>🤖 Written by an LLM (Claude), on the ideas, instruction, and editing of humans. AI-written text here is always marked and always disclosed; see <a href="https://11factor.org/#x">factor X</a>.</p>
   <p>The platform runs apps built on <a href="/">the CARLOS framework</a>, keeping the promises set out in <a href="https://11factor.org">The Eleven Factors</a>. <a href="https://carloku.com">Carloku</a> is the flagship deployment, offered hosted.</p>
   <p>What changed in each release, and who did the work, is in the <a href="/platform/changelog/">changelog</a>.</p>
   <p>The source for this site is <a href="https://github.com/carlosframework/website">public on GitHub</a>, and the platform's conventions are published as a <a href="https://github.com/carlosframework/skills">Claude Code skill</a>. The platform repository itself is not public yet.</p>
 </footer>
-
 </body>
 </html>
