@@ -1,0 +1,1 @@
+User supplied these steps and prompt in chat and requested implementation. Existing site navigation labels retained. Mock interface has no invented agent response or functional send control. Description metadata concatenates supplied steps.

@@ -1,0 +1,42 @@
+[
+  {
+    "id": "start.0",
+    "text": "Get started now",
+    "context": "User-supplied homepage CTA or getting-started instruction."
+  },
+  {
+    "id": "start.1",
+    "text": "Get started",
+    "context": "User-supplied homepage CTA or getting-started instruction."
+  },
+  {
+    "id": "start.2",
+    "text": "Get a Keymail address at keymail.dev",
+    "context": "User-supplied homepage CTA or getting-started instruction."
+  },
+  {
+    "id": "start.3",
+    "text": "CARLOS secure email",
+    "context": "User-supplied homepage CTA or getting-started instruction."
+  },
+  {
+    "id": "start.4",
+    "text": "Sign in to Carloku.com with your Keymail",
+    "context": "User-supplied homepage CTA or getting-started instruction."
+  },
+  {
+    "id": "start.5",
+    "text": "Add this to your agent:",
+    "context": "User-supplied homepage CTA or getting-started instruction."
+  },
+  {
+    "id": "start.6",
+    "text": "Use https://github.com/carlosframework/skills to make ...",
+    "context": "User-supplied homepage CTA or getting-started instruction."
+  },
+  {
+    "id": "start.7",
+    "text": "and describe your app.",
+    "context": "User-supplied homepage CTA or getting-started instruction."
+  }
+]

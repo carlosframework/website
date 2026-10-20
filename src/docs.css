@@ -382,3 +382,7 @@
 .docs-sitefoot { margin-top: clamp(2rem, 5vw, 3.5rem); }
 .docs-provenance { font-size: 0.85rem; }
 .docs-provenance code { font-size: 0.8rem; }
+
+/* Let the article shrink inside the grid; wide code scrolls within its block. */
+.docs-shell > main { min-width: 0; width: 100%; }
+.docs-article { overflow-wrap: anywhere; }
