@@ -1,0 +1,1 @@
+User supplied shorter dumpster labels in chat: Containers, build scripts, env bootstrap, Databases, Caches, Web proxies. Initial capitals follow the existing labels. No other public copy changed. User also requested one platform illustration boundary, gentle lettering float/neon glow, connection lights and node pings.
