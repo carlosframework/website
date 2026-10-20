@@ -1,0 +1,82 @@
+[
+  {
+    "id": "s01",
+    "section": "What kinds of apps can you build on CARLOS?",
+    "label": "What kinds of apps can you build on CARLOS?",
+    "text": "<h1>What kinds of apps can you build on CARLOS?</h1><p>From a personal utility to a shared workspace or social network, you choose how to arrange your app. An instance is one running copy: use one, or give each person, team or project their own. Decentralisation is optional.</p>",
+    "context": "The opening introduces the range of apps and explains what an instance is.",
+    "notes": "Keep the heading and paragraph HTML and any example links intact. This is a draft for review."
+  },
+  {
+    "id": "s02",
+    "section": "Personal apps",
+    "label": "Personal apps",
+    "text": "<h2>Personal apps</h2><p>Notes, files and fitness apps could use one instance per person. <a href=\"https://home.kass.training\" target=\"_blank\" rel=\"noopener\">Kass</a> is an example of this design.</p>",
+    "context": "Illustration 1 describes an app type and a possible way to arrange its instances. The named product is a supporting example, not an assertion that it uses every architecture described here.",
+    "notes": "Keep the heading and paragraph HTML and any example links intact. This is a draft for review."
+  },
+  {
+    "id": "s03",
+    "section": "Team workspaces",
+    "label": "Team workspaces",
+    "text": "<h2>Team workspaces</h2><p>Documents, calendars and shared inboxes could use one instance per team. <a href=\"https://oficina.works\" target=\"_blank\" rel=\"noopener\">Oficina</a> is an office suite with data sealed per team.</p>",
+    "context": "Illustration 2 describes an app type and a possible way to arrange its instances. The named product is a supporting example, not an assertion that it uses every architecture described here.",
+    "notes": "Keep the heading and paragraph HTML and any example links intact. This is a draft for review."
+  },
+  {
+    "id": "s04",
+    "section": "Developer tools",
+    "label": "Developer tools",
+    "text": "<h2>Developer tools</h2><p>Git hosting, continuous integration (CI) and project tools could use one instance per project or repository. <a href=\"https://amadan.net\" target=\"_blank\" rel=\"noopener\">amadan</a> combines Git hosting and CI.</p>",
+    "context": "Illustration 3 describes an app type and a possible way to arrange its instances. The named product is a supporting example, not an assertion that it uses every architecture described here.",
+    "notes": "Keep the heading and paragraph HTML and any example links intact. This is a draft for review."
+  },
+  {
+    "id": "s05",
+    "section": "Connected communities",
+    "label": "Connected communities",
+    "text": "<h2>Connected communities</h2><p>Social networks and messaging apps could use separate instances that communicate through app-defined protocols. You build those connections into the app. <a href=\"https://woodstar.app\" target=\"_blank\" rel=\"noopener\">Woodstar</a> is an example of a social app that supports ActivityPub and AT Protocol.</p>",
+    "context": "Illustration 4 describes an app type and a possible way to arrange its instances. The named product is a supporting example, not an assertion that it uses every architecture described here.",
+    "notes": "Keep the heading and paragraph HTML and any example links intact. This is a draft for review."
+  },
+  {
+    "id": "s06",
+    "section": "Business applications",
+    "label": "Business applications",
+    "text": "<h2>Business applications</h2><p>Ticketing, customer relationship management (CRM), internal tools and one-off apps can use one centralised instance. They could also use separate instances for separate customers. <a href=\"https://go.tito.io\" target=\"_blank\" rel=\"noopener\">Tito</a> is an example of a business adopting CARLOS.</p>",
+    "context": "Illustration 5 describes an app type and a possible way to arrange its instances. The named product is a supporting example, not an assertion that it uses every architecture described here.",
+    "notes": "Keep the heading and paragraph HTML and any example links intact. This is a draft for review."
+  },
+  {
+    "id": "s07",
+    "section": "Small utilities",
+    "label": "Small utilities",
+    "text": "<h2>Small utilities</h2><p>Reporting, scheduled jobs and integrations can run as a self-contained process that does one job. <a href=\"https://cribado.report\" target=\"_blank\" rel=\"noopener\">Cribado</a> handles email authentication reports.</p>",
+    "context": "Illustration 6 describes an app type and a possible way to arrange its instances. The named product is a supporting example, not an assertion that it uses every architecture described here.",
+    "notes": "Keep the heading and paragraph HTML and any example links intact. This is a draft for review."
+  },
+  {
+    "id": "s08",
+    "section": "Choose your boundary",
+    "label": "Choose your boundary",
+    "text": "<h2>Choose your boundary</h2><p>Decide which users and data belong together in an instance, then explore building an app on CARLOS.</p>",
+    "context": "Closing invitation to choose which users and data share an app instance.",
+    "notes": "Keep the heading and paragraph HTML and any example links intact. This is a draft for review."
+  },
+  {
+    "id": "navigation",
+    "section": "Navigation",
+    "label": "Site navigation",
+    "text": "<a href=\"https://carlosframework.com/\">CARLOS</a><nav><a href=\"https://carlosframework.com/apps/\" aria-current=\"page\">Apps</a><a href=\"https://carlosframework.com/trust/\">Trust</a><a href=\"https://carlosframework.com/platform/\">Platform</a><a href=\"https://carlosframework.com/docs/\">Docs</a><a href=\"https://carlosframework.com/start/\">Get started</a></nav>",
+    "context": "The existing site navigation, included to show the draft in context. Links leave the preview.",
+    "notes": "Keep HTML and link destinations intact."
+  },
+  {
+    "id": "authorship",
+    "section": "Disclosure",
+    "label": "Draft disclosure",
+    "text": "\ud83e\udd16 AI-written draft \u00b7 copy and illustrations for review",
+    "context": "Identifies this as an unpublished draft written by an AI.",
+    "notes": "Preview only."
+  }
+]
