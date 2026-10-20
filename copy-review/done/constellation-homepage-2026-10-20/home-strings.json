@@ -1,0 +1,90 @@
+[
+  {
+    "id": "hero",
+    "section": "Hero",
+    "label": "Hero",
+    "text": "<h1>CARLOS</h1><p>An opinionated framework for building, deploying and running robust web apps.</p><div class=\"actions\"><a class=\"primary\" href=\"https://carlosframework.com/start/\">Get started</a><a href=\"https://carlosframework.com/apps/\">Use the apps \u2197</a></div>",
+    "context": "Homepage design exploration. User-supplied copy retained for comparing the three directions.",
+    "notes": "Keep HTML structure and link destinations intact."
+  },
+  {
+    "id": "intro",
+    "section": "Benefits introduction",
+    "label": "Benefits introduction",
+    "text": "A set of defaults for the agentic age that bring a host of benefits",
+    "context": "Homepage design exploration. User-supplied copy retained for comparing the three directions.",
+    "notes": "Keep HTML structure and link destinations intact."
+  },
+  {
+    "id": "benefit.0",
+    "section": "A more sovereign architecture",
+    "label": "A more sovereign architecture",
+    "text": "<h2>A more sovereign architecture</h2><p class=\"benefit-intro\">By default, CARLOS apps are broken down into full-stack deployable instances that run as single processes with embedded databases that can run independently or as part of a SaaS like app deployment. This introduces huge flexibility and portability gains without compromising user experiences.</p><div class=\"table-wrap\"><table><thead><tr><th scope=\"col\">Before CARLOS</th><th scope=\"col\">With CARLOS</th><th scope=\"col\">Benefits</th></tr></thead><tbody><tr><td data-label=\"Before CARLOS\">Monolithic multi-tenant apps</td><td data-label=\"With CARLOS\">Single-process per tenant</td><td data-label=\"Benefits\">Much more flexibility</td></tr><tr><td data-label=\"Before CARLOS\">Centralised multi-tenant databases</td><td data-label=\"With CARLOS\">Database per-tenant</td><td data-label=\"Benefits\">More secure, more control</td></tr><tr><td data-label=\"Before CARLOS\">Nightly backups</td><td data-label=\"With CARLOS\">Continuous streaming</td><td data-label=\"Benefits\">Robust data-storage</td></tr><tr><td data-label=\"Before CARLOS\">Single-deployment per app</td><td data-label=\"With CARLOS\">Flexible deployment per tenant</td><td data-label=\"Benefits\">Easily deploy multi-platform, multi-region, or self-hosted</td></tr><tr><td data-label=\"Before CARLOS\">Everyone updates at once</td><td data-label=\"With CARLOS\">Tenants can choose whether to upgrade</td><td data-label=\"Benefits\">Customers have more control</td></tr></tbody></table></div>",
+    "context": "User-supplied homepage copy, updated in chat; only clear spelling corrections applied.",
+    "notes": "Keep HTML structure and link destinations intact."
+  },
+  {
+    "id": "benefit.1",
+    "section": "Embracing the agentic era",
+    "label": "Embracing the agentic era",
+    "text": "<h2>Embracing the agentic era</h2><p class=\"benefit-intro\">The initial question is: what if we could have all these benefits, without any compromise? How do we use agents to amplify a vision for a better web?</p><div class=\"table-wrap\"><table><thead><tr><th scope=\"col\">Before CARLOS</th><th scope=\"col\">With CARLOS</th><th scope=\"col\">Benefits</th></tr></thead><tbody><tr><td data-label=\"Before CARLOS\">Existing pre-agentic frameworks</td><td data-label=\"With CARLOS\">Agentic-aware from day one</td><td data-label=\"Benefits\">Maximal token efficiency</td></tr><tr><td data-label=\"Before CARLOS\">Slow, interpreted languages</td><td data-label=\"With CARLOS\">Fast, compiled languages</td><td data-label=\"Benefits\">Huge day-one performance</td></tr><tr><td data-label=\"Before CARLOS\">API as an addon</td><td data-label=\"With CARLOS\">API as first class</td><td data-label=\"Benefits\">Build apps that agents can use</td></tr></tbody></table></div>",
+    "context": "User-supplied homepage copy, updated in chat; only clear spelling corrections applied.",
+    "notes": "Keep HTML structure and link destinations intact."
+  },
+  {
+    "id": "benefit.2",
+    "section": "Better, faster, more productive development cycle",
+    "label": "Better, faster, more productive development cycle",
+    "text": "<h2>Better, faster, more productive development</h2><p class=\"benefit-intro\">Unlocking the promise of 100x productivity requires a mindset shift: what if everyone on a team can build features, as close to production as possible?</p><div class=\"table-wrap\"><table><thead><tr><th scope=\"col\">Before CARLOS</th><th scope=\"col\">With CARLOS</th><th scope=\"col\">Benefits</th></tr></thead><tbody><tr><td data-label=\"Before CARLOS\">Complicated development environments</td><td data-label=\"With CARLOS\">Simple dev env with few dependencies</td><td data-label=\"Benefits\">Little to no dev/prod disparity</td></tr><tr><td data-label=\"Before CARLOS\">Prototype -&gt; Plan -&gt; Implement</td><td data-label=\"With CARLOS\">Prototype and implement in the same step</td><td data-label=\"Benefits\">Programmers and non-programmers alike move quicker</td></tr><tr><td data-label=\"Before CARLOS\">Slow, clunky dev tools and CI</td><td data-label=\"With CARLOS\">Fast compile, fast runtime, fast CI</td><td data-label=\"Benefits\">Robust well-tested code with more reliable tests</td></tr><tr><td data-label=\"Before CARLOS\">Slow, brittle preview environments</td><td data-label=\"With CARLOS\">Instant full-stack preview environments</td><td data-label=\"Benefits\">Test multiple versions of features side-by-side</td></tr><tr><td data-label=\"Before CARLOS\">Clunky wrapped web apps for native</td><td data-label=\"With CARLOS\">Properly rapidly-built native UI apps</td><td data-label=\"Benefits\">Shared modules and database schema</td></tr></tbody></table></div>",
+    "context": "User-supplied homepage copy, updated in chat; only clear spelling corrections applied.",
+    "notes": "Keep HTML structure and link destinations intact."
+  },
+  {
+    "id": "benefit.3",
+    "section": "Improved operations",
+    "label": "Improved operations",
+    "text": "<h2>Improved operations</h2><p class=\"benefit-intro\">By simplifying the architecture, but without compromising on robustness or security, CARLOS apps gain a host of operational benefits.</p><div class=\"table-wrap\"><table><thead><tr><th scope=\"col\">Before CARLOS</th><th scope=\"col\">With CARLOS</th><th scope=\"col\">Benefits</th></tr></thead><tbody><tr><td data-label=\"Before CARLOS\">A stack of expensive tools</td><td data-label=\"With CARLOS\">Much more development and runtime efficiency</td><td data-label=\"Benefits\">Much higher cost:performance ratio</td></tr><tr><td data-label=\"Before CARLOS\">Prototype -&gt; Plan -&gt; Implement</td><td data-label=\"With CARLOS\">Prototype and implement in the same step</td><td data-label=\"Benefits\">Programmers and non-programmers alike move quicker</td></tr><tr><td data-label=\"Before CARLOS\">Slow, clunky dev tools and CI</td><td data-label=\"With CARLOS\">Fast compile, fast runtime, fast CI</td><td data-label=\"Benefits\">Robust well-tested code with more reliable tests</td></tr><tr><td data-label=\"Before CARLOS\">Complex container orchestration</td><td data-label=\"With CARLOS\">Lean process orchestration</td><td data-label=\"Benefits\">Lightweight operations that are far more efficient</td></tr></tbody></table></div>",
+    "context": "User-supplied homepage copy, updated in chat; only clear spelling corrections applied.",
+    "notes": "Keep HTML structure and link destinations intact."
+  },
+  {
+    "id": "benefit.4",
+    "section": "More secure defaults",
+    "label": "More secure defaults",
+    "text": "<h2>A solid security foundation</h2><p class=\"benefit-intro\">Starting from tenant isolation, and going all the way to full end-to-end-encryption if you need.</p><div class=\"table-wrap\"><table><thead><tr><th scope=\"col\">Before CARLOS</th><th scope=\"col\">With CARLOS</th><th scope=\"col\">Benefits</th></tr></thead><tbody><tr><td data-label=\"Before CARLOS\">Mixing customer data</td><td data-label=\"With CARLOS\">Isolating customer data</td><td data-label=\"Benefits\">Much narrower blast radius</td></tr><tr><td data-label=\"Before CARLOS\">Scoped database queries</td><td data-label=\"With CARLOS\">No risk of query leakage</td><td data-label=\"Benefits\">Greater portability e.g. true SQL access to data</td></tr><tr><td data-label=\"Before CARLOS\">Plaintext almost everywhere</td><td data-label=\"With CARLOS\">Encryption encouraged</td><td data-label=\"Benefits\">Security at rest, on disk and in transit</td></tr><tr><td data-label=\"Before CARLOS\">Opaque security posture and compliance</td><td data-label=\"With CARLOS\">Declarative trust classes</td><td data-label=\"Benefits\">More transparency about application security</td></tr><tr><td data-label=\"Before CARLOS\">Third-party security scanning</td><td data-label=\"With CARLOS\">Continuous security scanning baked in</td><td data-label=\"Benefits\">Encouraging good security hygiene out of the box</td></tr></tbody></table></div>",
+    "context": "User-supplied homepage copy, updated in chat; only clear spelling corrections applied.",
+    "notes": "Keep HTML structure and link destinations intact."
+  },
+  {
+    "id": "benefit.5",
+    "section": "Inclusivity, accessibility, and adaptability",
+    "label": "Inclusivity, accessibility, and adaptability",
+    "text": "<h2>Inclusivity, accessibility, and adaptability</h2><div class=\"table-wrap\"><table><thead><tr><th scope=\"col\">Before CARLOS</th><th scope=\"col\">With CARLOS</th><th scope=\"col\">Benefits</th></tr></thead><tbody><tr><td data-label=\"Before CARLOS\">Accessibility optional</td><td data-label=\"With CARLOS\">WCAG 2.2 AA audit-ready encouraged from the start</td><td data-label=\"Benefits\">More inclusive applications by default</td></tr><tr><td data-label=\"Before CARLOS\">Closed source</td><td data-label=\"With CARLOS\">Encouraging open source and open protocols</td><td data-label=\"Benefits\">More adaptable software</td></tr><tr><td data-label=\"Before CARLOS\">I18n maybe</td><td data-label=\"With CARLOS\">Comprehensive I18n and L10n</td><td data-label=\"Benefits\">Reach global audiences sooner</td></tr><tr><td data-label=\"Before CARLOS\">One size fits all</td><td data-label=\"With CARLOS\">More customisability per customer</td><td data-label=\"Benefits\">Many more viable options for custom experiences</td></tr></tbody></table></div>",
+    "context": "User-supplied sixth homepage benefit section.",
+    "notes": "Keep table structure intact."
+  },
+  {
+    "id": "tools",
+    "section": "Tools you can use",
+    "label": "Tools you can use",
+    "text": "<h2>Tools you can use</h2><p>Rastrillo is a web application framework. CARLOS platform handles deployment. Carloku is the hosted option. You can also run CARLOS yourself.</p><div class=\"tool-links\"><a href=\"https://rastrillo.org\" target=\"_blank\" rel=\"noopener\"><strong>Rastrillo \u2197</strong><span>Web application framework</span></a><a href=\"https://carlosframework.com/platform/\"><strong>CARLOS platform \u2192</strong><span>Deployment</span></a><a href=\"https://carloku.com\" target=\"_blank\" rel=\"noopener\"><strong>Carloku \u2197</strong><span>Hosted platform</span></a></div>",
+    "context": "Homepage design exploration. Proposed copy for review; Operations and Security replace repeated placeholder rows.",
+    "notes": "Keep HTML structure and link destinations intact."
+  },
+  {
+    "id": "footer",
+    "section": "Explore",
+    "label": "Explore",
+    "text": "<a href=\"https://carlosframework.com/start/\">Get started</a><a href=\"https://carlosframework.com/letters/\">The six letters</a><a href=\"https://use.carlosframework.com\">For organisations</a><a href=\"https://migrate.carlosframework.com\">Why you would migrate your product</a><a href=\"https://11factor.org\">The Eleven Factors</a>",
+    "context": "Homepage design exploration. User-supplied copy retained for comparing the three directions.",
+    "notes": "Keep HTML structure and link destinations intact."
+  },
+  {
+    "id": "controls",
+    "section": "Design directions",
+    "label": "Design directions",
+    "text": "<a href=\"https://carlosframework.com/\" class=\"brand\">CARLOS</a><div><label for=\"constellation\">Constellation</label><label for=\"field\">Field notes</label><label for=\"circuit\">Living circuit</label></div><span>\ud83e\udd16 Design & copy preview</span>",
+    "context": "Homepage design exploration. User-supplied copy retained for comparing the three directions.",
+    "notes": "Keep HTML structure and link destinations intact."
+  }
+]
