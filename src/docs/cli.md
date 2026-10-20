@@ -2158,6 +2158,10 @@ The member command remains `carlos ops host resolve`.
 
 `install-control` installs only instance-control and reloads systemd. `console-config` uses a separate console environment file and leaves host execution claims off. Neither installer starts its service.
 
+Two `run` phases make the files `carlos system guard-arm` takes. `sign-policy` signs the armed policy for a floor and writes nothing to the bucket. `publish-identity` publishes a release's signed identity. It takes the router's hash from the release's signed checksum list, and the console's from the console app's signed release, chosen by its build. The console must be built with the release tag as its version, or the phase refuses it. Build it stripped, with -s -w, as releases are built. Each phase writes its file to `--out`, a new path, readable by root only. Pass these files to `guard-arm` exactly as written. A JSON tool would change the signed bytes.
+
+`install-console` copies the console build that the published identity names into `/opt/carlos/system/console/console` and `console.prev`, owned by root. It refuses a source whose bytes don't match the identity, and it doesn't touch `console.service`. Pass that path to `guard-arm --console`.
+
 After starting the guarded console, run `console-report` on its box as root. It checks the signed roster, guard, systemd process and running executable, then records that process in the existing private box report. It refuses stale box evidence and leaves the report’s timestamp unchanged. Run it again after a console restart and immediately before floor publication; the next agent report may replace the process entry.
 
 #### carlos system journal-migrate
@@ -2263,6 +2267,43 @@ carlos system group role ie default
 ```
 
 Ops account owners and `CARLOS_SYSTEM_OPERATORS`.
+
+#### A box's identity record
+
+carlos system box publish-record publishes the box's identity record to the deployment bucket, at control/boxes/<box>.json, where the host claim's enrollment reads it. The record is the box's EC2 instance identity document and AWS's signature over it, so AWS vouches for the box, not the box itself or you. The agent publishes it by itself only in a region with HA on. Anywhere else, run this once on the box as the agent user, with the box's host.env loaded. This is the only supported way to run it:
+
+```sh
+systemd-run --wait --pipe -p EnvironmentFile=/etc/carlos/host.env -p User=carlos /opt/carlos/carlos system box publish-record
+```
+
+It refuses to run as root, on a fleet box, and on a box with no S3 deployment bucket. It only ever creates the record, and only an S3 bucket can refuse to overwrite one. If a record is already there, it checks it the way enrollment does: AWS's signature, the account, the region, the instance and the box name. A valid record is kept as it is, even an older one written before the instance was stopped and started, and nothing is written. Any other record is refused, with what is wrong, and left alone. A valid record means only that the evidence is in place. Enrollment still makes its own checks before it accepts the box.
+
+#### Boxes a region's group launches
+
+In a region with HA on, the boxes its Auto Scaling group launches set themselves up with no hand steps. A box's start-up runs two commands as root before it starts the agent.
+
+carlos system host-env write builds /etc/carlos/host.env from the deployment's parameters: SecureStrings in AWS SSM under /carlos/<deployment>/<region>/ and, for the values every region shares, /carlos/<deployment>/shared/. If a required value is missing, it stops and writes nothing.
+
+carlos system install-channel installs the release the box's channel names, as both carlos and carlos.prev, once it passes the published host floor. A box that already runs a release is refused: carlos system update moves it.
+
+With --policy FILE, the armed policy carlos system claims run sign-policy wrote, it installs before the host floor is published. The policy's floor stands in for the published one, and once a floor is published the two must be the same. It also arms a box that carlos system update has already moved to the channel's release: carlos is left as it is, and carlos.prev, the release before, is replaced by it, so guard-arm finds the release in both. A box on another release, or with an armed guard, is still refused.
+
+With --policy, --identity FILE is needed too: the release identity carlos system claims run publish-identity wrote. Before a floor is published, the channel pointer carlos system update writes names no release tag, so the release is found through this file instead. It must be the identity published for its tag, and it must name the release and the artifact the channel names.
+
+```sh
+carlos system host-env write --deployment prod --region ie
+carlos system install-channel
+```
+
+The agent then joins. It publishes the box's identity record and hosts nothing. Once the console has checked with AWS that the new box belongs to the region's group, it invites the box. The box arms its host lifecycle guard, the console checks the group again and enrolls it, and the box restarts as a hosting box. Only then does the load balancer send it traffic.
+
+carlos system host-env seed copies a box's existing host.env into those parameters, once per region. It writes the region's own values and any shared value not yet set. It refuses to change a shared value another region has set.
+
+```sh
+carlos system host-env seed --deployment prod --region ie --kms-key alias/carlos-prod-config
+```
+
+Seeding needs ssm:GetParametersByPath and ssm:PutParameter on the deployment's two parameter paths, and kms:Encrypt and kms:Decrypt on its configuration key.
 
 ### carlos move
 
