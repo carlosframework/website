@@ -1,0 +1,1 @@
+User supplied and approved in chat: "Single process, embedded database". Move this label inside the winged window and remove the old external caption. A visual line break follows the comma; wording is unchanged.
