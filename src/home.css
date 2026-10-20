@@ -66,9 +66,9 @@
 .contrast-pane { --pane-surface: #edf2eb; padding: 24px 28px 28px; min-width: 0; color: var(--tone); background: var(--pane-surface); position: relative; display: flex; flex-direction: column; }
 .contrast-pane.before { --pane-surface: #eeece6; color: #766553; }
 .contrast-pane + .contrast-pane { border-left: 1px solid #ccd5ce; }
-.contrast-stage { margin: 0 0 12px; font: 12px/1.4 ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; }
+.contrast-stage { margin: 0 0 12px; font: 12px/1.4 ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; text-align: center; }
 .contrast-pane > svg { display: block; width: 100%; height: auto; max-height: 260px; margin: auto; }
-.contrast-caption { font-size: 18px; line-height: 1.45; margin: 18px 0 0; max-width: 35ch; }
+.contrast-caption { font-size: 18px; line-height: 1.45; margin: 18px auto 0; max-width: 35ch; text-align: center; }
 .contrast-caption:empty { display: none; }
 /* One line vocabulary for every drawing: the Constellation's node cards and dashed orbits,
    filled pulse dots for "alive", and pane-coloured fills so nearer shapes occlude farther ones. */
