@@ -28,21 +28,21 @@
 .hero-art .signal-dot { fill: #b8f7cb; stroke: none; opacity: 0; }
 .hero-art .node-ping { vector-effect: non-scaling-stroke; fill: none; stroke: #b8f7cb; stroke-width: 1.5; opacity: 0; transform-box: fill-box; transform-origin: center; }
 .hero:after { background: radial-gradient(ellipse at 78% 46%, #59c5a738, transparent 60%); }
-.hero-wordmark { overflow: visible; filter: drop-shadow(0 0 5px #b2f3bd26); }
+.hero-wordmark { overflow: visible; }
+.hero-letter { filter: drop-shadow(0 0 5px #b2f3bd26); }
 @media (prefers-reduced-motion: no-preference) {
-  .hero h1 { animation: wordmark-float 9s ease-in-out infinite; }
-  .hero-wordmark { animation: wordmark-neon 13s ease-in-out infinite; }
+  .hero-letter { animation: letter-float var(--float-duration) ease-in-out infinite, letter-neon 13s linear infinite; animation-delay: var(--float-delay), var(--neon-delay); }
   .hero-art { animation: constellation-drift 22s ease-in-out infinite alternate; }
   .hero:after { animation: ambient-drift 17s ease-in-out infinite alternate; }
   .hero-art .signal-dot { animation: signal-travel 12s linear infinite; animation-delay: var(--signal-delay); }
   .hero-art .node-ping { animation: node-ping 12s ease-out infinite; animation-delay: var(--ping-delay); }
 }
-@keyframes wordmark-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-@keyframes wordmark-neon {
-  0%, 100% { filter: drop-shadow(0 0 5px #b2f3bd26); }
-  35%, 65% { filter: drop-shadow(0 0 9px #b2f3bd59); }
-  44%, 56% { filter: drop-shadow(0 0 6px #b2f3bd38); }
-  50% { filter: drop-shadow(0 0 8px #b2f3bd4d); }
+@keyframes letter-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes letter-neon {
+  0%, 40%, 100% { opacity: 1; filter: drop-shadow(0 0 5px #b2f3bd26); }
+  46%, 48%, 50%, 52% { opacity: 1; filter: drop-shadow(0 0 9px #b2f3bd80); }
+  47% { opacity: .85; filter: drop-shadow(0 0 1px #b2f3bd1a); }
+  51% { opacity: .9; filter: drop-shadow(0 0 2px #b2f3bd26); }
 }
 @keyframes signal-travel {
   0% { transform: translate(0,0); opacity: .9; }
