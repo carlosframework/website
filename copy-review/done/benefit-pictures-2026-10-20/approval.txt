@@ -1,0 +1,3 @@
+Illustration captions and labels supplied by Paul in chat, or reused from his existing tables (Before CARLOS, With CARLOS, Mixing customer data, Isolating customer data). Capitalisation of Go corrected under standing spelling authorisation. Graphs are conceptual, without measured values.
+User explicitly confirmed inclusion of Lightweight in “Cost-effective, Available, Replicated, Lightweight, Open, and Secure”.
+Fable (claude-fable-5-1) redrew all six illustrations at the user's explicit request. Captions, tables and all page text compared before/after: no text added or removed. Root corrected platform illustration to show separate databases and added section labels for assistive navigation.
