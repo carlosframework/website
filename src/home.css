@@ -25,7 +25,7 @@
 .hero-art .node-light { opacity: .7; }
 .hero-art .halo { fill: #64caa314; stroke: #91ce8255; }
 .hero-art .pulse { animation: none; }
-.hero-art .edge-signal { stroke: #b8f7cb; stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 16 184; stroke-dashoffset: 20; opacity: 0; }
+.hero-art .signal-dot { fill: #b8f7cb; stroke: none; opacity: 0; }
 .hero-art .node-ping { vector-effect: non-scaling-stroke; fill: none; stroke: #b8f7cb; stroke-width: 1.5; opacity: 0; transform-box: fill-box; transform-origin: center; }
 .hero:after { background: radial-gradient(ellipse at 78% 46%, #59c5a738, transparent 60%); }
 .hero-wordmark { overflow: visible; filter: drop-shadow(0 0 5px #b2f3bd26); }
@@ -34,7 +34,7 @@
   .hero-wordmark { animation: wordmark-neon 13s ease-in-out infinite; }
   .hero-art { animation: constellation-drift 22s ease-in-out infinite alternate; }
   .hero:after { animation: ambient-drift 17s ease-in-out infinite alternate; }
-  .hero-art .edge-signal { animation: connection-light 12s ease-in-out infinite; animation-delay: var(--signal-delay); }
+  .hero-art .signal-dot { animation: signal-travel 12s linear infinite; animation-delay: var(--signal-delay); }
   .hero-art .node-ping { animation: node-ping 12s ease-out infinite; animation-delay: var(--ping-delay); }
 }
 @keyframes wordmark-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
@@ -44,17 +44,15 @@
   44%, 56% { filter: drop-shadow(0 0 6px #b2f3bd38); }
   50% { filter: drop-shadow(0 0 8px #b2f3bd4d); }
 }
-@keyframes connection-light {
-  0% { stroke-dashoffset: 20; opacity: 0; }
-  5% { opacity: .85; }
-  24% { opacity: .85; }
-  30% { stroke-dashoffset: -100; opacity: 0; }
-  100% { stroke-dashoffset: -100; opacity: 0; }
+@keyframes signal-travel {
+  0% { transform: translate(0,0); opacity: .9; }
+  25% { transform: translate(var(--travel-x),var(--travel-y)); opacity: .9; }
+  26%,100% { transform: translate(var(--travel-x),var(--travel-y)); opacity: 0; }
 }
 @keyframes node-ping {
   0% { transform: scale(.85); opacity: 0; }
-  4% { opacity: .55; }
-  28% { transform: scale(2.2); opacity: 0; }
+  2% { opacity: .55; }
+  18% { transform: scale(2.2); opacity: 0; }
   100% { transform: scale(2.2); opacity: 0; }
 }
 @keyframes constellation-drift { from { transform: translate3d(0, -5px, 0); } to { transform: translate3d(-7px, 6px, 0); } }
@@ -126,7 +124,7 @@
 @media(min-width: 851px) { .benefit { grid-template-columns: 72px minmax(0, 1fr); } }
 
 /* Refined comparison artwork. */
-/* Benefit 3: the supporting stack burns in a dumpster; one Go process flies on wings and clouds. */
+/* Benefit 3 comparison artwork. */
 .dumpster { position: relative; width: 100%; max-width: 400px; margin: 6px auto 0; }
 .dumpster-lid { display: block; width: calc(100% + 40px); height: auto; margin: 0 -20px; overflow: visible; }
 .dumpster-rim { position: relative; z-index: 2; height: 14px; margin: -2px -12px 0; border: 2px solid currentColor; border-radius: 4px; background: var(--pane-surface); }
