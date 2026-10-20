@@ -18,3 +18,20 @@
 @media(prefers-color-scheme:light){.overview a:focus-visible,.content a:focus-visible,.home-footer a:focus-visible{outline-color:#805316}}
 
 .overview-actions{display:flex;flex-wrap:wrap;gap:0 24px;align-items:baseline}
+
+/* Low-frequency light and motion, confined to the decorative hero network. */
+.hero-art { pointer-events: none; animation: constellation-drift 22s ease-in-out infinite alternate; }
+.hero-art .ambient-cloud { transform-origin: 65% 55%; animation: ambient-drift 17s ease-in-out infinite alternate; }
+.hero-art .node-light { opacity: .65; animation: node-radiance 9s ease-in-out var(--phase, 0s) infinite; }
+.hero-art .halo { fill: #64caa314; stroke: #91ce8255; }
+.hero-art .pulse { filter: drop-shadow(0 0 4px #c8ef8b99); }
+.hero-art .signal { stroke: #b7efc4; stroke-width: 1.3; stroke-linecap: round; stroke-dasharray: 2 98; opacity: .55; animation: signal-travel 11s linear var(--phase, 0s) infinite; }
+@keyframes constellation-drift { from { transform: translate3d(0, -5px, 0); } to { transform: translate3d(-7px, 6px, 0); } }
+@keyframes ambient-drift { from { opacity: .6; transform: translate(-12px, 8px) scale(.95); } to { opacity: 1; transform: translate(14px, -10px) scale(1.06); } }
+@keyframes node-radiance { 0%, 100% { opacity: .3; } 50% { opacity: 1; } }
+@keyframes signal-travel { to { stroke-dashoffset: -100; } }
+@media (prefers-reduced-motion: reduce) {
+  .hero-art, .hero-art .ambient-cloud, .hero-art .node-light, .hero-art .signal, .hero-art .pulse { animation: none; transform: none; }
+  .hero-art .signal { display: none; }
+  .hero-art .node-light { opacity: .65; }
+}
