@@ -1,0 +1,30 @@
+/* Shared header: the same geometry and navigation on every destination. */
+body { --page-gutter: clamp(1.15rem, 4vw, 2.5rem); }
+body.site-home { --page-gutter: 0px; }
+.masthead {
+  max-width: none; width: auto; margin: 0 calc(-1 * var(--page-gutter));
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: nowrap; gap: 24px; padding: 26px 5vw;
+  background: #101c23; color: #eff8ec; border-bottom: 1px solid #ffffff20;
+  font: 400 15px/1.2 Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  letter-spacing: 0;
+}
+.masthead .mark, .masthead .mark:hover { display: block; line-height: 0; color: #eff8ec; flex-shrink: 0; }
+.masthead .wordmark {
+  display: block; width: 110px; height: auto; fill: none;
+  stroke: currentColor; stroke-width: 18; stroke-linecap: butt; stroke-linejoin: miter;
+}
+.masthead nav { display: flex; align-items: center; flex-wrap: wrap; gap: 26px; margin: 0; font-size: inherit; }
+.masthead nav a { color: #c4d7ce; text-decoration: none; }
+.masthead nav a:hover { color: #fff; }
+.masthead nav a[aria-current] { color: #c8ef8b; }
+.masthead a:focus-visible { outline: 3px solid #c8ef8b; outline-offset: 5px; }
+@media (max-width: 850px) {
+  .masthead { padding: 20px 6vw; font-size: 13px; }
+  .masthead nav { gap: 18px; }
+}
+@media (max-width: 500px) {
+  .masthead { align-items: flex-start; flex-direction: column; gap: 20px; font-size: 12px; }
+  .masthead nav { gap: 18px; }
+  .masthead .wordmark { width: 100px; }
+}

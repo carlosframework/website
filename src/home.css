@@ -16,3 +16,5 @@
 :root{color-scheme:light dark;--ink:#182721;--ink-2:#46574d;--surface:#fff;--rule:#ccd5ce;--prose:40rem;--shadow-2:0 12px 40px #0003}.ai-disclaimer .btn.primary{background:#c8ef8b;color:#14251b;padding:13px 22px;border:0;border-radius:5px}.ai-disclaimer .btn.primary:focus-visible{outline:3px solid #286e62;outline-offset:4px}@media(prefers-color-scheme:dark){:root{--ink:#e4eee8;--ink-2:#bdcfc4;--surface:#15272d;--rule:#34473f;--shadow-2:0 12px 40px #0009}}
 
 @media(prefers-color-scheme:light){.overview a:focus-visible,.content a:focus-visible,.home-footer a:focus-visible{outline-color:#805316}}
+
+.overview-actions{display:flex;flex-wrap:wrap;gap:0 24px;align-items:baseline}

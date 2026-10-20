@@ -57,6 +57,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/start": "start" });
   eleventyConfig.addPassthroughCopy({ "src/site.css": "site.css" });
   eleventyConfig.addPassthroughCopy({ "src/home.css": "home.css" });
+  eleventyConfig.addPassthroughCopy({ "src/header.css": "header.css" });
   eleventyConfig.addPassthroughCopy({ "src/ai-disclaimer.css": "ai-disclaimer.css" });
   eleventyConfig.addPassthroughCopy({ "src/ai-disclaimer.js": "ai-disclaimer.js" });
   eleventyConfig.addPassthroughCopy({ "src/docs.css": "docs.css" });
