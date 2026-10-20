@@ -3,6 +3,387 @@
   "repo": "https://amadan.net/carlos/platform",
   "releases": [
     {
+      "tag": "v0.28.4",
+      "date": "2026-10-18",
+      "sha": "f3bf1214ab92a47ecb626400e7bd1b35cd7a112c",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.4",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Console invites now arrive.** Before this release, an invite to anyone but yourself never reached them. The console now delivers the link to the invitee's Keymail inbox, or by email where console email is on. If neither works, it shows you the link to pass on yourself.",
+                "branches": [
+                  "design-console-invite-delivery"
+                ]
+              },
+              {
+                "md": "**An account can have 20 invites waiting at most, and send 20 an hour.** An invite emailed to an address that isn't a Keymail address can't be accepted yet.",
+                "branches": [
+                  "design-console-invite-delivery"
+                ]
+              },
+              {
+                "md": "**Nothing changes in the CLI.**"
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.**"
+              },
+              {
+                "md": "**Coming from v0.28.2, read the [v0.28.3 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.3) first.** They all still apply."
+              },
+              {
+                "md": "**Console email can switch itself on.** A console with `CARLOS_MAIL_REGION` set and a sending address (`CARLOS_CONSOLE_MAIL_FROM`, or one made from `CARLOS_MAIL_PLATFORM_SUFFIX`) creates an SES identity and DNS records for that address's domain the first time it starts. It sends nothing until SES has verified the domain.",
+                "branches": [
+                  "design-console-invite-delivery"
+                ]
+              },
+              {
+                "md": "**Sending also needs a grant that is off by default.** The region-host module's `console_mail_from` and `console_mail_region` add an `ses:SendEmail` grant to the host role. Leave them unset until that grant's security review is done. Without it, invites fall back to Keymail or the link.",
+                "branches": [
+                  "design-console-invite-delivery"
+                ]
+              },
+              {
+                "md": "**With `CARLOS_HOST_CLAIM` on, the console sends no email.** Invites then go by Keymail, or the owner passes the link on.",
+                "branches": [
+                  "design-console-invite-delivery"
+                ]
+              },
+              {
+                "md": "**`carlos system install-channel --policy` now also takes `--identity`.** The two go together. The published release identity stands in for the channel's release tag, which the channel only carries once a floor is published.",
+                "branches": [
+                  "claim-untagged-pointer"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-system"
+                ]
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_SWAP`, `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS` and `CARLOS_REQUIRE_POINTER_DIGEST` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "f3bf1214ab92a47ecb626400e7bd1b35cd7a112c",
+          "date": "2026-10-18",
+          "subject": "claim-untagged-pointer: install-channel --policy takes --identity (the published release identity) so an untagged channel pointer works; the activation witness has no hand-made input on the trial's path",
+          "branch": "claim-untagged-pointer",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/claim-untagged-pointer",
+          "commits": 6,
+          "docs": [
+            "/docs/cli#boxes-a-region-s-group-launches"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "91a651b3c5a0837445c1a5bc738aafe340928510",
+          "date": "2026-10-18",
+          "subject": "spec: console invite delivery by Keymail federation, then email",
+          "branch": "design-console-invite-delivery",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/design-console-invite-delivery",
+          "commits": 20,
+          "discussions": [
+            {
+              "id": 216,
+              "title": "Mail: a member can adopt another party's verified SES domain; sending-domain claims never expire",
+              "state": "open"
+            },
+            {
+              "id": 250,
+              "title": "Host floor guard: fix these before anyone runs guard-arm (Opus review of Plans 8/8b)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.3",
+      "date": "2026-10-18",
+      "sha": "50f5b26845fb0a23109078654ec5d59b3723d9c4",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.3",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Nothing changes for people using the CLI.**"
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.**"
+              },
+              {
+                "md": "**Coming from v0.28.1, read the [v0.28.2 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.2) first.** They all still apply."
+              },
+              {
+                "md": "**`carlos system install-channel --policy` prepares a box that is already running for host claims.** It puts the box's current release in both its copies, so the guard can be armed before a floor is published. That replaces the box's rollback copy, and the command says so. Nothing runs it on its own, and host claims stay off.",
+                "branches": [
+                  "claim-prev-rehearsal"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-system"
+                ]
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_SWAP`, `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS` and `CARLOS_REQUIRE_POINTER_DIGEST` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "50f5b26845fb0a23109078654ec5d59b3723d9c4",
+          "date": "2026-10-18",
+          "subject": "claim-prev-rehearsal: install-channel --policy arms an updater-installed box; the activation witness starts from a box the platform made and rehearses steps 6 and 7",
+          "branch": "claim-prev-rehearsal",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/claim-prev-rehearsal",
+          "commits": 7,
+          "docs": [
+            "/docs/cli#boxes-a-region-s-group-launches"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.2",
+      "date": "2026-10-18",
+      "sha": "7c1beb2da18da1a659e57a4514aee8abe2146d2d",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.2",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Nothing changes for people using the CLI.**"
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.**"
+              },
+              {
+                "md": "**Coming from v0.28.0, read the [v0.28.1 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.1) first.** They all still apply."
+              },
+              {
+                "md": "**Three new `carlos system claims` commands prepare a box for host claims.** `run` gains two phases, `sign-policy` and `publish-identity`, which make the files `carlos system guard-arm` needs, and `install-console` puts a protected copy of the console where the guard expects it. Nothing runs them on its own, and host claims stay off.",
+                "branches": [
+                  "claim-step6-artifacts"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-system-claims",
+                  "/docs/cli#carlos-system"
+                ]
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_SWAP`, `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS` and `CARLOS_REQUIRE_POINTER_DIGEST` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "7c1beb2da18da1a659e57a4514aee8abe2146d2d",
+          "date": "2026-10-18",
+          "subject": "claim-step6-artifacts: claims run sign-policy and publish-identity, --out byte-exact files, claims install-console (dev cohort-1 trial step 6)",
+          "branch": "claim-step6-artifacts",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/claim-step6-artifacts",
+          "commits": 9,
+          "docs": [
+            "/docs/cli#carlos-system-claims"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.1",
+      "date": "2026-10-18",
+      "sha": "3b69c2bd60edaecb04771d4cd85792e326010cc0",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.1",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Nothing changes for people using the CLI.**"
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.**"
+              },
+              {
+                "md": "**Coming from v0.27.x, read the [v0.28.0 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.0) first.** They all still apply."
+              },
+              {
+                "md": "**A box can publish its identity record by hand.** `systemd-run --wait --pipe -p EnvironmentFile=/etc/carlos/host.env -p User=carlos /opt/carlos/carlos system box publish-record` writes the box's AWS-signed identity record to the deployment bucket once. It never replaces or deletes a record, and it refuses to run as root or on a fleet box. Nothing runs it on its own.",
+                "branches": [
+                  "box-publish-record"
+                ]
+              },
+              {
+                "md": "**A box that has not reported for a day drops out of status.** `carlos status --live`, the console's box list and the promote list leave out a box whose report has not been written for 24 hours. Before, it stayed in the list as stale. Fleet boxes are listed as before.",
+                "branches": [
+                  "region-ha-2b-build"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-status"
+                ]
+              },
+              {
+                "md": "**Each box gets an idle join unit.** `carlos-system-join.path` is installed and enabled at the roll. Nothing touches the file it watches until region HA is turned on, so it never starts its service.",
+                "branches": [
+                  "region-ha-2b-build"
+                ]
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_SWAP`, `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS` and `CARLOS_REQUIRE_POINTER_DIGEST` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "3b69c2bd60edaecb04771d4cd85792e326010cc0",
+          "date": "2026-10-18",
+          "subject": "box-publish-record",
+          "branch": "box-publish-record",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/box-publish-record",
+          "commits": 1,
+          "docs": [
+            "/docs/cli#a-box-s-identity-record"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "b11189254fcf542ba99a428e63742c0aa81f069e",
+          "date": "2026-10-18",
+          "subject": "region HA 2b: the joining and enrolment plan and its copy record",
+          "branch": "region-ha-2b-build",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/region-ha-2b-build",
+          "commits": 32,
+          "discussions": [
+            {
+              "id": 275,
+              "title": "carlos binary doubled to 74.5 MB: the EC2 SDK client via internal/awsinv",
+              "state": "closed"
+            }
+          ],
+          "docs": [
+            "/docs/cli#boxes-a-region-s-group-launches"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "04819f9b42ed6767d816bdfecd53490407ee20bb",
+          "date": "2026-10-17",
+          "subject": "changelog-v0.28.0: release step 10 for v0.28.0, plus the darwin/windows vet fix for claimunit_inputs_test.go",
+          "branch": "changelog-v0.28.0",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/changelog-v0.28.0",
+          "commits": 2,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v0.28.0",
       "date": "2026-10-17",
       "sha": "260653783857088d6ba940101191c599974f8caa",
