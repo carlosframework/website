@@ -159,3 +159,7 @@
 @media(max-width: 650px) {
       .dumpster li { font-size: 13px; }
 }
+
+.winged-window { position: relative; width: 100%; max-width: 476px; margin: auto; }
+.winged-window > svg { display: block; width: 100%; height: auto; }
+.window-label { position: absolute; left: 20.4545%; top: 32%; width: 59.091%; height: 31%; display: flex; align-items: center; justify-content: center; margin: 0; padding: 0 6px; text-align: center; font-size: clamp(13px, 1.3vw, 16px); line-height: 1.4; }
