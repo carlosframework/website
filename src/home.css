@@ -18,3 +18,17 @@
 @media(prefers-color-scheme:light){.overview a:focus-visible,.content a:focus-visible,.home-footer a:focus-visible{outline-color:#805316}}
 
 .overview-actions{display:flex;flex-wrap:wrap;gap:0 24px;align-items:baseline}
+
+/* Static SVG lighting moves as one layer; the ambient wash animates separately. */
+.hero-art { pointer-events: none; overflow: visible; }
+.hero-art .ambient-cloud { opacity: .65; }
+.hero-art .node-light { opacity: .7; }
+.hero-art .halo { fill: #64caa314; stroke: #91ce8255; }
+.hero-art .pulse { animation: none; }
+.hero:after { background: radial-gradient(ellipse at 78% 46%, #59c5a738, transparent 60%); }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-art { animation: constellation-drift 22s ease-in-out infinite alternate; }
+  .hero:after { animation: ambient-drift 17s ease-in-out infinite alternate; }
+}
+@keyframes constellation-drift { from { transform: translate3d(0, -5px, 0); } to { transform: translate3d(-7px, 6px, 0); } }
+@keyframes ambient-drift { from { opacity: .4; transform: translate3d(-12px, 8px, 0) scale(.95); } to { opacity: 1; transform: translate3d(14px, -10px, 0) scale(1.06); } }
