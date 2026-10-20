@@ -25,8 +25,8 @@
 .hero-art .node-light { opacity: .7; }
 .hero-art .halo { fill: #64caa314; stroke: #91ce8255; }
 .hero-art .pulse { animation: none; }
-.hero-art .signal-dot { fill: #b8f7cb; stroke: none; opacity: 0; }
-.hero-art .node-ping { vector-effect: non-scaling-stroke; fill: none; stroke: #b8f7cb; stroke-width: 1.5; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.hero-art .signal-dot { fill: #91cead; stroke: none; opacity: 0; }
+.hero-art .node-ping { vector-effect: non-scaling-stroke; fill: none; stroke: #91cead; stroke-width: 1; opacity: 0; transform-box: fill-box; transform-origin: center; }
 .hero:after { background: radial-gradient(ellipse at 78% 46%, #59c5a738, transparent 60%); }
 .hero-wordmark { overflow: visible; }
 .hero-letter { filter: drop-shadow(0 0 5px #b2f3bd26); }
@@ -34,8 +34,8 @@
   .hero-letter { animation: letter-float var(--float-duration) ease-in-out infinite, letter-neon 13s linear infinite; animation-delay: var(--float-delay), var(--neon-delay); }
   .hero-art { animation: constellation-drift 22s ease-in-out infinite alternate; }
   .hero:after { animation: ambient-drift 17s ease-in-out infinite alternate; }
-  .hero-art .signal-dot { animation: signal-travel 12s linear infinite; animation-delay: var(--signal-delay); }
-  .hero-art .node-ping { animation: node-ping 12s ease-out infinite; animation-delay: var(--ping-delay); }
+  .hero-art .signal-dot { animation: signal-travel 24s linear infinite; animation-delay: var(--signal-delay); }
+  .hero-art .node-ping { animation: node-ping 24s ease-out infinite; animation-delay: var(--ping-delay); }
 }
 @keyframes letter-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 @keyframes letter-neon {
@@ -45,15 +45,15 @@
   51% { opacity: .9; filter: drop-shadow(0 0 2px #b2f3bd26); }
 }
 @keyframes signal-travel {
-  0% { transform: translate(0,0); opacity: .9; }
-  25% { transform: translate(var(--travel-x),var(--travel-y)); opacity: .9; }
+  0% { transform: translate(0,0); opacity: .32; }
+  25% { transform: translate(var(--travel-x),var(--travel-y)); opacity: .32; }
   26%,100% { transform: translate(var(--travel-x),var(--travel-y)); opacity: 0; }
 }
 @keyframes node-ping {
-  0% { transform: scale(.85); opacity: 0; }
-  2% { opacity: .55; }
-  18% { transform: scale(2.2); opacity: 0; }
-  100% { transform: scale(2.2); opacity: 0; }
+  0% { transform: scale(.95); opacity: 0; }
+  4% { opacity: .2; }
+  20% { transform: scale(1.65); opacity: 0; }
+  100% { transform: scale(1.65); opacity: 0; }
 }
 @keyframes constellation-drift { from { transform: translate3d(0, -5px, 0); } to { transform: translate3d(-7px, 6px, 0); } }
 @keyframes ambient-drift { from { opacity: .4; transform: translate3d(-12px, 8px, 0) scale(.95); } to { opacity: 1; transform: translate3d(14px, -10px, 0) scale(1.06); } }
