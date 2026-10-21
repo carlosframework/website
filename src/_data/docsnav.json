@@ -8,6 +8,16 @@
           "slug": "cli",
           "label": "The CLI",
           "blurb": "Every carlos command, grouped by whether you are shipping an app, running a deployment, or on a box."
+        },
+        {
+          "slug": "scan-callbacks",
+          "label": "Receiving scan results",
+          "blurb": "Ask for one object to be scanned, read the verdict, and verify the callback that tells you it is done."
+        },
+        {
+          "slug": "plans",
+          "label": "Plans",
+          "blurb": "Give accounts limits, packs and sponsorship. Plans stay off until you configure a catalog."
         }
       ]
     }

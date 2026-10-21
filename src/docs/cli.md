@@ -559,6 +559,8 @@ A hibernating instance is woken first. A live one keeps serving, and the command
 
 carlos run exits with the command's own status, 128 plus the signal number when a signal ended it, 124 when it timed out, 125 when it was interrupted or the instance let go of it without a result, 130 when you cancelled it, 3 when the box refused it or did not pick it up within 60 seconds, and 2 when the console refused it.
 
+carlos logs shows when each run started, who asked for it and how it ended. The command's output is not kept there.
+
 Arguments are kept in the account's audit log, with who ran them. Never put a secret in an argument. Pass it in a --file, or keep it in the instance's environment.
 
 ### carlos schedule
@@ -1451,6 +1453,45 @@ Setting `CARLOS_CLAMD_ADDR` without `CARLOS_STORE_BACKEND` is refused at boot. A
 Wiring an engine is not the same as switching scanning on. The deployment-wide
 switch is `carlos system antivirus` — see [carlos system](#carlos-system).
 
+##### Request one object
+
+`carlos store scan request` opts a store into scanning. To request a scan for one uploaded object, your app calls the scan API with an app-scoped `service` credential. The account owner creates that credential:
+
+```sh
+carlos services create --account example --app hello --role service upload-scanner
+```
+
+##### Requesting a scan
+
+Send the credential's bearer token with both requests:
+
+```http
+POST /api/cli/apps/{account}/{app}/store/scan/object
+{"key":"uploads/report.pdf"}
+```
+
+```http
+GET /api/cli/apps/{account}/{app}/store/scan/object?key=uploads/report.pdf&wait=30s
+```
+
+A separate worker checks for requests every 30 seconds, with a work limit per app. Busy queues can take longer. `carlos store scan status` reports bucket-sweep coverage; use the object endpoint for this upload's result. See [Receiving scan results](/docs/scan-callbacks).
+
+##### Before scanning
+
+The API scans the app's default store. It has no environment-store selector. The store must be provisioned, scanning must be enabled for the deployment, and a member's plaintext request must have been granted by an operator.
+
+##### Callback keys
+
+Polling works without callback keys. For callbacks, set `CARLOS_SCAN_WEBHOOK_KEY` to a newly generated 32-byte secret encoded as hex. The per-app callback secret delivered to your app is also hex-encoded; decode it before verifying signatures.
+
+An operator replaces one app's callback secret with:
+
+```sh
+carlos store scan rotate-webhook-key --app hello
+```
+
+This changes only `hello`. A scan grant can also deliver a callback secret. Delivering changed config restarts affected apps.
+
 ### carlos relay
 
 A STUN and TURN relay the platform runs for your app's WebRTC calls, so a
@@ -1733,6 +1774,18 @@ logged-in one.
 `carlos accounts migrate` copies an app's objects to an account-qualified
 prefix and re-stamps its routes. Run it with `--dry-run` first; it prints the
 plan and touches nothing.
+
+### carlos accounts plan
+
+Shows or changes an account's plan. It is a deployment-operator command, and it only works where the console has a plan catalog (see [Plans](plans)).
+
+```sh
+carlos accounts plan --account bac
+carlos accounts plan --account bac --set personal --pack apps=2 --reason "needs more apps"
+carlos accounts plan --account bac --set free --sponsored limits.json --reason "existing account, sponsored"
+```
+
+Without `--set` it prints the plan, who set it and why, and every limit the account has. With `--set` it changes the plan and prints the result. `--reason` is required for a change. `--pack` can be repeated. `--sponsored` names a JSON file of limits; each one replaces the plan's limit where it is more generous.
 
 ### carlos fleets
 
@@ -2162,6 +2215,8 @@ Two `run` phases make the files `carlos system guard-arm` takes. `sign-policy` s
 
 `install-console` copies the console build that the published identity names into `/opt/carlos/system/console/console` and `console.prev`, owned by root. It refuses a source whose bytes don't match the identity, and it doesn't touch `console.service`. Pass that path to `guard-arm --console`.
 
+To replace an installed console, add `--upgrade --from <sha256>`, where the sha256 is the console that is running now. It refuses unless that build is what the box holds, then installs the new console and keeps the old one as `console.prev`. A box upgraded this way can't be armed again with `guard-arm` until `install-console` has been run without `--upgrade`, because `guard-arm` expects both copies to be the same build.
+
 After starting the guarded console, run `console-report` on its box as root. It checks the signed roster, guard, systemd process and running executable, then records that process in the existing private box report. It refuses stale box evidence and leaves the report’s timestamp unchanged. Run it again after a console restart and immediately before floor publication; the next agent report may replace the process entry.
 
 #### carlos system journal-migrate
@@ -2192,6 +2247,16 @@ where no scan can run.
 Deployment operators only (`CARLOS_STORE_OPERATORS`). Enabling scans nothing by
 itself — a member still requests scanning for their app and an operator still
 grants it per store.
+
+##### Deployment-wide callback rotation
+
+After configuring a new `CARLOS_SCAN_WEBHOOK_KEY`, keep the old key in `CARLOS_SCAN_WEBHOOK_KEY_PREVIOUS` during rotation and run:
+
+```sh
+carlos system antivirus rotate-webhook-key
+```
+
+The CLI delivers secrets in bounded batches until complete. It does not create or change the master key. Apps whose delivered secret changes restart. The current and previous master keys must differ; a previous key without a current key is refused.
 
 #### Platform GeoIP
 
@@ -2346,6 +2411,23 @@ to confirm.
 | `1` | the console could not be reached, or answered with an error |
 
 Operators who are members of the instance's account.
+
+`carlos move offline` moves one instance with planned downtime, one step at a time. It is for operators, works with host claims and Phase 1 moves off, and never acts on its own: each verb does one step and says which verb comes next.
+
+```sh
+carlos move offline stage  --host <host> --to <region>
+carlos move offline start  --host <host> --to <region>
+carlos move offline seal   --host <host>
+carlos move offline flip   --host <host>
+carlos move offline open   --host <host>
+carlos move offline finish --host <host>
+carlos move offline abort  --host <host>
+carlos move offline status --host <host>
+```
+
+The instance is offline from `start` until `open`. Until `open`, `abort` puts it back where it was with nothing lost. After `open`, moving it back is a new move.
+
+`stage` is optional and comes before `start`. It copies the instance's data to the region it moves to while the instance keeps serving, and each time it runs it copies only what is new. The more it has copied, the less is left to copy while the instance is offline. Until `start`, `abort` removes the staged copy and the instance is never offline.
 
 ## On the host
 
