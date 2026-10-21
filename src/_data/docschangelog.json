@@ -3,6 +3,607 @@
   "repo": "https://amadan.net/carlos/platform",
   "releases": [
     {
+      "tag": "v0.28.7",
+      "date": "2026-10-21",
+      "sha": "771ca01b6be00cec299a8e265c34136daa1fe0d1",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.7",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**`carlos logs` now shows each run.** It shows when each `carlos run` started, who asked for it and how it ended. The command's output is not kept there.",
+                "branches": [
+                  "run-lifecycle-logs-325"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-logs",
+                  "/docs/cli#carlos-run"
+                ]
+              },
+              {
+                "md": "**An app can ask for one uploaded object to be scanned.** Where scanning is enabled for the deployment and an operator has granted the store, the app requests a scan with an app-scoped `service` credential and polls for the result, or receives a signed callback. See [Receiving scan results](https://carlosframework.com/docs/scan-callbacks).",
+                "branches": [
+                  "scan-demand-revival"
+                ]
+              },
+              {
+                "md": "**The console's account switcher has a search box.** It helps when you belong to many accounts.",
+                "branches": [
+                  "console-switcher-filter"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.4, read the [v0.28.5 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.5) first. Coming from v0.28.5, upgrade the console with `carlos system claims install-console --upgrade` as the [v0.28.6 notes](https://github.com/carlosframework/releases/releases/tag/v0.28.6) describe.",
+                "docs": [
+                  "/docs/cli#carlos-system-claims"
+                ]
+              },
+              {
+                "md": "**An offline move can copy most of its data before the instance goes offline.** Run `carlos move offline stage --host <host> --to <region>` while the instance keeps serving. It copies the instance's replica to the target region, and running it again copies only what is new. `start` then takes the instance offline as before, and the seal copies only what changed since the last stage. Until `start`, `abort` removes the staged copy and the instance is never offline. While a move is staged, the instance refuses `carlos run` and deletion, and no other instance can move offline.",
+                "branches": [
+                  "moves-offline-precopy"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-move",
+                  "/docs/cli#carlos-run"
+                ]
+              },
+              {
+                "md": "**Every box in both regions must run this release before `stage` works.** Each box now publishes `offline-stage-1`, and `stage` refuses while any box in either region lacks it.",
+                "branches": [
+                  "moves-offline-precopy"
+                ]
+              },
+              {
+                "md": "**Moves and replica copies now run eight object copies at once.** Before, they copied one object at a time, so a large replica took minutes to copy while the instance was offline.",
+                "branches": [
+                  "moves-offline-precopy"
+                ]
+              },
+              {
+                "md": "**On-demand scanning needs `CARLOS_SCAN_WEBHOOK_KEY` only for callbacks.** Polling works without it. To rotate it, keep the old key in `CARLOS_SCAN_WEBHOOK_KEY_PREVIOUS` and run `carlos system antivirus rotate-webhook-key`. Apps whose delivered secret changes restart.",
+                "branches": [
+                  "scan-demand-revival"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-system"
+                ]
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` as it is: a box armed for zero-downtime deploys stays armed.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "771ca01b6be00cec299a8e265c34136daa1fe0d1",
+          "date": "2026-10-21",
+          "subject": "moves-offline-precopy: carlos move offline stage (pre-copy while serving) and parallel mirror copies",
+          "branch": "moves-offline-precopy",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/moves-offline-precopy",
+          "commits": 10,
+          "docs": [
+            "/docs/cli#carlos-move"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "f550afa21b8098460cbcf0bac2cac6748e52b802",
+          "date": "2026-10-21",
+          "subject": "spec: plans, caps and packs for the first paid launch (draft)",
+          "branch": "design-plans-and-caps",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/design-plans-and-caps",
+          "commits": 15,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-accounts-plan",
+            "/docs/plans#turning-plans-on",
+            "/docs/plans#the-catalog",
+            "/docs/plans#assigning-a-plan",
+            "/docs/plans#sponsored-accounts"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "aaa6a9498092d0e24910991127b45a9b21cdf7b4",
+          "date": "2026-10-21",
+          "subject": "root tests: the carlos binary is built once per test run, not once per test",
+          "branch": "test-suite-speed",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/test-suite-speed",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 291,
+              "title": "Test suite speed: where the CI gate's 375 seconds go, and a ranked plan",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "512baa591dc275b5b3a01a353d6993fb19509a0b",
+          "date": "2026-10-21",
+          "subject": "Prompts:",
+          "branch": "test-suite-debt",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/test-suite-debt",
+          "commits": 4,
+          "discussions": [
+            {
+              "id": 226,
+              "title": "Root package tests read the operator's real ~/.carlos/config (TestShipVerbAPIMode aborts the package)",
+              "state": "open"
+            },
+            {
+              "id": 258,
+              "title": "Root CLI tests read the operator's real ~/.carlos/config when TMPDIR is under HOME",
+              "state": "open"
+            },
+            {
+              "id": 263,
+              "title": "Hibernating instances: keep 7 days of snapshot history like awake ones",
+              "state": "closed"
+            },
+            {
+              "id": 266,
+              "title": "Flaky: sim/litestreamfacts TestGate_AnchoredLineageThroughStore under load",
+              "state": "open"
+            },
+            {
+              "id": 274,
+              "title": "Flaky CI test: stopevidence TestFDIdentityFindsAHardLinkHeldByAChild",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "f54aa2fc50b8481b9ba4b6bfe09a21bc7c7172e2",
+          "date": "2026-10-21",
+          "subject": "carlos run: a run's start and end reach carlos logs (#325)",
+          "branch": "run-lifecycle-logs-325",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/run-lifecycle-logs-325",
+          "commits": 5,
+          "discussions": [
+            {
+              "id": 325,
+              "title": "Run a one-off command with one instance's delivered config (carlos exec)",
+              "state": "closed"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-run"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "3d444a1b63c6e853527292cd8845f1347fdbb544",
+          "date": "2026-10-21",
+          "subject": "Merge reviewed on-demand object scanning revival",
+          "branch": "scan-demand-revival",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/scan-demand-revival",
+          "commits": 1,
+          "docs": [
+            "/docs/cli#carlos-store-scan",
+            "/docs/cli#deployment-wide-object-scanning",
+            "/docs/scan-callbacks#asking-for-a-scan",
+            "/docs/scan-callbacks#the-states",
+            "/docs/scan-callbacks#callbacks-take-a-path"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "ce8c425ae5930e1c2807018bde1880b93b0947cd",
+          "date": "2026-10-20",
+          "subject": "console: searchable, scrolling account switcher",
+          "branch": "console-switcher-filter",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/console-switcher-filter",
+          "commits": 2,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.6",
+      "date": "2026-10-20",
+      "sha": "e0986eabc5bc2a7ae5e17e58b19c9a6b92beecfe",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.6",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Nothing changes for people deploying apps with the CLI.**"
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.**"
+              },
+              {
+                "md": "**Coming from v0.28.4, read the [v0.28.5 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.5) first.** They all still apply, including the one update by hand for a box whose guard is armed on v0.28.4."
+              },
+              {
+                "md": "**A guard-armed box's protected console can now be replaced.** Once the box's router is on this release, run `carlos system claims install-console --upgrade --from <sha256>` as root, where the sha256 is the console that is running now. It refuses unless that build is what the box holds, then installs the new console and keeps the old one as `console.prev`. No hand recovery is needed. A box upgraded this way can't be armed again with `carlos system guard-arm` until `install-console` has been run without `--upgrade`, because `guard-arm` expects both copies to be the same build.",
+                "branches": [
+                  "install-console-upgrade"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-system-claims",
+                  "/docs/cli#carlos-system"
+                ]
+              },
+              {
+                "md": "**A nested instance's `config.env` is written as soon as its directory appears.** Before, a move could leave the instance without it for up to an hour.",
+                "branches": [
+                  "moves-offline-fixes"
+                ]
+              },
+              {
+                "md": "**Each offline move step now sees a current box report.** While a move is running, the source boxes and the sealing box report again every 15 seconds. A move takes under a minute of downtime when its steps run back to back. A step that meets a stale report now says the report is not current and to try again. Before, `flip` could answer that a process was still running.",
+                "branches": [
+                  "moves-offline-fixes"
+                ]
+              },
+              {
+                "md": "**A source box's scheduler leaves a moved instance alone.** After `open`, it no longer writes a stray token file into the instance it gave up.",
+                "branches": [
+                  "moves-offline-fixes"
+                ]
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS` and `CARLOS_REQUIRE_POINTER_DIGEST` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` as it is: a box armed for zero-downtime deploys stays armed.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "e0986eabc5bc2a7ae5e17e58b19c9a6b92beecfe",
+          "date": "2026-10-20",
+          "subject": "moves-offline-fixes: harness Run 9 defects. Config sync writes a nested row's config.env as soon as its instance directory appears, keeping it pending until delivered (6); each offline door step sees a current report: source boxes and the sealer refresh reports every 15 s while a move is active without renewing the tombstone, and a stale report answers MV-O178 (7); a source box's scheduler leaves a held or moved host alone, excluding it before the batch limit (8). Astra reviewed (two rounds); census-ruling-moves-offline-fixes (platform-1c); MV-O178 approved by Paul.",
+          "branch": "moves-offline-fixes",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/moves-offline-fixes",
+          "commits": 9,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "2185035698a1111c487651bddb1bf2500cd92ccc",
+          "date": "2026-10-20",
+          "subject": "install-console --upgrade --from <sha256>: replace a guard-armed box's protected console",
+          "branch": "install-console-upgrade",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/install-console-upgrade",
+          "commits": 4,
+          "docs": [
+            "/docs/cli#carlos-system-claims"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.5",
+      "date": "2026-10-20",
+      "sha": "54ae7fb93820f37f123bbdcbcb57f4f2efb25dc9",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.5",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Nothing changes for people deploying apps with the CLI.**"
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.**"
+              },
+              {
+                "md": "**Coming from v0.28.3, read the [v0.28.4 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.4) first.** They all still apply."
+              },
+              {
+                "md": "**`carlos move offline` moves one instance to another region, with planned downtime.** It is for operators, works only while host claims and Phase 1 moves are off, and takes one step per command: `start`, `seal`, `flip`, `open`, then `finish`. The instance is offline from `start` until `open`. Until `open`, `abort` puts it back where it was with nothing lost.",
+                "branches": [
+                  "moves-offline"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-move"
+                ]
+              },
+              {
+                "md": "**Roll every box in both regions before you start an offline move.** `seal` waits until every box in the instance's current region has stopped it and said so, and a box on an earlier release never says so.",
+                "branches": [
+                  "moves-offline"
+                ]
+              },
+              {
+                "md": "**A box whose guard is armed on v0.28.4 needs one update by hand.** Its updater reads a candidate's progress messages as part of the answer, so `carlos system update` refuses every candidate on that box. Stop `carlos-system-update.path`, put the v0.28.5 binary in a root-only file after checking it against `SHA256SUMS.txt`, run it as root as `system apply` with the box's `host.env`, check the box, then start `carlos-system-update.path` again. Do one box at a time. From then on the box updates as usual.",
+                "branches": [
+                  "armed-box-updates"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-system"
+                ]
+              },
+              {
+                "md": "**The guarded updater reads only what a candidate writes to standard output.** Progress and warnings no longer break its checks, so this is the last update a guard-armed box needs by hand.",
+                "branches": [
+                  "armed-box-updates"
+                ]
+              },
+              {
+                "md": "**`carlos system guard-arm` makes its directories readable whatever your umask is.** Before, a root shell with a strict umask left them unreadable to the box's updater.",
+                "branches": [
+                  "claim-guard-umask"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-system"
+                ]
+              },
+              {
+                "md": "**Routes with their own unit now restart on boxes whose agent doesn't run as root.** The agent now hands those restarts to root. Before, the restart was refused, the agent read that as a broken build and rolled back.",
+                "branches": [
+                  "adopt-unit-root-pass-315"
+                ]
+              },
+              {
+                "md": "**`carlos system status` warns when a new box would boot an older build.** It compares `bootstrap/carlos` with stable's build and says which file to copy over it.",
+                "branches": [
+                  "bootstrap-carlos-follows-316"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-system"
+                ]
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS` and `CARLOS_REQUIRE_POINTER_DIGEST` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` as it is: a box armed for zero-downtime deploys stays armed.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "54ae7fb93820f37f123bbdcbcb57f4f2efb25dc9",
+          "date": "2026-10-20",
+          "subject": "armed-box-updates: guard-armed boxes can take a release by the ruled re-arm. Cherry-picks 8376a468 (rootaws: an inherited disabled sentinel is not an override) and 8a313548 (hostfloor: a guarded run returns stdout only) from claim-empty-cohort-done, Astra-reviewed there; census-ruling-claim-rootaws-sentinel, confirmed for main by platform-1c. For v0.28.5.",
+          "branch": "armed-box-updates",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/armed-box-updates",
+          "commits": 3,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "7af881553052fb0b1a26308f49e446df5bcf71be",
+          "date": "2026-10-20",
+          "subject": "moves-offline: operator-run offline region move (claims-off, planned downtime): holds and fences every source box, seals the source with a create-only tombstone after a final checkpoint, lands every dependency on the target proven against an immutable seal.json, opens, then retires the source by rename. Reviewed task by task and by Fable and Astra; census-ruling-moves-offline; copy approved by Paul 2026-10-20. Dormant until an operator runs carlos move offline.",
+          "branch": "moves-offline",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/moves-offline",
+          "commits": 40,
+          "docs": [
+            "/docs/cli#carlos-move"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "57569bfffa089b9e0ac9c61b9d6f1a03ccf4fc97",
+          "date": "2026-10-20",
+          "subject": "changelog-v0.28.4: release step 10 for v0.28.1 to v0.28.4",
+          "branch": "changelog-v0.28.4",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/changelog-v0.28.4",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "cd2dd6e1a3f208b31932d28721bfa0eedb7e7a76",
+          "date": "2026-10-20",
+          "subject": "system status: say when bootstrap/carlos is not stable's build (#316)",
+          "branch": "bootstrap-carlos-follows-316",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/bootstrap-carlos-follows-316",
+          "commits": 2,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 316,
+              "title": "Keep bootstrap/carlos in step with the fleet: system update mirrors releases but new boxes still boot a stale binary",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "d7a5b8eb640535f54dd7e0380eda59e9bcc6c2c6",
+          "date": "2026-10-20",
+          "subject": "adopt: an agent that is not root hands named-unit routes to root's pass (#315)",
+          "branch": "adopt-unit-root-pass-315",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/adopt-unit-root-pass-315",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 315,
+              "title": "Agent's in-process adopt rolls back a console update when it can't restart console.service itself (\"Interactive authentication required\")",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "96db0efe4a0dc94f26cc8e01d5ed8c5c07e3296a",
+          "date": "2026-10-19",
+          "subject": "claim-guard-umask: guard-arm makes its guard, system and lock directories 0755 whatever the caller's umask (#317)",
+          "branch": "claim-guard-umask",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/claim-guard-umask",
+          "commits": 2,
+          "discussions": [
+            {
+              "id": 317,
+              "title": "guard-arm's directories inherit the caller's umask: umask 077 broke the guarded console (exit 203)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v0.28.4",
       "date": "2026-10-18",
       "sha": "f3bf1214ab92a47ecb626400e7bd1b35cd7a112c",
