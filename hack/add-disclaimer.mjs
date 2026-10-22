@@ -32,20 +32,27 @@ export async function addDisclaimer(outputDir) {
   ${paragraphs}
   <button class="btn primary" type="button" data-ai-disclaimer-continue>${escape(copy.continue)}</button>
 </dialog>
-<noscript><aside class="ai-disclaimer-fallback">
-  <h2>${escape(copy.title)}</h2>
-  ${paragraphs}
-</aside></noscript>
 <!-- /ai-disclaimer:notice -->`;
   const reopen = `<!-- ai-disclaimer:reopen -->
 <!-- 👨 -->
-<p><button class="ai-disclaimer-reopen" type="button" data-ai-disclaimer-open hidden>${escape(copy.reopen)}</button></p>
+<button class="ai-disclaimer-reopen" type="button" data-ai-disclaimer-open hidden>${escape(copy.reopen)}</button>
+<noscript><details class="ai-disclaimer-fallback">
+  <summary>${escape(copy.reopen)}</summary>
+  <h2>${escape(copy.title)}</h2>
+  ${paragraphs}
+</details></noscript>
 <!-- /ai-disclaimer:reopen -->`;
+
+  const marker = "<!-- site-footer:disclosure -->";
 
   for await (const file of htmlFiles(outputDir)) {
     let html = await readFile(file, "utf8");
     // A watch rebuild may leave passthrough pages in place.
-    html = html.replace(/<!-- ai-disclaimer:(head|notice|reopen) -->[\s\S]*?<!-- \/ai-disclaimer:\1 -->\n?/g, "");
+    // The reopen block goes back to its marker so a rebuild keeps its position.
+    html = html.replace(
+      /<!-- ai-disclaimer:(head|notice|reopen) -->[\s\S]*?<!-- \/ai-disclaimer:\1 -->(\n?)/g,
+      (_, name, newline) => (name === "reopen" ? marker + newline : ""),
+    );
     if (/<meta\b[^>]*http-equiv=["']refresh["']/i.test(html)) {
       await writeFile(file, html);
       continue;
@@ -53,9 +60,11 @@ export async function addDisclaimer(outputDir) {
     if (!/<\/head>/i.test(html) || !/<body\b[^>]*>/i.test(html) || !/<\/footer>/i.test(html)) {
       throw new Error(`Cannot add disclaimer to ${file}: missing head, body or footer`);
     }
-    html = html.replace(/<\/head>/i, `${head}\n</head>`);
-    html = html.replace(/<body\b[^>]*>/i, (body) => `${body}\n${notice}`);
-    html = html.replace(/<\/footer>/i, `${reopen}\n</footer>`);
+    html = html.replace(/<\/head>/i, () => `${head}\n</head>`);
+    html = html.replace(/<body\b[^>]*>/i, (body) => `${body}${notice}\n`);
+    html = html.includes(marker)
+      ? html.replace(marker, () => reopen)
+      : html.replace(/<\/footer>/i, () => `${reopen}\n</footer>`);
     await writeFile(file, html);
   }
 }

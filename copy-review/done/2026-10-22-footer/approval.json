@@ -1,0 +1,13 @@
+{
+  "approval_source": "user chat",
+  "date": "2026-10-22",
+  "requests": [
+    "Remove automatic AI disclosure; keep it in footer.",
+    "Tidy footer and add structure.",
+    "Remove the LLM attribution and Eleven-inspiration footer paragraphs."
+  ],
+  "subtitle_selection": "An opinionated framework for building and shipping apps in the agentic age.",
+  "subtitle_amendment": "Maybe \"web apps\"?",
+  "applied_subtitle": "An opinionated framework for building and shipping web apps in the agentic age.",
+  "footer_copy": "Existing site labels and links regrouped; no new explanatory prose. Docs source provenance retained. Disclosure title and paragraphs unchanged."
+}

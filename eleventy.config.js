@@ -2,6 +2,7 @@
 import markdownIt from "markdown-it";
 import markdownItAnchor from "markdown-it-anchor";
 import { addDisclaimer } from "./hack/add-disclaimer.mjs";
+import { addFooter } from "./hack/add-footer.mjs";
 
 // slugify must match internal/docsite's Anchor in the platform repo
 // exactly, or an internal fragment link passes that repo's Go gate and
@@ -46,7 +47,10 @@ function sameFence(closing, opening) {
 }
 
 export default function (eleventyConfig) {
-  eleventyConfig.on("eleventy.after", async ({ dir }) => addDisclaimer(dir.output));
+  eleventyConfig.on("eleventy.after", async ({ dir }) => {
+    await addFooter(dir.output);
+    await addDisclaimer(dir.output);
+  });
   eleventyConfig.addPassthroughCopy({ "src/index.html": "index.html" });
   eleventyConfig.addPassthroughCopy({ "src/platform": "platform" });
   eleventyConfig.addPassthroughCopy({ "src/rastrillo": "rastrillo" });
@@ -59,6 +63,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/home.css": "home.css" });
   eleventyConfig.addPassthroughCopy({ "src/home-textures": "home-textures" });
   eleventyConfig.addPassthroughCopy({ "src/header.css": "header.css" });
+  eleventyConfig.addPassthroughCopy({ "src/footer.css": "footer.css" });
   eleventyConfig.addPassthroughCopy({ "src/ai-disclaimer.css": "ai-disclaimer.css" });
   eleventyConfig.addPassthroughCopy({ "src/ai-disclaimer.js": "ai-disclaimer.js" });
   eleventyConfig.addPassthroughCopy({ "src/docs.css": "docs.css" });
