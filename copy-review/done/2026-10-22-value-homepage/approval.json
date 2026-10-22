@@ -1,0 +1,13 @@
+{
+  "approval_source": "user chat",
+  "date": "2026-10-22",
+  "user_statement": "I think this is ready to ship for now, at least so that Doc and James can take over.",
+  "scope": "Current homepage iteration and linked self-hosting guide, after the supplied hero copy and benefit grouping. Final mechanical correction removes the 25ch limit from hero card paragraphs.",
+  "review_url": "http://docs-t1.tail5fd3ba.ts.net:40033/preview/index.html",
+  "notes": [
+    "User provided the benefit claims, including cost and compute figures. No new measurements or audit certification are asserted by this release record.",
+    "Original copy-review form was not submitted; approval was given explicitly in chat.",
+    "Translations remain deferred; account migration remains deferred.",
+    "Existing production footer, navigation, docs and disclosure are preserved."
+  ]
+}

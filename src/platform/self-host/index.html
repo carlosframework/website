@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101c23">
+<title>Self-host CARLOS platform</title>
+<meta name="description" content="A CARLOS platform deployment needs its own console, object-store bucket, hosts running carlos, and domain name system (DNS) records.">
+<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
+<meta property="og:title" content="Self-host CARLOS platform">
+<meta property="og:description" content="A CARLOS platform deployment needs its own console, object-store bucket, hosts running carlos, and domain name system (DNS) records.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://carlosframework.com/platform/self-host/">
+<link rel="stylesheet" href="/home.css?v=0">
+<link rel="stylesheet" href="/header.css?v=0">
+</head>
+<body class="landing site-home hosting-page">
+<header class="masthead">
+  <a class="mark" href="/"><svg class="wordmark" viewBox="11 11 518 118" width="79" height="18" fill="none" stroke="currentColor" stroke-width="18" role="img" aria-label="CARLOS"><path transform="translate(0,0)" d="M77,44 A20,20 0 0 0 57,24 H43 A20,20 0 0 0 23,44 V96 A20,20 0 0 0 43,116 H57 A20,20 0 0 0 77,96"/><path transform="translate(88,0)" d="M25,117 L45,23 H55 L75,117 M33,80 H67"/><path transform="translate(176,0)" d="M23,117 V23 H53 A23,23 0 0 1 53,69 H23 M50,69 L77,117"/><path transform="translate(264,0)" d="M23,23 V117 H77"/><path transform="translate(352,0)" d="M23,44 A20,20 0 0 1 43,24 H57 A20,20 0 0 1 77,44 V96 A20,20 0 0 1 57,116 H43 A20,20 0 0 1 23,96 Z"/><path transform="translate(440,0)" d="M77,39 A16,16 0 0 0 61,23 H39 A16,16 0 0 0 23,39 V54 A16,16 0 0 0 39,70 H61 A16,16 0 0 1 77,86 V101 A16,16 0 0 1 61,117 H39 A16,16 0 0 1 23,101 V98"/></svg></a>
+  <nav aria-label="Site">
+    <a href="/apps/">Apps</a>
+    <a href="/trust/">Trust</a>
+    <a href="/platform/" aria-current="page">Platform</a>
+    <a href="/docs/">Docs</a>
+    <a href="/start/">Get started</a>
+  </nav>
+</header>
+<main class="hosting-guide"><a href="/#start">CARLOS</a><h1>🤖 Self-host CARLOS platform</h1>
+<p>A CARLOS platform deployment needs its own console, object-store bucket, hosts running <code>carlos</code>, and domain name system (DNS) records. You operate the deployment service for your apps, including routing and host services.</p>
+<h2>Choose your host and services</h2>
+<p>Choose the compute location and service providers separately. Linux hosts provide the full service path through <code>systemd</code>, the Linux service manager.</p>
+<p>On Amazon Web Services (AWS), the existing integrations use S3 for storage, IAM for managed app-storage credentials, SES for email, and Route 53 for latency-based DNS.</p>
+<p>You can run hosts outside AWS and still use AWS services. <code>CARLOS_S3_ENDPOINT</code> points platform storage at an S3-compatible endpoint. That changes the storage endpoint, but the AWS provisioner still uses AWS IAM. Managed email and latency-based DNS also retain their AWS integrations.</p>
+<p>For a deployment without AWS, validate the object store’s conditional writes and choose which integrations to provide. S3 compatibility alone does not supply an alternative to IAM, SES or Route 53.</p>
+<h2>Set up the deployment</h2>
+<p>Choose the host, bucket, and domain first. Install <code>carlos</code> on the hosts, then bootstrap them and configure the bucket access, release verification, console identity and domain, and host services. Configure DNS and encrypted HTTPS.</p>
+<p>This guide outlines the deployment choices. Use the <a href="/docs/cli/">CLI documentation</a> for operator command reference. Host setup and configuration are defined in the <a href="https://github.com/carlosframework/platform">CARLOS platform repository</a>.</p>
+<p>Point the CLI at your own console. Deploy a first app, verify its route, and test recovery. Add optional email or latency-based DNS integrations only after the base deployment works.</p>
+<h2>Operate it</h2>
+<p>The operator maintains the hosts, applies updates, checks storage and backups, and verifies recovery. Keep those checks independent of the provider you choose.</p>
+</main>
+<footer class="home-footer"><nav><a href="https://carlosframework.com/start/">Get started</a><a href="https://carlosframework.com/letters/">The six letters</a><a href="https://use.carlosframework.com">For organisations</a><a href="https://migrate.carlosframework.com">Why you would migrate your product</a><a href="https://11factor.org">The Eleven Factors</a></nav>
+  <p>🤖 Written by an LLM (Claude), on the ideas, instruction, and editing of humans. AI-written text here is always marked and always disclosed; see <a href="https://11factor.org/#x">factor X</a>.</p>
+  <p>CARLOS keeps the promises set out in <a href="https://11factor.org">The Eleven Factors</a>, and is informed by building <a href="https://elevenmessenger.com">Eleven</a> — the way the twelve factors were separate from Heroku, but informed by it.</p>
+  <p><a href="/letters/">The six letters</a> · <a href="/apps/">Apps</a> · <a href="/trust/">Trust</a> · <a href="/start/">Get started</a> · <a href="https://use.carlosframework.com">For organisations</a> · <a href="https://migrate.carlosframework.com">For vendors</a></p>
+  <p><a href="https://github.com/carlosframework/website">Source for this site on GitHub</a>. Open, of course.</p>
+</footer>
+</body>
+</html>
