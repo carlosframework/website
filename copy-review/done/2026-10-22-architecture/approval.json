@@ -1,0 +1,24 @@
+{
+  "approval_source": "user instructions in chat",
+  "date": "2026-10-22",
+  "subtitle": "An opinionated architecture for building and shipping better apps in the agentic age.",
+  "promise": "Your agents can build any app. If they follow CARLOS principles, they come out better.",
+  "promise_emphasis": "better",
+  "architecture_copy": [
+    "CARLOS, at its root, is a set of hard decisions that you no longer need to make about things you shouldn't have to care about.",
+    "By accepting these decisions, you get fast, robust, accessible applications that can be deployed locally, or to any cloud on any platform, and run for 70\u201380% less than traditional apps.",
+    "Use Rastrillo to build apps that embody the CARLOS architecture, and use CARLOS platform (self-hosted, or via Carloku) to deploy them today."
+  ],
+  "links": {
+    "Get started": "/start/",
+    "Learn more": "#architecture",
+    "Read about the architecture": "/attributes/",
+    "Case studies": "/case-studies/"
+  },
+  "notes": [
+    "New prose and comparison stack labels supplied by user, applied verbatim. First long passage split at the sentence boundary into two paragraphs.",
+    "Tool descriptions, three architecture principles, all twelve detailed benefits and case summaries reused from approved live site.",
+    "Cost claim comes from supplied copy; no new measurements or testimonials introduced.",
+    "Requested structure: tools in hero; no duplicate attribute map; combined comparisons before benefits; no pictorial illustrations; no list numbers; case studies expandable by user."
+  ]
+}
