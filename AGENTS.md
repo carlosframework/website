@@ -13,9 +13,10 @@ is adopting CARLOS deliberately and is listed on the site as an adopter,
 not an extraction source — it doesn't count toward the "5 systems" stat. The pages are static and the
 stylesheet (`site.css`) is plain: what a visitor downloads is HTML and CSS,
 with one local script for the AI disclaimer and no third-party resources.
-The disclaimer is an explicit user-requested exception (2026-09-24): show an
-overlay, remember Continue in that browser, and allow reopening it from the
-footer. Keep the rest of the site free of browser JavaScript and bundlers.
+The disclaimer is an explicit user-requested exception (2026-09-24): keep the
+disclosure available from the footer. As of 2026-10-22, it opens only when
+requested; never show it automatically or store an acknowledgement. Keep the
+rest of the site free of browser JavaScript and bundlers.
 Durable product context for design tooling lives in
 `PRODUCT.md`.
 
@@ -59,9 +60,12 @@ person marker.**
 ## Conventions
 
 - **Only the AI disclaimer runs in the browser.** No frameworks, remotely
-  fetched fonts or analytics. Continue saves `carlos.ai-disclaimer.v1` in
-  localStorage; storage failure must never prevent dismissal. With JavaScript
-  disabled, show the disclosure inline and leave the site usable.
+  fetched fonts or analytics. The footer button opens the disclosure on request;
+  Continue and Escape dismiss it and return focus. There is no localStorage
+  acknowledgement. With
+  JavaScript disabled, a collapsed disclosure in the footer provides the same
+  copy. The footer links are shared through `src/_includes/footer.html` and
+  `hack/add-footer.mjs`; page placeholders retain docs source provenance.
   The `/docs` build is a devDependency
   that runs at authoring time; `_site/` is gitignored and never committed.
 - **Light and dark** via `prefers-color-scheme` — keep both working when

@@ -2,7 +2,6 @@
   const dialog = document.getElementById("ai-disclaimer");
   if (!dialog || typeof dialog.showModal !== "function") return;
 
-  const storageKey = "carlos.ai-disclaimer.v1";
   const reopen = document.querySelector("[data-ai-disclaimer-open]");
   let returnFocus;
 
@@ -24,11 +23,6 @@
   });
 
   dialog.querySelector("[data-ai-disclaimer-continue]").addEventListener("click", () => {
-    try {
-      localStorage.setItem(storageKey, "continued");
-    } catch {
-      // Storage can be disabled; Continue must still close the notice.
-    }
     dialog.close();
   });
 
@@ -36,12 +30,4 @@
     reopen.hidden = false;
     reopen.addEventListener("click", show);
   }
-
-  let continued = false;
-  try {
-    continued = localStorage.getItem(storageKey) === "continued";
-  } catch {
-    // Show the notice when this browser cannot save a choice.
-  }
-  if (!continued) show();
 })();
