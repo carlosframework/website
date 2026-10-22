@@ -1,0 +1,380 @@
+[
+  {
+    "id": "nav.overview",
+    "section": "Nav",
+    "label": "Overview",
+    "text": "CARLOS Platform",
+    "context": "Text in the nav section of this page."
+  },
+  {
+    "id": "nav.docs",
+    "section": "Nav",
+    "label": "Docs",
+    "text": "Documentation",
+    "context": "Text in the nav section of this page."
+  },
+  {
+    "id": "nav.selfhost",
+    "section": "Nav",
+    "label": "Selfhost",
+    "text": "Self-host",
+    "context": "Text in the nav section of this page."
+  },
+  {
+    "id": "nav.releases",
+    "section": "Nav",
+    "label": "Releases",
+    "text": "Releases",
+    "context": "Text in the nav section of this page."
+  },
+  {
+    "id": "actions.carloku",
+    "section": "Actions",
+    "label": "Carloku",
+    "text": "Start with Carloku",
+    "context": "Text in the actions section of this page."
+  },
+  {
+    "id": "actions.selfhost",
+    "section": "Actions",
+    "label": "Selfhost",
+    "text": "Self-host CARLOS Platform",
+    "context": "Text in the actions section of this page."
+  },
+  {
+    "id": "hero.title",
+    "section": "Hero",
+    "label": "Title",
+    "text": "CARLOS Platform",
+    "context": "Text in the hero section of this page."
+  },
+  {
+    "id": "hero.intro",
+    "section": "Hero",
+    "label": "Intro",
+    "text": "Deploy apps and static sites on hosted Carloku, or run CARLOS Platform in your own infrastructure.",
+    "context": "Text in the hero section of this page."
+  },
+  {
+    "id": "origin.letter",
+    "section": "Origin",
+    "label": "Letter",
+    "text": "CARLOS Platform is a love-letter to Heroku. Heroku was the best platform as a service and was never beaten for developer experience. CARLOS Platform aims to allow folks the ultimate dream: to get started quickly and easily with a hosted platform like Carloku, but to be able to bring the entire platform into their own infrastructure as needs must.",
+    "context": "Text in the origin section of this page."
+  },
+  {
+    "id": "diagram.title",
+    "section": "Diagram",
+    "label": "Title",
+    "text": "How it runs",
+    "context": "Text in the diagram section of this page."
+  },
+  {
+    "id": "diagram.control.title",
+    "section": "Diagram",
+    "label": "Title",
+    "text": "Console \u00b7 CLI \u00b7 API",
+    "context": "Text in the diagram section of this page."
+  },
+  {
+    "id": "diagram.control.description",
+    "section": "Diagram",
+    "label": "Description",
+    "text": "Manage apps, releases and configuration",
+    "context": "Text in the diagram section of this page."
+  },
+  {
+    "id": "diagram.bucket.title",
+    "section": "Diagram",
+    "label": "Title",
+    "text": "Deployment bucket \u00b7 S3",
+    "context": "Text in the diagram section of this page."
+  },
+  {
+    "id": "diagram.bucket.description",
+    "section": "Diagram",
+    "label": "Description",
+    "text": "Releases, configuration and placement",
+    "context": "Text in the diagram section of this page."
+  },
+  {
+    "id": "diagram.converge",
+    "section": "Diagram",
+    "label": "Converge",
+    "text": "Each regional host reads the deployment configuration",
+    "context": "Text in the diagram section of this page."
+  },
+  {
+    "id": "region0.name",
+    "section": "Region0",
+    "label": "Name",
+    "text": "Region A",
+    "context": "Text in the region0 section of this page."
+  },
+  {
+    "id": "region0.traffic",
+    "section": "Region0",
+    "label": "Traffic",
+    "text": "App requests \u2193",
+    "context": "Text in the region0 section of this page."
+  },
+  {
+    "id": "region0.edge.title",
+    "section": "Region0",
+    "label": "Title",
+    "text": "Regional edge",
+    "context": "Text in the region0 section of this page."
+  },
+  {
+    "id": "region0.edge.description",
+    "section": "Region0",
+    "label": "Description",
+    "text": "TLS certificates and request routing",
+    "context": "Text in the region0 section of this page."
+  },
+  {
+    "id": "region0.tenant1.title",
+    "section": "Region0",
+    "label": "Title",
+    "text": "Tenant instance",
+    "context": "Text in the region0 section of this page."
+  },
+  {
+    "id": "region0.tenant1.description",
+    "section": "Region0",
+    "label": "Description",
+    "text": "App + SQLite",
+    "context": "Text in the region0 section of this page."
+  },
+  {
+    "id": "region0.tenant2.title",
+    "section": "Region0",
+    "label": "Title",
+    "text": "Tenant instance",
+    "context": "Text in the region0 section of this page."
+  },
+  {
+    "id": "region0.tenant2.description",
+    "section": "Region0",
+    "label": "Description",
+    "text": "App + SQLite",
+    "context": "Text in the region0 section of this page."
+  },
+  {
+    "id": "region0.backup",
+    "section": "Region0",
+    "label": "Backup",
+    "text": "\u2193 Litestream streams database changes",
+    "context": "Text in the region0 section of this page."
+  },
+  {
+    "id": "region0.s3.title",
+    "section": "Region0",
+    "label": "Title",
+    "text": "Regional data bucket \u00b7 S3",
+    "context": "Text in the region0 section of this page."
+  },
+  {
+    "id": "region0.s3.description",
+    "section": "Region0",
+    "label": "Description",
+    "text": "Tenant database backups",
+    "context": "Text in the region0 section of this page."
+  },
+  {
+    "id": "region1.name",
+    "section": "Region1",
+    "label": "Name",
+    "text": "Region B",
+    "context": "Text in the region1 section of this page."
+  },
+  {
+    "id": "region1.traffic",
+    "section": "Region1",
+    "label": "Traffic",
+    "text": "App requests \u2193",
+    "context": "Text in the region1 section of this page."
+  },
+  {
+    "id": "region1.edge.title",
+    "section": "Region1",
+    "label": "Title",
+    "text": "Regional edge",
+    "context": "Text in the region1 section of this page."
+  },
+  {
+    "id": "region1.edge.description",
+    "section": "Region1",
+    "label": "Description",
+    "text": "TLS certificates and request routing",
+    "context": "Text in the region1 section of this page."
+  },
+  {
+    "id": "region1.tenant1.title",
+    "section": "Region1",
+    "label": "Title",
+    "text": "Tenant instance",
+    "context": "Text in the region1 section of this page."
+  },
+  {
+    "id": "region1.tenant1.description",
+    "section": "Region1",
+    "label": "Description",
+    "text": "App + SQLite",
+    "context": "Text in the region1 section of this page."
+  },
+  {
+    "id": "region1.tenant2.title",
+    "section": "Region1",
+    "label": "Title",
+    "text": "Tenant instance",
+    "context": "Text in the region1 section of this page."
+  },
+  {
+    "id": "region1.tenant2.description",
+    "section": "Region1",
+    "label": "Description",
+    "text": "App + SQLite",
+    "context": "Text in the region1 section of this page."
+  },
+  {
+    "id": "region1.backup",
+    "section": "Region1",
+    "label": "Backup",
+    "text": "\u2193 Litestream streams database changes",
+    "context": "Text in the region1 section of this page."
+  },
+  {
+    "id": "region1.s3.title",
+    "section": "Region1",
+    "label": "Title",
+    "text": "Regional data bucket \u00b7 S3",
+    "context": "Text in the region1 section of this page."
+  },
+  {
+    "id": "region1.s3.description",
+    "section": "Region1",
+    "label": "Description",
+    "text": "Tenant database backups",
+    "context": "Text in the region1 section of this page."
+  },
+  {
+    "id": "diagram.note",
+    "section": "Diagram",
+    "label": "Note",
+    "text": "App requests go to regional edges. Deployment metadata and tenant backups live in separate buckets.",
+    "context": "Text in the diagram section of this page."
+  },
+  {
+    "id": "ship.title",
+    "section": "Ship",
+    "label": "Title",
+    "text": "Ship",
+    "context": "Text in the ship section of this page."
+  },
+  {
+    "id": "ship.body",
+    "section": "Ship",
+    "label": "Body",
+    "text": "Deploy apps and static sites with signed releases and named channels. Create branch previews, promote through bake windows and approvals, and roll back to an earlier release. Use zero-downtime swaps on configured hosts.",
+    "context": "Text in the ship section of this page."
+  },
+  {
+    "id": "run.title",
+    "section": "Run",
+    "label": "Title",
+    "text": "Run",
+    "context": "Text in the run section of this page."
+  },
+  {
+    "id": "run.body",
+    "section": "Run",
+    "label": "Body",
+    "text": "Place tenant instances by region. Hibernate idle apps and wake them on request. Use one-way read replicas, customer-owned fleets and optional sidecars. Run scheduled jobs and one-off commands.",
+    "context": "Text in the run section of this page."
+  },
+  {
+    "id": "services.title",
+    "section": "Services",
+    "label": "Title",
+    "text": "App services",
+    "context": "Text in the services section of this page."
+  },
+  {
+    "id": "services.body",
+    "section": "Services",
+    "label": "Body",
+    "text": "Custom domains, automatic TLS certificates, secrets, environment configuration and feature flags. Approved object storage with malware scanning, plus email with verified domains and delivery events.",
+    "context": "Text in the services section of this page."
+  },
+  {
+    "id": "operate.title",
+    "section": "Operate",
+    "label": "Title",
+    "text": "Operate",
+    "context": "Text in the operate section of this page."
+  },
+  {
+    "id": "operate.body",
+    "section": "Operate",
+    "label": "Body",
+    "text": "Use scoped credentials for automation. Follow logs, grouped errors, availability and optional cookieless analytics. Roll platform updates out in stages.",
+    "context": "Text in the operate section of this page."
+  },
+  {
+    "id": "data.title",
+    "section": "Data",
+    "label": "Title",
+    "text": "Data",
+    "context": "Text in the data section of this page."
+  },
+  {
+    "id": "data.body",
+    "section": "Data",
+    "label": "Body",
+    "text": "Litestream streams tenant SQLite changes to regional S3 storage. Restore databases or inspect earlier points in time.",
+    "context": "Text in the data section of this page."
+  },
+  {
+    "id": "hosting.title",
+    "section": "Hosting",
+    "label": "Title",
+    "text": "Self-host CARLOS Platform",
+    "context": "Text in the hosting section of this page."
+  },
+  {
+    "id": "hosting.body",
+    "section": "Hosting",
+    "label": "Body",
+    "text": "Run compute on your own infrastructure. Current integrations use AWS S3, SES email and Route 53 steering.",
+    "context": "Text in the hosting section of this page."
+  },
+  {
+    "id": "hosting.guide",
+    "section": "Hosting",
+    "label": "Guide",
+    "text": "Read the self-hosting guide",
+    "context": "Text in the hosting section of this page."
+  },
+  {
+    "id": "more.docs",
+    "section": "More",
+    "label": "Docs",
+    "text": "Platform documentation",
+    "context": "Text in the more section of this page."
+  },
+  {
+    "id": "more.start",
+    "section": "More",
+    "label": "Start",
+    "text": "Get started",
+    "context": "Text in the more section of this page."
+  },
+  {
+    "id": "release.version",
+    "section": "Release",
+    "label": "Version",
+    "text": "Checked against v0.28.9 \u00b7 22 October 2026",
+    "context": "Text in the release section of this page."
+  }
+]

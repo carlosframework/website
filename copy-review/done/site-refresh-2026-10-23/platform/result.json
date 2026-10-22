@@ -1,0 +1,78 @@
+{
+  "action": "approve",
+  "guidance": null,
+  "strings": [
+    {
+      "id": "hero.intro",
+      "text": "Deploy apps and static sites on hosted Carloku, or run CARLOS Platform in your own infrastructure.",
+      "original": "Deploy apps and static sites on hosted Carloku, or run CARLOS Platform in your own infrastructure.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "diagram.note",
+      "text": "App requests go to regional edges. Deployment metadata and tenant backups live in separate buckets.",
+      "original": "App requests go to regional edges. Deployment metadata and tenant backups live in separate buckets.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "ship.body",
+      "text": "Deploy apps and static sites with signed releases and named channels. Create branch previews, promote through bake windows and approvals, and roll back to an earlier release. Use zero-downtime swaps on configured hosts.",
+      "original": "Deploy apps and static sites with signed releases and named channels. Create branch previews, promote through bake windows and approvals, and roll back to an earlier release. Use zero-downtime swaps on configured hosts.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "run.body",
+      "text": "Place tenant instances by region. Hibernate idle apps and wake them on request. Use one-way read replicas, customer-owned fleets and optional sidecars. Run scheduled jobs and one-off commands.",
+      "original": "Place tenant instances by region. Hibernate idle apps and wake them on request. Use one-way read replicas, customer-owned fleets and optional sidecars. Run scheduled jobs and one-off commands.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "services.body",
+      "text": "Custom domains, automatic TLS certificates, secrets, environment configuration and feature flags. Approved object storage with malware scanning, plus email with verified domains and delivery events.",
+      "original": "Custom domains, automatic TLS certificates, secrets, environment configuration and feature flags. Approved object storage with malware scanning, plus email with verified domains and delivery events.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "operate.body",
+      "text": "Use scoped credentials for automation. Follow logs, grouped errors, availability and optional cookieless analytics. Roll platform updates out in stages.",
+      "original": "Use scoped credentials for automation. Follow logs, grouped errors, availability and optional cookieless analytics. Roll platform updates out in stages.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "data.body",
+      "text": "Litestream streams tenant SQLite changes to regional S3 storage. Restore databases or inspect earlier points in time.",
+      "original": "Litestream streams tenant SQLite changes to regional S3 storage. Restore databases or inspect earlier points in time.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "hosting.body",
+      "text": "Run compute on your own infrastructure. Current integrations use AWS S3, SES email and Route 53 steering.",
+      "original": "Run compute on your own infrastructure. Current integrations use AWS S3, SES email and Route 53 steering.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    }
+  ]
+}

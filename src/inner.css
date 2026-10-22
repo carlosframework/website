@@ -1,0 +1,66 @@
+body.inner-page { --page-gutter:0px; }
+.inner-hero { background:radial-gradient(ellipse at 12% 0%,#346e6c55,transparent 55%),radial-gradient(ellipse at 90% 70%,#735d9155,transparent 55%),#101c23; color:#eef5ed; padding:clamp(3rem,7vw,6rem) 0; }
+.inner-hero h1 { font-size:clamp(2.8rem,6vw,5rem);line-height:1.05;letter-spacing:-.045em; }
+.inner-hero .intro { font-size:clamp(1.2rem,2vw,1.5rem);line-height:1.5;max-width:43rem;margin-top:1.4rem;color:#c4d5ce; }
+.inner-hero .eyebrow {font: .8rem var(--mono);letter-spacing:.14em;color:var(--mint);text-transform:uppercase;margin-bottom:1rem;}
+.inner-section {padding:clamp(2.5rem,6vw,4.5rem) 0;background:var(--page);color:var(--ink);border-bottom:1px solid var(--rule);}
+.inner-section.alt {background:var(--page-alt);}
+.inner-section h2 {font-size:clamp(1.6rem,3vw,2.3rem);line-height:1.2;letter-spacing:-.025em;}
+.inner-section h3 {font-size:1.25rem;line-height:1.3;}
+.inner-section p {color:var(--muted);max-width:50rem;margin-top:1rem;}
+.local-nav {display:flex;gap:1.5rem;flex-wrap:wrap;padding-block:1rem;border-bottom:1px solid #ffffff24;font-size:.9rem;}
+.local-nav a {color:#b9d7cd;}
+.hero-actions {display:flex;flex-wrap:wrap;align-items:center;gap:1.5rem;margin-top:2rem;}
+.hero-actions a {color:var(--mint);font-weight:600;}
+.hero-actions .primary {background:var(--lime);color:#142823;border-radius:999px;padding:.8rem 1.35rem;text-decoration:none;}
+.love-letter {font-size:1.15rem;line-height:1.8;border-left:3px solid var(--lavender);padding-left:1.5rem;max-width:50rem;}
+.trust-table {width:100%;border-collapse:collapse;margin-top:2rem;text-align:left;}
+.trust-table th {font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:500;padding:0 1rem 1rem;}
+.trust-table td {padding:1.25rem 1rem;vertical-align:top;border-top:1px solid var(--rule);}
+.trust-table td:first-child {font:600 1.2rem var(--mono);color:var(--accent);width:6rem;}
+.trust-table td:nth-child(2) {font-weight:650;width:15rem;}
+.trust-table td:nth-child(3) {color:var(--muted);}
+.note {font-size:.9rem;}
+.trust-extras {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2.5rem;}
+.trust-extras article {border-top:3px solid var(--accent);padding-top:1.2rem;}
+.trust-extras article:nth-child(2) {border-color:var(--lavender);}
+.trust-extras article:nth-child(3) {border-color:#86badf;}
+.platform-diagram {margin-top:2rem;display:grid;gap:1rem;}
+.control-lane {display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1rem;}
+.diagram-box {padding:1.2rem;text-align:center;border:1px solid var(--rule);border-radius:8px;background:var(--page-alt);}
+.diagram-box strong {display:block;font-size:1.05rem;}
+.diagram-box small {display:block;margin-top:.35rem;color:var(--muted);line-height:1.4;}
+.diagram-arrow {color:var(--accent);text-align:center;font-size:1.5rem;}
+.diagram-route {border-block:1px dashed var(--rule);padding:.7rem;text-align:center;color:var(--muted);font: .8rem var(--mono);}
+.regions {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2rem;}
+.region {border-top:3px solid var(--mint);padding:1.3rem 0 0;}
+.region:nth-child(2) {border-color:var(--lavender);}
+.region h3 {margin-bottom:1rem;}
+.region-flow {display:grid;gap:.65rem;}
+.tenants {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem;}
+.tenants .diagram-box {border-color:color-mix(in srgb,var(--accent) 45%,transparent);}
+.database {background:color-mix(in srgb,var(--accent) 10%,var(--page));}
+.feature-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3rem;margin-top:2rem;}
+.feature-grid article {padding-top:1.2rem;border-top:2px solid var(--accent);}
+.feature-grid article:nth-child(even) {border-color:var(--lavender);}
+.feature-grid p {max-width:40rem;}
+.release-note {font: .85rem var(--mono);margin-top:2rem!important;}
+.start-tabs {position:relative;}
+.tab-buttons {display:flex;gap:2.25rem;border-bottom:1px solid var(--rule);margin-bottom:2.5rem;}
+.tab-buttons button {font:600 1.1rem var(--sans);padding:.4rem 0 1rem;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--muted);cursor:pointer;}
+.tab-buttons button[aria-selected=true] {border-bottom-color:var(--accent);color:var(--ink);}
+[hidden] {display:none!important;}
+.code-wrap {position:relative;margin:1.25rem 0 2rem;}
+.code-wrap pre {padding:1.5rem;padding-right:5rem;border-left:3px solid var(--accent);background:var(--page-alt);white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7;font: .95rem/1.7 var(--mono);color:var(--ink);margin:0;}
+.copy-button {position:absolute;right:.75rem;top:.75rem;border:1px solid var(--rule);border-radius:5px;background:var(--page);color:var(--ink);font: .8rem var(--sans);padding:.45rem .65rem;cursor:pointer;}
+.hand-steps {max-width:58rem;}
+.hand-steps h3 {margin-top:2.3rem;}
+.hand-steps a {font-weight:600;}
+@media(max-width:700px){.regions,.feature-grid,.trust-extras {grid-template-columns:1fr;}.control-lane{grid-template-columns:1fr;}.control-lane>.diagram-arrow{transform:rotate(90deg);}.trust-table thead{display:none;}.trust-table tr{display:grid;grid-template-columns:5rem 1fr;padding-block:1rem;border-top:1px solid var(--rule);}.trust-table td{padding:.3rem .5rem;border:0;width:auto!important;}.trust-table td:nth-child(3){grid-column:2;}.code-wrap pre{font-size:.8rem;padding:3.5rem 1rem 1rem;}.inner-hero h1{font-size:2.8rem;}.local-nav{gap:1.1rem}.love-letter{font-size:1.05rem;}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;}}
+
+.tab-buttons label {position:relative;font:600 1.1rem var(--sans);padding:.4rem 0 1rem;border-bottom:3px solid transparent;color:var(--muted);cursor:pointer;}
+.tab-buttons input {position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden;}
+.tab-buttons label:has(input:checked) {border-bottom-color:var(--accent);color:var(--ink);}
+.tab-buttons label:has(input:focus-visible) {outline:3px solid var(--focus);outline-offset:5px;border-radius:3px;}
+.start-tabs:has(#choose-agent:checked) #panel-hand,.start-tabs:has(#choose-hand:checked) #panel-agent {display:none;}

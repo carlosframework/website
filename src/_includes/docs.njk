@@ -39,14 +39,14 @@
   <nav aria-label="Site">
     <a href="/apps/">Apps</a>
     <a href="/trust/">Trust</a>
-    <a href="/platform/">Platform</a>
-    <a href="/docs/" aria-current="page">Docs</a>
+    <a href="/platform/" aria-current="true">Platform</a>
     <a href="/start/">Get started</a>
   </nav>
 </header>
 
 <div class="docs-shell">
   <nav class="docs-nav" aria-label="Documentation">
+    <p class="docs-nav-title"><a href="/platform/">CARLOS Platform</a></p>
     <p class="docs-nav-title"><a href="/docs/"{% if isIndex %} class="active" aria-current="page"{% endif %}>Documentation</a></p>
     {% for section in docsnav.sections %}
     <p class="docs-nav-section">{{ section.title }}</p>

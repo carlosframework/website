@@ -1,0 +1,104 @@
+/* CARLOS apps page: compact heading and card grid. Builds on /home.css tokens. */
+
+body.apps-page { --page-gutter: 0px; }
+
+.apps-main { display: block; }
+
+.apps-cards {
+  background: var(--page);
+  color: var(--ink);
+  padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(3rem, 7vw, 5.5rem);
+}
+
+.apps-intro { margin-bottom: clamp(1.75rem, 4vw, 2.75rem); max-width: 46rem; }
+.apps-intro h1 {
+  font-size: clamp(2.25rem, 1.65rem + 2.2vw, 3rem);
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.apps-intro p { margin-top: 1rem; font-size: 1.125rem; line-height: 1.55; color: var(--muted); }
+
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.app-card {
+  --tone: #82c9b5;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--tone) calc(var(--card-tint) * 100%), transparent), transparent 55%),
+    var(--page-alt);
+  transition: border-color 0.2s, transform 0.2s;
+}
+.app-card::before {
+  content: "";
+  height: 3px;
+  flex: none;
+  background: var(--tone);
+}
+.app-card:hover { border-color: color-mix(in srgb, var(--tone) 55%, var(--rule)); transform: translateY(-2px); }
+.app-card:nth-child(6n+1) { --tone: #82c9b5; }
+.app-card:nth-child(6n+2) { --tone: #b5a0d0; }
+.app-card:nth-child(6n+3) { --tone: #c8ef8b; }
+.app-card:nth-child(6n+4) { --tone: #86badf; }
+.app-card:nth-child(6n+5) { --tone: #e3a07c; }
+.app-card:nth-child(6n+6) { --tone: #dc9cc4; }
+@media (prefers-color-scheme: light) {
+  .app-card:nth-child(6n+1) { --tone: #1f7a66; }
+  .app-card:nth-child(6n+2) { --tone: #7b5a91; }
+  .app-card:nth-child(6n+3) { --tone: #5f7a1d; }
+  .app-card:nth-child(6n+4) { --tone: #326c91; }
+  .app-card:nth-child(6n+5) { --tone: #a4572f; }
+  .app-card:nth-child(6n+6) { --tone: #9a4f7b; }
+}
+
+.app-body { flex: 1 1 auto; padding: 1.25rem 1.35rem 1.1rem; }
+.app-card h2 { font-size: 1.1875rem; line-height: 1.3; font-weight: 650; color: var(--ink); }
+.app-card p { margin-top: 0.5rem; color: var(--muted); font-size: 1rem; line-height: 1.55; }
+
+.app-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 1.25rem;
+  min-height: 3.25rem;
+  padding: 0.75rem 1.35rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.9375rem;
+}
+.app-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--link);
+  font-weight: 600;
+  text-decoration: none;
+}
+.app-links a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+.app-links svg { width: 14px; height: 14px; flex: none; transition: transform 0.2s; }
+.app-links a:hover svg { transform: translate(2px, -2px); }
+
+@media (max-width: 960px) { .app-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 620px) { .app-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) {
+  .app-card, .app-links svg { transition: none; }
+  .app-card:hover { transform: none; }
+}
+
+.app-brand { display:flex; align-items:center; gap:1rem; min-height:60px; margin-bottom:1rem; }
+.app-logo { width:56px; height:56px; flex:none; display:flex; align-items:center; justify-content:center; background:#fff; border-radius:10px; padding:7px; }
+.app-logo img { display:block; width:100%; height:100%; object-fit:contain; }
+.wordmark-logo { width:110px; padding:12px; }

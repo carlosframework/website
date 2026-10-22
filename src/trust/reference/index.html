@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101c23">
+<title>CARLOS. Trust classes</title>
+<meta name="description" content="Six trust classes, S to C. Pick one, declare what your host can see, get placed accordingly.">
+<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
+<meta property="og:title" content="CARLOS. Trust classes">
+<meta property="og:description" content="Six trust classes, S to C. Pick one, declare what your host can see, get placed accordingly.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://carlosframework.com/trust/reference/">
+<link rel="stylesheet" href="/site.css?v=0">
+<link rel="stylesheet" href="/header.css?v=0">
+</head>
+<body>
+
+<header class="masthead">
+  <a class="mark" href="/"><svg class="wordmark" viewBox="11 11 499 118" width="79" height="18" fill="none" stroke="currentColor" stroke-width="18" role="img" aria-label="CARLOS"><path transform="translate(0,0)" d="M77,44 A20,20 0 0 0 57,24 H43 A20,20 0 0 0 23,44 V96 A20,20 0 0 0 43,116 H57 A20,20 0 0 0 77,96"/><path transform="translate(86,0)" d="M25,117 L45,23 H55 L75,117 M33,80 H67"/><path transform="translate(172,0)" d="M23,117 V23 H53 A23,23 0 0 1 53,69 H23 M50,69 L77,117"/><path transform="translate(258,0)" d="M23,23 V117 H77"/><path transform="translate(335,0)" d="M23,44 A20,20 0 0 1 43,24 H57 A20,20 0 0 1 77,44 V96 A20,20 0 0 1 57,116 H43 A20,20 0 0 1 23,96 Z"/><path transform="translate(421,0)" d="M77,39 A16,16 0 0 0 61,23 H39 A16,16 0 0 0 23,39 V54 A16,16 0 0 0 39,70 H61 A16,16 0 0 1 77,86 V101 A16,16 0 0 1 61,117 H39 A16,16 0 0 1 23,101 V98"/></svg></a>
+  <nav aria-label="Site">
+    <a href="/apps/">Apps</a>
+    <a href="/trust/" aria-current="true">Trust</a>
+    <a href="/platform/">Platform</a>
+    <a href="/start/">Get started</a>
+  </nav>
+</header>
+
+<div class="hero compact">
+  <p class="kicker">Trust classes</p>
+  <h1>Know what a host <span class="rise">can see</span>.</h1>
+  <p class="lede">Pick a class up front. Declare what the host is left holding. Get placed where that's allowed. CARLOS doesn't choose your posture; it makes you say it out loud.</p>
+  <p class="robot">🤖 That's <a href="https://11factor.org/#x">factor X</a> for AI-slop lines you'll spot across this site.</p>
+</div>
+
+<main>
+
+<section id="classes">
+  <div class="head">
+    <h2>The six classes</h2>
+    <p class="standfirst">Ordered <code>S ≤ A &lt; B &lt; C</code>. The A variants are flavours of A, not grades.</p>
+  </div>
+
+  <div class="classes">
+    <div class="class" data-g="s">
+      <span class="grade">S</span>
+      <span class="name">Stateless</span>
+      <span class="what">Holds no user data at all: a static file tree, or a binary with no persistent user state. There is nothing for a host to see.
+        <span class="who">carlosframework.com · rastrillo.org · carloku.com</span></span>
+    </div>
+    <div class="class" data-g="a">
+      <span class="grade">A1</span>
+      <span class="name">Host-blind</span>
+      <span class="what">Keys live on the user's own devices; the instance never holds one that opens user content. The only residue is transport shape: who connects when, object sizes, timing. No content-derived identifiers at rest.
+        <span class="who">Slopbox — padded fixed-size blobs, encrypted filenames</span></span>
+    </div>
+    <div class="class" data-g="a">
+      <span class="grade">A2</span>
+      <span class="name">Host-blind, declared residue</span>
+      <span class="what">Content sealed as in A1, plus an enumerated application-level residue that the app publishes in the open. An undeclared plaintext surface is a class violation regardless of intent, because the declaration is what makes the class auditable.
+        <span class="who">Keymail — routing headers · Kass — log timestamps · Eleven — thread membership · Woodstar</span></span>
+    </div>
+    <div class="class" data-g="a">
+      <span class="grade">A/pub</span>
+      <span class="name">Public by design</span>
+      <span class="what">A host-blind app whose plaintext surfaces are public on purpose, listed one by one. A box hosting public posts learns nothing a browser would not.
+        <span class="who">Woodstar — public posts; blobs and direct messages stay sealed</span></span>
+    </div>
+    <div class="class" data-g="b">
+      <span class="grade">B</span>
+      <span class="name">Sealed single-tenant</span>
+      <span class="what">Sealed everywhere it rests outside the live process: parked database, replica, blobs. The running instance holds a key in memory while awake, because unattended automation requires plaintext. A cold artifact leak yields nothing; a live-host compromise yields data.
+        <span class="who">an internal finance ledger, one instance per team</span></span>
+    </div>
+    <div class="class" data-g="c">
+      <span class="grade">C</span>
+      <span class="name">Host-sighted</span>
+      <span class="what">Plaintext at rest as a deliberate, recorded decision: support visibility, SQL over personal data, payments. Confidentiality rests on operator policy and tenant isolation rather than on mathematics, and stated plainly rather than implied quietly.
+        <span class="who">Tito — the defining example</span></span>
+    </div>
+  </div>
+</section>
+
+<section id="placement">
+  <div class="head">
+    <h2>Placement follows the class</h2>
+    <p class="standfirst">Nothing that sees gets placed where nobody is accountable for seeing.</p>
+  </div>
+  <div class="prose">
+    <p>Hosts rank by who controls the box. A workload runs only where the host is trusted enough for its class: C never lands on a shared pool; A can go anywhere, because there's nothing on it to see.</p>
+    <p>The class belongs to a workload, not a product. An E2EE app with an automation sidecar is two answers: the app is A, the sidecar is B, and each is placed on its own terms.</p>
+    <p>A declaration names the workload, its class, every plaintext surface, and where the keys live. Then the CARLOS test: <em>publish the database and see what leaks</em>. A leaks its declared residue and nothing more. B's cold copy leaks nothing. C leaks the data, and said so up front.</p>
+    <p>Examples show classes, not adoption. Nothing is certified against an external standard yet. What auditors get is a declaration they can test, not a paragraph they have to believe.</p>
+  </div>
+</section>
+
+
+<section id="licensing">
+  <div class="head">
+    <h2>Licensing is the other axis</h2>
+    <p class="standfirst">A trust class says what a host can see. A licence class says what a customer can do with the code. CARLOS doesn't dictate: you choose.</p>
+  </div>
+  <div class="classes lic">
+    <div class="class" data-l="l1">
+      <span class="grade">L1</span>
+      <span class="name">Libre</span>
+      <span class="what">Free as in freedom and free of charge. Anyone may run, change and redistribute it. The operator earns from hosting or support, or not at all.
+        <span class="who">amadan · the framework and this site</span></span>
+    </div>
+    <div class="class" data-l="l2">
+      <span class="grade">L2</span>
+      <span class="name">Source-available, commercial</span>
+      <span class="what">You can read it and self-host it; commercial use or redistribution needs a licence from the author.
+        <span class="who">Slopbox · Eleven as intended (its repository carries MPL-2.0 today)</span></span>
+    </div>
+    <div class="class" data-l="l3">
+      <span class="grade">L3</span>
+      <span class="name">Open source, with a hosted offering</span>
+      <span class="what">Fully open, and the author also runs it for you. The hosted service is the product; the code is the guarantee you can leave.
+        <span class="who">Oficina, as intended</span></span>
+    </div>
+    <div class="class" data-l="l4">
+      <span class="grade">L4</span>
+      <span class="name">Closed source, hosted only</span>
+      <span class="what">The author runs it and does not ship the code. Ownership for the customer means their instance, their data and their trust class, not the software.
+        <span class="who">a conventional SaaS moving onto CARLOS</span></span>
+    </div>
+    <div class="class" data-l="l5">
+      <span class="grade">L5</span>
+      <span class="name">Closed source, hosted and on-prem</span>
+      <span class="what">The author ships a binary the customer may run on their own boxes under licence, and also hosts it. One codebase, every deployment mode. Like status-quo SaaS, but better.
+        <span class="who">Tito · Jelly, in development</span></span>
+    </div>
+  </div>
+  <p class="note" style="margin-top:1.75rem">The two axes are independent. An L5 app can be class A; an L1 app can be class C. A gallery entry names both, or says which has not been published yet.</p>
+</section>
+
+
+<section id="remix">
+  <div class="head">
+    <h2>Remixability is the third</h2>
+    <p class="standfirst">Trust says what a host can see. Licence says what a customer may do. Remixability says what an agent, or a person with a fork, <em>can</em> actually do today. Three flags, each yes or no.</p>
+  </div>
+  <div class="classes remix">
+    <div class="class" data-r="fork">
+      <span class="grade">R·fork</span>
+      <span class="name">Forkable</span>
+      <span class="what">The source is available and a fork that stays close to upstream keeps working with the shared glue: sign-on, the edge, hibernation, the trust class, push notifications, integrations. Drift far enough and you are on your own, which is fair.
+        <span class="who">follows from the licence: L1 to L3 yes, L4 and L5 no</span></span>
+    </div>
+    <div class="class" data-r="drive">
+      <span class="grade">R·drive</span>
+      <span class="name">Agent-driveable</span>
+      <span class="what">The app opts actions in as typed tools, so an agent reaches the same handler a person does, through the same middleware, with a confirmation sentence on every write. The framework provides this; the app has to switch it on.
+        <span class="who">the model supports it; no app has published tools yet</span></span>
+    </div>
+    <div class="class" data-r="build">
+      <span class="grade">R·build</span>
+      <span class="name">Agent-rebuildable</span>
+      <span class="what">The app publishes a skill at its well-known URL, so an agent can fork it, change it and redeploy it without a person reading the code first. The framework publishes two skills; each app owes its own.
+        <span class="who">the model supports it; no app has published a skill yet</span></span>
+    </div>
+  </div>
+  <p class="note" style="margin-top:1.75rem">All three are possible for every app in the family, because every app has the same shape. The gallery records which ones have done it, not which ones could.</p>
+</section>
+
+<section class="close">
+  <h2>See who declares what</h2>
+  <p class="standfirst">Every app in the gallery carries its class, or admits it hasn't published one.</p>
+  <div class="actions">
+    <a class="btn primary" href="/apps/">Browse the apps</a>
+    <a class="btn ghost" href="/letters/#secure">The Secure letter</a>
+  </div>
+</section>
+
+</main>
+
+<footer></footer>
+
+</body>
+</html>

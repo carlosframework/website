@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <title>Kass — a dumbbell with a padlock</title>
+  <rect width="1024" height="1024" rx="224" fill="#19433b"/>
+  <g fill="#e8f4c5">
+    <rect x="156" y="395" width="64" height="234" rx="26"/>
+    <rect x="240" y="307" width="102" height="410" rx="32"/>
+    <rect x="330" y="474" width="364" height="76" rx="18"/>
+    <rect x="682" y="307" width="102" height="410" rx="32"/>
+    <rect x="804" y="395" width="64" height="234" rx="26"/>
+  </g>
+  <path d="M444 508v-82a68 68 0 0 1 136 0v82" fill="none" stroke="#19433b" stroke-width="76"/>
+  <path d="M444 508v-82a68 68 0 0 1 136 0v82" fill="none" stroke="#fff" stroke-width="40"/>
+  <rect x="410" y="484" width="204" height="176" rx="36" fill="#19433b" stroke="#19433b" stroke-width="30"/>
+  <rect x="410" y="484" width="204" height="176" rx="36" fill="#fff"/>
+  <circle cx="512" cy="550" r="20" fill="#19433b"/>
+  <path d="M503 556h18l7 45h-32z" fill="#19433b"/>
+</svg>
