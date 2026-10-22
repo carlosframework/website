@@ -878,3 +878,77 @@ body.landing .attribute-map a{min-height:4rem}
 }
 
 .ai-disclaimer-fallback { background: var(--surface); color: var(--ink); }
+
+/* Architecture-first homepage. Letter cells share a baseline; L has a narrower
+   advance so its blank right side does not widen the gap before O. */
+.hero {
+  display: grid;
+  align-items: center;
+  min-height: calc(100svh - 79px);
+  padding-block: clamp(3rem, 6vh, 6rem);
+}
+.hero-grid { width: 100%; max-width: var(--wrap); grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; }
+.hero-copy { padding-top: 0; }
+.hero-wordmark { aspect-ratio: 499 / 118; column-gap: 1.6032%; }
+.hero-tools { display: grid; gap: 1rem; }
+.hero .hero-tool {
+  display: block;
+  padding: 1.6rem 1.8rem;
+  border: 1px solid #82c9b540;
+  border-radius: 12px;
+  background: #15272dd9;
+  color: var(--cream);
+  text-decoration: none;
+}
+.hero .hero-tool.framework { border-color: #b5a0d040; background: #272538cf; }
+.hero .hero-tool.platform { border-color: #86badf40; background: #192c3bcf; }
+.hero-tool h2 { margin: 0 0 0.5rem; font-size: 1.4rem; line-height: 1.3; letter-spacing: -0.02em; }
+.hero-tool h2 span { color: var(--mint); margin-left: 0.3em; }
+.hero-tool.framework h2 span { color: var(--lavender); }
+.hero-tool.platform h2 span { color: #86badf; }
+.hero .hero-tool h2 a { color: inherit; text-decoration: none; }
+.hero-tool p { color: var(--cream-dim); font-size: 1rem; line-height: 1.5; max-width: none; }
+a.hero-tool:hover h2, .hero-tool h2 a:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+.hero-tool-actions { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin-top: 0.8rem; }
+.hero .hero-tool-actions a { color: #b9dcef; font-size: 0.9375rem; min-height: 2.75rem; display: inline-flex; align-items: center; }
+.architecture-intro { padding-block: clamp(3rem, 6vw, 5rem); text-align: left; scroll-margin-top: 1rem; }
+.architecture-copy { max-width: 48rem; margin-inline: auto; }
+.architecture-intro h2 { max-width: none; margin: 0 0 2rem; font-size: clamp(1.8rem, 3vw, 2.6rem); line-height: 1.25; }
+.architecture-intro h2 em { color: var(--accent); }
+.architecture-intro p { margin: 0 0 1.5rem; font-size: clamp(1rem, 1.5vw, 1.2rem); line-height: 1.75; }
+.architecture-intro .architecture-link { display: inline-flex; align-items: center; gap: 0.6rem; min-height: 2.75rem; margin: 0 0 2rem; font-weight: 600; }
+.architecture-intro p:last-child { margin-bottom: 0; }
+.architecture-principles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; list-style: none; padding: 0; margin: 0 0 3.5rem!important; }
+.architecture-principles h3 { font-size: 1.2rem; margin: 0 0 0.75rem; line-height: 1.3; }
+.architecture-principles p { color: var(--muted); font-size: 1rem; line-height: 1.6; }
+.stack-example { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--rule); }
+.stack-example h3 { font-size: clamp(1.3rem, 2vw, 1.7rem); line-height: 1.3; margin: 0 0 1.5rem; }
+.stack-comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1.5rem, 5vw, 4rem); align-items: start; }
+.stack-comparison h4 { color: var(--muted); font-size: 0.9375rem; line-height: 1.4; font-weight: 600; margin: 0 0 1rem; }
+.stack-after h4 { color: var(--accent); }
+.stack-list { display: grid; gap: 0.5rem; list-style: none; padding: 0; margin: 0; }
+.stack-list li { padding: 0.7rem 1rem; background: color-mix(in srgb, var(--ink) 4%, var(--page)); border-left: 2px solid var(--rule); font-size: 0.95rem; line-height: 1.5; }
+.stack-after .stack-list li { border-left-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--page)); }
+.proof-section .chapter-heading h2 a { color: inherit; text-decoration: none; }
+.proof-section .chapter-heading h2 a:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+.case-studies-page .case-studies-content { min-height: calc(100svh - 79px); --section-texture: url('/home-textures/waves.svg'); }
+.case-studies-content h1 { font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1.15; margin: 0 0 3rem; }
+.case-study { max-width: 48rem; padding: 2.5rem 0; border-top: 1px solid var(--rule); scroll-margin-top: 2rem; }
+.case-study h2 { color: var(--accent); margin-bottom: 0.75rem; }
+.case-study h3 { font-size: 1.25rem; margin-bottom: 1rem; }
+.case-study p { color: var(--muted); font-size: 1.125rem; line-height: 1.75; margin-bottom: 1rem; }
+@media (max-width: 1000px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .hero-tools { max-width: 650px; width: 100%; }
+}
+@media (max-width: 850px) { .hero { min-height: calc(100svh - 67px); } }
+@media (max-width: 700px) {
+  .architecture-principles { grid-template-columns: 1fr; gap: 1.5rem; }
+  .stack-comparison { gap: 1.25rem; }
+  .stack-list li { padding: 0.65rem 0.75rem; font-size: 0.875rem; }
+}
+@media (max-width: 500px) {
+  .hero { min-height: calc(100svh - 99px); }
+  .hero .hero-tool { padding: 1.3rem; }
+}
+@media (max-width: 420px) { .stack-comparison { grid-template-columns: 1fr; gap: 1.5rem; } }
