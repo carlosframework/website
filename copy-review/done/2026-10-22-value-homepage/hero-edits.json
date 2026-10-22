@@ -1,0 +1,9 @@
+{
+  "hero.title": "An opinionated framework for building and shipping the web apps of the future.",
+  "delivery.title": "Speed",
+  "delivery.body": "Faster to build, deploy, and run",
+  "cost.title": "Value",
+  "cost.body": "Better cost:performance, lower overall costs, reduced carbon footprint",
+  "control.title": "Control",
+  "control.body": "Control data and compute residency, build truly local services"
+}
