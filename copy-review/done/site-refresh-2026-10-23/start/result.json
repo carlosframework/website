@@ -1,0 +1,78 @@
+{
+  "action": "approve",
+  "guidance": null,
+  "strings": [
+    {
+      "id": "hero.intro",
+      "text": "Build with your agent, or deploy a sample app yourself.",
+      "original": "Build with your agent, or deploy a sample app yourself.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "agent.heading",
+      "text": "Copy this prompt into your coding agent",
+      "original": "Copy this prompt into your coding agent",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "agent.prompt",
+      "text": "Build [describe your app] using CARLOS principles and Rastrillo.\n\nRead https://github.com/carlosframework/skills/blob/main/skills/getting-started/SKILL.md and https://rastrillo.org/SKILL.md first.\n\nI want to deploy to carloku.com. Help me connect my account, then build, test and deploy the app. Use the current installation commands in rastrillo.org/SKILL.md.",
+      "original": "Build [describe your app] using CARLOS principles and Rastrillo.\n\nRead https://github.com/carlosframework/skills/blob/main/skills/getting-started/SKILL.md and https://rastrillo.org/SKILL.md first.\n\nI want to deploy to carloku.com. Help me connect my account, then build, test and deploy the app. Use the current installation commands in rastrillo.org/SKILL.md.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "hand.prerequisites",
+      "text": "You need Git, Go 1.26 or later, and the CARLOS command-line tool.",
+      "original": "You need Git, Go 1.26 or later, and the CARLOS command-line tool.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "sample.commands",
+      "text": "git clone --depth 1 https://amadan.net/rastrillo/rastrillo\ncd rastrillo/examples/notes\ngo test ./...\nGOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -o notes-linux-arm64 ./cmd/notes",
+      "original": "git clone --depth 1 https://amadan.net/rastrillo/rastrillo\ncd rastrillo/examples/notes\ngo test ./...\nGOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -o notes-linux-arm64 ./cmd/notes",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "account.commands",
+      "text": "carlos auth login --console https://console.carloku.com\ncarlos auth whoami\ncarlos apps create --app notes",
+      "original": "carlos auth login --console https://console.carloku.com\ncarlos auth whoami\ncarlos apps create --app notes",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "account.help",
+      "text": "Approve the sign-in code in your browser. Replace YOUR_ACCOUNT_ID below with the account short ID printed by whoami.",
+      "original": "Approve the sign-in code in your browser. Replace YOUR_ACCOUNT_ID below with the account short ID printed by whoami.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "deploy.commands",
+      "text": "carlos instances enable --app notes\ncarlos instances create --app notes --host notes.YOUR_ACCOUNT_ID.oncarlos.com --channel edge\ncarlos env set --app notes NOTES_ORIGIN=https://notes.YOUR_ACCOUNT_ID.oncarlos.com\ncarlos deploy --app notes ./notes-linux-arm64",
+      "original": "carlos instances enable --app notes\ncarlos instances create --app notes --host notes.YOUR_ACCOUNT_ID.oncarlos.com --channel edge\ncarlos env set --app notes NOTES_ORIGIN=https://notes.YOUR_ACCOUNT_ID.oncarlos.com\ncarlos deploy --app notes ./notes-linux-arm64",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    }
+  ]
+}

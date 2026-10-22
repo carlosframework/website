@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <!-- Amadan logo: a dunce cap on git-branch legs. Source of truth for
+       the mark is assets/logo/ on the main branch; this copy is embedded
+       in the hub binary and adapts to the viewer's color scheme (the
+       presentation attributes are the light palette, so the mark
+       degrades to light colors wherever the style block is ignored). -->
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .lane { stroke: #EDE4D3; }
+      .open { fill: #3E332A; }
+    }
+  </style>
+  <g transform="rotate(-5 128 170)">
+    <path d="M128 22 C114 66 82 138 66 172 A62 14 0 0 0 190 172 C174 138 142 66 128 22 Z"
+          fill="#F6EFDF" stroke="#3A2E25" stroke-width="6" stroke-linejoin="round"/>
+    <ellipse class="open" cx="128" cy="172" rx="62" ry="14" fill="#E7DCC2" stroke="#3A2E25" stroke-width="6"/>
+    <!-- The scrawl: a "/" — the separator in a repo path, and the fada
+         amadán loses when it becomes amadan. -->
+    <path d="M111 138 L135 100" stroke="#C9502E" stroke-width="9" stroke-linecap="round" fill="none"/>
+  </g>
+  <g class="lane" stroke="#3A2E25" fill="none" stroke-linecap="round">
+    <path d="M96 165 C87 192 74 204 62 212" stroke-width="8"/>
+    <path d="M80 196 C78 208 77 216 76 223" stroke-width="6"/>
+    <path d="M112 162 C108 190 105 208 103 224" stroke-width="8"/>
+    <path d="M128 160 L128 226" stroke-width="8"/>
+    <path d="M144 159 C149 190 152 208 154 224" stroke-width="8"/>
+    <path d="M160 159 C169 186 182 198 194 206" stroke-width="8"/>
+    <path d="M176 190 C179 202 180 212 181 220" stroke-width="6"/>
+  </g>
+  <g fill="#C9502E">
+    <circle cx="62" cy="212" r="7"/>
+    <circle cx="80" cy="196" r="5.5"/>
+    <circle cx="76" cy="223" r="6"/>
+    <circle cx="103" cy="224" r="7"/>
+    <circle cx="128" cy="226" r="7"/>
+    <circle cx="154" cy="224" r="7"/>
+    <circle cx="194" cy="206" r="7"/>
+    <circle cx="176" cy="190" r="5.5"/>
+    <circle cx="181" cy="220" r="6"/>
+  </g>
+</svg>

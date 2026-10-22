@@ -15,7 +15,7 @@ Everything an agent needs, in the order it is needed. The skills below carry the
 3. Rastrillo, the web framework. Its [SKILL.md](https://raw.githubusercontent.com/rastrilloorg/rastrillo/main/SKILL.md) is the app story, read in full before writing code (mirror of amadan.net/rastrillo/rastrillo). [Topic docs](https://rastrillo.org/docs/), each page also served as markdown at /docs/<page>.md. Install: `go install amadan.net/rastrillo/rastrillo/cmd/rastrillo@latest` (Go 1.25+).
 4. amadan, where the code lives. [House rules for agents](https://amadan.net/docs/-/agent-skill.md), or `amadan agent skill -install`; [getting started](https://amadan.net/docs/getting-started.md); [CI](https://amadan.net/docs/ci.md), which runs only once a runner serves the repo (runners are unsandboxed by default; getting-started says how to run one safely); [the CLI](https://amadan.net/docs/cli.md); [amadan's own llms.txt](https://amadan.net/llms.txt).
 5. Carloku, the hosted platform. [The console](https://console.carloku.com). The `carlos` CLI: [binaries and checksums](https://github.com/carlosframework/releases), and [every command](https://carlosframework.com/docs/cli.md).
-6. Trust classes, for declaring what the host can see: [the classes](https://carlosframework.com/trust/).
+6. Trust classes, for declaring what the host can see: [the classes](https://carlosframework.com/trust/reference/).
 
 Every docs page below is served as plain markdown at the listed URL; the same page rendered for people is the URL without the `.md`.
 {% for section in docsnav.sections %}

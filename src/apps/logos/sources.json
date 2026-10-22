@@ -1,0 +1,54 @@
+[
+  {
+    "app": "eleven",
+    "source": "https://elevenmessenger.com/assets/icon_128.png",
+    "file": "eleven.png"
+  },
+  {
+    "app": "keymail",
+    "source": "https://keymail.dev/static/apple-touch-icon.png",
+    "file": "keymail.png"
+  },
+  {
+    "app": "woodstar",
+    "source": "https://woodstar.app/logo.svg?v=2",
+    "file": "woodstar.svg"
+  },
+  {
+    "app": "kass",
+    "source": "https://home.kass.training/icon.svg",
+    "file": "kass.svg"
+  },
+  {
+    "app": "slopbox",
+    "source": "https://slopbox.cloud/icon.png",
+    "file": "slopbox.png"
+  },
+  {
+    "app": "amadan",
+    "source": "https://amadan.net/static/871f3e64c9a1/img/amadan-logo.svg",
+    "file": "amadan.svg"
+  },
+  {
+    "app": "cribado",
+    "source": "https://cribado.report/favicon.svg",
+    "file": "cribado.svg"
+  },
+  {
+    "app": "oficina",
+    "source": "https://oficina.works/static/brand/icon.svg?v=bba6f83f78733b36",
+    "file": "oficina.svg"
+  },
+  {
+    "app": "tito",
+    "source": "https://ti.to/home",
+    "file": "tito.svg",
+    "note": "Official inline header wordmark, extracted without geometry changes."
+  },
+  {
+    "app": "jelly",
+    "source": "https://letsjelly.com",
+    "file": "jelly.svg",
+    "note": "Official inline header wordmark, extracted without geometry changes."
+  }
+]

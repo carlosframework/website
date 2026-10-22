@@ -1,0 +1,58 @@
+[
+  {
+    "id": "hero.intro",
+    "section": "Hero",
+    "label": "Intro",
+    "text": "Deploy apps and static sites on hosted Carloku, or run CARLOS Platform in your own infrastructure.",
+    "context": "Text in the hero section of this page."
+  },
+  {
+    "id": "diagram.note",
+    "section": "Diagram",
+    "label": "Note",
+    "text": "App requests go to regional edges. Deployment metadata and tenant backups live in separate buckets.",
+    "context": "Text in the diagram section of this page."
+  },
+  {
+    "id": "ship.body",
+    "section": "Ship",
+    "label": "Body",
+    "text": "Deploy apps and static sites with signed releases and named channels. Create branch previews, promote through bake windows and approvals, and roll back to an earlier release. Use zero-downtime swaps on configured hosts.",
+    "context": "Text in the ship section of this page."
+  },
+  {
+    "id": "run.body",
+    "section": "Run",
+    "label": "Body",
+    "text": "Place tenant instances by region. Hibernate idle apps and wake them on request. Use one-way read replicas, customer-owned fleets and optional sidecars. Run scheduled jobs and one-off commands.",
+    "context": "Text in the run section of this page."
+  },
+  {
+    "id": "services.body",
+    "section": "Services",
+    "label": "Body",
+    "text": "Custom domains, automatic TLS certificates, secrets, environment configuration and feature flags. Approved object storage with malware scanning, plus email with verified domains and delivery events.",
+    "context": "Text in the services section of this page."
+  },
+  {
+    "id": "operate.body",
+    "section": "Operate",
+    "label": "Body",
+    "text": "Use scoped credentials for automation. Follow logs, grouped errors, availability and optional cookieless analytics. Roll platform updates out in stages.",
+    "context": "Text in the operate section of this page."
+  },
+  {
+    "id": "data.body",
+    "section": "Data",
+    "label": "Body",
+    "text": "Litestream streams tenant SQLite changes to regional S3 storage. Restore databases or inspect earlier points in time.",
+    "context": "Text in the data section of this page."
+  },
+  {
+    "id": "hosting.body",
+    "section": "Hosting",
+    "label": "Body",
+    "text": "Run compute on your own infrastructure. Current integrations use AWS S3, SES email and Route 53 steering.",
+    "context": "Text in the hosting section of this page."
+  }
+]

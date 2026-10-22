@@ -1,0 +1,78 @@
+{
+  "action": "approve",
+  "guidance": null,
+  "strings": [
+    {
+      "id": "hero.intro",
+      "text": "Choose what your hosting provider can see. Declare where the keys live and what stays readable.",
+      "original": "Choose what your hosting provider can see. Declare where the keys live and what stays readable.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "classes.heading",
+      "text": "What can the host see?",
+      "original": "What can the host see?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "class1.description",
+      "text": "Network timing and object sizes. Content keys stay on users’ devices.",
+      "original": "Network timing and object sizes. Content keys stay on users’ devices.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "class2.description",
+      "text": "Only the metadata the app explicitly declares, alongside transport information.",
+      "original": "Only the metadata the app explicitly declares, alongside transport information.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "class4.description",
+      "text": "The running process can read data. Stored copies outside it remain encrypted.",
+      "original": "The running process can read data. Stored copies outside it remain encrypted.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "workload.description",
+      "text": "Record the class, readable surfaces and key locations for each workload. An encrypted app and its automation service can have different classes.",
+      "original": "Record the class, readable surfaces and key locations for each workload. An encrypted app and its automation service can have different classes.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "licence.description",
+      "text": "Trust describes access to data. A software licence determines who may run, change and redistribute the code.",
+      "original": "Trust describes access to data. A software licence determines who may run, change and redistribute the code.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "tools.description",
+      "text": "Publish the tools and skills people can use to operate or adapt your app. Declare what is available today.",
+      "original": "Publish the tools and skills people can use to operate or adapt your app. Declare what is available today.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "hero.intro",
+    "section": "Hero",
+    "label": "Intro",
+    "text": "Choose what your hosting provider can see. Declare where the keys live and what stays readable.",
+    "context": "Text in the hero section of this page."
+  },
+  {
+    "id": "classes.heading",
+    "section": "Classes",
+    "label": "Heading",
+    "text": "What can the host see?",
+    "context": "Text in the classes section of this page."
+  },
+  {
+    "id": "class1.description",
+    "section": "Class1",
+    "label": "Description",
+    "text": "Network timing and object sizes. Content keys stay on users\u2019 devices.",
+    "context": "Text in the class1 section of this page."
+  },
+  {
+    "id": "class2.description",
+    "section": "Class2",
+    "label": "Description",
+    "text": "Only the metadata the app explicitly declares, alongside transport information.",
+    "context": "Text in the class2 section of this page."
+  },
+  {
+    "id": "class4.description",
+    "section": "Class4",
+    "label": "Description",
+    "text": "The running process can read data. Stored copies outside it remain encrypted.",
+    "context": "Text in the class4 section of this page."
+  },
+  {
+    "id": "workload.description",
+    "section": "Workload",
+    "label": "Description",
+    "text": "Record the class, readable surfaces and key locations for each workload. An encrypted app and its automation service can have different classes.",
+    "context": "Text in the workload section of this page."
+  },
+  {
+    "id": "licence.description",
+    "section": "Licence",
+    "label": "Description",
+    "text": "Trust describes access to data. A software licence determines who may run, change and redistribute the code.",
+    "context": "Text in the licence section of this page."
+  },
+  {
+    "id": "tools.description",
+    "section": "Tools",
+    "label": "Description",
+    "text": "Publish the tools and skills people can use to operate or adapt your app. Declare what is available today.",
+    "context": "Text in the tools section of this page."
+  }
+]

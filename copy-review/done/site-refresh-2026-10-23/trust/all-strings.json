@@ -1,0 +1,233 @@
+[
+  {
+    "id": "hero.title",
+    "section": "Hero",
+    "label": "Title",
+    "text": "Trust",
+    "context": "Text in the hero section of this page."
+  },
+  {
+    "id": "hero.intro",
+    "section": "Hero",
+    "label": "Intro",
+    "text": "Choose what your hosting provider can see. Declare where the keys live and what stays readable.",
+    "context": "Text in the hero section of this page."
+  },
+  {
+    "id": "classes.heading",
+    "section": "Classes",
+    "label": "Heading",
+    "text": "What can the host see?",
+    "context": "Text in the classes section of this page."
+  },
+  {
+    "id": "table.0",
+    "section": "Table",
+    "label": "0",
+    "text": "Class",
+    "context": "Text in the table section of this page."
+  },
+  {
+    "id": "table.1",
+    "section": "Table",
+    "label": "1",
+    "text": "Model",
+    "context": "Text in the table section of this page."
+  },
+  {
+    "id": "table.2",
+    "section": "Table",
+    "label": "2",
+    "text": "What stays readable",
+    "context": "Text in the table section of this page."
+  },
+  {
+    "id": "class0.code",
+    "section": "Class0",
+    "label": "Code",
+    "text": "S",
+    "context": "Text in the class0 section of this page."
+  },
+  {
+    "id": "class0.title",
+    "section": "Class0",
+    "label": "Title",
+    "text": "Stateless",
+    "context": "Text in the class0 section of this page."
+  },
+  {
+    "id": "class0.description",
+    "section": "Class0",
+    "label": "Description",
+    "text": "No stored user data.",
+    "context": "Text in the class0 section of this page."
+  },
+  {
+    "id": "class1.code",
+    "section": "Class1",
+    "label": "Code",
+    "text": "A1",
+    "context": "Text in the class1 section of this page."
+  },
+  {
+    "id": "class1.title",
+    "section": "Class1",
+    "label": "Title",
+    "text": "Host-blind",
+    "context": "Text in the class1 section of this page."
+  },
+  {
+    "id": "class1.description",
+    "section": "Class1",
+    "label": "Description",
+    "text": "Network timing and object sizes. Content keys stay on users\u2019 devices.",
+    "context": "Text in the class1 section of this page."
+  },
+  {
+    "id": "class2.code",
+    "section": "Class2",
+    "label": "Code",
+    "text": "A2",
+    "context": "Text in the class2 section of this page."
+  },
+  {
+    "id": "class2.title",
+    "section": "Class2",
+    "label": "Title",
+    "text": "Host-blind, declared metadata",
+    "context": "Text in the class2 section of this page."
+  },
+  {
+    "id": "class2.description",
+    "section": "Class2",
+    "label": "Description",
+    "text": "Only the metadata the app explicitly declares, alongside transport information.",
+    "context": "Text in the class2 section of this page."
+  },
+  {
+    "id": "class3.code",
+    "section": "Class3",
+    "label": "Code",
+    "text": "A/pub",
+    "context": "Text in the class3 section of this page."
+  },
+  {
+    "id": "class3.title",
+    "section": "Class3",
+    "label": "Title",
+    "text": "Public by design",
+    "context": "Text in the class3 section of this page."
+  },
+  {
+    "id": "class3.description",
+    "section": "Class3",
+    "label": "Description",
+    "text": "Public content is readable. Private content stays encrypted.",
+    "context": "Text in the class3 section of this page."
+  },
+  {
+    "id": "class4.code",
+    "section": "Class4",
+    "label": "Code",
+    "text": "B",
+    "context": "Text in the class4 section of this page."
+  },
+  {
+    "id": "class4.title",
+    "section": "Class4",
+    "label": "Title",
+    "text": "Sealed at rest",
+    "context": "Text in the class4 section of this page."
+  },
+  {
+    "id": "class4.description",
+    "section": "Class4",
+    "label": "Description",
+    "text": "The running process can read data. Stored copies outside it remain encrypted.",
+    "context": "Text in the class4 section of this page."
+  },
+  {
+    "id": "class5.code",
+    "section": "Class5",
+    "label": "Code",
+    "text": "C",
+    "context": "Text in the class5 section of this page."
+  },
+  {
+    "id": "class5.title",
+    "section": "Class5",
+    "label": "Title",
+    "text": "Host-sighted",
+    "context": "Text in the class5 section of this page."
+  },
+  {
+    "id": "class5.description",
+    "section": "Class5",
+    "label": "Description",
+    "text": "Stored data is readable. Protection comes from tenant isolation and operator policies.",
+    "context": "Text in the class5 section of this page."
+  },
+  {
+    "id": "classes.note",
+    "section": "Classes",
+    "label": "Note",
+    "text": "The A variants describe different models, not a ranking.",
+    "context": "Text in the classes section of this page."
+  },
+  {
+    "id": "workload.title",
+    "section": "Workload",
+    "label": "Title",
+    "text": "Declare it per workload",
+    "context": "Text in the workload section of this page."
+  },
+  {
+    "id": "workload.description",
+    "section": "Workload",
+    "label": "Description",
+    "text": "Record the class, readable surfaces and key locations for each workload. An encrypted app and its automation service can have different classes.",
+    "context": "Text in the workload section of this page."
+  },
+  {
+    "id": "licence.title",
+    "section": "Licence",
+    "label": "Title",
+    "text": "Your licence is a separate choice",
+    "context": "Text in the licence section of this page."
+  },
+  {
+    "id": "licence.description",
+    "section": "Licence",
+    "label": "Description",
+    "text": "Trust describes access to data. A software licence determines who may run, change and redistribute the code.",
+    "context": "Text in the licence section of this page."
+  },
+  {
+    "id": "tools.title",
+    "section": "Tools",
+    "label": "Title",
+    "text": "Make room for people and agents",
+    "context": "Text in the tools section of this page."
+  },
+  {
+    "id": "tools.description",
+    "section": "Tools",
+    "label": "Description",
+    "text": "Publish the tools and skills people can use to operate or adapt your app. Declare what is available today.",
+    "context": "Text in the tools section of this page."
+  },
+  {
+    "id": "links.reference",
+    "section": "Links",
+    "label": "Reference",
+    "text": "Read the full trust reference",
+    "context": "Text in the links section of this page."
+  },
+  {
+    "id": "links.apps",
+    "section": "Links",
+    "label": "Apps",
+    "text": "Explore CARLOS apps",
+    "context": "Text in the links section of this page."
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "hero.intro",
+    "section": "Hero",
+    "label": "Intro",
+    "text": "Build with your agent, or deploy a sample app yourself.",
+    "context": "Text in the hero section of this page."
+  },
+  {
+    "id": "agent.heading",
+    "section": "Agent",
+    "label": "Heading",
+    "text": "Copy this prompt into your coding agent",
+    "context": "Text in the agent section of this page."
+  },
+  {
+    "id": "agent.prompt",
+    "section": "Agent",
+    "label": "Prompt",
+    "text": "Build [describe your app] using CARLOS principles and Rastrillo.\n\nRead https://github.com/carlosframework/skills/blob/main/skills/getting-started/SKILL.md and https://rastrillo.org/SKILL.md first.\n\nI want to deploy to carloku.com. Help me connect my account, then build, test and deploy the app. Use the current installation commands in rastrillo.org/SKILL.md.",
+    "context": "Text in the agent section of this page."
+  },
+  {
+    "id": "hand.prerequisites",
+    "section": "Hand",
+    "label": "Prerequisites",
+    "text": "You need Git, Go 1.26 or later, and the CARLOS command-line tool.",
+    "context": "Text in the hand section of this page."
+  },
+  {
+    "id": "sample.commands",
+    "section": "Sample",
+    "label": "Commands",
+    "text": "git clone --depth 1 https://amadan.net/rastrillo/rastrillo\ncd rastrillo/examples/notes\ngo test ./...\nGOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -o notes-linux-arm64 ./cmd/notes",
+    "context": "Text in the sample section of this page."
+  },
+  {
+    "id": "account.commands",
+    "section": "Account",
+    "label": "Commands",
+    "text": "carlos auth login --console https://console.carloku.com\ncarlos auth whoami\ncarlos apps create --app notes",
+    "context": "Text in the account section of this page."
+  },
+  {
+    "id": "account.help",
+    "section": "Account",
+    "label": "Help",
+    "text": "Approve the sign-in code in your browser. Replace YOUR_ACCOUNT_ID below with the account short ID printed by whoami.",
+    "context": "Text in the account section of this page."
+  },
+  {
+    "id": "deploy.commands",
+    "section": "Deploy",
+    "label": "Commands",
+    "text": "carlos instances enable --app notes\ncarlos instances create --app notes --host notes.YOUR_ACCOUNT_ID.oncarlos.com --channel edge\ncarlos env set --app notes NOTES_ORIGIN=https://notes.YOUR_ACCOUNT_ID.oncarlos.com\ncarlos deploy --app notes ./notes-linux-arm64",
+    "context": "Text in the deploy section of this page."
+  }
+]
