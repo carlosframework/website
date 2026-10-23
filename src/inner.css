@@ -2,6 +2,7 @@ body.inner-page { --page-gutter:0px; }
 .inner-hero { background:radial-gradient(ellipse at 12% 0%,#346e6c55,transparent 55%),radial-gradient(ellipse at 90% 70%,#735d9155,transparent 55%),#101c23; color:#eef5ed; padding:clamp(3rem,7vw,6rem) 0; }
 .inner-hero h1 { font-size:clamp(2.8rem,6vw,5rem);line-height:1.05;letter-spacing:-.045em; }
 .inner-hero .intro { font-size:clamp(1.2rem,2vw,1.5rem);line-height:1.5;max-width:43rem;margin-top:1.4rem;color:#c4d5ce; }
+.inner-hero .intro a { color:#82c9b5; }
 .inner-hero .eyebrow {font: .8rem var(--mono);letter-spacing:.14em;color:var(--mint);text-transform:uppercase;margin-bottom:1rem;}
 .inner-section {padding:clamp(2.5rem,6vw,4.5rem) 0;background:var(--page);color:var(--ink);border-bottom:1px solid var(--rule);}
 .inner-section.alt {background:var(--page-alt);}
