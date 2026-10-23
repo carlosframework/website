@@ -29,6 +29,86 @@
 
     <h2>New opportunities from on-prem installs</h2>
     <p>Jelly's ground-up rewrite using Rastrillo meant that it inherited performance budgets and clean separation of customer data, along with the ability to deploy on-prem, unlocking sales opportunities that were impossible before.</p>
+
+
+<h2>What Jelly is</h2>
+
+<p>Jelly is a shared email tool for small teams. The addresses a group answers from, like hello@, support@ or bookings@, get read and answered together. You can see who has picked up which conversation, leave notes for each other that the customer never sees, and stop asking "has anyone replied to this?"</p>
+
+<p>It grew out of organising Ruby Manor, where a handful of volunteers sharing one inbox turned out to be messier than it had any right to be. Today the teams using it range from a neighbourhood user group to churches, clinics and small companies. Most of them are between three and fifteen people, and most of them do not want a helpdesk. They want email, but shared.</p>
+
+<p>Keeping it affordable matters a lot to me. Jelly has a flat price, not a price per seat, because a team shouldn't have to decide which of its volunteers is worth paying for.</p>
+
+<p><img src="jelly-inbox.webp" alt="Jelly's inbox for a church team: conversations grouped into Brand new, Mine and Unassigned, each with labels and the initials of the people following it" width="800"></p>
+
+<h2>Where it started</h2>
+
+<p>The first version of Jelly is a Rails app, started in February 2024. It is a perfectly normal Rails app. It ran on Render as a web process and a background worker, with Postgres for the data, Redis alongside it, Postmark for sending mail and S3 for attachments.</p>
+
+<p>Every team lived in the same Postgres database, told apart by a <code>team_id</code> column. That's how almost everyone builds this kind of software, and it's how I built it.</p>
+
+<h2>What wasn't working</h2>
+
+<p>Keeping one team's data away from another's was never really the problem. Rails and a bit of care handle that fine. The problems were stability and cost, and they turned out to be the same problem.</p>
+
+<p><strong>Everyone shared everyone else's bad day.</strong> All the incoming email for every team went through one queue. A flurry of activity, or one rogue email that tripped over a bug in the parser, and that queue could clog up, and suddenly nobody's mail was arriving. In the same way, one customer with a very large database running a particularly difficult search could tie up the database, and the timeouts would cascade out to teams who had done nothing at all except try to read their email.</p>
+
+<p><strong>The only fix on offer was a bigger bill.</strong> Render was already costing over $200 a month, and that runs around the clock whether anyone is reading mail or not. Every time things wobbled, the choice was the same: spend hundreds of dollars more on bigger servers, and get further locked into them, or spend the day fighting timeouts. For a product whose whole point is being affordable for small teams, neither of those was much of a choice. It had become a firefight.</p>
+
+<p>There were smaller annoyances too.</p>
+
+<p><strong>Everyone moved together.</strong> One deploy meant every team got the change at the same moment. There was no easy way to give a new version to one friendly team first, and see how it went.</p>
+
+<p><strong>Self-hosting wasn't really possible.</strong> People asked to run Jelly themselves, which is very reasonable for an email tool. "Here's a Rails app, a Postgres, a Redis and a job worker, good luck" is not a very nice answer.</p>
+
+<p><strong>Getting started was a page of instructions.</strong> Homebrew, rbenv, Postgres, puma-dev, encryption keys fetched from a password manager. All of it ordinary, and all of it a reason a new person's first afternoon is spent not working on Jelly.</p>
+
+<h2>Starting again on CARLOS</h2>
+
+<p>At the end of August 2026 I started rebuilding Jelly as a Go app on <a href="https://github.com/rastrilloorg/rastrillo">rastrillo</a>, deployed on CARLOS. The biggest change isn't the language. It's that <strong>every team gets its own instance of Jelly</strong>, with its own SQLite database.</p>
+
+<p>That sounds like it should be a lot more work to run. On CARLOS it's less.</p>
+
+<p>The app is a single static binary. I run <code>carlos ship</code>, and the platform takes care of putting it on instances, routing traffic to them, TLS certificates, configuration and secrets, and replicating each team's database somewhere safe. When somebody signs up, a small manager app asks CARLOS for a new instance, and a few moments later that team has a Jelly of their own.</p>
+
+<p>A lot of the things the Rails app needed a separate service for are just part of the platform:</p>
+
+<ul>
+<li><strong>Sending mail.</strong> CARLOS sends it, and keeps a record of what was delivered.</li>
+<li><strong>Background work.</strong> There's no job worker and no Redis. The app declares a schedule, and for things that need to happen at a particular moment (a message sent later, a snooze running out) it asks the platform to wake it up then.</li>
+<li><strong>Logs.</strong> <code>carlos logs</code>, for one team, not a stream of everybody's.</li>
+</ul>
+
+<p>Working on it day to day is pleasantly boring. <code>bin/local up</code> builds and runs Jelly and the manager on my laptop, with no CARLOS and nothing else to install beyond Go. Each test gets a fresh copy of a SQLite file instead of a shared database server. And because a whole team is just a file, I can copy one to see exactly what they're seeing when something looks wrong.</p>
+
+<p><img src="jelly-conversation.webp" alt="A Jelly conversation about a wedding enquiry, showing internal notes between two team members above the reply sent to the customer" width="800"></p>
+
+<h2>Moving teams across</h2>
+
+<p>Rebuilding something people already use only works if you can move them without them noticing. Each new Jelly instance can sync with the old Rails app, first silently in the background so I can check the data matches, and then for real when that team switches over. The first teams across were our own, then Jelly's own inbox, and then LRUG, the London Ruby User Group, as the first team from outside.</p>
+
+<p>Because each team is its own instance, each one moves on its own day. If something goes wrong it goes wrong for one team, and the old app is still there to go back to.</p>
+
+<!-- TODO(James): update the count of teams moved across when this goes up. -->
+
+<h2>What we're seeing</h2>
+
+<p><strong>Quiet teams cost almost nothing.</strong> An instance that hasn't been used for fifteen minutes goes to sleep, and wakes again in well under half a second when an email arrives or someone opens it. Most small teams are quiet most of the time, so most of the time they aren't using anything at all. For the first time the hosting cost of a team looks like the size of the team.</p>
+
+<p><strong>One team's bad day stays theirs.</strong> Each team has its own database and does its own email processing, so there is no shared queue to clog and no shared database to tie up. If a strange email trips a bug, it trips it for one team, and I can fix it for them without anyone else noticing. A huge mailbox running a hard search slows down the people searching it, and nobody else. The firefighting has simply stopped.</p>
+
+<p><strong>Releases go out gradually.</strong> A new version can go to my own team first, then a few friendly ones, then everybody. Rolling back is one command.</p>
+
+<p><strong>Self-hosting is the same thing.</strong> The binary we run is the binary you'd run. Put it on your own CARLOS deployment, or just run the binary on any box you like. There isn't a second, lesser version for people who want to host it themselves.</p>
+
+<p><strong>It's quicker to build.</strong> With less infrastructure to think about, more of the time goes into Jelly itself. The new version has caught up with and passed the old one in a couple of months, with one person and a lot of tests.</p>
+
+<!-- TODO(James): check "caught up with and passed" is a claim you're happy to make publicly. -->
+
+<p>Mostly, though, it feels like the architecture finally agrees with the product. Jelly is for small teams, and now each of them gets a small Jelly of their own.</p>
+
+<p><a href="https://letsjelly.com">letsjelly.com</a></p>
+
   </article></section>
 </main>
 <footer></footer>
