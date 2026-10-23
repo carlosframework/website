@@ -1,0 +1,74 @@
+[
+  {
+    "id": "s01",
+    "section": "Platform features",
+    "label": "Platform features",
+    "text": "<h2>Platform features</h2>",
+    "context": "Heading above the grouped feature list, below the platform diagram.",
+    "notes": "Keep the heading and list markup; edit the wording within it."
+  },
+  {
+    "id": "s02",
+    "section": "Platform features",
+    "label": "Deployments",
+    "text": "<h3>Deployments</h3>\n<ul>\n<li>Deploy full-stack apps and static sites.</li>\n<li>Use signed releases and named deployment channels.</li>\n<li>Create previews for code branches.</li>\n<li>Add promotion pipelines with bake windows and approvals.</li>\n<li>Roll back releases and swap builds without downtime on configured hosts.</li>\n</ul>",
+    "context": "Deployment tools: how developers publish, preview and update apps.",
+    "notes": "Keep the heading and list markup; edit the wording within it."
+  },
+  {
+    "id": "s03",
+    "section": "Platform features",
+    "label": "Hosting and regions",
+    "text": "<h3>Hosting and regions</h3>\n<ul>\n<li>Place each tenant's apps in a chosen region.</li>\n<li>Hibernate idle apps and wake them on request.</li>\n<li>Run apps on customer-owned fleets or on-premises compute.</li>\n<li>Add optional sidecars for background processes.</li>\n</ul>",
+    "context": "Hosting options: where apps run and how their processes are managed.",
+    "notes": "Keep the heading and list markup; edit the wording within it."
+  },
+  {
+    "id": "s04",
+    "section": "Platform features",
+    "label": "Data and storage",
+    "text": "<h3>Data and storage</h3>\n<ul>\n<li>Back up SQLite continuously to regional S3 storage.</li>\n<li>Download and query current or historical database snapshots.</li>\n<li>Use object storage per app or configuration environment.</li>\n<li>Manage storage credentials and usage from the platform.</li>\n</ul>",
+    "context": "Database backups, historical data access and managed file storage.",
+    "notes": "Keep the heading and list markup; edit the wording within it."
+  },
+  {
+    "id": "s05",
+    "section": "Platform features",
+    "label": "Email sending",
+    "text": "<h3>Email sending</h3>\n<ul>\n<li>Send email from verified domains through SMTP backed by Amazon SES.</li>\n<li>Receive delivery, bounce and complaint events with signed callbacks.</li>\n<li>Track delivery counts and daily sending caps.</li>\n</ul>",
+    "context": "Email sending services, including verification and delivery events.",
+    "notes": "Keep the heading and list markup; edit the wording within it."
+  },
+  {
+    "id": "s06",
+    "section": "Platform features",
+    "label": "Domains and location",
+    "text": "<h3>Domains and location</h3>\n<ul>\n<li>Attach custom domains with automatic HTTPS.</li>\n<li>Use optional IP geolocation: country, region and approximate coordinates.</li>\n<li>Look up IP addresses through the CLI or API.</li>\n<li>Steer domain traffic by network latency when enabled.</li>\n</ul>",
+    "context": "Custom domains, HTTPS and the location information apps can use.",
+    "notes": "Keep the heading and list markup; edit the wording within it."
+  },
+  {
+    "id": "s07",
+    "section": "Platform features",
+    "label": "Security and scanning",
+    "text": "<h3>Security and scanning</h3>\n<ul>\n<li>Scan app object storage with optional ClamAV antivirus.</li>\n<li>Run scans on demand and keep recorded results.</li>\n<li>Optionally block reads of objects identified as infected.</li>\n<li>Use scoped automation credentials and owner or member permissions.</li>\n</ul>",
+    "context": "Antivirus scanning and access controls. Scanning applies to managed object storage.",
+    "notes": "Keep the heading and list markup; edit the wording within it."
+  },
+  {
+    "id": "s08",
+    "section": "Platform features",
+    "label": "Configuration and automation",
+    "text": "<h3>Configuration and automation</h3>\n<ul>\n<li>Manage apps from the console, CLI or API.</li>\n<li>Give your agent skills for operating the platform.</li>\n<li>Manage sealed secrets, environment variables and feature flags.</li>\n<li>Schedule jobs and run one-off commands.</li>\n</ul>",
+    "context": "Interfaces and configuration tools for people, scripts and agents.",
+    "notes": "Keep the heading and list markup; edit the wording within it."
+  },
+  {
+    "id": "s09",
+    "section": "Platform features",
+    "label": "Monitoring and operations",
+    "text": "<h3>Monitoring and operations</h3>\n<ul>\n<li>Read live application and platform logs.</li>\n<li>Group errors and availability events by cause.</li>\n<li>Add optional analytics without cookies.</li>\n<li>Review activity history and roll out platform updates in stages.</li>\n</ul>",
+    "context": "Tools for following app behaviour and operating the platform.",
+    "notes": "Keep the heading and list markup; edit the wording within it."
+  }
+]

@@ -1,0 +1,87 @@
+{
+  "action": "approve",
+  "guidance": null,
+  "strings": [
+    {
+      "id": "s01",
+      "text": "<h2>Platform features</h2>",
+      "original": "<h2>Platform features</h2>",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "s02",
+      "text": "<h3>Deployments</h3>\n<ul>\n<li>Deploy full-stack apps and static sites.</li>\n<li>Use signed releases and named deployment channels.</li>\n<li>Create previews for code branches.</li>\n<li>Add promotion pipelines with bake windows and approvals.</li>\n<li>Roll back releases and swap builds without downtime on configured hosts.</li>\n</ul>",
+      "original": "<h3>Deployments</h3>\n<ul>\n<li>Deploy full-stack apps and static sites.</li>\n<li>Use signed releases and named deployment channels.</li>\n<li>Create previews for code branches.</li>\n<li>Add promotion pipelines with bake windows and approvals.</li>\n<li>Roll back releases and swap builds without downtime on configured hosts.</li>\n</ul>",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "s03",
+      "text": "<h3>Hosting and regions</h3>\n<ul>\n<li>Place each tenant's apps in a chosen region.</li>\n<li>Hibernate idle apps and wake them on request (typically <500ms).</li>\n<li>Run apps on customer-owned fleets or on-premises compute.</li>\n<li>Add optional sidecars for background processes.</li>\n</ul>",
+      "original": "<h3>Hosting and regions</h3>\n<ul>\n<li>Place each tenant's apps in a chosen region.</li>\n<li>Hibernate idle apps and wake them on request.</li>\n<li>Run apps on customer-owned fleets or on-premises compute.</li>\n<li>Add optional sidecars for background processes.</li>\n</ul>",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": true
+    },
+    {
+      "id": "s04",
+      "text": "<h3>Data and storage</h3>\n<ul>\n<li>Continuous SQLite backups with Litestream to regional S3 storage.</li>\n<li>Download and query current or historical database snapshots.</li>\n<li>Use object storage per app or configuration environment.</li>\n<li>Manage storage credentials and usage from the platform.</li>\n</ul>",
+      "original": "<h3>Data and storage</h3>\n<ul>\n<li>Back up SQLite continuously to regional S3 storage.</li>\n<li>Download and query current or historical database snapshots.</li>\n<li>Use object storage per app or configuration environment.</li>\n<li>Manage storage credentials and usage from the platform.</li>\n</ul>",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "s05",
+      "text": "<h3>Email sending</h3>\n<ul>\n<li>Send email from verified domains through SMTP backed by Amazon SES.</li>\n<li>Receive delivery, bounce and complaint events with signed callbacks.</li>\n<li>Track delivery counts and daily sending caps.</li>\n</ul>",
+      "original": "<h3>Email sending</h3>\n<ul>\n<li>Send email from verified domains through SMTP backed by Amazon SES.</li>\n<li>Receive delivery, bounce and complaint events with signed callbacks.</li>\n<li>Track delivery counts and daily sending caps.</li>\n</ul>",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "s06",
+      "text": "<h3>Domains and location</h3>\n<ul>\n<li>Attach custom domains with automatic HTTPS.</li>\n<li>Use optional IP geolocation: country, region and approximate coordinates.</li>\n<li>Look up IP addresses through the CLI or API.</li>\n<li>Steer domain traffic by network latency when enabled.</li>\n</ul>",
+      "original": "<h3>Domains and location</h3>\n<ul>\n<li>Attach custom domains with automatic HTTPS.</li>\n<li>Use optional IP geolocation: country, region and approximate coordinates.</li>\n<li>Look up IP addresses through the CLI or API.</li>\n<li>Steer domain traffic by network latency when enabled.</li>\n</ul>",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "s07",
+      "text": "<h3>Security and scanning</h3>\n<ul>\n<li>Scan app object storage with optional ClamAV antivirus.</li>\n<li>Run scans on demand and keep recorded results.</li>\n<li>Optionally block reads of objects identified as infected.</li>\n<li>Use scoped automation credentials and owner or member permissions.</li>\n</ul>",
+      "original": "<h3>Security and scanning</h3>\n<ul>\n<li>Scan app object storage with optional ClamAV antivirus.</li>\n<li>Run scans on demand and keep recorded results.</li>\n<li>Optionally block reads of objects identified as infected.</li>\n<li>Use scoped automation credentials and owner or member permissions.</li>\n</ul>",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "s08",
+      "text": "<h3>Configuration and automation</h3>\n<ul>\n<li>Manage apps from the console, CLI or API.</li>\n<li>Give your agent skills for operating the platform.</li>\n<li>Manage sealed secrets, environment variables and feature flags.</li>\n<li>Schedule jobs and run one-off commands.</li>\n</ul>",
+      "original": "<h3>Configuration and automation</h3>\n<ul>\n<li>Manage apps from the console, CLI or API.</li>\n<li>Give your agent skills for operating the platform.</li>\n<li>Manage sealed secrets, environment variables and feature flags.</li>\n<li>Schedule jobs and run one-off commands.</li>\n</ul>",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "s09",
+      "text": "<h3>Monitoring and operations</h3>\n<ul>\n<li>Read live application and platform logs.</li>\n<li>Group errors and availability events by cause.</li>\n<li>Add optional analytics without cookies.</li>\n<li>Review activity history and roll out platform updates in stages.</li>\n</ul>",
+      "original": "<h3>Monitoring and operations</h3>\n<ul>\n<li>Read live application and platform logs.</li>\n<li>Group errors and availability events by cause.</li>\n<li>Add optional analytics without cookies.</li>\n<li>Review activity history and roll out platform updates in stages.</li>\n</ul>",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    }
+  ]
+}
