@@ -1,0 +1,73 @@
+[
+  {
+    "id": "s01",
+    "section": "CARLOS by the numbers",
+    "label": "CARLOS by the numbers",
+    "text": "<h2 id=\"numbers-title\">CARLOS by the numbers</h2><p>Based on real world data from Team Tito</p>",
+    "context": "Dashboard heading and attribution immediately above Who is using CARLOS. The attribution is the user\u2019s exact wording.",
+    "notes": "Preserve the HTML tags; edit the words between them."
+  },
+  {
+    "id": "s02",
+    "section": "10\u00d7 less to run",
+    "label": "10\u00d7 less to run",
+    "text": "<strong>10\u00d7</strong><span>less to run</span>",
+    "context": "User-reported legacy baseline is$7,000/month; identified CARLOS core infrastructure projects to$709/month from10\u201322October. Rounded ratio approximately10\u00d7. Shared services and workload differences are not fully allocated; this draft is not a verified total-cost saving.",
+    "notes": "Preserve the HTML tags; edit the words between them."
+  },
+  {
+    "id": "s03",
+    "section": "87% less JavaScript",
+    "label": "87% less JavaScript",
+    "text": "<strong>87%</strong><span>less JavaScript</span>",
+    "context": "User-approved headline. Five browser visits per live AwesomeConf page measured average JavaScript transfers of667213bytes on existing Tito and84968bytes on Tito on CARLOS; a87.3%reduction. This is page-transfer size, not a general claim about every CARLOS app.",
+    "notes": "Preserve the HTML tags; edit the words between them."
+  },
+  {
+    "id": "s04",
+    "section": "7 regions",
+    "label": "7 regions",
+    "text": "<strong>7</strong><span>regions for your customers</span>",
+    "context": "Seven regions confirmed available through the live console API: Canada,Germany,Ireland,India,Sweden,UKandUS. The count includes the original home region.",
+    "notes": "Preserve the HTML tags; edit the words between them."
+  },
+  {
+    "id": "s05",
+    "section": "12\u00d7 faster to ship",
+    "label": "12\u00d7 faster to ship",
+    "text": "<strong>12\u00d7</strong><span>faster to ship</span>",
+    "context": "User approved12\u00d7 after confirming the comparison is two years of product development versus an estimated two-month rebuild, including additional features. This describes development time, not deployment duration. The completion milestone was not independently established.",
+    "notes": "Preserve the HTML tags; edit the words between them."
+  },
+  {
+    "id": "s06",
+    "section": "Outcomes",
+    "label": "Outcomes",
+    "text": "<li>New capabilities</li><li>Isolated customer data</li><li>Isolated customer instances</li>",
+    "context": "Benefits beneath the headline figures. No unsupported counts are added.",
+    "notes": "Preserve the HTML tags; edit the words between them."
+  },
+  {
+    "id": "s07",
+    "section": "Average document response time",
+    "label": "Average document response time",
+    "text": "<h3>Response time spot check</h3><p>Average time until the first byte arrives.</p><dl><div class=\"timing-row\"><dt>Existing Tito</dt><dd>311<span> ms</span></dd></div><div class=\"timing-row timing-new\"><dt>Tito on CARLOS</dt><dd>73<span> ms</span></dd></div></dl>",
+    "context": "Measured response time for the two public AwesomeConf event pages. These are document time-to-first-byte averages, not throughput or full-page rendering.",
+    "notes": "Preserve the HTML tags; edit the words between them."
+  },
+  {
+    "id": "s08",
+    "section": "How we measured",
+    "label": "How we measured",
+    "text": "<summary>How we measured</summary><p>JavaScript bytes transferred averaged 667kB per visit on ti.to and 85kB on go.tito.io, from five visits to each page in headless Chromium with a fresh browser context and cache disabled each time.</p><p>Measured with curl on 23 October 2026: ten requests per page, alternating between sites from one machine. Each request opened a new connection; figures include network time. These live event pages have different content and templates. This measures response time, not throughput.</p><p><a href=\"https://ti.to/paulca/awesomeconf\" target=\"_blank\" rel=\"noopener\">Existing Tito</a> \u00b7 <a href=\"https://go.tito.io/paulca/awesomeconf\" target=\"_blank\" rel=\"noopener\">Tito on CARLOS</a></p>",
+    "context": "Expandable methods note for the response-time and JavaScript-transfer spot checks. The JavaScript headline was approved by the user.",
+    "notes": "Preserve the HTML tags; edit the words between them."
+  },
+  {
+    "id": "s09",
+    "section": "Measurement aside",
+    "label": "Claude aside",
+    "text": "(And yes, we made Claude check the maths.)",
+    "context": "Light aside below the measurements. Opus independently reviewed the calculations; it did not independently establish every underlying business estimate."
+  }
+]
