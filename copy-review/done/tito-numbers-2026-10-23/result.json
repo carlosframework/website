@@ -1,0 +1,87 @@
+{
+  "action": "approve",
+  "guidance": null,
+  "strings": [
+    {
+      "id": "s01",
+      "text": "<h2 id=\"numbers-title\">CARLOS by the numbers</h2><p>See how CARLOS is already providing massive value for Team Tito</p>",
+      "original": "<h2 id=\"numbers-title\">CARLOS by the numbers</h2><p>Based on real world data from Team Tito</p>",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "s02",
+      "text": "<strong>10×</strong><span>lower cost to run</span>",
+      "original": "<strong>10×</strong><span>less to run</span>",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "s03",
+      "text": "<strong>87%</strong><span>less JavaScript</span>",
+      "original": "<strong>87%</strong><span>less JavaScript</span>",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "s04",
+      "text": "<strong>7</strong><span>regions for customers</span>",
+      "original": "<strong>7</strong><span>regions for your customers</span>",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "s05",
+      "text": "<strong>12×</strong><span>faster to ship</span>",
+      "original": "<strong>12×</strong><span>faster to ship</span>",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "s06",
+      "text": "<li>New capabilities</li><li>Isolated customer data</li><li>Isolated customer instances</li>",
+      "original": "<li>New capabilities</li><li>Isolated customer data</li><li>Isolated customer instances</li>",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "s07",
+      "text": "<h3>Response time spot check</h3><p>Average time until the first byte arrives.</p><dl><div class=\"timing-row\"><dt>Existing Tito</dt><dd>311<span> ms</span></dd></div><div class=\"timing-row timing-new\"><dt>Tito on CARLOS</dt><dd>73<span> ms</span></dd></div></dl>",
+      "original": "<h3>Response time spot check</h3><p>Average time until the first byte arrives.</p><dl><div class=\"timing-row\"><dt>Existing Tito</dt><dd>311<span> ms</span></dd></div><div class=\"timing-row timing-new\"><dt>Tito on CARLOS</dt><dd>73<span> ms</span></dd></div></dl>",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "s08",
+      "text": "<summary>How we measured</summary><p>JavaScript bytes transferred averaged 667kB per visit on ti.to and 85kB on go.tito.io, from five visits to each page in headless Chromium with a fresh browser context and cache disabled each time.</p><p>Measured with curl on 23 October 2026: ten requests per page, alternating between sites from one machine. Each request opened a new connection; figures include network time. These live event pages have different content and templates. This measures response time, not throughput.</p><p><a href=\"https://ti.to/paulca/awesomeconf\" target=\"_blank\" rel=\"noopener\">Existing Tito</a> · <a href=\"https://go.tito.io/paulca/awesomeconf\" target=\"_blank\" rel=\"noopener\">Tito on CARLOS</a> 🤖 this bit was written by Claude</p>",
+      "original": "<summary>How we measured</summary><p>JavaScript bytes transferred averaged 667kB per visit on ti.to and 85kB on go.tito.io, from five visits to each page in headless Chromium with a fresh browser context and cache disabled each time.</p><p>Measured with curl on 23 October 2026: ten requests per page, alternating between sites from one machine. Each request opened a new connection; figures include network time. These live event pages have different content and templates. This measures response time, not throughput.</p><p><a href=\"https://ti.to/paulca/awesomeconf\" target=\"_blank\" rel=\"noopener\">Existing Tito</a> · <a href=\"https://go.tito.io/paulca/awesomeconf\" target=\"_blank\" rel=\"noopener\">Tito on CARLOS</a></p>",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": true
+    },
+    {
+      "id": "s09",
+      "text": "(And yes, Claude insisted on checking these claims.)",
+      "original": "(And yes, we made Claude check the maths.)",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": true
+    }
+  ]
+}

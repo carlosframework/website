@@ -1,0 +1,15 @@
+{
+  "action": "approve",
+  "source": "conversation",
+  "user_instruction": "OK, let's leave out the load test until it's dealt with on Tito and ship what we have",
+  "scope": "Latest displayed capability preview, including six labels and heading; load-test results excluded.",
+  "consistency_change": {
+    "files": [
+      "src/index.html",
+      "src/case-studies/tito/index.html"
+    ],
+    "old": "Two years in three months",
+    "new": "12\u00d7 faster to ship",
+    "basis": "User explicitly corrected the development comparison to 12x; reuse exact approved dashboard wording for the stale case-study heading."
+  }
+}

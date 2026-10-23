@@ -1039,3 +1039,25 @@ a.hero-tool:hover h2, .hero-tool :is(h2, h3) a:hover { text-decoration: underlin
   .ready-tools .tool-icon-skill { filter:brightness(.6); }
 }
 @media(max-width:850px) { .ready-tools { grid-template-columns:1fr; } }
+
+/* Tito outcomes dashboard */
+
+.chapter.numbers-section{--page:#142b29;--ink:#edf6f0;--muted:#b7ccc3;--accent:#bfe989;--line:#38534a;background:var(--page);color:var(--ink);padding-block:5rem;}
+.numbers-section:after{display:none}.numbers-heading p{color:var(--muted);margin:1rem 0 0;font-size:1.15rem}.numbers-section h2{max-width:none}.numbers-section .numbers-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2rem;margin:3.5rem 0 0;padding:0;list-style:none}.number-stat{border-top:1px solid var(--line);padding-top:1.5rem;display:flex;flex-direction:column;gap:1rem}.number-stat strong{font-size:clamp(3.8rem,6vw,6rem);font-weight:650;letter-spacing:-.06em;color:var(--accent);line-height:1.05;font-variant-numeric:tabular-nums}.number-stat span{font-size:1.12rem;line-height:1.45;max-width:20ch}.numbers-section .numbers-outcomes{display:flex;flex-wrap:wrap;gap:1.2rem 2.4rem;padding:0;list-style:none;margin:2.8rem 0;color:var(--ink)}.numbers-outcomes li{display:flex;gap:.6rem;align-items:center}.numbers-outcomes li:before{content:'';width:.45rem;height:.45rem;border-radius:50%;background:var(--accent);flex-shrink:0}.numbers-response{border-top:1px solid var(--line);padding-top:2rem}.numbers-response h3{font-size:1.4rem;margin:0}.numbers-response p{color:var(--muted);margin:.6rem 0 1.8rem}.numbers-response dl{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin:0}.timing-row{position:relative;padding-bottom:1.2rem;display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap}.timing-row:after{position:absolute;content:'';height:5px;bottom:0;left:0;background:#758c80;width:100%;border-radius:2px}.timing-new:after{width:23.56%;background:var(--accent)}.timing-row dt{color:var(--muted)}.timing-row dd{font-size:2.8rem;letter-spacing:-.04em;line-height:1.2;margin:0;color:var(--ink);font-variant-numeric:tabular-nums}.timing-row dd span{font-size:1.1rem;letter-spacing:0}.numbers-method{margin-top:1.7rem;color:var(--muted);font-size:.9rem}.numbers-method summary{cursor:pointer;width:fit-content}.numbers-method p{max-width:80ch;line-height:1.6}.numbers-method a{color:inherit}.numbers-section a:focus-visible,.numbers-method summary:focus-visible{outline:2px solid var(--accent);outline-offset:5px}
+@media(prefers-color-scheme:light){.chapter.numbers-section{--page:#eaf1df;--ink:#20352a;--muted:#4b6254;--accent:#3b651e;--line:#b7cbb1}}
+@media(max-width:700px){.chapter.numbers-section{padding-block:3rem}.numbers-section .numbers-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:2rem 1.4rem;margin-top:2rem}.number-stat strong{font-size:3.8rem}.number-stat span{font-size:1rem}.numbers-response dl{grid-template-columns:1fr;gap:1.5rem}.numbers-section .numbers-outcomes{display:grid;gap:1rem}}
+
+.numbers-section .numbers-aside{margin-top:1.4rem;font-size:.9rem;color:var(--muted)}
+
+.number-stat .number-explanation{display:block;font-size:.95rem;line-height:1.5;color:var(--muted);font-weight:400;max-width:26ch;margin-top:-.4rem}
+
+.numbers-section .numbers-capabilities{margin-block:2.8rem 2.4rem;padding-top:2rem;border-top:1px solid var(--line)}
+.numbers-capabilities h3{display:flex;flex-wrap:wrap;align-items:center;gap:.35em;font-size:clamp(1.3rem,2.4vw,1.75rem);line-height:1.4;font-weight:600;letter-spacing:-.025em;margin:0;color:var(--ink)}
+.numbers-capabilities .capability-direction{display:inline-flex;align-items:center;gap:.25em}
+.capability-direction svg{width:1em;height:1em;color:var(--accent);flex:none}
+.numbers-section .capabilities-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:2rem;row-gap:1.4rem;list-style:none;margin:1.8rem 0 0;padding:0}
+.capabilities-list li{display:flex;align-items:center;gap:.75rem;min-width:0;color:var(--ink);font-size:1.05rem;line-height:1.4}
+.capabilities-list .capability-plus{display:grid;place-items:center;flex:none;width:1.6rem;height:1.6rem;border-radius:50%;background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent)}
+.capability-plus svg{width:1rem;height:1rem}
+@media(max-width:700px){.numbers-section .capabilities-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:1.1rem}.capabilities-list li{font-size:.95rem;gap:.5rem}.numbers-capabilities h3{font-size:1.3rem}.numbers-section .numbers-capabilities{margin-block:2.2rem}}
+@media(max-width:360px){.numbers-section .capabilities-list{grid-template-columns:1fr}}

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "capability.1",
+    "section": "Lower costs and greater capabilities",
+    "label": "Customer isolation",
+    "text": "Customer isolation",
+    "context": "One of six additions beneath the Tito dashboard figures. A plus sign beside each label makes the gain in capabilities visible without adding another set of cards."
+  },
+  {
+    "id": "capability.2",
+    "section": "Lower costs and greater capabilities",
+    "label": "Regional hosting",
+    "text": "Regional hosting",
+    "context": "One of six additions beneath the Tito dashboard figures. A plus sign beside each label makes the gain in capabilities visible without adding another set of cards."
+  },
+  {
+    "id": "capability.3",
+    "section": "Lower costs and greater capabilities",
+    "label": "Agent access",
+    "text": "Agent access",
+    "context": "One of six additions beneath the Tito dashboard figures. A plus sign beside each label makes the gain in capabilities visible without adding another set of cards."
+  },
+  {
+    "id": "capability.4",
+    "section": "Lower costs and greater capabilities",
+    "label": "Local development",
+    "text": "Local development",
+    "context": "One of six additions beneath the Tito dashboard figures. A plus sign beside each label makes the gain in capabilities visible without adding another set of cards."
+  },
+  {
+    "id": "capability.5",
+    "section": "Lower costs and greater capabilities",
+    "label": "Portable data",
+    "text": "Portable data",
+    "context": "One of six additions beneath the Tito dashboard figures. A plus sign beside each label makes the gain in capabilities visible without adding another set of cards."
+  },
+  {
+    "id": "capability.6",
+    "section": "Lower costs and greater capabilities",
+    "label": "Enterprise sign-in",
+    "text": "Enterprise sign-in",
+    "context": "One of six additions beneath the Tito dashboard figures. A plus sign beside each label makes the gain in capabilities visible without adding another set of cards."
+  }
+]

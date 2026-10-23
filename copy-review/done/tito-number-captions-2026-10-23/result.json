@@ -1,0 +1,42 @@
+{
+  "action": "approve",
+  "guidance": null,
+  "strings": [
+    {
+      "id": "caption.1",
+      "text": "from reducing AWS resources",
+      "original": "by reducing AWS resources",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "caption.2",
+      "text": "by rendering pages on the server",
+      "original": "by rendering pages on the server",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "caption.3",
+      "text": "to deploy self-contained apps around the world",
+      "original": "by deploying self-contained apps around the world",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "caption.4",
+      "text": "by building with agents on CARLOS foundations",
+      "original": "by building with agents on CARLOS foundations",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    }
+  ]
+}

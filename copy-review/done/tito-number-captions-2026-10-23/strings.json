@@ -1,0 +1,34 @@
+[
+  {
+    "id": "caption.1",
+    "section": "10× lower cost to run",
+    "label": "How",
+    "text": "by reducing AWS resources",
+    "context": "A short explanation beneath “10× lower cost to run” in CARLOS by the numbers. The headline has already been approved; only this caption is being reviewed.",
+    "notes": "Keep this to one short phrase."
+  },
+  {
+    "id": "caption.2",
+    "section": "87% less JavaScript",
+    "label": "How",
+    "text": "by rendering pages on the server",
+    "context": "A short explanation beneath “87% less JavaScript” in CARLOS by the numbers. The headline has already been approved; only this caption is being reviewed.",
+    "notes": "Keep this to one short phrase."
+  },
+  {
+    "id": "caption.3",
+    "section": "7 regions for customers",
+    "label": "How",
+    "text": "by deploying self-contained apps around the world",
+    "context": "A short explanation beneath “7 regions for customers” in CARLOS by the numbers. The headline has already been approved; only this caption is being reviewed.",
+    "notes": "Keep this to one short phrase."
+  },
+  {
+    "id": "caption.4",
+    "section": "12× faster to ship",
+    "label": "How",
+    "text": "by building with agents on CARLOS foundations",
+    "context": "A short explanation beneath “12× faster to ship” in CARLOS by the numbers. The headline has already been approved; only this caption is being reviewed.",
+    "notes": "Keep this to one short phrase."
+  }
+]
