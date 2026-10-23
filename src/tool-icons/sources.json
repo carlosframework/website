@@ -1,0 +1,15 @@
+{
+  "rastrillo.svg": {
+    "source": "https://rastrillo.org/",
+    "asset": "SVG favicon",
+    "changes": "None"
+  },
+  "platform.svg": {
+    "source": "https://carloku.com/",
+    "asset": "Header mark",
+    "changes": "Converted fills to grayscale; replaced rounded square background with circle"
+  },
+  "skill.svg": {
+    "asset": "Document and spark motif; not an official Agent Skills logo"
+  }
+}

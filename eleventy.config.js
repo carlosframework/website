@@ -62,6 +62,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/start": "start" });
   eleventyConfig.addPassthroughCopy({ "src/site.css": "site.css" });
   eleventyConfig.addPassthroughCopy({ "src/home.css": "home.css" });
+  eleventyConfig.addPassthroughCopy({ "src/tool-icons": "tool-icons" });
   eleventyConfig.addPassthroughCopy({ "src/inner.css": "inner.css" });
   eleventyConfig.addPassthroughCopy({ "src/home-textures": "home-textures" });
   eleventyConfig.addPassthroughCopy({ "src/header.css": "header.css" });
