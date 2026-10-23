@@ -26,7 +26,92 @@
     <a href="/start/">Get started</a>
   </nav>
 </header>
-<nav class="local-nav wrap" aria-label="Platform"><a href="/platform/" aria-current="page"><span >CARLOS Platform</span></a><a href="/docs/" class=""><span >Documentation</span></a><a href="/platform/self-host/" class=""><span >Self-host</span></a><a href="https://github.com/carlosframework/releases/releases" class=""><span >Releases</span></a></nav><main><section class="inner-hero"><div class="wrap"><h1 >CARLOS Platform</h1><p class="intro">Deploy apps and static sites on hosted Carloku, or run CARLOS Platform in your own infrastructure.</p><div class="hero-actions"><a href="https://carloku.com" class="primary"><span >Start with Carloku</span></a><a href="/platform/self-host/" class=""><span >Self-host CARLOS Platform</span></a></div></div></section><section class="inner-section "><div class="wrap"><p class="love-letter">CARLOS Platform is a love-letter to Heroku. Heroku was the best platform as a service and was never beaten for developer experience. CARLOS Platform aims to allow folks the ultimate dream: to get started quickly and easily with a hosted platform like Carloku, but to be able to bring the entire platform into their own infrastructure as needs must.</p></div></section><section class="inner-section alt"><div class="wrap"><h2 >How it runs</h2><div class="platform-diagram"><div class="control-lane"><div class="diagram-box "><strong >Console · CLI · API</strong><small >Manage apps, releases and configuration</small></div><span class="diagram-arrow" aria-hidden="true">→</span><div class="diagram-box "><strong >Deployment bucket · S3</strong><small >Releases, configuration and placement</small></div></div><div class="diagram-route">Each regional host reads the deployment configuration</div><div class="regions"><article class="region"><h3 >Region A</h3><div class="region-flow"><div class="diagram-route">App requests ↓</div><div class="diagram-box "><strong >Regional edge</strong><small >TLS certificates and request routing</small></div><div class="diagram-arrow" aria-hidden="true">↓</div><div class="tenants"><div class="diagram-box "><strong >Tenant instance</strong><small >App + SQLite</small></div><div class="diagram-box "><strong >Tenant instance</strong><small >App + SQLite</small></div></div><div class="diagram-route">↓ Litestream streams database changes</div><div class="diagram-box database"><strong >Regional data bucket · S3</strong><small >Tenant database backups</small></div></div></article><article class="region"><h3 >Region B</h3><div class="region-flow"><div class="diagram-route">App requests ↓</div><div class="diagram-box "><strong >Regional edge</strong><small >TLS certificates and request routing</small></div><div class="diagram-arrow" aria-hidden="true">↓</div><div class="tenants"><div class="diagram-box "><strong >Tenant instance</strong><small >App + SQLite</small></div><div class="diagram-box "><strong >Tenant instance</strong><small >App + SQLite</small></div></div><div class="diagram-route">↓ Litestream streams database changes</div><div class="diagram-box database"><strong >Regional data bucket · S3</strong><small >Tenant database backups</small></div></div></article></div></div><p class="note">App requests go to regional edges. Deployment metadata and tenant backups live in separate buckets.</p></div></section><section class="inner-section "><div class="wrap"><div class="feature-grid"><article><h3 >Ship</h3><p >Deploy apps and static sites with signed releases and named channels. Create branch previews, promote through bake windows and approvals, and roll back to an earlier release. Use zero-downtime swaps on configured hosts.</p></article><article><h3 >Run</h3><p >Place tenant instances by region. Hibernate idle apps and wake them on request. Use one-way read replicas, customer-owned fleets and optional sidecars. Run scheduled jobs and one-off commands.</p></article><article><h3 >App services</h3><p >Custom domains, automatic TLS certificates, secrets, environment configuration and feature flags. Approved object storage with malware scanning, plus email with verified domains and delivery events.</p></article><article><h3 >Operate</h3><p >Use scoped credentials for automation. Follow logs, grouped errors, availability and optional cookieless analytics. Roll platform updates out in stages.</p></article><article><h3 >Data</h3><p >Litestream streams tenant SQLite changes to regional S3 storage. Restore databases or inspect earlier points in time.</p></article><article><h3 >Self-host CARLOS Platform</h3><p >Run compute on your own infrastructure. Current integrations use AWS S3, SES email and Route 53 steering.</p><a href="/platform/self-host/" class=""><span >Read the self-hosting guide</span></a></article></div></div></section><section class="inner-section alt"><div class="wrap"><div class="hero-actions"><a href="/docs/" class=""><span >Platform documentation</span></a><a href="/start/" class=""><span >Get started</span></a></div><p class="release-note"><a href="https://github.com/carlosframework/releases/releases/tag/v0.28.9" class=""><span >Checked against v0.28.9 · 22 October 2026</span></a></p></div></section></main><footer></footer>
+<nav class="local-nav wrap" aria-label="Platform"><a href="/platform/" aria-current="page"><span >CARLOS Platform</span></a><a href="/docs/" class=""><span >Documentation</span></a><a href="/platform/self-host/" class=""><span >Self-host</span></a><a href="https://github.com/carlosframework/releases/releases" class=""><span >Releases</span></a></nav><main><section class="inner-hero"><div class="wrap"><h1 >CARLOS Platform</h1><p class="intro">Deploy apps and static sites on hosted Carloku, or run CARLOS Platform in your own infrastructure.</p><div class="hero-actions"><a href="https://carloku.com" class="primary"><span >Start with Carloku</span></a><a href="/platform/self-host/" class=""><span >Self-host CARLOS Platform</span></a></div></div></section><section class="inner-section "><div class="wrap"><p class="love-letter">CARLOS Platform is a love-letter to Heroku. Heroku was the best platform as a service and was never beaten for developer experience. CARLOS Platform aims to allow folks the ultimate dream: to get started quickly and easily with a hosted platform like Carloku, but to be able to bring the entire platform into their own infrastructure as needs must.</p></div></section><section class="inner-section alt"><div class="wrap"><h2 >How it runs</h2><div class="platform-diagram"><div class="control-lane"><div class="diagram-box "><strong >Console · CLI · API</strong><small >Manage apps, releases and configuration</small></div><span class="diagram-arrow" aria-hidden="true">→</span><div class="diagram-box "><strong >Deployment bucket · S3</strong><small >Releases, configuration and placement</small></div></div><div class="diagram-route">Each regional host reads the deployment configuration</div><div class="regions"><article class="region"><h3 >Region A</h3><div class="region-flow"><div class="diagram-route">App requests ↓</div><div class="diagram-box "><strong >Regional edge</strong><small >TLS certificates and request routing</small></div><div class="diagram-arrow" aria-hidden="true">↓</div><div class="tenants"><div class="diagram-box "><strong >Tenant instance</strong><small >App + SQLite</small></div><div class="diagram-box "><strong >Tenant instance</strong><small >App + SQLite</small></div></div><div class="diagram-route">↓ Litestream streams database changes</div><div class="diagram-box database"><strong >Regional data bucket · S3</strong><small >Tenant database backups</small></div></div></article><article class="region"><h3 >Region B</h3><div class="region-flow"><div class="diagram-route">App requests ↓</div><div class="diagram-box "><strong >Regional edge</strong><small >TLS certificates and request routing</small></div><div class="diagram-arrow" aria-hidden="true">↓</div><div class="tenants"><div class="diagram-box "><strong >Tenant instance</strong><small >App + SQLite</small></div><div class="diagram-box "><strong >Tenant instance</strong><small >App + SQLite</small></div></div><div class="diagram-route">↓ Litestream streams database changes</div><div class="diagram-box database"><strong >Regional data bucket · S3</strong><small >Tenant database backups</small></div></div></article></div></div><p class="note">App requests go to regional edges. Deployment metadata and tenant backups live in separate buckets.</p></div></section><section class="inner-section platform-features" id="features"><div class="wrap"><div><h2>Platform features</h2>
+<p>Oodles and oodles of features extracted from real-world use-cases.</p></div><div class="feature-grid feature-categories"><article><svg class="feature-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" />
+  <path d="m21.854 2.147-10.94 10.939" />
+</svg><div><h3>Deployments</h3>
+<ul>
+<li>Deploy full-stack apps and static sites.</li>
+<li>Use signed releases and named deployment channels.</li>
+<li>Create previews for code branches.</li>
+<li>Add promotion pipelines with bake windows and approvals.</li>
+<li>Roll back releases and swap builds without downtime on configured hosts.</li>
+</ul></div></article><article><svg class="feature-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<circle cx="12" cy="12" r="10" />
+  <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+  <path d="M2 12h20" />
+</svg><div><h3>Hosting and regions</h3>
+<ul>
+<li>Place each tenant's apps in a chosen region.</li>
+<li>Hibernate idle apps and wake them on request (typically &lt;500ms).</li>
+<li>Run apps on customer-owned fleets or on-premises compute.</li>
+<li>Add optional sidecars for background processes.</li>
+</ul></div></article><article><svg class="feature-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<ellipse cx="12" cy="5" rx="9" ry="3" />
+  <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+  <path d="M3 12A9 3 0 0 0 21 12" />
+</svg><div><h3>Data and storage</h3>
+<ul>
+<li>Continuous SQLite backups with Litestream to regional S3 storage.</li>
+<li>Download and query current or historical database snapshots.</li>
+<li>Use object storage per app or configuration environment.</li>
+<li>Manage storage credentials and usage from the platform.</li>
+</ul></div></article><article><svg class="feature-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" />
+  <path d="m21.854 2.147-10.94 10.939" />
+</svg><div><h3>Email sending</h3>
+<ul>
+<li>Send email from verified domains through SMTP backed by Amazon SES.</li>
+<li>Receive delivery, bounce and complaint events with signed callbacks.</li>
+<li>Track delivery counts and daily sending caps.</li>
+</ul></div></article><article><svg class="feature-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<rect x="16" y="16" width="6" height="6" rx="1" />
+  <rect x="2" y="16" width="6" height="6" rx="1" />
+  <rect x="9" y="2" width="6" height="6" rx="1" />
+  <path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3" />
+  <path d="M12 12V8" />
+</svg><div><h3>Domains and location</h3>
+<ul>
+<li>Attach custom domains with automatic HTTPS.</li>
+<li>Use optional IP geolocation: country, region and approximate coordinates.</li>
+<li>Look up IP addresses through the CLI or API.</li>
+<li>Steer domain traffic by network latency when enabled.</li>
+</ul></div></article><article><svg class="feature-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+  <path d="m9 12 2 2 4-4" />
+</svg><div><h3>Security and scanning</h3>
+<ul>
+<li>Scan app object storage with optional ClamAV antivirus.</li>
+<li>Run scans on demand and keep recorded results.</li>
+<li>Optionally block reads of objects identified as infected.</li>
+<li>Use scoped automation credentials and owner or member permissions.</li>
+</ul></div></article><article><svg class="feature-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<line x1="21" x2="14" y1="4" y2="4" />
+  <line x1="10" x2="3" y1="4" y2="4" />
+  <line x1="21" x2="12" y1="12" y2="12" />
+  <line x1="8" x2="3" y1="12" y2="12" />
+  <line x1="21" x2="16" y1="20" y2="20" />
+  <line x1="12" x2="3" y1="20" y2="20" />
+  <line x1="14" x2="14" y1="2" y2="6" />
+  <line x1="8" x2="8" y1="10" y2="14" />
+  <line x1="16" x2="16" y1="18" y2="22" />
+</svg><div><h3>Configuration and automation</h3>
+<ul>
+<li>Manage apps from the console, CLI or API.</li>
+<li>Give your agent skills for operating the platform.</li>
+<li>Manage sealed secrets, environment variables and feature flags.</li>
+<li>Schedule jobs and run one-off commands.</li>
+</ul></div></article><article><svg class="feature-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<path d="M4 10c0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 8-8 8H4" />
+  <polyline points="8 22 4 18 8 14" />
+</svg><div><h3>Monitoring and operations</h3>
+<ul>
+<li>Read live application and platform logs.</li>
+<li>Group errors and availability events by cause.</li>
+<li>Add optional analytics without cookies.</li>
+<li>Review activity history and roll out platform updates in stages.</li>
+</ul></div></article></div></div></section><section class="inner-section alt"><div class="wrap"><div class="hero-actions"><a href="/docs/" class=""><span >Platform documentation</span></a><a href="/start/" class=""><span >Get started</span></a></div><p class="release-note"><a href="https://github.com/carlosframework/releases/releases/tag/v0.28.9" class=""><span >Checked against v0.28.9 · 22 October 2026</span></a></p></div></section></main><footer></footer>
 
 
 </body></html>
