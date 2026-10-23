@@ -28,8 +28,31 @@
 <section class="chapter case-studies-content"><h1>Eleven</h1><article class="case-study" id="eleven">
 
     <h2>The E2EE Messenger</h2>
-    <p>I want to make a chat app. It should be end to end encrypted. Should it use SQLite? Find out about the app that led to the creation of CARLOS.</p>
-    <p><a href="https://elevenmessenger.com/security/" target="_blank" rel="noopener noreferrer">How Eleven’s security works</a></p>
+    <blockquote class="case-study-prompt" cite="https://status.elevenmessenger.com/prompts.html#s=d44f1f0e-f363-48f3-a231-7faeba75a1aa"><p>"I want to make a chat app. It's kid friendly. It doesn't require any kind of log in: just a secret link to initialise, and when I send someone the link, they get to choose a screen name. I can deploy it easily and run it on a single server. Should it use sqlite? I want all the messages to be encrypted, so that if someone compromises the server, they can't access anything." <a href="https://status.elevenmessenger.com/prompts.html#s=d44f1f0e-f363-48f3-a231-7faeba75a1aa" target="_blank" rel="noopener noreferrer">27 June 2026</a></p></blockquote>
+
+    <p>This was the first prompt that led to <a href="https://elevenmessenger.com" target="_blank" rel="noopener noreferrer">Eleven Messenger</a>, the app that we ultimately extracted CARLOS out of, and probably the nicest team chat app I've yet to experience.</p>
+
+    <p>But this wasn’t the thing that got me most excited. 12 days later, I typed:</p>
+
+    <blockquote class="case-study-prompt" cite="https://status.elevenmessenger.com/prompts.html#s=d49ff2f6-c243-407d-b3b9-056facd370f5"><p>"How do we make deploying home and the oauth broker apps essentially infinitely scaleable?" <a href="https://status.elevenmessenger.com/prompts.html#s=d49ff2f6-c243-407d-b3b9-056facd370f5" target="_blank" rel="noopener noreferrer">9 July 2026</a></p></blockquote>
+
+    <p>What followed—amongst the psychosis–was the feeling that answered the question: "can we have apps that have great UX, great security and privacy, and planet scalability?".</p>
+
+    <p>The crux was this: each Eleven team would run at a different URL, but the whole thing would feel like signing on to a single system, just like Slack, just like Teams, just like Discord. Traditionally, self-hosted or "you get an instance" solutions would require a completely separate log-in, but Eleven started to feel different. Sure we could do the instance thing, but along came home.elevenmessenger.com</p>
+
+    <p>Home is a simple stateless app that’s backed by S3. Each "user" that signs in to home isn't actually signing in to a database: but their passkey is decrypting a file stored on object storage, which contains their credentials for one of the instances they have access to. What looks like SSO is actually a credential vault. Because there’s a small compute layer running on the platform alongside S3, it can expose an API, so the web app, the desktop app, and the iOS app can all use it to stay in sync: signed in teams, which order they appear, and which ones should be "pinned".</p>
+
+    <p>Added to all this architectural elegance was the crux of the response to the first prompt: end to end encryption, and server-blind data storage.</p>
+
+    <p>So here I had an app that felt great to use, was synced across all my devices, <em>felt</em> like the traditional SaaS apps that we've grown so used to the convenience off, but was in fact running a separate instance of the app for each team.</p>
+
+    <p>Suddenly, this was how I wanted <em>all</em> apps to be. Could we do this for email? Enter <a href="https://keymail.dev" target="_blank" rel="noopener noreferrer">Keymail</a>. Dropbox? See <a href="https://slopbox.cloud" target="_blank" rel="noopener noreferrer">Slopbox</a> ... I kept going and going. I got angry that smarter people than me hadn’t done this for all of the services I rely on. How is it OK that Google has ben able to read all my email for 20 years? Why are we OK that Slack can read every message we’ve sent, or that if we really wanted to, we could read our employees private messages? Why could Twitter just be bought?</p>
+
+    <p>I know that lots of good folks have been considering these things for a long time, and the ideas behind CARLOS are all on the shoulders of true giants in terms of data hygiene practices and advocacy for better respect for users’ data.</p>
+
+    <p>CARLOS is just our contribution to show that it could have been done all along, and that if we want it now, well, here it is.</p>
+    <p class="case-study-byline">—<a href="https://paulca.com" target="_blank" rel="noopener noreferrer">Paul Campbell</a>, October 2026</p>
+    <p class="case-study-resource"><a href="https://elevenmessenger.com/security/" target="_blank" rel="noopener noreferrer">How Eleven’s security works</a></p>
   </article></section>
 </main>
 <footer></footer>

@@ -1,0 +1,12 @@
+{
+  "source": "conversation",
+  "authorship": "human",
+  "scope": "User supplied full Eleven story and confirmed that it should be signed to Paul, following Tito sign-off.",
+  "transformation": "Preserved words, paragraph breaks and emphasis; rendered supplied links and prompt quotations as HTML; retained existing security-details link.",
+  "additional_user_edits": {
+    "running_cost_label": "lower running costs",
+    "removed_statistic": "7 regions for customers",
+    "development_caption": "by building with agents on CARLOS principles"
+  },
+  "homepage_quote_marks": "User requested quote marks around the Eleven prompt, ending after Should it use SQLite?"
+}
