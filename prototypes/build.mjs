@@ -33,6 +33,7 @@ for(const option of ['a','b','c']){
   if(option==='c'){
    const capability=[...numbers.querySelectorAll('.capabilities-list li')];
    const capabilities=indices=>`<ul class="riff-capabilities">${indices.map(i=>capability[i].outerHTML).join('')}</ul>`;
+   const securityCapabilities=capabilities([5]).replace('</ul>', ['Defence against common security threats','Auditing at every step'].map(text=>`<li>${capability[5].querySelector('.capability-plus').outerHTML}<span>${text}</span></li>`).join('')+'</ul>');
    const stat=i=>`<div class="riff-stat">${statistics[i]}</div>`;
    const compactStat=i=>`<p class="riff-support">${statistics[i]}</p>`;
    const security=benefits.querySelector('#benefit-security');
@@ -47,7 +48,7 @@ for(const option of ['a','b','c']){
    combined.innerHTML+=`<div class="riff-grid">
     <article class="riff-column"><h3>Better</h3>${stat(0)}<div class="riff-detail">${compactStat(1)}${capabilities([2,3])}</div></article>
     <article class="riff-column"><h3>Faster</h3>${stat(2)}<div class="riff-detail"><p class="riff-support">${copy('s03').replace('4.5×','<strong>4.5×</strong>')}</p><p class="riff-support">${copy('s07').replace('5×','<strong>5×</strong>')}</p></div></article>
-    <article class="riff-column"><h3>Harder</h3><div class="riff-stat riff-security">${security.querySelector('svg').outerHTML}<span>Customer isolation</span><small>${escape(security.querySelector('li').textContent)}</small></div><div class="riff-detail">${capabilities([5])}<p class="riff-support riff-extra">${escape(encryption)}</p></div></article>
+    <article class="riff-column"><h3>Harder</h3><div class="riff-stat riff-security">${security.querySelector('svg').outerHTML}<span>Customer isolation</span><small>${escape(security.querySelector('li').textContent)}</small></div><div class="riff-detail">${securityCapabilities}<p class="riff-support riff-extra">${escape(encryption)}</p></div></article>
     <article class="riff-column"><h3>Stronger</h3><div class="riff-stat riff-backup"><strong>1–2s</strong><span>backup latency</span><small>${backupSuffix}</small></div><div class="riff-detail">${capabilities([1,4])}<p class="riff-support riff-extra">${escape(zeroDowntime)}</p></div></article>
    </div>`;
   } else if(option==='a'){
@@ -65,8 +66,11 @@ for(const option of ['a','b','c']){
   combined.append(comparisons);
   const method=d.createElement('section');method.className='measurement-section';
   // Keep the JavaScript method and source links; replace the obsolete curl spot check.
-  method.innerHTML='<h3>How we measured</h3>'+(option==='c'?'<p class="measurement-source">Based on real world data from Team Tito</p>':'')+`<p>${copy('s05')}</p><p>${copy('s06')}</p>`+(option==='c'?`<p>${copy('s07')}: ${copy('s08')}</p><p>${copy('s02')} ${copy('s04')}</p>`:'')+numbers.querySelector('.numbers-method>p').outerHTML+numbers.querySelector('.numbers-method>p:last-child').outerHTML;
-  combined.append(method);
+  method.innerHTML='<h3>How we measured</h3>'+`<p>${copy('s05')}</p><p>${copy('s06')}</p>`+(option==='c'?`<p>${copy('s07')}: ${copy('s08')}</p><p>${copy('s02')} ${copy('s04')}</p>`:'')+numbers.querySelector('.numbers-method>p').outerHTML+numbers.querySelector('.numbers-method>p:last-child').outerHTML;
+  const disclosure=d.createElement('details');disclosure.className='measurement-disclosure';
+  disclosure.innerHTML='<summary>Numbers based on real data from Tito. The agents insisted on measuring everything. <span>See how</span></summary>';
+  disclosure.append(method);
+  combined.append(disclosure);
   numbers.remove();how.remove();intro.after(combined);
   benefits.classList.add('listed-benefits');
   combined.after(benefits);benefits.after(proof);
