@@ -80,20 +80,6 @@
 
 .compact-metrics strong{white-space:nowrap}
 
-/* Each attribute is a tab; headings group the twelve choices. */
-.attribute-tabs{grid-template-columns:18rem minmax(0,1fr);gap:3.5rem}
-.attribute-tabs .tab-labels{gap:1.5rem}
-.attribute-tab-group h3{font-size:.82rem;text-transform:uppercase;letter-spacing:.075em;color:var(--muted);margin:0 0 .5rem!important;padding-left:1rem}
-.attribute-tabs .attribute-tab-group label{font-size:.95rem;min-height:2.85rem;padding:.65rem 1rem;border-left:3px solid transparent;border-bottom:0}
-.attribute-tabs>.tab-panels{position:static;align-self:start;padding:1.5rem 0 2rem 2.5rem;border-left:1px solid var(--rule)}
-.tabbed-benefits .attribute-tabs .outcome-card{grid-column:auto;max-width:42rem;background:none;box-shadow:none}
-.attribute-tabs .outcome-card h3{font-size:clamp(1.65rem,3vw,2.35rem);line-height:1.25;margin:0 0 1rem}
-.attribute-tabs .outcome-card>svg{width:36px;height:36px;margin-bottom:1.5rem}
-.attribute-tabs .outcome-card p{font-size:1.15rem;line-height:1.7;max-width:none;margin:0 0 1.75rem}
-.attribute-tabs .outcome-card li{font-size:1.05rem;line-height:1.6;margin:.35rem 0;padding-left:1.3rem}
-.attribute-tabs .outcome-card ul{gap:.6rem}
-/* The generic three-choice tabs must not also select these twelve panels. */
-.attribute-tabs>input:checked~.tab-panels>.tab-panel{display:none}
 .comparison-section{border-top:1px solid var(--rule);padding-top:2rem;margin-top:2rem}
 .comparison-section>h3,.measurement-section>h3{font-size:1.55rem;margin:0 0 1.75rem}
 .comparison-section .stack-example{margin:0;padding:0;border:0}
@@ -114,3 +100,13 @@
 .comparison-section .stack-comparison h5{font-size:.94rem;line-height:1.4;margin:0 0 1rem;color:var(--muted)}
 .comparison-section .stack-after h5{color:var(--accent)}
 .measurement-section .numbers-response h4{font-size:1.15rem;line-height:1.35;margin:0 0 1rem}
+
+/* Five compact measurements; the two longer results share the second row. */
+.compact-metrics.metrics-five{grid-template-columns:repeat(6,minmax(0,1fr))}
+.metrics-five>li{grid-column:span 2}
+.metrics-five>li:nth-last-child(-n+2){grid-column:span 3}
+.compact-metrics strong em{display:block;font-size:.75rem;letter-spacing:0;font-weight:500;font-style:normal;line-height:1.5}
+.difference-panel .compact-metrics li+li{margin-top:1.5rem}
+.measurement-section>p{grid-column:auto}
+.listed-benefits{padding-block:clamp(2.5rem,5vw,4.5rem)!important}
+@media(max-width:650px){.compact-differences .metrics-five{grid-template-columns:1fr}.metrics-five>li,.metrics-five>li:nth-last-child(-n+2){grid-column:auto}.compact-differences .metrics-five li{grid-template-columns:6rem minmax(0,1fr)}}
