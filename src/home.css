@@ -1117,3 +1117,8 @@ a.hero-tool:hover h2, .hero-tool :is(h2, h3) a:hover { text-decoration: underlin
 .site-home #how,.site-home #benefits{scroll-margin-top:5rem}
 @media(max-width:950px){.compact-differences .stack-comparison{grid-template-columns:minmax(0,1fr);gap:1rem}.compact-differences .stack-arrow svg{transform:rotate(90deg)}.compact-differences .stack-after{max-width:none}.measurement-section{column-gap:1.5rem}}
 @media(max-width:650px){.compact-differences .stack-list li{font-size:.82rem;padding:.6rem .5rem}.compact-differences .stack-icon{width:17px;height:17px}.compact-differences .stack-before .stack-list{gap:.4rem}.measurement-section{display:block}}
+
+.compact-differences{padding-block:clamp(2.5rem,5vw,4.5rem)!important}
+.compact-differences:after{opacity:.045}
+.compact-differences .chapter-heading{margin-bottom:1.75rem;display:block}
+.compact-differences .chapter-heading p{max-width:70ch;color:var(--muted);font-size:1.05rem;line-height:1.6;margin:1rem 0 0}
