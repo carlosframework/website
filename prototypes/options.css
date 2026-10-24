@@ -130,7 +130,6 @@
 @media(max-width:1050px){.riff-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.riff-column{grid-template-rows:auto minmax(11rem,auto) 1fr}}
 @media(max-width:620px){.riff-grid{grid-template-columns:1fr;gap:2rem}.riff-column{grid-template-rows:auto auto auto}.riff-stat{margin-bottom:1.25rem}.riff-column h3{margin-bottom:1rem}}
 
-.riff-detail .riff-extra{margin-top:.75rem!important;font-size:.9rem;color:var(--muted)}
 
 
 .measurement-disclosure{border-top:1px solid var(--rule);margin-top:2rem}
