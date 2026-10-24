@@ -110,3 +110,26 @@
 .measurement-section>p{grid-column:auto}
 .listed-benefits{padding-block:clamp(2.5rem,5vw,4.5rem)!important}
 @media(max-width:650px){.compact-differences .metrics-five{grid-template-columns:1fr}.metrics-five>li,.metrics-five>li:nth-last-child(-n+2){grid-column:auto}.compact-differences .metrics-five li{grid-template-columns:6rem minmax(0,1fr)}}
+
+/* Four outcomes combine architecture, capabilities and measured results. */
+.riff-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2rem;margin:2rem 0 1.75rem}
+.riff-column{display:grid;grid-template-rows:auto minmax(12rem,auto) 1fr;min-width:0;border-top:2px solid var(--accent);padding-top:1.25rem}
+.riff-column h3{font-size:1.4rem;line-height:1.3;margin:0 0 1.5rem}
+.riff-stat{display:flex;flex-direction:column;align-items:flex-start;gap:.5rem;min-width:0}
+.riff-stat>strong{font-size:clamp(2.7rem,4.5vw,4.25rem);line-height:1.1;letter-spacing:-.05em;color:var(--accent);white-space:nowrap}
+.riff-stat>span{font-size:1rem;font-weight:700;line-height:1.5}
+.riff-stat>small{font-size:.9rem;line-height:1.5;color:var(--muted)}
+.riff-security>svg{height:clamp(2.97rem,4.95vw,4.675rem);width:clamp(2.97rem,4.95vw,4.675rem);color:var(--accent);margin:0}
+.riff-detail{border-top:1px solid var(--rule);padding-top:1rem}
+.riff-support{font-size:.95rem;color:var(--ink);line-height:1.6;margin:0 0 1rem!important}
+.riff-support strong{font-size:1.1rem;font-weight:700;color:var(--accent);margin-right:.25em}
+.riff-support small{display:block;color:var(--muted);font-size:.85rem}
+.riff-capabilities{padding:0!important;list-style:none;display:grid;gap:.65rem;margin:0!important;font-size:.9rem;line-height:1.5}
+.riff-capabilities li{display:flex;align-items:center;gap:.5rem}
+.riff-capabilities .capability-plus{height:1.1rem;width:1.1rem;flex-shrink:0}
+@media(max-width:1050px){.riff-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.riff-column{grid-template-rows:auto minmax(11rem,auto) 1fr}}
+@media(max-width:620px){.riff-grid{grid-template-columns:1fr;gap:2rem}.riff-column{grid-template-rows:auto auto auto}.riff-stat{margin-bottom:1.25rem}.riff-column h3{margin-bottom:1rem}}
+
+.riff-detail .riff-extra{margin-top:.75rem!important;font-size:.9rem;color:var(--muted)}
+
+.measurement-section>.measurement-source{grid-column:1/-1}
