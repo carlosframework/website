@@ -46,7 +46,7 @@ for(const option of ['a','b','c']){
    const encryption=[...security.querySelectorAll('li')].find(n=>n.textContent.includes('E2EE')).textContent;
    combined.innerHTML+=`<div class="riff-grid">
     <article class="riff-column"><h3>Better</h3>${stat(0)}<div class="riff-detail">${compactStat(1)}${capabilities([2,3])}</div></article>
-    <article class="riff-column"><h3>Faster</h3>${stat(2)}<div class="riff-detail"><p class="riff-support">${copy('s03').replace('4.5×','<strong>4.5×</strong>')}</p><p class="riff-support">${copy('s01').replace('320','<strong>320</strong>')}</p></div></article>
+    <article class="riff-column"><h3>Faster</h3>${stat(2)}<div class="riff-detail"><p class="riff-support">${copy('s03').replace('4.5×','<strong>4.5×</strong>')}</p><p class="riff-support">${copy('s07').replace('5×','<strong>5×</strong>')}</p></div></article>
     <article class="riff-column"><h3>Harder</h3><div class="riff-stat riff-security">${security.querySelector('svg').outerHTML}<span>Customer isolation</span><small>${escape(security.querySelector('li').textContent)}</small></div><div class="riff-detail">${capabilities([5])}<p class="riff-support riff-extra">${escape(encryption)}</p></div></article>
     <article class="riff-column"><h3>Stronger</h3><div class="riff-stat riff-backup"><strong>1–2s</strong><span>backup latency</span><small>${backupSuffix}</small></div><div class="riff-detail">${capabilities([1,4])}<p class="riff-support riff-extra">${escape(zeroDowntime)}</p></div></article>
    </div>`;
@@ -65,7 +65,7 @@ for(const option of ['a','b','c']){
   combined.append(comparisons);
   const method=d.createElement('section');method.className='measurement-section';
   // Keep the JavaScript method and source links; replace the obsolete curl spot check.
-  method.innerHTML='<h3>How we measured</h3>'+(option==='c'?'<p class="measurement-source">Based on real world data from Team Tito</p>':'')+`<p>${copy('s05')}</p><p>${copy('s06')}</p>`+(option==='c'?`<p>${copy('s02')} ${copy('s04')}</p>`:'')+numbers.querySelector('.numbers-method>p').outerHTML+numbers.querySelector('.numbers-method>p:last-child').outerHTML;
+  method.innerHTML='<h3>How we measured</h3>'+(option==='c'?'<p class="measurement-source">Based on real world data from Team Tito</p>':'')+`<p>${copy('s05')}</p><p>${copy('s06')}</p>`+(option==='c'?`<p>${copy('s07')}: ${copy('s08')}</p><p>${copy('s02')} ${copy('s04')}</p>`:'')+numbers.querySelector('.numbers-method>p').outerHTML+numbers.querySelector('.numbers-method>p:last-child').outerHTML;
   combined.append(method);
   numbers.remove();how.remove();intro.after(combined);
   benefits.classList.add('listed-benefits');

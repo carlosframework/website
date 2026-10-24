@@ -45,5 +45,10 @@
       "text": "First Contentful Paint measures when content first appears. We averaged five alternating desktop Chromium visits to each AwesomeConf page: Classic and CARLOS. Each visit used a fresh browser context with browser caching disabled and no network throttling. Server-side page caching stayed enabled.",
       "context": "Always-visible browser measurement notes. Explains the first-render measurement and browser setup."
     }
-  ]
+  ],
+  "followup": {
+    "user_message": "just go 5x",
+    "approved_headline": "5× faster responses",
+    "context": "Rounded down from the verified 5.399985 mean response-time ratio; exact timings retained in measurement notes."
+  }
 }

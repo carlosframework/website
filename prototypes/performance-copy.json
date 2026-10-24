@@ -40,5 +40,19 @@
     "label": "Browser-test method",
     "text": "First Contentful Paint measures when content first appears. We averaged five alternating desktop Chromium visits to each AwesomeConf page: Classic and CARLOS. Each visit used a fresh browser context with browser caching disabled and no network throttling. Server-side page caching stayed enabled.",
     "context": "Always-visible browser measurement notes. Explains the first-render measurement and browser setup."
+  },
+  {
+    "id": "s07",
+    "section": "Performance",
+    "label": "Response-time headline",
+    "text": "5× faster responses",
+    "context": "User-approved rounded comparison of mean HTML response times at 40 requests per second."
+  },
+  {
+    "id": "s08",
+    "section": "Performance",
+    "label": "Response-time comparison",
+    "text": "13.6 ms versus 73.5 ms at the same 40 requests/second.",
+    "context": "CARLOS versus Classic mean HTML response times from the 24 October test; source figures 13.620083 and 73.548250 ms."
   }
 ]
