@@ -1,0 +1,81 @@
+/* Layout prototypes: production styles and approved copy are reused. */
+.preview-switch{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:center;gap:1.25rem;padding:.65rem 1rem;background:var(--page);border-bottom:1px solid var(--rule);font-size:.9rem}
+.preview-switch a{padding:.3rem .8rem;text-decoration:none;border-radius:6px;color:var(--ink)}
+.preview-switch a[aria-current=page]{background:var(--accent);color:var(--page);font-weight:700}
+.compact-differences{padding-block:clamp(2.5rem,5vw,4.5rem)!important}
+.compact-differences:after,.tabbed-benefits:after{opacity:.045}
+.compact-differences .chapter-heading{margin-bottom:1.75rem;display:block}
+.compact-differences .chapter-heading p{max-width:70ch;color:var(--muted);font-size:1.05rem;line-height:1.6;margin:1rem 0 0}
+.difference-columns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2rem;margin-top:2rem}
+.difference-column{border-top:2px solid var(--accent);padding-top:1.25rem}
+.difference-column h3{font-size:1.35rem;margin:0 0 .65rem;color:var(--ink)}
+.difference-column p{color:var(--muted);font-size:1rem;line-height:1.6;margin:0}
+.compact-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2rem;border-block:1px solid var(--rule);padding:1.5rem 0;margin:2rem 0 .65rem;list-style:none}
+.compact-metrics li{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:.8rem;row-gap:.2rem}
+.compact-metrics strong{font-size:clamp(2.4rem,4vw,3.5rem);line-height:1.1;color:var(--accent);letter-spacing:-.05em;grid-row:span 2}
+.compact-metrics span{font-weight:650;font-size:1rem;line-height:1.35}
+.compact-metrics small{font-size:.85rem;line-height:1.4;color:var(--muted)}
+.metric-source{color:var(--muted);font-size:.85rem;margin:.75rem 0 1.5rem}
+.compact-capabilities{display:flex;flex-wrap:wrap;gap:.55rem 1.2rem;list-style:none;margin:1.25rem 0;padding:0;font-size:.9rem;color:var(--ink)}
+.compact-capabilities li{display:flex;align-items:center;gap:.4rem}
+.compact-capabilities .capability-plus{width:1.2rem;height:1.2rem}
+.compact-disclosure{border-top:1px solid var(--rule);margin-top:1rem}
+.compact-disclosure>summary{padding:1rem 0;font-weight:650;cursor:pointer;color:var(--ink);font-size:1rem}
+.compact-disclosure[open]>summary{margin-bottom:1rem}
+.compact-disclosure .stack-example{margin:0 0 1.75rem;padding:0;border:0}
+.compact-disclosure .stack-example+ .stack-example{border-top:1px solid var(--rule);padding-top:1.75rem}
+.compact-differences .stack-comparison{grid-template-columns:minmax(0,1.15fr) 1.5rem minmax(0,1fr);gap:1.4rem}
+.compact-differences .stack-before .stack-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem}
+.compact-differences .stack-list li{padding:.65rem .7rem;font-size:.86rem;gap:.5rem;line-height:1.45}
+.compact-differences .stack-icon{width:20px;height:20px}
+.compact-differences .stack-explanation{font-size:1rem;max-width:80ch}
+.compact-differences .numbers-response{padding-top:1rem;margin:1.5rem 0}
+.compact-differences .numbers-response dl{max-width:40rem}
+.compact-differences .numbers-method{margin:0}
+.side-tabs{position:relative;display:grid;grid-template-columns:14rem minmax(0,1fr);column-gap:2.5rem;align-items:start;border:0;padding:0;margin:0;min-width:0}
+.side-tabs>legend,.side-tabs>input{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.side-tabs>.tab-labels{grid-column:1;grid-row:1;display:grid;gap:.5rem}
+.side-tabs label{display:flex;gap:.8rem;align-items:center;min-height:3.6rem;cursor:pointer;padding:.85rem 1rem;border-left:3px solid transparent;color:var(--muted);font-size:1rem;line-height:1.35;font-weight:600}
+.side-tabs label svg{width:22px;height:22px;flex-shrink:0}
+.side-tabs label:hover{background:color-mix(in srgb,var(--accent) 5%,transparent);color:var(--ink)}
+.side-tabs>input:nth-of-type(1):checked~.tab-labels>label:nth-child(1),.side-tabs>input:nth-of-type(2):checked~.tab-labels>label:nth-child(2),.side-tabs>input:nth-of-type(3):checked~.tab-labels>label:nth-child(3){border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent)}
+.side-tabs>input:nth-of-type(1):focus-visible~.tab-labels>label:nth-child(1),.side-tabs>input:nth-of-type(2):focus-visible~.tab-labels>label:nth-child(2),.side-tabs>input:nth-of-type(3):focus-visible~.tab-labels>label:nth-child(3){outline:2px solid var(--accent);outline-offset:3px}
+.side-tabs>.tab-panels{grid-column:2;grid-row:1;min-width:0}
+.side-tabs .tab-panel{display:none}
+.side-tabs>input:nth-of-type(1):checked~.tab-panels>.tab-panel:nth-child(1),.side-tabs>input:nth-of-type(2):checked~.tab-panels>.tab-panel:nth-child(2),.side-tabs>input:nth-of-type(3):checked~.tab-panels>.tab-panel:nth-child(3){display:block}
+.tabbed-benefits{padding-block:clamp(2.5rem,5vw,4.5rem)!important}
+.tabbed-benefits .chapter-heading{margin-bottom:2rem}
+.tabbed-benefits .benefit-group{margin:0;padding:0;border:0}
+.tabbed-benefits .benefit-group-title{font-size:1.35rem;max-width:38ch;margin:0 0 1.75rem}
+.tabbed-benefits .outcome-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.75rem 2rem}
+.tabbed-benefits .outcome-card{padding:0!important;border:0!important;display:block}
+.tabbed-benefits .outcome-card h4{font-size:1.15rem;margin-bottom:.6rem}
+.tabbed-benefits .outcome-card p,.tabbed-benefits .outcome-card li{font-size:.95rem;line-height:1.6}
+.tabbed-benefits .outcome-card p{margin-bottom:.7rem}
+.tabbed-benefits .outcome-card ul{margin:0;padding-left:1.15rem}
+.tabbed-benefits .outcome-card li{margin:.25rem 0}
+.tabbed-benefits .outcome-card .outcome-icon{margin-bottom:.6rem}
+.difference-tabs{margin-block:2rem 1.5rem}
+.difference-tabs .tab-panels{min-height:12rem;border-left:1px solid var(--rule);padding-left:2rem}
+.difference-panel h3{font-size:1.5rem;margin:0 0 1rem}
+.difference-panel p{font-size:1.05rem;line-height:1.6;max-width:55ch;color:var(--muted)}
+.difference-panel .compact-metrics{display:block;border:0;margin:1.3rem 0 0;padding:0}
+.difference-panel .compact-metrics li{max-width:26rem}
+.preview-options :is(a,summary):focus-visible{outline:2px solid var(--accent);outline-offset:5px}
+@media(max-width:950px){.side-tabs{grid-template-columns:11rem minmax(0,1fr);gap:1.5rem}.compact-metrics li{display:flex;flex-direction:column;align-items:start}.compact-metrics{gap:1.25rem}.compact-differences .stack-comparison{grid-template-columns:minmax(0,1fr);gap:1rem}.compact-differences .stack-arrow svg{transform:rotate(90deg)}.compact-differences .stack-after{max-width:none}.tabbed-benefits .outcome-grid{gap:1.5rem}}
+@media(max-width:650px){.difference-columns{grid-template-columns:1fr;gap:1.4rem}.difference-column{display:grid;grid-template-columns:7.5rem 1fr;gap:1rem}.difference-column h3{font-size:1.1rem}.difference-column p{font-size:.95rem}.side-tabs{display:block}.side-tabs>.tab-labels{display:flex;gap:.3rem;margin-bottom:1.75rem}.side-tabs label{flex:1;display:block;padding:.65rem .5rem;font-size:.85rem;text-align:center;border-left:0;border-bottom:3px solid transparent}.side-tabs label svg{display:block;margin:0 auto .4rem}.tabbed-benefits .outcome-grid{grid-template-columns:1fr}.difference-tabs .tab-panels{border-left:0;padding-left:0;min-height:15rem}.compact-metrics{gap:.7rem}.compact-metrics strong{font-size:2.4rem}.compact-metrics span{font-size:.85rem}.compact-metrics small{font-size:.78rem}.compact-differences .stack-list li{font-size:.82rem}.compact-differences .stack-icon{width:17px;height:17px}.compact-differences .stack-before .stack-list{gap:.4rem}.compact-differences .stack-list li{padding:.6rem .5rem}.preview-switch{font-size:.8rem;gap:.5rem}}
+@media(max-width:360px){.difference-column{display:block}.difference-column h3{margin-bottom:.4rem}.compact-metrics{grid-template-columns:1fr}.compact-metrics li{display:grid;grid-template-columns:6rem 1fr;align-items:center}}
+
+/* Override the homepage reset without changing production styles. */
+.preview-options #how,.preview-options #benefits{scroll-margin-top:5rem}
+.compact-differences h2{max-width:none}
+.compact-differences .compact-metrics{padding:1.25rem 0;margin:1.75rem 0 .65rem}
+.compact-differences .metric-source{margin:.8rem 0 1.25rem}
+.compact-differences .compact-capabilities{margin:1.25rem 0}
+.compact-differences .difference-panel .compact-metrics{margin:1.25rem 0 0;padding:0}
+.compact-differences .stack-explanation+.stack-explanation{margin-top:1rem}
+.tabbed-benefits .outcome-card ul{gap:.4rem}
+@media(max-width:650px){.difference-column{display:block}.difference-column h3{margin-bottom:.4rem}.compact-differences .compact-metrics{grid-template-columns:1fr;gap:1rem}.compact-differences .compact-metrics li{display:grid;grid-template-columns:6rem 1fr;align-items:center}.compact-metrics span{font-size:1rem}.compact-metrics small{font-size:.85rem}.compact-differences .difference-panel .compact-metrics li{grid-template-columns:6rem 1fr}}
+@media print{.preview-switch,.side-tabs>.tab-labels{display:none}.side-tabs{display:block}.side-tabs .tab-panel{display:block!important;margin-bottom:2rem}}
+
+.compact-metrics strong{white-space:nowrap}
