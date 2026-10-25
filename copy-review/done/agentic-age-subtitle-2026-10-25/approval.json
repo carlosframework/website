@@ -1,0 +1,24 @@
+{
+  "source_conversation": "Direct user request in conversation",
+  "date": "2026-10-25",
+  "scope": "homepage subtitle, meta/OG descriptions, and architecture copy",
+  "approved": true,
+  "changes": [
+    {
+      "before": "An agentic software development approach for building and shipping uncompromising apps",
+      "after": "A software development approach to building and shipping uncompromising apps in the agentic age",
+      "locations": [
+        "src/index.html line 7 (meta description)",
+        "src/index.html line 10 (og:description)",
+        "src/index.html line 27 (hero-subtitle)"
+      ]
+    },
+    {
+      "before": "and run for 70%–80% less than traditional web apps",
+      "after": "and cost 70%–80% less to run than traditional web apps",
+      "locations": [
+        "src/index.html line 46 (architecture-diagram description)"
+      ]
+    }
+  ]
+}
