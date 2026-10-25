@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-25",
+  "scope": "homepage subtitle and meta/OG descriptions",
+  "source": "conversation",
+  "before": "A software development approach to building and shipping uncompromising apps in the agentic age",
+  "after": "An AI-driven software development approach for building and shipping uncompromising apps in the agentic age",
+  "locations": [
+    "src/index.html line 7 (meta name=description)",
+    "src/index.html line 10 (meta property=og:description)",
+    "src/index.html line 27 (hero subtitle)"
+  ],
+  "approved": true
+}
