@@ -1031,7 +1031,7 @@ a.hero-tool:hover h2, .hero-tool :is(h2, h3) a:hover { text-decoration: underlin
 .tool-heading :is(h2, h3) { min-width:0; margin:0; }
 .tool-icon { display:block; flex:none; width:3rem; height:3rem; }
 .tool-icon-rastrillo { padding:.4rem; border-radius:.6rem; background:#f2f0e6; }
-.tool-icon-platform { border-radius:50%; }
+.tool-icon-platform { border-radius:.6rem; }
 .ready-tools { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1.5rem; }
 .ready-tools .hero-tool { display:flex; flex-direction:column; min-width:0; color:var(--ink); --tool-accent:var(--accent); border-color:color-mix(in srgb,var(--tool-accent) 30%,transparent); background:color-mix(in srgb,var(--tool-accent) 6%,var(--page)); }
 .ready-tools .framework { --tool-accent:#b5a0d0; }

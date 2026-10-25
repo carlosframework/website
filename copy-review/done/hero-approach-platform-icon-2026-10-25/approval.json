@@ -1,0 +1,9 @@
+{
+  "source": "conversation",
+  "date": "2026-10-25",
+  "copy_source": "verbatim user-provided replacement",
+  "before": "An architecture for building and shipping uncompromising apps in the agentic age",
+  "after": "An agentic software development approach for building and shipping uncompromising apps",
+  "scope": "Homepage subtitle, description and Open Graph description. Platform logo reduced inside a squircle matching the Rastrillo icon, in both card locations. User subsequently requested the supplied CARLOS expansion immediately above the footer meta links; applied through the shared footer.",
+  "footer_text": "CARLOS: Cost-effective, Available, Replicated, Lightweight, Open, Secure"
+}
