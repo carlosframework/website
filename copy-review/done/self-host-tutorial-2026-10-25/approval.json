@@ -1,0 +1,9 @@
+{
+  "source": "conversation",
+  "date": "2026-10-25",
+  "instruction": "Alright, let's ship it",
+  "scope": "The complete self-hosting guide shown in the preview, including all eight steps, code examples and production follow-ups.",
+  "preview_url": "http://docs-t1.tail5fd3ba.ts.net:41735",
+  "sha256": "0754dba4929d040eb45e42620873a9b24c41792aea1efa8a6c334ae1db66d6e8",
+  "approved_document": "approved.json:text"
+}
