@@ -733,6 +733,15 @@ details.layer>p{padding-left:1rem}
 .hosting-guide table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.95rem}
 .hosting-guide th,.hosting-guide td{padding:.75rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
 .hosting-guide code{font-size:.9em;color:var(--mint)}
+.self-host-tutorial{max-width:960px}
+.self-host-tutorial pre{padding:1.2rem;background:#172a2e;border:1px solid var(--line);border-radius:10px;overflow:auto;max-width:100%;line-height:1.6}
+.self-host-tutorial code{overflow-wrap:anywhere}
+.self-host-tutorial pre code{overflow-wrap:normal;white-space:pre}
+.self-host-tutorial h3{margin:2rem 0 1rem}
+.self-host-tutorial h2{scroll-margin-top:6rem}
+.self-host-tutorial a{color:var(--mint);text-decoration:underline}
+@media(prefers-color-scheme:light){.self-host-tutorial pre{background:#e3ede8}}
+@media(max-width:600px){.self-host-tutorial{padding:2rem 1.25rem}.self-host-tutorial pre{font-size:.78rem}}
 /* Organic light and fine grain replace the hero's network diagram. */
 .hero-nebula.nebula-textured{inset:-12% -9% auto auto;width:83%;height:130%;opacity:.95;mask-image:linear-gradient(90deg,transparent 2%,#000 34%);overflow:visible}
 .mist-layer{transform-origin:500px 350px;animation:mist-drift 42s ease-in-out infinite alternate}
