@@ -953,6 +953,9 @@ a.hero-tool:hover h2, .hero-tool :is(h2, h3) a:hover { text-decoration: underlin
 .proof-section .chapter-heading h2 a:hover { text-decoration: underline; text-underline-offset: 0.2em; }
 .case-studies-page .case-studies-content { min-height: calc(100svh - 79px); --section-texture: url('home-textures/waves.svg'); }
 .case-studies-content h1 { font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1.15; margin: 0 0 3rem; }
+.case-study-eyebrow { font-family: var(--mono); font-size: 0.8125rem; letter-spacing: 0.12em; text-transform: uppercase; margin: 0 0 0.75rem; }
+.case-study-eyebrow a { color: var(--accent); text-decoration: none; }
+.case-study-eyebrow a:hover { text-decoration: underline; text-underline-offset: 0.2em; }
 .case-study { max-width: 48rem; padding: 2.5rem 0; border-top: 1px solid var(--rule); scroll-margin-top: 2rem; }
 .case-study h2 { color: var(--accent); margin-bottom: 0.75rem; }
 .case-study h3 { font-size: 1.25rem; margin-bottom: 1rem; }
