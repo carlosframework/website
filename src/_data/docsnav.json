@@ -18,6 +18,11 @@
           "slug": "plans",
           "label": "Plans",
           "blurb": "Give accounts limits, packs and sponsorship. Plans stay off until you configure a catalog."
+        },
+        {
+          "slug": "rate-limits",
+          "label": "Rate limits",
+          "blurb": "Stop one visitor taking over an instance, set limits per instance, and roll them out safely."
         }
       ]
     }

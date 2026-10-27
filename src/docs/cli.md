@@ -127,6 +127,10 @@ prints one line saying which and why:
 carlos apps create --app hello --region uk
 ```
 
+`--analytics` or `--no-analytics` turns analytics on or off for the new app.
+Without either, the app follows the account's setting. Only an owner can
+choose differently from the account.
+
 A name is also refused when its platform apex, `<app>.<account>.<apps
 domain>`, is already taken: by another app's instance, even one in the Trash,
 or by any route there at all. The new app would otherwise never get an address
@@ -184,6 +188,17 @@ carlos apps ttl --app tmp-docs 5d
 carlos apps keep --app tmp-docs
 ```
 
+`carlos apps list` shows each app's own region, the region where its new instances start. For an app with a region, it shows the region set when the app was created or changed later. For an app on a fleet, it shows the fleet instead. Where new instances start can differ from where existing instances run. For a pooled app, the app's Running page in the console shows where its instances start.
+
+`carlos apps region` shows where an app's new instances start, and `--set` changes that default:
+
+```sh
+carlos apps region --app hello
+carlos apps region --app hello --set uk
+```
+
+An app's region sets where its new instances start, except for apps whose instances start in a pool. Those instances start in the home region instead. Changing the region moves nothing: existing instances stay where they are, and only instances created afterwards start in the new region when the app uses its region. Use `carlos move` to move one that exists. The new region must be one the platform offers, able to start instances now, and allowed for this app's instances. An app on a fleet is refused because the fleet decides where its instances run. Use `carlos apps place` instead. The command also refuses an app whose instances start in a pool because the app's region does not decide where its new instances start. It also refuses an app in the Trash. Account owners and deployment operators can change the region with this command. In the console, the Region control is on the app's settings page, which only account members can open. Owners and deployment operators who are members can use the control. A deployment operator who is not a member must use the command. The console records who changed it, from what and to what, in the app's activity. After a change, `carlos deploy --region` must name the app's current region.
+
 `carlos apps set` changes how the app's running instances take a new build:
 
 ```sh
@@ -207,6 +222,25 @@ carlos apps set shop --instance-control updates,pin --default-updates manual
 
 --instance-control names the settings an instance may change itself once instances can act for themselves. --default-updates and --default-major apply wherever an instance has not chosen; --default-channel is the channel new instances are created on.
 
+System operators can also set an app's instance policy: which private addresses its instances may reach and the size each instance runs at. `carlos apps show` reads it back.
+
+```sh
+carlos apps set shop --egress-allow 10.0.5.20,fd00:5::20
+carlos apps set shop --size large
+carlos instances set shop-a.example.com --app shop --size xlarge
+carlos apps show shop
+```
+
+An instance cannot reach a private address unless its app allows it. `--egress-allow` takes the app's whole list, comma-separated, and replaces the list before it. To drop one address, pass the list without it; `--egress-allow ""` removes them all. Each entry is a single IP address, with no range, port or zone. Public addresses are refused because instances can reach them already, and so are loopback, link-local, multicast and reserved addresses, the cloud metadata service and the NAT64 prefix. An app may allow at most 8.
+
+A change that adds an address is checked against the deployment's boxes. An address that belongs to one of them is refused, and so is any new address while a box does not publish its address list yet. Boxes that publish none at all are named after the change. An allow takes effect only on a box where every instance runs nested (see `carlos status --layout`). It does not take effect while host claims are on. If a box later takes an allowed address, the console sends an alert.
+
+The sizes are `small` (256 MiB of memory), `standard` (512 MiB), `large` (1 GiB) and `xlarge` (2 GiB), with CPU and IO to match. `carlos apps set --size` sets the app's size, and `--size default` goes back to the build's size. `carlos instances set --size` gives one instance a size of its own, and `--size default` makes it follow the app's size again. A size above `standard` is refused when it is more than a quarter of the memory on the smallest box the app can run on, or when one of those boxes reports no memory total.
+
+After a size change, the command prints each box's memory committed to awake instances, out of its total. CPU and IO change at once. A larger size's memory applies when an instance next starts or is deployed. A smaller size applies only when the instance starts cold. Restart it to apply the new memory now. `carlos status --layout` shows the size each instance runs at.
+
+The console records a change, and the app's boxes apply it. A box that follows the deployment's change index does so within seconds; any other box within about 33 minutes. `carlos apps show` prints the egress allow, the app's size, and every instance with a size of its own. A `!` before an address means one of the deployment's boxes now holds it.
+
 ### carlos ship
 
 Publishes a release. The artifact is hashed, stored under its content
@@ -223,6 +257,12 @@ off is the point of having one: ship mints the next iteration under it. Use
 `--kind static` with a directory to ship a site instead of a binary. `--label`
 is one line for humans and shows up in `carlos releases` and in the console,
 so write it for the person doing a rollback at 2am.
+
+`--assets` names a folder your build writes its files to, for example `/assets/`. Repeat it for up to 8 folders. Each must start and end with `/`, be at most 128 bytes, and contain none of `%`, `?`, `#`, `*` or `..`. `/` alone is refused, because it would keep copies of every page. No folder may sit inside another. A static site cannot use it, because a static site is already served from every region. The folders belong to the release, so a rollback to an older build uses the folders that build declared.
+
+Files under an asset folder are fetched without the visitor's cookies or login, so put only public files there. Anything that needs to know who is asking belongs outside those folders.
+
+Servers keep a copy only when your app answers with status 200, a `Cache-Control` that allows it (for example `public, max-age=31536000, immutable`), a `Content-Type` that is not HTML, and no `Set-Cookie`. Each response says what happened in a `Carlos-Cache` header: `hit` came from a saved copy, `miss` had no saved copy yet, so the server fetched it and tried to keep one, and `bypass` was fetched without keeping a copy.
 
 ### carlos promote
 
@@ -279,6 +319,8 @@ binary, and it says so while it waits. Set one with
 [carlos apps build-probe](/docs/cli#carlos-apps); it is a single command per
 app.
 
+A host behind a password gate ([carlos gate](/docs/cli#carlos-gate)) is watched like any other. Deploy asks the console for a pass that lasts 15 minutes and checks the version through the gate with it. The console only hands one to someone who could already remove the gate, or to a deploy credential for a host on a channel it can deploy its own build to. Each one is recorded in the app's activity log. If the console refuses a pass for a static site, the host is left unchecked and the deploy still succeeds. Otherwise a deploy without a pass keeps waiting and will likely time out.
+
 ```sh
 carlos deploy --app hello ./hello
 ```
@@ -317,7 +359,12 @@ nothing.
 When `carlos deploy` creates your first app, it sends your timezone so the
 console can pick the region nearest you, and prints the choice. `--region
 <code>` chooses instead. On an app that already exists, `--region` must
-match the app's region, or deploy stops before shipping anything.
+match the app's region, or deploy stops before shipping anything. That is
+the app's current region after any `carlos apps region --set`. If `carlos
+deploy --region` names another region, deploy stops before shipping
+anything. Deploy never moves an instance to match the app's region.
+
+`carlos deploy` takes the same repeatable `--assets` flag and passes it to the ship. Save the list as `"assets": ["/assets/"]` in `.carlos/config` and a bare `carlos deploy` declares it on every release. A flag on the command line replaces the saved list for that run, and `--no-assets` ships with none. A release that declares no folders gets no copies, so deploying a build without them turns copying off for that build. `--assets` and `--no-assets` cannot be given together.
 
 `--temporary` creates a new app for a static site that cleans up after
 itself. It is named `tmp-` plus six random letters and digits, or
@@ -329,6 +376,44 @@ app is served only at its own platform address, so `--host` and
 ```sh
 carlos deploy --temporary --ttl 3d ./dist
 ```
+
+#### Redirects for a static site
+
+Put a file named `_redirects` at the top of the site directory. It uses the
+format Netlify and Cloudflare Pages use: one rule per line, with a source, a
+destination and an optional status.
+
+```text
+# source           destination              status
+/old-page          /new-page                301
+/blog/*            /posts/:splat            301
+/docs/:slug        /guide/:slug             302
+/app/*             /app/index.html          200
+https://www.example.com/*  https://example.com/:splat  301!
+/*                 /404.html                404
+```
+
+- A source is a path, or a URL with a host. A URL source applies only to
+  requests for that host, so the last-but-one rule sends `www` to the apex.
+- `:name` matches one path segment. A `*` at the end matches the rest of the
+  path, and the destination gets it as `:splat`.
+- The status is 301 when you leave it out. 302, 303, 307 and 308 are also
+  redirects. 200 serves the destination's file at the requested URL, which
+  is how a single-page app serves its client-side routes. 404 serves the
+  destination's file as the not-found page.
+- A 200 or 404 rule takes a path in the same site. A redirect can also go to
+  another host.
+- A request's query string is kept unless the destination has one of its
+  own.
+- When a file exists at the requested path, the file wins. Add `!` to the
+  status (`301!`) to make the rule win.
+- Rules apply in order, and the first rule that matches is used. A line
+  starting with `#` is a comment.
+
+`carlos ship` and `carlos deploy` refuse a `_redirects` file with a line they
+cannot use, and name the line. Netlify's conditions, such as `Country=`, and
+proxying to another host are not supported. A file can have up to 2,000
+rules. The edge does not serve the `_redirects` file itself.
 
 #### Two builds at once
 
@@ -536,10 +621,9 @@ own error, `attempt to write a readonly database`. That is on purpose.
 Changing a copy would change nothing on the instance, and a command that
 seemed to succeed would say otherwise.
 
-If the app has more than one instance, name one with `--instance`. Only
-instances that sleep have a replica. An instance on your own fleet, in
-another region, or in a pool cannot be read this way, and the command says
-which.
+If the app has more than one instance, name one with `--instance`. Only instances that sleep have a database copy. An instance on your own fleet or in a pool cannot be read this way, and the command says which.
+
+When an instance keeps its data in a different region from the console's, `carlos db query` runs in that region. A server there restores the copy, runs your query and sends back only the rows. `carlos db pull` fetches the copy's files from there and restores them on your machine. Both are encrypted for your terminal on the way, so nothing in between can read them, and nothing is printed or saved until all of it has arrived and been checked. In that region, a query's copy can be at most 2 GB once restored, the query runs for at most 5 minutes, and the rows can total at most 64 MB. A pull can fetch at most 2 GB.
 
 ### carlos run
 
@@ -549,7 +633,7 @@ Runs one command of your app against one instance, as that instance: the same bu
 carlos run --app shop --instance shop.example.com --file orders.csv -- import orders.csv
 ```
 
-Any person who is a member of the account can run a command. A service credential cannot.
+Any person who is a member of the account can run a command. A service credential cannot. The one exception is a `run` credential, which can run the commands it was minted with. [Runs from a service](#runs-from-a-service) says how.
 
 Each --file is uploaded with the request and placed, under its own name, in the directory CARLOS_RUN_DIR names. Together they can come to 64 MB. The directory is deleted when the run ends.
 
@@ -559,9 +643,77 @@ A hibernating instance is woken first. A live one keeps serving, and the command
 
 carlos run exits with the command's own status, 128 plus the signal number when a signal ended it, 124 when it timed out, 125 when it was interrupted or the instance let go of it without a result, 130 when you cancelled it, 3 when the box refused it or did not pick it up within 60 seconds, and 2 when the console refused it.
 
-carlos logs shows when each run started, who asked for it and how it ended. The command's output is not kept there.
+carlos logs shows when each run started, who asked for it and how it ended. The command's output is not kept there. A service's run reads "started by service ci", with the person it named, if any, marked as the service's statement.
+
+If you cannot tell whether a run started (the connection dropped as you sent it), start it with `--idempotency-key <key>`. The key is a string you choose: 1 to 128 characters of letters, digits, dots, underscores, colons and hyphens. Run the same command again with the same key and the same files, and carlos says `already started: run <id>` and follows that run, instead of starting a second. Each `--file` is hashed first, because a key only matches a request that is the same in every byte. The same key with a different command, timeout or file is refused with `idempotency_key_reused`. A key is yours alone: no other person or service can see it or collide with it. It is honoured for 24 hours, or until you have made 32 newer keyed admissions on that instance, whichever comes first. After that the same key starts a new run. If the run has since finished and its output was read, or has been cleared away, carlos says `run <id> was already started with this key, and its output is no longer kept` and exits 2: the run happened, but there is nothing left to follow.
 
 Arguments are kept in the account's audit log, with who ran them. Never put a secret in an argument. Pass it in a --file, or keep it in the instance's environment.
+
+#### Runs from a service
+
+A server that has no person at a terminal, such as a back office that imports an account's data, can start and follow runs with a `run` credential. The account owner mints it:
+
+```sh
+carlos services create --role run --app shop --commands "import classic,import sync" fleet-runs
+```
+
+`--app` and `--commands` are both required. A `run` credential starts, follows, cancels, expires and acknowledges runs of its own app's instances, and does nothing else. No other role can run commands, `admin` included: a credential that can provision instances cannot run commands on them unless it was also minted for that.
+
+`--commands` is a comma-separated list of prefixes, and each prefix is its words separated by spaces. A run is allowed when its arguments start with every word of at least one prefix, compared word for word and exactly. With only `import classic` granted, `import classic --slug acme` runs, and `import classical`, `import` and `import sync` are refused. **A prefix also allows every flag and argument after it**, so grant the shortest prefix that names the work you mean, and do not grant `import` when you mean `import classic`. A prefix of no words is refused. A word is valid UTF-8 of 1 to 128 bytes with no spaces, commas or control characters, and a credential may hold up to 32 prefixes. A refused command answers 403 `command_not_granted` before anything is stored.
+
+The list is fixed at mint. `carlos services ls` shows it, rotating a credential keeps it, and there is no way to edit it: mint a new credential to change what it may run. People are not limited by any list.
+
+A service sees and acts on only the runs its own credential started. Another service's run, a person's run and a run of an earlier credential that had the same name all answer `not_found`, as if there were no such run. Members of the account see every run, a service's included. When a service's run holds an instance, a service that did not start it is told that the instance has a run open and nothing more.
+
+A service may say who a run is for, by sending `on_behalf_of` with an email address of at most 254 bytes. It is recorded on the service's word and checked for nothing but its shape, so it grants nothing. Every place a run is shown reads "run by service ci for ada@example.com (as stated by the service)", or "run by service ci (scheduled)" when it names no one. A person's run cannot send it.
+
+#### The run API
+
+`carlos run` is a client of these routes. A service calls them with its credential as a bearer token, and a person with a signed-in token. Under `/api/cli/apps/<account>/<app>/instances/<host>/runs`:
+
+- `POST` creates a run. The body is multipart: a `meta` part first, as JSON (`argv`, `timeout_s`, `files` as a list of `name`, `size` and `sha256`, and `on_behalf_of`), then one `file` part per file, in the order and under the names `meta` gave. It answers `202` with the run's `id`, `host` and `state`.
+- `GET /<id>?after=<seq>` pages the run's output from after chunk `seq`, and carries the result once the run has one.
+- `POST /<id>/cancel` and `POST /<id>/expire` cancel a run, or give up on one no box has picked up.
+- `POST /<id>/ack` with `{"last_seq": n}` says the output has been read, so the console can delete it.
+- `GET ?key=<key>` answers `{"run_id": "..."}` for the run a key started, or `404`.
+
+Every refusal a run route makes has a `code` beside its `error` sentence, for a caller that has no person to read the sentence. Not being signed in, a credential of the wrong role and an account the caller is not in are answered as they are on every other route, without a code, and tell themselves apart by status.
+
+- `not_found`: no such instance, or no such run. For a service, also a run it did not start.
+- `host_claim`: this console runs with host claims, which cannot yet run commands, so it refuses every run for everyone. The same refusal comes to a `run` credential.
+- `rate_limited`: too many run requests. Wait a minute.
+- `unavailable`: the console's store is not available. Try again.
+- `record_failed`: the console could not record the run or the change. Try again.
+- `read_failed`: the console could not read the run. Try again.
+- `not_runnable`: the instance is of a kind `carlos run` does not work on.
+- `moving`: the instance is moving. Run it once the move has finished.
+- `run_open`: the instance already has a run open. A service that did not start it is not told whose it is.
+- `malformed`: the request is not shaped as above.
+- `invalid_request`: the command, timeout, files or sha256 values in `meta` are not acceptable.
+- `files_too_large`: the files come to more than 64 MB.
+- `import_uncommitted`: the instance is an import that is not committed yet.
+- `command_not_granted`: this credential was not minted for that command.
+- `on_behalf_of_invalid`: `on_behalf_of` is not an email address of at most 254 bytes, or a person sent it.
+- `run_started`: the run has already started, so it cannot be expired.
+- `run_ended`: the run has already ended, so it cannot be cancelled.
+- `run_not_finished`: the run has not finished, so it cannot be acknowledged yet.
+- `last_seq_mismatch`: the acknowledgement named a chunk other than the run's last.
+- `idempotency_key_invalid`: the key is not 1 to 128 characters of letters, digits, dots, underscores, colons and hyphens.
+- `idempotency_key_reused`: the key was used for a different request.
+- `keys_not_ready`: this console does not take keys yet. See below.
+- `file_hash_mismatch`: the bytes of a file are not the sha256 `meta` declared for it. This is a 400.
+
+A create with an `Idempotency-Key` header is admitted at most once. A retry with the same key and the same request answers `202` with the same body and `"replayed": true`, and starts nothing. Keyed creates carry three rules:
+
+- `meta` must declare each file's sha256, in either case. A file whose bytes do not match is refused as `file_hash_mismatch`.
+- A refusal is not remembered, and a key is evaluated afresh on each try. A `run_open` that blocked the first try can succeed on the second, once the other run has finished.
+- A 4xx on a retry means that attempt admitted nothing. An earlier attempt with the same key may have started the run, so confirm with `GET ?key=` before concluding that it never ran. A 5xx, a timeout or a dropped connection means unknown: retry with the same key.
+
+A key is honoured for 24 hours, or until the same caller has made 32 newer keyed admissions on that instance, whichever comes first. The limit is per caller, so another caller can never evict your key. Do not retry a key past that: it starts a fresh run.
+
+Keyed creates are off until the operator of the console turns them on, with `CARLOS_RUN_KEYS=on`, and answer `503 keys_not_ready` until then. The operator does that only once every box runs a build that keeps them. It is a one-way switch: a box rolled back to an older build afterwards forgets the keys silently, and a retry could then start a second run.
+
+Deleting an instance deletes its keys with it. A retry that arrives after the host was deleted and created again starts a fresh run on the new instance.
 
 ### carlos schedule
 
@@ -756,6 +908,10 @@ every few minutes, and asleep instances are measured too. A dash means no box
 has measured it: the instance is not running anywhere yet, it has not created
 its database, or it keeps its data somewhere CARLOS does not manage.
 
+The REGION column names where each instance runs, as a place and a code, such as London (UK). While an instance moves, it also says which way.
+
+The `EGRESS` column lists the private addresses the instance may reach, or `-` for none. A word after `!` means the allow is not in force yet: `pending` until the instance next starts, `failing` while its box retries, or `not available` on a box that cannot apply it. The `REASON` column says why, after `egress:`.
+
 `carlos instances list` shows two builds for each instance: the one installed
 on its box, and the one serving its requests. They differ while a new build
 rolls out, while an asleep instance waits for its next request, and after a
@@ -916,7 +1072,7 @@ question through the console.
 
 ### carlos instances set
 
-Sets how one instance takes new builds: auto or manual updates, the channel, a major version to stay on (stable only), or an exact build to pin. An empty value clears a setting, so the app's default applies again.
+Sets how one instance takes new builds: auto or manual updates, the channel, a major version to stay on (stable only), or an exact build to pin. An empty value clears an update setting, so the app's default applies again. System operators can also give the instance its own size with `--size`; `--size default` clears it. See [carlos apps](/docs/cli#carlos-apps).
 
 ```sh
 carlos instances set a.shop.example.com --updates manual
@@ -928,6 +1084,14 @@ Asks the instance's box to install the newest build it considers ready, even wit
 
 ```sh
 carlos instances update a.shop.example.com
+```
+
+### carlos instances set-assets
+
+Turns asset copying on or off for one instance. `off` means requests for its asset files always reach the app, which helps while you are debugging. `on` goes back to following the folders its release declares. An instance follows its release until you set it.
+
+```sh
+carlos instances set-assets --app shop a.shop.example.com off
 ```
 
 ### carlos sidecars
@@ -979,6 +1143,12 @@ it back from, so `carlos sidecars ls` shows the build its box last started
 for each sidecar, beside the version its channel points at. One that has not
 started on any box reads as unknown rather than as current.
 
+A console operator can pause sidecars for every account not named in
+`CARLOS_SIDECAR_ACCOUNTS`, a comma-separated list of account sqids. A paused
+account gets a 403 with the code `sidecars-paused` from `enable` and
+`create`. Its existing sidecars keep running, and `ls`, `wake` and `rm` still
+work. Unset, nothing is paused.
+
 ### carlos steering
 
 Decides whether one instance's DNS answer varies by where the request comes
@@ -1023,6 +1193,8 @@ necessarily a complete one. The command says so every time it prints.
 
 Its `DB` column is each route's SQLite database size, the same figure as in
 [carlos instances](/docs/cli#carlos-instances).
+
+The REGION column names where each route or box runs, such as London (UK).
 
 ### carlos domains
 
@@ -1133,6 +1305,17 @@ restart, no environment edit, no root-owned file on an edge box. Setting is
 an admin-role write and every change is audited under the app's Activity;
 the app's own instance credential can read the flags but never set them.
 
+### carlos assets
+
+Throws away or inspects the copies that servers keep of an app's asset files. `carlos assets purge --app shop` makes every instance of the app forget what it has saved, so the next request for each file goes to the app. If it stops part way it names the instances that did not change, and running it again finishes the job. `carlos assets status --app shop` lists each instance with the folders its home server is publishing, whether asset copying is on, and the generation the purge has reached. Copies are only kept for folders the release declares with `--assets`.
+
+A purge reaches every server that can read the platform's storage within a minute. A server that cannot stops serving the app's saved asset files within an hour.
+
+```sh
+carlos assets purge --app shop
+carlos assets status --app shop
+```
+
 ### carlos gate
 
 Puts one shared password in front of an app's hostnames — for a static site
@@ -1154,6 +1337,36 @@ attached to the app are gated along with the platform hostname. This is a
 curtain in front of the whole hostname, not accounts for the app's own
 users; an app with real sign-in keeps doing that itself.
 
+### carlos ratelimit
+
+```text
+usage: carlos ratelimit <show|set|clear> [flags]
+
+  show  -app <a> [-host <h>]
+                  the limits on the app's instances (or one host), the
+                  plan's ceiling if there is one, and the last day's refusals
+  set   -app <a> [-host <h>] [-busy-at N] [-share N] [-rate N] [-burst N]
+        [-path /prefix:share=N,rate=N,burst=N]... [-remove-path /prefix]...
+                  change only the values you name; the rest stay as they are
+  clear -app <a> [-host <h>]
+                  go back to the platform's defaults
+
+  -busy-at N      the app counts as busy at N requests in flight (default 64)
+  -share N        while busy, each address may have N in flight (default 16)
+  -rate N         backstop: N requests a second from one address (default 300)
+  -burst N        backstop: bursts of up to N on top of the rate (default 1000)
+  -path           different numbers for one path prefix, such as /api/
+
+  -account    <a>       account (sqid or name; default "ops")
+  -account-id <id>      account sqid, matched as a sqid ONLY
+  -console    <origin>  console to act through (default: the only logged-in one)
+
+Signed-in only (carlos auth login). A quiet app is never limited except by
+the backstop, which only a flood from one address reaches. When the app is
+busy, the addresses with the most requests in flight are turned away first.
+The box picks a change up within seconds of the next converge tick.
+```
+
 ### carlos logs
 
 The app's own stdout and stderr, merged with the platform's events about it:
@@ -1167,6 +1380,10 @@ carlos logs --app hello --since 1h -f
 `-f` follows, polling every two seconds until you interrupt it. `--grep` takes
 an RE2 pattern, `--stream app` drops the platform commentary, and `--host`
 narrows to one instance.
+
+### carlos explain
+
+`carlos explain <code> --app <a>` reads a reference code from a page the platform's edge protection answered. It says which rule fired and when, and shows the request while a record of it is kept, for 7 days.
 
 ### carlos errors
 
@@ -1212,7 +1429,8 @@ Records the edge filed before causes were recorded are grouped under
 
 Page views, daily visitors, bytes served, top pages, top referers and named
 events, counted at the edge as it serves your app: no JavaScript, no cookie,
-no stored IP. Off until you turn it on, for one app or for the whole account.
+no stored IP. New accounts start with analytics on. Turn it on or off for one
+app or for the whole account.
 
 ```sh
 carlos analytics --app hello --set-count edge
@@ -1787,6 +2005,22 @@ carlos accounts plan --account bac --set free --sponsored limits.json --reason "
 
 Without `--set` it prints the plan, who set it and why, and every limit the account has. With `--set` it changes the plan and prints the result. `--reason` is required for a change. `--pack` can be repeated. `--sponsored` names a JSON file of limits; each one replaces the plan's limit where it is more generous.
 
+### carlos billing
+
+Lists the billing problems the console could not settle on its own, and closes one once you have dealt with it in the Stripe Dashboard. It is a deployment-operator command, and it only works where the console has billing turned on (see [Plans](plans#billing-operators)).
+
+```sh
+carlos billing problems
+carlos billing problems -all
+carlos billing close -id 12 -note "refunded and cancelled in the dashboard"
+carlos billing house -account bac -on -note "our own shop"
+carlos billing house -account bac -off -note "now a customer"
+```
+
+`problems` prints one line per open problem: its number, the account, the reason, the subscription, when it opened (UTC) and what the console saw. `-all` adds closed problems. `close` needs `-note`. The console refuses to close most problems while Stripe still shows the subscription as live.
+
+`house` marks an account as a house account, whose checkout carries the house coupon and so pays nothing, or clears the mark. It needs `-account` (the account's sqid), exactly one of `-on` and `-off`, and `-note` saying why. The mark applies when the account starts a checkout, and does not change a subscription it already has. It works only against a console. See [Plans](plans#house-accounts).
+
 ### carlos fleets
 
 A fleet is a group of remote boxes an account owns, dialing in to this
@@ -1830,6 +2064,8 @@ the rungs named with `--rungs` (`canary`, `edge`, `beta`; never `stable`).
 It must name one app and cannot hotfix. If the app has a pipeline, it may
 move `canary/<name>` channels only. CI reads it from
 `CARLOS_SERVICE_TOKEN` with `CARLOS_CONSOLE`.
+
+`run` is for a server that starts commands of an app against its instances, and no other role does that. It is minted with `--app` and `--commands`, and it can run only the commands it names. See [Runs from a service](#runs-from-a-service); it also says what a prefix allows.
 
 One door stays shut to every role: `carlos instances enable`, which writes the
 manifest bounding which domain, pool and regions an instance may be created
@@ -2078,11 +2314,13 @@ not a secret — a wrong-method request gets a 405 from the router, like every
 other route here — but the answer is, because it names other people's
 accounts.
 
-Two things it cannot see, both printed under the table. A sleeping instance
-has no process and so no reading, so it does not appear. And the readings are
-fleet-wide while the account each one is attributed to comes from the
-console's own box's route registry, so on a multi-box deployment an instance
-running elsewhere can show up under `(platform)` rather than under its tenant.
+A sleeping instance has no process or reading, so it does not appear. A note
+under the table explains this. Each reading belongs to the account whose own
+platform domain the instance's hostname is under
+(`<name>.<account>.<apps domain>`), wherever the instance runs, or to the
+owner its box recorded with the reading. An instance with neither, such as one
+on a custom domain, appears as `(unattributed)`. Its usage counts against no
+account, including the platform.
 
 `--layout` shows which layout each instance is on, box by box. `flat` is the
 shared `/data` every instance used to live in. `nested` is the instance's own
@@ -2090,8 +2328,14 @@ directory, where it cannot see its neighbours. `fenced` means a move between
 the two is in progress or stopped part way, and `conflict` means two routes
 claim the same directory; neither wakes until that is resolved. `foreign`
 rows have paths the layout pass does not recognise and leaves alone, and
-`external` rows are run by another supervisor. Like `--instances`, it goes
-through the console and is operator only.
+`external` rows are run by another supervisor. `alias` rows are platform
+addresses that use another instance's process. `REASON` says when the alias
+socket does not exist. Requests to that address then fail. Like
+`--instances`, it goes through the console and is operator only.
+
+The REGION column names where each route or box runs, such as London (UK).
+
+The `SIZE` column is the size an awake nested instance runs at: `swap` while a deploy is swapping it, `?` when its box could not read it, and `-` for anything else. `standard>large` means it runs at standard and its policy asks for large; a note under the table says when that takes effect. The `EGRESS` column is the instance's egress allow as its box applies it. A `!` before an address means one of the deployment's boxes now holds it. A word after `!` means the allow is not in force: `failing`, `policy unreadable`, `policy unverifiable`, `policy expired`, `box not wholly nested`, `not yet supported under claims`, or `refused` when the box dropped an entry. `REASON` gives the detail after `egress:`.
 
 A box that runs `nested` instances beside `flat`, `foreign` or `external`
 ones gets a warning after the table. Each of those still shares the agent's
@@ -2205,23 +2449,15 @@ image before starting `apply`, `recover`, `edge` or `console`. Once armed,
 the local floor remains enforced independently of `CARLOS_HOST_CLAIM`.
 The member command remains `carlos ops host resolve`.
 
-#### carlos system claims
+#### carlos system db-worker
 
-`carlos system claims` prepares the dev claim mechanics trial. Run `help` for the commands and required inputs. `run` executes one revision-checked phase from a protected plan on the trusted signing host; `inspect` returns the verified roster and its signed envelope. Box installers run as root. Add `--dry-run` to preview an operation.
-
-`install-control` installs only instance-control and reloads systemd. `console-config` uses a separate console environment file and leaves host execution claims off. Neither installer starts its service.
-
-Two `run` phases make the files `carlos system guard-arm` takes. `sign-policy` signs the armed policy for a floor and writes nothing to the bucket. `publish-identity` publishes a release's signed identity. It takes the router's hash from the release's signed checksum list, and the console's from the console app's signed release, chosen by its build. The console must be built with the release tag as its version, or the phase refuses it. Build it stripped, with -s -w, as releases are built. Each phase writes its file to `--out`, a new path, readable by root only. Pass these files to `guard-arm` exactly as written. A JSON tool would change the signed bytes.
-
-`install-console` copies the console build that the published identity names into `/opt/carlos/system/console/console` and `console.prev`, owned by root. It refuses a source whose bytes don't match the identity, and it doesn't touch `console.service`. Pass that path to `guard-arm --console`.
-
-To replace an installed console, add `--upgrade --from <sha256>`, where the sha256 is the console that is running now. It refuses unless that build is what the box holds, then installs the new console and keeps the old one as `console.prev`. A box upgraded this way can't be armed again with `guard-arm` until `install-console` has been run without `--upgrade`, because `guard-arm` expects both copies to be the same build.
-
-After starting the guarded console, run `console-report` on its box as root. It checks the signed roster, guard, systemd process and running executable, then records that process in the existing private box report. It refuses stale box evidence and leaves the report’s timestamp unchanged. Run it again after a console restart and immediately before floor publication; the next agent report may replace the process entry.
+`carlos system db-worker` runs on platform boxes only. systemd starts it for each forwarded database query. You never run it yourself.
 
 #### carlos system journal-migrate
 
 Before starting claim-enabled services on a box with legacy journals, stop the edge and agent. Run `carlos system journal-migrate` as root with `CARLOS_HOST_CLAIM=1` and the deployment environment loaded. The command imports journals only when signed root stop evidence verifies them. It leaves the original files in place. After migration, root ignores changed legacy files and logs an alert. Keep the migration marker.
+
+The migration census reads the backfill plan `backfill-collect` wrote. It reports each ordinary instance route on the box as that box's installation, so `backfill-adopt` can give the host to this box. If the window masks units by moving each unit file aside and linking `/dev/null` in its place, pass `--window DIR`, the window's directory, with the originals in `DIR/held`. The census then accepts those masks and no others.
 
 #### Deployment-wide object scanning
 
@@ -2319,6 +2555,44 @@ carlos system legacy-routes assign says which account and app the routes an oper
 ```sh
 carlos system legacy-routes assign --name shop --to bac/shop
 ```
+
+#### Instance lifetimes
+
+carlos system lifetimes cutover switches a console without host claims onto instance lifetimes. It is done once per deployment, and it cannot be undone. Every box must run a release that knows about lifetimes first.
+
+Roll the boxes before the console. Until the console rolls, an older console may rewrite an instance record without its sequence field, record_seq. That is the exposure the deployment has today, and it ends when the console rolls.
+
+An older box, one whose release does not publish lifetimes-1, must never be started, restarted or rolled back into the fleet once control/lifetimes-cutover.json exists.
+
+Run it in this order:
+
+1. Stop the old console. An older console must never run beside this one, and must never be started again once the cutover has begun.
+2. Start the new console.
+3. Run the command, and read its output until it says on.
+
+```sh
+carlos system lifetimes cutover
+```
+
+The console writes control/lifetimes-cutover.json and at once stops taking changes of every kind. While it switches on instance lifetimes, every change made through the console answers 503 "the console is switching on instance lifetimes. try again in a minute". That covers changes to instances, deploys and promotions, invites and account actions, from the CLI and from the browser. Reads keep working. The refusal lasts at least a minute. It lasts longer while changes the console took before the marker are still finishing, and the command prints how many are left:
+
+```text
+instance lifetimes: switching on; 2 unit(s) of earlier work still finishing
+```
+
+A minute after the last of that work ends, lifetimes are on:
+
+```text
+instance lifetimes: on since 2026-10-22T12:01:30Z
+```
+
+The command asks again every 5 seconds until lifetimes are on. Running it again is safe: it only reports how far the console has got. With --no-wait it prints the state once and returns.
+
+While the console starts, until it has read the marker, every page answers 503 "the console is starting. try again in a minute". This is usually over in a moment.
+
+A console that restarts after the cutover waits a minute after its own start before it turns lifetimes on again. A marker written by hand closes the console to changes within 10 seconds. If the marker exists but cannot be read, the command says so; repair control/lifetimes-cutover.json by hand. A console with host claims has no lifetimes, and refuses the command.
+
+Operators only.
 
 #### Box and group roles
 
