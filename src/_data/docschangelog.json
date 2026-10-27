@@ -3,6 +3,3638 @@
   "repo": "https://amadan.net/carlos/platform",
   "releases": [
     {
+      "tag": "v0.28.29",
+      "date": "2026-10-27",
+      "sha": "50c0cb14b429993b89bcb71dbf51a645580cc4aa",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.29",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Sidecars take the home region by its code.** `carlos sidecars create --region` with the home region's code now creates the sidecar in the home region, as `carlos instances create` already does. Before, a deployment with an active hostname history refused it, and one without stored the sidecar under a region no box serves.",
+                "branches": [
+                  "nearest-region-followups"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-sidecars",
+                  "/docs/cli#carlos-instances"
+                ]
+              },
+              {
+                "md": "**Plans through Stripe Checkout, switched off.** The console now includes plan and pack checkout through Stripe, team plan seat matching and a billing page. Operators can use `carlos billing house` to mark house accounts once billing is configured. These features stay dormant while `CARLOS_BILLING` is unset, so users cannot use them yet.",
+                "branches": [
+                  "plans-6b-checkout-flow"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-billing"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.26 or earlier, read the [v0.28.27 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.27) first, and the notes they point to."
+              },
+              {
+                "md": "**Build a console with `make build-console`.** Release builds now carry the full commit they were built from. The console writes it into the hostname history's floor, and the console roll script refuses a floor that doesn't name one. `console hosts-used activate` refuses a console that doesn't name its commit.",
+                "branches": [
+                  "nearest-region-followups"
+                ]
+              },
+              {
+                "md": "**Turn app regions on only once the hostname history is active.** Follow \"Completing the history\" and then \"Turning app regions on\" in the README, in that order."
+              },
+              {
+                "md": "**The box agent's behaviour does not change.** Roll it anyway, so every box runs the same release."
+              },
+              {
+                "md": "**Every other dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_BILLING` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "50c0cb14b429993b89bcb71dbf51a645580cc4aa",
+          "date": "2026-10-27",
+          "subject": "Nearest-region follow-ups before flagship Task 15. #442: release builds stamp their full commit (version.Commit via -ldflags in make build and make build-console, which refuses an empty one; version.Revision falls back to vcs.revision), so the hostname history's floor always names a commit and roll-console.sh accepts it; console hosts-used activate refuses a build that doesn't name a full commit before writing anything, and WriteHostsFloor refuses an empty commit; the README release recipe builds the console with make build-console. #441: the sidecar create door normalises the home region's name to the record's empty region before validation, as the instance door has since #346, so a sidecar created with -region <home code> passes S4 and lands where the home's boxes serve it. Witnesses through the built console binary and the HTTP doors after a real activation. Astra round 1 READY; census approved by Astra (#280); copy by delegated Luna pass.",
+          "branch": "nearest-region-followups",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/nearest-region-followups",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 346,
+              "title": "Review: carlos-static-redirects",
+              "state": "open"
+            },
+            {
+              "id": 441,
+              "title": "Sidecar create with the home region code (-region ie) is refused with S4 once the hostname history is active",
+              "state": "open"
+            },
+            {
+              "id": 442,
+              "title": "Hostname history floor has an empty commit when a release-built console activates; roll-console.sh would refuse it on flagship (Task 15)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "bf55f29e67f21b56667b5ab3f6cefa7c9d40c555",
+          "date": "2026-10-27",
+          "subject": "Plans 6b: checkout, team plans and the billing page, dormant until 6c. Owners buy Personal, Community or Business with packs through Stripe Checkout (the /upgrade entry the pricing page links to), change packs, upgrade, stop or resume renewal, match seats on team plans and reach a locked portal for cards and invoices; operators mark house accounts (carlos billing house). Every provider write is a persisted prepared request resent verbatim under Stripe idempotency keys, gated by one recovery predicate and billing readiness, with provider time for every safety decision; late restores after renewal are detected; account deletion finishes outstanding work before judging live subscriptions. Plan accepted by Astra after nine rounds, Paul's Calls 1-18; per-task Astra reviews; whole-branch review round 2 READY AFTER FIXES with the fix applied; census approved by Astra (#280); copy through Luna, approved by Paul. Switches on after 6c with existing accounts sponsored first (Paul, 2026-10-27, #439).",
+          "branch": "plans-6b-checkout-flow",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/plans-6b-checkout-flow",
+          "commits": 85,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 425,
+              "title": "rollout flake: TestAMoveOntoTheInstalledGoodBuildWaitsForASignedRollback times out waiting for the move onto v1 on the CI runner",
+              "state": "open"
+            },
+            {
+              "id": 439,
+              "title": "Plan 6b: 24 hours without a merge (stopping rule 8), and a switch-on date (rule 5)",
+              "state": "closed"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-billing",
+            "/docs/plans#billing-operators",
+            "/docs/plans#turning-it-on",
+            "/docs/plans#the-portal-and-the-house-coupon",
+            "/docs/plans#billing-problems"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.28",
+      "date": "2026-10-27",
+      "sha": "3800b8bbecf1b8e0a6ebbb0256d2c07b5254e672",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.28",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**New accounts start with analytics on.** An app's Analytics tab now has a Turn on button when analytics is off, and creating an app lets you choose, starting from the account's setting. `carlos apps create` takes `--analytics` or `--no-analytics`. Existing accounts keep their current setting.",
+                "branches": [
+                  "analytics-onramp"
+                ],
+                "docs": [
+                  "/docs/cli#carlos-apps"
+                ]
+              },
+              {
+                "md": "**Operator pages move to a new layout.** `/fleet` is now a dashboard of who is using the platform, what they are doing and whether everything is running. Today's box list moves to Boxes, and new People and Activity pages join Metrics, Economics and Architecture.",
+                "branches": [
+                  "operator-pages"
+                ]
+              },
+              {
+                "md": "**A script scans for the hostname history.** `scripts/hosts-used-scan-aws.sh` lists every box and bucket on the roster for the offline step in the README, read-only. A box's readiness probe directory no longer counts as an unknown entry.",
+                "branches": [
+                  "nearest-region-scan"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.26 or earlier, read the [v0.28.27 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.27) first, and the notes they point to."
+              },
+              {
+                "md": "**The box agent's behaviour does not change.** Roll it anyway, so every box runs the same release."
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "3800b8bbecf1b8e0a6ebbb0256d2c07b5254e672",
+          "date": "2026-10-27",
+          "subject": "nearest-region-scan: hosts-used AWS adapter scan (Task 11), plain-prefix and strict S3 page gates, mapper skips the probe dir (#437, #438)",
+          "branch": "nearest-region-scan",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/nearest-region-scan",
+          "commits": 11,
+          "discussions": [
+            {
+              "id": 437,
+              "title": "Box listings carry instances/_probe, which the Task 6 mapper reports unmapped: activate would refuse on every box",
+              "state": "open"
+            },
+            {
+              "id": 438,
+              "title": "Task 11 scan: stopping rule 2 after Astra round 2. Which cut for the prefix and S3-page families?",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "81db4870d8692d65f2c2cbb795b84578f46d074d",
+          "date": "2026-10-27",
+          "subject": "operator pages plan: revise for what landed and what was decided since 2026-10-25",
+          "branch": "operator-pages",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/operator-pages",
+          "commits": 33,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "0a32ce38b45106ff1b690b8d6359d1c444688d45",
+          "date": "2026-10-26",
+          "subject": "Analytics on-ramp: plan",
+          "branch": "analytics-onramp",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/analytics-onramp",
+          "commits": 11,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-apps",
+            "/docs/cli#carlos-analytics"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.27",
+      "date": "2026-10-26",
+      "sha": "a55f0f23474aa3ae1208d4d6b4269f471d1496c2",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.27",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**A platform alias now wakes its sleeping instance.** An apex or other platform alias used to answer 502 while its instance slept. It now goes through the instance's own entry, so a request to it wakes the instance, and the instance's password gate now applies to the alias too. Usage through the alias counts against the instance. An alias whose instance is not ready, or whose socket belongs to more than one route or to another tenant, is not served."
+              },
+              {
+                "md": "**Statements charge tagged usage from instances on custom domains to their owner.** Hourly usage rollups now include each tenant's tagged usage, so the statements pass charges it to the right account."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.24 or earlier, read the [v0.28.25](https://github.com/carlosframework/releases/releases/tag/v0.28.25) and [v0.28.26](https://github.com/carlosframework/releases/releases/tag/v0.28.26) operator notes first, and the notes they point to. Region high availability stays off until you set `CONSOLE_HA_REGIONS`."
+              },
+              {
+                "md": "**The box agent changes.** The edge serves a platform alias through its instance's entry, and a box's edges file stops listing an alias the edge refuses. The hourly rollups the box writes include each tenant's tagged usage."
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "a55f0f23474aa3ae1208d4d6b4269f471d1496c2",
+          "date": "2026-10-26",
+          "subject": "alias-wake-338: a platform alias wakes its sleeping instance through the instance's own entry (#338 follow-up)",
+          "branch": "alias-wake-338",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/alias-wake-338",
+          "commits": 7,
+          "discussions": [
+            {
+              "id": 151,
+              "title": "Two file-mode tests fail under a 0077 umask",
+              "state": "open"
+            },
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 338,
+              "title": "A platform alias keeps the flat socket after its instance nests (502)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "e92c22adbcfd5266edb6bcae589d31de6f12d736",
+          "date": "2026-10-26",
+          "subject": "rollup-tenant-tags: hourly rollups carry each tenant's tagged usage, so statements count custom-domain instances for their owner",
+          "branch": "rollup-tenant-tags",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/rollup-tenant-tags",
+          "commits": 3,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.26",
+      "date": "2026-10-26",
+      "sha": "80343a50d1e4991ad001cef057fd68a7757399dc",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.26",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Instances born highly available survive an agent restart.** Root now reads the agent's process id from systemd before it refuses a connection, and the agent retries a refused startup sweep up to five times within 20 seconds, before any wake. High availability in a region still stays off until you set `CONSOLE_HA_REGIONS`."
+              },
+              {
+                "md": "**A box can serve the shared pool and a named pool.** `CARLOS_POOLS` takes the reserved name `@shared` for the shared pool, so `CARLOS_POOLS=@shared,hapair` serves both."
+              },
+              {
+                "md": "**Platform aliases follow their instance.** When an instance moves to the nested layout, its platform aliases move with it, so they no longer answer 502. On each platform box, the agent repairs an alias when its old socket no longer exists."
+              },
+              {
+                "md": "**Usage and billing charge each instance to its own account,** including instances on other boxes. Readings that can't be tied to an account are counted against no account. Nothing is back-filled. The open month corrects at the next statements pass."
+              },
+              {
+                "md": "**A hostname that held data can be kept from ever being created again.** This needs an offline step, described in the README under the hostname history. Until it is done, new hostnames are recorded and nothing is refused."
+              },
+              {
+                "md": "**Console pages load faster,** with fewer storage reads."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.24 or earlier, read the [v0.28.25 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.25) first, and the notes they point to."
+              },
+              {
+                "md": "**The box agent changes.** Besides the restart fix above, root no longer fails to read the registry while the agent is still adding a new column, which v0.28.25 logged once at the upgrade as `no such column: ha`."
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "80343a50d1e4991ad001cef057fd68a7757399dc",
+          "date": "2026-10-26",
+          "subject": "Region HA P1a follow-up (#433): the startup sweep survives an agent restart (root re-reads the edge's MainPID from systemd before refusing a peer and accepts only an exact match; the agent retries a refused sweep up to five times within 20 s, always before any wake); root's read-only registry reads every migration-added routes column as its default when the table lacks it (one shared migration definition, every column tested on its own); CARLOS_POOLS gains the reserved token @shared for the shared pool, through one parser (provision.ParseBoxPools), so a box can serve the shared pool plus a named pool (the dev HA pair 'hapair'). Reviews: Astra round 1 READY AFTER FIXES (one P2 fixed), round 2 READY; census ha-p1a-433 approved on #280.",
+          "branch": "ha-p1a-dev-pair-433",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/ha-p1a-dev-pair-433",
+          "commits": 10,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 433,
+              "title": "v0.28.25 (region HA P1a) on dev: root reads routes.ha before the agent adds it; the startup sweep never retries",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "70930b64b0e2aef65ed8dec4c32c656a2d574577",
+          "date": "2026-10-26",
+          "subject": "usage-attribution-390: usage and billing attribute every box's readings by the box's tenant tag or the host's account namespace, not the console box's registry (#390)",
+          "branch": "usage-attribution-390",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/usage-attribution-390",
+          "commits": 5,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 390,
+              "title": "Usage attribution is box-local: census, fleetMeters, statements and status --instances charge remote tenants to the platform",
+              "state": "closed"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-status"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "d3c5601be33f99fb64f293dc6d308b9301567c08",
+          "date": "2026-10-26",
+          "subject": "alias-socket-follow-338: platform aliases follow their instance's socket, and a repair for stale ones (#338, #392)",
+          "branch": "alias-socket-follow-338",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/alias-socket-follow-338",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 338,
+              "title": "A platform alias keeps the flat socket after its instance nests (502)",
+              "state": "open"
+            },
+            {
+              "id": 392,
+              "title": "taskmonger.bdk.oncarlos.com is a route on two boxes (annie and barbara), both publishing it as home, with no instance record",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-status"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "1eb4e7624d557360600057fa20d7b80b62b018c5",
+          "date": "2026-10-26",
+          "subject": "Nearest-region never-reuse, merge B: offline activation and the refusals",
+          "branch": "nearest-region-b",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/nearest-region-b",
+          "commits": 21,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 404,
+              "title": "Host lifecycle claims shelved; live moves and paid HA get a new, smaller design",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "fc30b42163ac77e1505b4ab6df6125f4fd28767c",
+          "date": "2026-10-26",
+          "subject": "Console 150 ms budget: quick wins",
+          "branch": "console-perf-quick-wins",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/console-perf-quick-wins",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "78c23655e35b1914386f4dd9a59c3e2c48c0f9ed",
+          "date": "2026-10-26",
+          "subject": "retire-app-lock-407: console record writes that can add a follower share the app lock with the canary retire",
+          "branch": "retire-app-lock-407",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/retire-app-lock-407",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 407,
+              "title": "Canary retire: a create between the final re-list and the delete can slip through (app lock follow-up)",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.25",
+      "date": "2026-10-26",
+      "sha": "fd93024a8b6d54e58306ab8137f359097ab2aab3",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.25",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**The first part of high availability in a region. It stays off until you turn it on.** A new console setting, `CONSOLE_HA_REGIONS`, lists the regions whose new instances are born highly available. Such an instance can wake on any box in its region, and only one box serves it at a time. This release turns it on nowhere. Instances that exist today keep working exactly as before, and are never converted."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.23 or earlier, read the [v0.28.24 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.24) first, and the notes they point to."
+              },
+              {
+                "md": "**The box agent changes.** Each lease lock now names the box, its instance id when known, and the process id. For instances that exist today, the lock is still deleted when the instance sleeps. For an instance born highly available, the box writes a release marker instead of deleting the lock. Another box takes the instance only after a clean marker. A box reuses its own local copy only when the marker names that box, the lifetime matches, and the local state is unchanged. Otherwise it restores the instance from storage. Such an instance runs only in the nested layout. A box that cannot run it nested refuses the wake."
+              },
+              {
+                "md": "**Moves and places refuse highly available instances. Imports into a highly available region refuse.** An offline move of one and `carlos apps place` for its app are refused before anything stops. An import into a highly available region is refused before anything is written.",
+                "docs": [
+                  "/docs/cli#carlos-apps"
+                ]
+              },
+              {
+                "md": "**`carlos system join` is gone.** Joining mode, its units `carlos-system-join.path` and `carlos-system-join.service`, and the console's enrolment pass are removed. Bootstrapping a box removes those units if an earlier build left them.",
+                "docs": [
+                  "/docs/cli#carlos-system"
+                ]
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "fd93024a8b6d54e58306ab8137f359097ab2aab3",
+          "date": "2026-10-26",
+          "subject": "Region HA without claims, P1a: born-HA hosts on a region's boxes, single writer by the Litestream lease. Spec rev 6.1 (N-HA1..7, approved by Paul) and plan P1a rev 4. P0 removes the claim code that would act under the HA switch (joining mode, enrolment pass, the claim arm of beginExecutableChange). The lease owner names the box (box/v1;ref;iid;pid); a graceful release writes a release marker instead of deleting the lock, failed releases are persisted and retried, and another box acquires only on a clean marker. A box reuses its local copy only when the marker names it, its lifetime and an unchanged tree; otherwise it restores into a clean tree. Born-HA hosts (record stamped ha:true by the console for CONSOLE_HA_REGIONS) run nested only, publish files and wake state, mint secrets only through one guard and launch the acknowledged bytes; same-box recovery needs root's startup sweep and an empty host slice. Moves, imports and placement refuse HA hosts (copy RHA-P1a-C1/C2 approved by Paul). Seeded N-box simulation for single writer and no stale serving (3000 seeds, 14 mutations caught). Reviews: Astra per-task on risky tasks, whole-branch with one fix wave; census census-ruling region-ha-p1a approved by Astra in three rounds on #280. Dormant until CONSOLE_HA_REGIONS names a region. Not released.",
+          "branch": "design-region-ha-no-claims",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/design-region-ha-no-claims",
+          "commits": 67,
+          "discussions": [
+            {
+              "id": 199,
+              "title": "A deleted instance's replica is inherited by whoever next creates the same host, in any account",
+              "state": "open"
+            },
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 421,
+              "title": "Region HA without claims: review budget (stopping rules 1-2)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.24",
+      "date": "2026-10-26",
+      "sha": "d7ae1d76c3efa8b7e6a9546471da9164c296b5f0",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.24",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**The console now shows CPU and memory for nested instances, on their own box and on other boxes.** The box agent reads each nested instance’s units and reports them under the instance’s name. Readings appear only for instances on boxes running this release. The first reading after an agent update is not tenant-marked when it includes units already running when the agent started."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.22, read the [v0.28.23 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.23) first: they cover the asset cache, which stays off until you arm a box. Coming from v0.28.16 or earlier, read the [v0.28.17 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.17) too."
+              },
+              {
+                "md": "**The box agent changes.** Each metrics sample now also reads the units of every nested host, sums them and reports the sum under `carlos-exec@<host>`. The agent marks the reading with the tenant only when it can confirm the instance was started for that tenant and remained that tenant while the sample was read, as v0.28.23 does for other instances. A reading that includes a unit that was already running when the agent started is never marked. After that unit stops, the first reading is still unmarked. The next reading can be marked. The console's side of this shipped in v0.28.23."
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "d7ae1d76c3efa8b7e6a9546471da9164c296b5f0",
+          "date": "2026-10-26",
+          "subject": "remote-metrics-nested: the metrics sweep samples nested (isolated exec) instances and tags them with their tenant",
+          "branch": "remote-metrics-nested",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/remote-metrics-nested",
+          "commits": 6,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.23",
+      "date": "2026-10-26",
+      "sha": "acfa4f805db1724fd410148dd69b7dee8d6edeaa",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.23",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Edges can keep copies of an app's asset folders.** On an armed box, the edge can keep copies of cacheable files under the folders an app declares with `carlos deploy --assets` or `carlos ship --assets`, and answer later matching requests from those copies. An armed box in another region can fill its copy from the app's home box, so a visitor far from home can get the file from a nearer box. For cache-eligible requests, `Carlos-Cache` is `miss` when the box fetched the file for a cache fill, even if the copy was not ultimately stored, `hit` when it answered from its copy, and `bypass` when it forwarded the request without using the cache. Nothing is copied until an operator arms a box.",
+                "docs": [
+                  "/docs/cli#carlos-deploy",
+                  "/docs/cli#carlos-ship"
+                ]
+              },
+              {
+                "md": "**The console can show CPU and memory for non-isolated instances on other boxes.** This works when the box can confirm that the instance was started for that tenant and remained that tenant while the sample was read. Instances that run inside nested groups, and isolated instances on other boxes, still show no readings."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.16 or earlier, read the [v0.28.17 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.17) first."
+              },
+              {
+                "md": "**The console, CLI, and router binary change, and so does the box agent.** The agent marks samples from a non-isolated instance only when it can confirm that the instance was started for that tenant and remained that tenant while the sample was read. The console uses a reading from another box only when that mark matches the instance, and an older console ignores the mark."
+              },
+              {
+                "md": "**The asset cache stays off until you arm a box.** To arm one, set `CARLOS_ASSET_CACHE=1` in its host.env and restart it. The copies live in `asset-cache` under the box's data directory. They take at most 4 GiB or a tenth of the data filesystem, whichever is smaller. A positive `CARLOS_ASSET_CACHE_MAX` value sets the size in bytes instead. Only an armed home box publishes an app's assets to other boxes. In dev, arm the home box for a test app first. Then arm one box in another region and verify that it can fetch the app's asset from the home box before arming the rest. On the flagship, arm the console box first, then one small box and watch its disk, then the rest one at a time."
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "acfa4f805db1724fd410148dd69b7dee8d6edeaa",
+          "date": "2026-10-26",
+          "subject": "retire-window-415: every console record delete marks the canary-retire window",
+          "branch": "retire-window-all-deletes-415",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/retire-window-all-deletes-415",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 415,
+              "title": "Lifetime detach, recovery and previous-owner cleanup skip the canary-retire deletion window",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "76bd4d3addd29b87b62eafb69712fba1c2802cc1",
+          "date": "2026-10-26",
+          "subject": "Edge asset cache plan 3: serve declared asset folders from every edge",
+          "branch": "edge-asset-cache-3",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/edge-asset-cache-3",
+          "commits": 47,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 369,
+              "title": "Census rulings as approvals: classify, one command to propose, approve in one action",
+              "state": "open"
+            },
+            {
+              "id": 396,
+              "title": "Edge asset cache: carlos assets status follow-ups (unknown state, shared election, EAC-16 wording)",
+              "state": "open"
+            },
+            {
+              "id": 414,
+              "title": "Edge asset cache: far recording corners under protection (follow-up from plan 3)",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-ship",
+            "/docs/cli#carlos-assets"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "4dc5902d4f244a3de346b258660950472df9b07a",
+          "date": "2026-10-26",
+          "subject": "remote-instance-metrics: boxes tag instance metrics with their tenant; the console shows CPU and memory for instances on other boxes",
+          "branch": "remote-instance-metrics",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/remote-instance-metrics",
+          "commits": 8,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "f7644a9cfb3f84a07e29a7cbbcc4e143d1d40229",
+          "date": "2026-10-26",
+          "subject": "fix-427: TestBounceForNamesTheCause allows the stop's own event after the bounce",
+          "branch": "fix-427-activator-flake",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fix-427-activator-flake",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 427,
+              "title": "activator flake: TestBounceForNamesTheCause sees the async 'instance stopping' event as a second event",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.22",
+      "date": "2026-10-26",
+      "sha": "c5d6d0f5639610f17ee8920ad8f6c2f5f53a04c9",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.22",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Region labels now show the code in capitals, such as \"London (UK)\".** The console and the CLI print the new form. Commands still take the lower-case code, such as `--region uk`, and JSON output keeps it lower case."
+              },
+              {
+                "md": "**The Overview's Running tile now counts instances on other boxes.** An app whose instances all run on a box other than the console's own showed \"?\" in its Running tile. The tile now counts them from their boxes' reports. CPU and memory for those instances are still not shown."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.16 or earlier, read the [v0.28.17 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.17) first."
+              },
+              {
+                "md": "**The console, CLI, and router binary change.** The router binary includes the updated region-label package, but box routing does not change."
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "c5d6d0f5639610f17ee8920ad8f6c2f5f53a04c9",
+          "date": "2026-10-26",
+          "subject": "label-case-running-tile: region labels read London (UK); the Running tile counts instances on other boxes",
+          "branch": "label-case-running-tile",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/label-case-running-tile",
+          "commits": 4,
+          "docs": [
+            "/docs/cli#carlos-instances",
+            "/docs/cli#carlos-routes",
+            "/docs/cli#carlos-status"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "7c9e9d6a6e7b773808cf88ae12abf3b774744ba2",
+          "date": "2026-10-26",
+          "subject": "Census re-base (C2): only code the root binary compiles, reviewer decides every class",
+          "branch": "census-rebase-c2",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/census-rebase-c2",
+          "commits": 22,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 401,
+              "title": "edge flake: TestAwakeThrottleClosesAndRefusesUpgrades, socket still open after 0.02 s on the CI runner",
+              "state": "open"
+            },
+            {
+              "id": 420,
+              "title": "Three load-dependent test flakes seen in branch CI (edge awake throttle, rootfs start lock, fleet metrics speed rows)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.21",
+      "date": "2026-10-26",
+      "sha": "563453808bdd4ff0ac7f7c47f5a6e4a3293987f0",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.21",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**You can now change the region where an app's new instances start.** `carlos apps region --app <app>` shows it, and `carlos apps region --app <app> --set uk` changes it. An account owner or deployment operator can change it from the CLI. Owners and deployment operators who are account members can also use the Region control on the app's Settings page. A deployment operator who is not a member must use the CLI. Changing it moves nothing. Existing instances stay where they are, and only instances created afterwards start in the new region. An app whose instances start in a pool keeps starting them in the home region. To move an instance that exists, use `carlos move`. `carlos deploy --region` now checks against the app's current region.",
+                "docs": [
+                  "/docs/cli#carlos-apps",
+                  "/docs/cli#carlos-move",
+                  "/docs/cli#carlos-deploy"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.16 or earlier, read the [v0.28.17 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.17) first."
+              },
+              {
+                "md": "**Nothing changes on the boxes.** The app's region is kept in the console's database. The console adds the region fields to its apps table when it starts, and an older console ignores them. A console rolled back to v0.28.20 keeps any region changed with this release."
+              },
+              {
+                "md": "**The console now records each hostname before new app data is written, and refuses nothing for reuse yet.** Before it creates an instance, a seeded or imported instance, or a sidecar, the console writes a mark for the hostname under `control/hosts-used/` in the deployment bucket. If it cannot write the mark, it refuses the create with \"Could not check whether <host> is free. Try again.\" and creates nothing. `carlos system hosts-used status` shows the mode and how many hostnames are recorded. The mode stays incomplete, so an existing mark does not refuse a create yet. Nearest-region placement stays off while `CONSOLE_APP_REGIONS` is unset. A console rolled back to v0.28.20 ignores the marks.",
+                "docs": [
+                  "/docs/cli#carlos-system"
+                ]
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "563453808bdd4ff0ac7f7c47f5a6e4a3293987f0",
+          "date": "2026-10-26",
+          "subject": "fix-423: console tenant tests assert on rendered cells, not the whole page body",
+          "branch": "fix-423-test-substring",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fix-423-test-substring",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "70d3767265fa52b596285152480bd230a0cc23b2",
+          "date": "2026-10-26",
+          "subject": "Nearest-region never-reuse, merge A: record every hostname that holds data",
+          "branch": "nearest-region-a",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/nearest-region-a",
+          "commits": 13,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 404,
+              "title": "Host lifecycle claims shelved; live moves and paid HA get a new, smaller design",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "25bfb7a50bb9e2939460402580586b6bc98751d7",
+          "date": "2026-10-26",
+          "subject": "app-region-set: carlos apps region shows and changes where an app's new instances start (owner or operator)",
+          "branch": "app-region-set",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/app-region-set",
+          "commits": 6,
+          "discussions": [
+            {
+              "id": 426,
+              "title": "app-region-set: review notes (stopping rule 2, merged 25bfb7a)",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-apps",
+            "/docs/cli#carlos-deploy"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.20",
+      "date": "2026-10-26",
+      "sha": "b1d00ca7d84dd2c158151469f9fd40283707e33b",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.20",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Every app and instance now shows where it runs.** The console and the CLI name a region like \"London (uk)\" or \"Dublin (ie)\". The app list, the Overview, the Running tab, the instance page, Releases and Settings show it, and so do `carlos apps list`, `carlos instances list`, `carlos routes`, `carlos sidecars list` and `carlos status --instances`. An app on a customer fleet shows \"fleet\" and the fleet's name. A new CLI talking to an older console prints the code alone. Commands still take the code, such as `--region uk`.",
+                "docs": [
+                  "/docs/cli#carlos-apps",
+                  "/docs/cli#carlos-instances",
+                  "/docs/cli#carlos-routes",
+                  "/docs/cli#carlos-sidecars",
+                  "/docs/cli#carlos-status"
+                ]
+              },
+              {
+                "md": "**The console's app pages are reorganised.** Errors, Availability and Analytics are now their own app tabs. Deployments and Release history are one Releases page, with the only Roll back button under Live now. Placement and a new Errors and analytics section are in the app's settings. Old links to Deployments, the pipeline and the advanced settings redirect to the new pages."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.16 or earlier, read the [v0.28.17 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.17) first."
+              },
+              {
+                "md": "**Operators can now set an app's egress allows and instance sizes, and nothing changes until they do.** `carlos apps set --egress-allow` lets an app's instances reach named private addresses. `carlos apps set --size` and `carlos instances set --size` pick small, standard, large or xlarge, from 256 MiB and half a CPU up to 2 GiB and four CPUs. `carlos apps show` reads the policy back. A larger size's memory applies at the instance's next start or deploy, and a smaller one at a cold start. CPU and IO change at once. Before the first grant, every box and every console that writes the deployment bucket must run this release. To roll a console back below this release once any policy exists, first delete everything under `control/app-policy/` in the deployment bucket, which removes every allow and size. The README's \"App policies\" section has the rest.",
+                "docs": [
+                  "/docs/cli#carlos-apps",
+                  "/docs/cli#carlos-instances-set"
+                ]
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "b1d00ca7d84dd2c158151469f9fd40283707e33b",
+          "date": "2026-10-26",
+          "subject": "region-labels: every app and instance shows its region as a place name in the console and CLI",
+          "branch": "region-labels",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/region-labels",
+          "commits": 32,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-apps",
+            "/docs/cli#carlos-instances",
+            "/docs/cli#carlos-routes",
+            "/docs/cli#carlos-status"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "b85bbf8d5c2cf26004db9fe9158932d7f265a6ed",
+          "date": "2026-10-26",
+          "subject": "Instance policy: per-app egress allow (#328) and operator-set instance sizes (#329)",
+          "branch": "instance-egress-sizes-328-329",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/instance-egress-sizes-328-329",
+          "commits": 163,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 328,
+              "title": "How should an isolated tenant reach a private service its operator runs? (Gotenberg on 172.31.x is fenced off by the nested layout)",
+              "state": "open"
+            },
+            {
+              "id": 329,
+              "title": "Operator-set CPU/memory per tenant instance (today only the two platform tiers, chosen by the manifest's children bit)",
+              "state": "open"
+            },
+            {
+              "id": 336,
+              "title": "S3 request bill grows with apps × boxes: every box re-walks the whole bucket on each pass (~$3/app/month)",
+              "state": "open"
+            },
+            {
+              "id": 410,
+              "title": "activator: shrinkFirstWake's cleanup races the first-wake watch goroutine under -race",
+              "state": "open"
+            },
+            {
+              "id": 419,
+              "title": "Root verifies the signed app policy itself before applying egress (#328 follow-up)",
+              "state": "open"
+            },
+            {
+              "id": 420,
+              "title": "Three load-dependent test flakes seen in branch CI (edge awake throttle, rootfs start lock, fleet metrics speed rows)",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-apps",
+            "/docs/cli#carlos-instances",
+            "/docs/cli#carlos-instances-set",
+            "/docs/cli#carlos-status"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "e49282b9305212295c042ed4967ec14165702bf3",
+          "date": "2026-10-26",
+          "subject": "instancectl: the start-lock test orders B's hang-up instead of racing it (#420)",
+          "branch": "fix-rootfs-lock-test-420",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fix-rootfs-lock-test-420",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 292,
+              "title": "Edge restart: the stopping agent recycles an instance and strands its lease for 15 minutes",
+              "state": "closed"
+            },
+            {
+              "id": 420,
+              "title": "Three load-dependent test flakes seen in branch CI (edge awake throttle, rootfs start lock, fleet metrics speed rows)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "ed03ca7ddc4567b07bb6caf6e5b5eca1f2937f1e",
+          "date": "2026-10-26",
+          "subject": "Console navigation round: nine one-level app tabs, one Releases page, settings sections",
+          "branch": "console-ux-nav",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/console-ux-nav",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "a64f5a412401cf4043a762eccd3a6c21e00ce3a3",
+          "date": "2026-10-26",
+          "subject": "AGENTS.md: stopping rules for agents, and a review brief template with a round budget and a three-way verdict",
+          "branch": "agents-stopping-rules",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/agents-stopping-rules",
+          "commits": 2,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "156d4955b6ef98d41738207e0843711c2baf2ef1",
+          "date": "2026-10-26",
+          "subject": "AGENTS.md: amadan branch merge has -squash; land with it instead of squashing the branch by hand",
+          "branch": "agents-md-squash-merge",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/agents-md-squash-merge",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.19",
+      "date": "2026-10-26",
+      "sha": "934258919f6c0ee34160c1ea10bd06841377ccff",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.19",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**The console's app pages now show instances that run on other boxes.** An instance on another box used to leave its app's pages saying \"No instances yet\" and its instance page answering \"not found\". The Overview, Running, Deployments, Releases and Settings tabs and the instance page now list it. When a fresh box report identifies the app, they show its version, state and domains from that report. Remote rows have no CPU or memory readings yet, and the Running tab has no restart button for them. `carlos restart --host` still restarts them. `carlos instances list` can now show their state when a matching box report is available.",
+                "docs": [
+                  "/docs/cli#carlos-restart",
+                  "/docs/cli#carlos-instances"
+                ]
+              },
+              {
+                "md": "**Retiring a canary in the console can now ask you to wait.** The console refuses to retire a canary while any instance or sidecar record still names that channel. It also refuses for 15 minutes after an instance record is created or changed, after a record is deleted by the console, and after the console restarts. This gives recent changes time to reach the boxes. The refusal says \"Could not verify no hosts follow this channel — try again.\" Try again after the wait."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.16 or earlier, read the [v0.28.17 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.17) first."
+              },
+              {
+                "md": "**The console now times every page.** Measured page responses carry a `Server-Timing` header. The Fleet metrics page has a Console speed table for the last 2,048 measured requests. It shows each route's request count, requests over 150 ms, p50, p95 and S3 requests. GET and HEAD requests over 150 ms can produce a warning in the console's journal. Nothing needs turning on."
+              },
+              {
+                "md": "**The app pages add no requests to the boxes.** The console reads every box's status report from the bucket once a minute at most, shared by everyone browsing, and not at all when nobody is. When the change index is armed and has a complete snapshot, instance records come from it. Otherwise, a page view reads the app's records from the bucket, as the Logs tab already did."
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "934258919f6c0ee34160c1ea10bd06841377ccff",
+          "date": "2026-10-26",
+          "subject": "console-remote-instances: console pages show instances on other boxes (records + box reports; no remote metrics yet)",
+          "branch": "console-remote-instances",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/console-remote-instances",
+          "commits": 28,
+          "discussions": [
+            {
+              "id": 2,
+              "title": "Managed email identities: many senders per app",
+              "state": "open"
+            },
+            {
+              "id": 390,
+              "title": "Usage attribution is box-local: census, fleetMeters, statements and status --instances charge remote tenants to the platform",
+              "state": "closed"
+            },
+            {
+              "id": 415,
+              "title": "Lifetime detach, recovery and previous-owner cleanup skip the canary-retire deletion window",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "5bba4bc116a368995becd0a2db7030575b9b570d",
+          "date": "2026-10-26",
+          "subject": "Rootfs apps Plan 2 Task 10: dev fleet-box run record (#366). Box half passes on systemd 257.13 (rootfs probe incl. root-image, mounts, cgroup-strict, mdwe, box-addr; rootfs_ready; image carry-forwards; R-b supported by a stand-in unit; box-address deny with stand-in addresses). Instance checks blocked: StartStaged has no rootfs arm (Plan 3 Task N1); a flat rootfs row reaches the binary exec (N1 refuses it); fresh offcloud bootstrap leaves /run/carlos-control root:root (#416). Box torn down.",
+          "branch": "rootfs-task10-run",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/rootfs-task10-run",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 366,
+              "title": "Rootfs apps: run any Linux app (Rails, Laravel, Django) on your own boxes, isolated like a nested instance",
+              "state": "open"
+            },
+            {
+              "id": 416,
+              "title": "Fresh bootstrap -offcloud box: /run/carlos-control stays root:root until a reboot",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "ddf3b9291d77c303d17640e43050587b12177405",
+          "date": "2026-10-26",
+          "subject": "Console 150 ms budget, plan 1: measure every screen",
+          "branch": "console-perf-1",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/console-perf-1",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.18",
+      "date": "2026-10-26",
+      "sha": "6ddb33334685e9509cc5de73488b809471df33ad",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.18",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Nothing changes for people deploying apps with the CLI.**"
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.16 or earlier, read the [v0.28.17 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.17) first."
+              },
+              {
+                "md": "**A box on systemd 257 can now pass the rootfs probe.** systemd 257, as on Debian 13, mounts a rootfs image's loop device through `/proc/self/fd/N`. The probe's `root-image` check refused that, so every such box reported `rootfs_ready` false. The check now looks at the device itself: the root must be a read-only squashfs on a loop device. After the roll, read `/run/carlos-control/rootfs-probe.out` on each box, dev boxes first. No rootfs app runs until a rootfs release is shipped."
+              },
+              {
+                "md": "**Billing can be tried in test mode, and stays off unless you turn it on.** With `CARLOS_BILLING=test`, `CARLOS_PLAN_CATALOG`, a price book, the Stripe test settings and price mappings in the console's environment, the console keeps each paying account's plan in step with its subscription at Stripe. Nobody can buy anything through the console yet. `carlos billing problems` lists what the console could not settle on its own, and `carlos billing close` closes one after you deal with it in Stripe. The Plans page's billing section lists the settings. The console adds three billing tables when it starts. An older console ignores them. Leave `CARLOS_BILLING` unset.",
+                "docs": [
+                  "/docs/cli#carlos-billing"
+                ]
+              },
+              {
+                "md": "**`carlos system claims` is gone.** The hidden commands for the dev claim trial, and the code behind them, are removed. Nothing that runs with host claims off used them.",
+                "docs": [
+                  "/docs/cli#carlos-system"
+                ]
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "6ddb33334685e9509cc5de73488b809471df33ad",
+          "date": "2026-10-26",
+          "subject": "Rootfs probe: root-image judges the loop device, not the mount source string (#366). systemd 257 mounts a RootImage= loop device through /proc/self/fd/N, so the old /dev/loop prefix test refused every real box (rootfs_ready false everywhere, fail closed). rootIsImage now requires squashfs on loop major 7, a source of exactly /dev/loopN or /proc/self/fd/N, ro and the marker; parseMountinfo reads MAJ:MIN and refuses truncated lines. Census census-ruling-rootfs-root-image approved by Astra on #280.",
+          "branch": "rootfs-root-image-probe",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/rootfs-root-image-probe",
+          "commits": 5,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 366,
+              "title": "Rootfs apps: run any Linux app (Rails, Laravel, Django) on your own boxes, isolated like a nested instance",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "7f79385e56cd595e169bcf0faec6b7411efa4c11",
+          "date": "2026-10-26",
+          "subject": "Plans 6a: Checkout core (dormant until Stripe is configured)",
+          "branch": "plans-6-checkout",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/plans-6-checkout",
+          "commits": 28,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-billing",
+            "/docs/plans#when-a-plan-lapses",
+            "/docs/plans#billing-operators",
+            "/docs/plans#turning-it-on",
+            "/docs/plans#the-price-book"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "a912a342fdf9b04b34ce6a772cd1235d4b3855d7",
+          "date": "2026-10-25",
+          "subject": "Claims cleanup R2: delete the activation tooling and claim simulation",
+          "branch": "claims-cleanup-r2",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/claims-cleanup-r2",
+          "commits": 6,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.17",
+      "date": "2026-10-25",
+      "sha": "cb23eb517eb9b7e52422fd2e52f727b0a8ba0fd1",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.17",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**`carlos deploy` and `carlos canary` can check a host behind a password gate.** Deploy asks the console for a pass that lasts 15 minutes and checks the new version through the gate with it. The console only hands one to someone who could already remove the gate, or to a deploy credential for a host on a channel it can deploy its own build to, and each one is recorded in the app's activity log.",
+                "docs": [
+                  "/docs/cli#carlos-deploy",
+                  "/docs/cli#carlos-canary"
+                ]
+              },
+              {
+                "md": "**The edge records requests for well-known attack paths.** It checks each request against a list built into the platform, such as `.env` and `.git` files, path traversal and common probe paths. By default it blocks nothing: a match is recorded and the request goes on to the app. `carlos explain <code> --app <a>` says which rule fired and when, and shows the request if it is still kept, for up to 7 days.",
+                "docs": [
+                  "/docs/cli#carlos-explain"
+                ]
+              },
+              {
+                "md": "**An offline move's pause is a few seconds shorter.** At the first wake after a move opens, the new box removes the staged copy's files 8 at a time instead of one by one."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.15 or earlier, read the [v0.28.16 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.16) first."
+              },
+              {
+                "md": "**Nested instances can no longer connect to their own box's addresses.** Each box denies its interface addresses, its private IPv4 and any global IPv6, on `carlos-instances.slice`, so every nested instance is refused a connection to them. The box's isolation probe now also checks that deny (`box-addr`) and that a nested instance using the default memory setting cannot map memory that is both writable and executable (`mdwe`). If the probe fails, the box stops waking nested instances. After the roll, read `/run/carlos-control/probe.out` on each box, dev boxes first."
+              },
+              {
+                "md": "**Boxes can run rootfs apps, but none run yet.** A box can run an app shipped as a read-only image as a nested instance, on an account's own boxes only (a fleet with an owner record, or a single-tenant deployment), with `CARLOS_SWAP=overlap`. Each box reports `rootfs_ready` in its status. Nothing changes until a rootfs release is shipped."
+              },
+              {
+                "md": "**Leave `CARLOS_EDGE_PROTECT` unset.** Unset, every rule only records. `block` answers a 404 block page and is for dev boxes only. `off` turns the checks off."
+              },
+              {
+                "md": "**Instance lifetimes wait for `carlos system lifetimes cutover`.** Until an operator runs it, the console works as before. Run it only after every box runs this release and the old console has stopped. It is done once per deployment and cannot be undone, and after it no older console or box may run in the deployment again. Leave `CARLOS_LIFETIMES_MIGRATE` unset. While a console starts, until it has read `control/lifetimes-cutover.json`, every page answers 503 for a moment.",
+                "docs": [
+                  "/docs/cli#carlos-system"
+                ]
+              },
+              {
+                "md": "**Plan caps add a slowdown and a lapse, and still do nothing without a plan catalog.** With `CARLOS_PLAN_CATALOG` set, an account past twice the month's bandwidth, or past twice its awake hours after 3 days' notice, has its instances share 5 requests a second, with bursts up to 30, until the month ends. When a paid plan or pack falls, what the smaller plan no longer covers is turned off after 7 days of grace: visitors get a plain 503 page, it is never woken, and its settings and data are kept. Owners choose what stays on the account's keep page, and paying again turns everything back on. Without a catalog, nothing changes."
+              },
+              {
+                "md": "**Regional display names stay off until `STATUS_NAME_REGION` is set.** Set to a region code such as `ie`, it gives the box a display name such as `seamus-minding-ie` on the status page and in the console. Nothing is keyed on it and the box's label is unchanged."
+              },
+              {
+                "md": "**Asset copies can be declared, but nothing copies them yet.** `carlos ship --assets` and `carlos deploy --assets` declare folders for an app's build files. `carlos instances set-assets` turns copying on or off for one instance, and `carlos assets` inspects or purges copies. A box publishes them only with `CARLOS_ASSET_CACHE=1`. Leave it unset.",
+                "docs": [
+                  "/docs/cli#carlos-ship",
+                  "/docs/cli#carlos-deploy",
+                  "/docs/cli#carlos-instances-set-assets",
+                  "/docs/cli#carlos-assets"
+                ]
+              },
+              {
+                "md": "**The `region-host` module denies the host role reads of `/carlos/release-key`.** `deny_release_key_reads` defaults to true. It takes effect on the next module ref bump and targeted apply. The console reads its key from its service environment, so promotion is unaffected."
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "cb23eb517eb9b7e52422fd2e52f727b0a8ba0fd1",
+          "date": "2026-10-25",
+          "subject": "Claims cleanup R1: move the live slices out of the claim packages",
+          "branch": "claims-cleanup-r1",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/claims-cleanup-r1",
+          "commits": 8,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "6bead9d524974a8248375742e2e43ffd486cc1bd",
+          "date": "2026-10-25",
+          "subject": "Census R0: deletions become reviewer approvals (test only)",
+          "branch": "claims-cleanup-r0",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/claims-cleanup-r0",
+          "commits": 8,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "39cda4118db28f1a5853d8e333b00f41b515487a",
+          "date": "2026-10-25",
+          "subject": "Offline move trim T1: drop the staged replica in parallel",
+          "branch": "offline-move-trim-t1",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/offline-move-trim-t1",
+          "commits": 5,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "96564cf34a397ede79d66a6cdd10c920052b35dc",
+          "date": "2026-10-25",
+          "subject": "Edge protection Plan 2: the hard and probe tiers, in watch mode. A catalogue embedded in the binary (internal/edgeguard) is matched in memory against every request the edge serves except door calls, backhauled door hops and tunnel deliveries: hard rules (.env, .git, traversal) and probe rules (well-known attack paths, matched only where the app would not serve the path; static sites decide from their own files, and a rewrite onto a hard-tier file is refused). By default every match is only recorded, as a Match request record with a reference code; CARLOS_EDGE_PROTECT=block (dev only) answers a 404 block page. The console names a code's catalogue rule, and carlos explain says what a block page's code means. Copy EP-1..EP-14 approved by Paul. Census census-ruling-edge-protection-2: approvals by Astra, two decisions by Paul, on #280. Not released.",
+          "branch": "edge-protection-2",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/edge-protection-2",
+          "commits": 17,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 399,
+              "title": "Framework: publish the app's route list in the release manifest (edge protection §5.3)",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-explain"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "d34c0a72af8261aa317a03621579214184cff721",
+          "date": "2026-10-25",
+          "subject": "Rootfs apps Plan 2: box isolation (#366). A box can run a rootfs app (an OCI image shipped as a read-only squashfs) as a nested instance: root's control service validates the staged image against the authorised manifest and starts it through five new systemd templates (run, gen, worker, cmd, probe) under RootImage= with the restated namespace block; the trampoline launches only root's own launch file; a rootfs isolation probe gates rootfs_ready; the box's own addresses are denied on carlos-instances.slice for every nested unit (#367); rootfs placement is own boxes only (fleet owner record or single-tenant). Termination is one per-unit lock and one removal proof; KillGen and the observer prove rootfs units by their own cgroups. Dormant until a rootfs release is shipped. Binary ceiling raised to 53 MB (#405). Census census-ruling-rootfs-apps-2 approved on #280 (Astra; Paul's decisions).",
+          "branch": "rootfs-apps-2-box",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/rootfs-apps-2-box",
+          "commits": 47,
+          "discussions": [
+            {
+              "id": 275,
+              "title": "carlos binary doubled to 74.5 MB: the EC2 SDK client via internal/awsinv",
+              "state": "closed"
+            },
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 328,
+              "title": "How should an isolated tenant reach a private service its operator runs? (Gotenberg on 172.31.x is fenced off by the nested layout)",
+              "state": "open"
+            },
+            {
+              "id": 329,
+              "title": "Operator-set CPU/memory per tenant instance (today only the two platform tiers, chosen by the manifest's children bit)",
+              "state": "open"
+            },
+            {
+              "id": 366,
+              "title": "Rootfs apps: run any Linux app (Rails, Laravel, Django) on your own boxes, isolated like a nested instance",
+              "state": "open"
+            },
+            {
+              "id": 367,
+              "title": "Nested instances can reach the box's own global addresses (public IPv4 on the interface, global IPv6)",
+              "state": "open"
+            },
+            {
+              "id": 369,
+              "title": "Census rulings as approvals: classify, one command to propose, approve in one action",
+              "state": "open"
+            },
+            {
+              "id": 405,
+              "title": "Binary size: main is about 0.5 MB under the ceiling again",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "9b81d97bda0073f45d106350dc4ea915492e779e",
+          "date": "2026-10-25",
+          "subject": "Plans 4d-1: lapse lifecycle, switch-off half. When a paid plan or pack falls, what the account no longer pays for gets 7 days of grace (plus 72 h notice), then is switched off: a neutral 503 at the edge, never woken by the activator, config and data kept; owners choose what stays on a keep page; paying again switches it back on at once; applyAccountPlan is the single plan-change path; sponsored and never-paid accounts never lapse; dormant without CARLOS_PLAN_CATALOG",
+          "branch": "plans-4d-lapse",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/plans-4d-lapse",
+          "commits": 20,
+          "docs": [
+            "/docs/plans#warnings-and-grace",
+            "/docs/plans#when-a-plan-lapses"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "953b9fdafa0d61c0c3fb84b9e35758a4903ce276",
+          "date": "2026-10-25",
+          "subject": "design: self-serve offline moves, rev 1",
+          "branch": "design-self-serve-offline-moves",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/design-self-serve-offline-moves",
+          "commits": 142,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 343,
+              "title": "Self-serve moves: rulings Paul owes before the build (Q3, cleanup exclusion, cutover command)",
+              "state": "closed"
+            },
+            {
+              "id": 345,
+              "title": "Claims-off boxes have no binary floor: an older box that starts or returns after a rollout can still run legacy deletes",
+              "state": "open"
+            },
+            {
+              "id": 350,
+              "title": "Plan 1 copy review: the new sentences on design-self-serve-offline-moves",
+              "state": "closed"
+            },
+            {
+              "id": 393,
+              "title": "Member moves: a people path on the self-serve offline move (design-member-moves)",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#instance-lifetimes"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude",
+                "codex"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "3c33f2eb130f5721a37ed09526f1e05f44712c99",
+          "date": "2026-10-25",
+          "subject": "Regional box display names (seamus-minding-ie). STATUS_NAME_REGION themes a name-verb-region display name derived from the box's identity label, shown on the status page and console /fleet beside the unchanged label; nothing keys on it. Group boxes may carry it in host.env; moves treat it as box-owned. Word lists for ie, uk, us, au after a Luna copy pass and Paul's picks (#395). Census approved on #280. Dormant until STATUS_NAME_REGION is set.",
+          "branch": "design-regional-box-labels",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/design-regional-box-labels",
+          "commits": 10,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 395,
+              "title": "Regional box names: four word-list taste calls for Paul",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "c743efeafef23567c9e2c37d29d351043690e1e4",
+          "date": "2026-10-25",
+          "subject": "carlos deploy and canary watch a gated host through a gate pass (#164)",
+          "branch": "gated-deploy-watch-164",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/gated-deploy-watch-164",
+          "commits": 4,
+          "discussions": [
+            {
+              "id": 164,
+              "title": "carlos deploy reports failure on a gated app, after a successful ship and promote",
+              "state": "closed"
+            },
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-deploy"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "e16095cc9dff7b74e9b1fc7b2880cb2e87069f12",
+          "date": "2026-10-25",
+          "subject": "Plans 4c: box-side throttle. Past twice the month's bandwidth (no notice wait) or awake hours (72 h notice), an account's instances share one 5 req/s bucket until the month ends; awake-throttled accounts also have open WebSockets closed, new upgrades refused and a 15-minute continuous-awake ceiling; carried in the limits record with an Until; dormant without CARLOS_PLAN_CATALOG",
+          "branch": "plans-4c-box-throttle",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/plans-4c-box-throttle",
+          "commits": 12,
+          "docs": [
+            "/docs/plans#warnings-and-grace"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "5698a8f5ceae9fc39943cae86f9bc64413d7eec5",
+          "date": "2026-10-25",
+          "subject": "Account and box-root hardening from the 2026-10-25 security review",
+          "branch": "fix/hunt-account-root-hardening",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fix%2Fhunt-account-root-hardening",
+          "commits": 8,
+          "discussions": [
+            {
+              "id": 22,
+              "title": "adoptLoop and configSyncLoop have no boot retry/backoff on registry or store open failure",
+              "state": "open"
+            },
+            {
+              "id": 49,
+              "title": "domains: alias health stamps invisible on PLATFORM_APPS_DOMAIN-less boxes and fleet boxes",
+              "state": "open"
+            },
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 370,
+              "title": "Native sidecars run on the flat tier: move them to nested and refuse flat spawns",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "241a6266165925bf6c35d3531b3c3f6425257c9e",
+          "date": "2026-10-25",
+          "subject": "Edge asset cache plan 1: declare and publish, dark",
+          "branch": "edge-asset-cache-1",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/edge-asset-cache-1",
+          "commits": 32,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-ship",
+            "/docs/cli#carlos-deploy",
+            "/docs/cli#carlos-instances-set-assets",
+            "/docs/cli#carlos-assets"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.16",
+      "date": "2026-10-25",
+      "sha": "7f8767715280765a9b47bd715a96203d3d36fda4",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.16",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**An instance can have rate limits.** `carlos ratelimit show` displays four numbers per instance, while `set` and `clear` change them for one instance or every instance of an app: when it counts as busy, how many requests one address may have in flight while it is busy, and a backstop rate and burst per address. A path prefix such as `/api/` can have its own share, rate and burst. A refused visitor gets `429 Too Many Requests` with `Retry-After`, and a refused request never wakes a sleeping instance. In the default observe mode, a box only counts what it would refuse until the deployment's operator turns enforcement on. The docs' \"Rate limits\" page says more.",
+                "docs": [
+                  "/docs/cli#carlos-ratelimit"
+                ]
+              },
+              {
+                "md": "**A new custom domain gets checked for a certificate sooner.** Once a host is attached, the certificate issuer checks its DNS every minute for ten minutes, then every five minutes for the rest of the hour. If DNS points at the deployment, it can order the certificate before the next hourly pass, subject to the shared certificate order limit."
+              },
+              {
+                "md": "**The edge keeps request records in an app's logs.** It records a sample of requests that found nothing. It keeps path pieces and query parameter names only when they are short or look like harmless lower-case words, and masks the rest. It also records a count of the app's requests each minute. `carlos logs --stream edge` shows them.",
+                "docs": [
+                  "/docs/cli#carlos-logs"
+                ]
+              },
+              {
+                "md": "**Static sites: old cache versions are cleaned up at startup when the edge is alone.** On the first start that creates the cache lock, the edge only creates the lock. A later start can set aside old release trees and remove them in the background when no other edge is serving the cache."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.14 or earlier, read the [v0.28.15 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.15) first."
+              },
+              {
+                "md": "**Rate limits only count until you set `CARLOS_RATE_LIMIT=enforce`.** Each box reads it from its `host.env`. Unset or `observe`, a box counts and logs what it would refuse and refuses nothing. `off` turns the limiter off. Read the counts with `carlos ratelimit show` for a few days, then set `enforce`, dev boxes first.",
+                "docs": [
+                  "/docs/cli#carlos-ratelimit"
+                ]
+              },
+              {
+                "md": "**Disk use under `/data/static` can drop after the second edge start on this release.** At startup, an edge that is the only one using its static cache sets aside old release trees and removes them in the background, while keeping each site's current version. The first start on this release only creates the cache's lock file, so cleanup starts from the next start."
+              },
+              {
+                "md": "**Plan caps still do nothing without a plan catalog.** With `CARLOS_PLAN_CATALOG` set, a console now refuses new always-on workers and schedules that run more often than the plan allows on shared boxes, while allowing them on an account's own boxes. It warns owners at 80% of each cap, keeps a grace clock for each cap, pauses account-wide email senders immediately when the account reaches twice the plan's daily limit, unless the catalog sets a lower ceiling, and refuses new uploads after storage grace and three days' notice, or immediately at twice the storage cap. Without a catalog, nothing changes."
+              },
+              {
+                "md": "**The `deployment-buckets` and `region-remote-host` modules expire old data versions.** In their data buckets, a replaced or deleted version is kept for 7 days (`data_noncurrent_days`) before it expires. Unfinished uploads are aborted after 7 days, and empty delete markers are cleaned up. Until then, a deleted file can still be brought back."
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "7f8767715280765a9b47bd715a96203d3d36fda4",
+          "date": "2026-10-25",
+          "subject": "edge: sweep old static-site trees once at startup when no other edge serves the cache (census-ruling-static-sweep)",
+          "branch": "static-sweep",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/static-sweep",
+          "commits": 6,
+          "discussions": [
+            {
+              "id": 253,
+              "title": "Signed channel pointers carry no manifest digest: an old pointer plus a reused, pruned version name installs bytes nobody promoted",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "542ad2c1e3ae40210f346d437c159f7753ca100b",
+          "date": "2026-10-25",
+          "subject": "edge: wake the cert warm when its host set grows (#386)",
+          "branch": "certwarm-wake",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/certwarm-wake",
+          "commits": 6,
+          "discussions": [
+            {
+              "id": 386,
+              "title": "New custom domains wait up to an hour for a certificate: the cert warm is never woken",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "4a9a47c0bd802849894ff1fcb610458aad22eff3",
+          "date": "2026-10-25",
+          "subject": "Plans 4b: email and storage after-grace stages. Account-wide email pause at twice the plan's daily limit (resumes at the UTC day roll); new uploads refused on every store past storage grace or at twice the cap (reads and deletes allowed); banner and CLI name the stage; dormant without CARLOS_PLAN_CATALOG",
+          "branch": "plans-4b-after-grace",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/plans-4b-after-grace",
+          "commits": 11,
+          "docs": [
+            "/docs/plans#warnings-and-grace"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "c79965906bd4fcefe3c66c97c7cfaaa67e4ffc2b",
+          "date": "2026-10-25",
+          "subject": "Add public console build target",
+          "branch": "release/public-console",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/release%2Fpublic-console",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 388,
+              "title": "Public console build target — Opus review complete",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "codex"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "c3a34e32f9b13d60456f22bafd756abb3a97a026",
+          "date": "2026-10-25",
+          "subject": "edge: per-instance rate limit, fair share under pressure plus a backstop (#358)",
+          "branch": "design-edge-rate-limit-358",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/design-edge-rate-limit-358",
+          "commits": 33,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 358,
+              "title": "Edge: per-client rate limit on public traffic (429 + Retry-After), configurable per app",
+              "state": "open"
+            },
+            {
+              "id": 375,
+              "title": "Rate limit: refusals at the sending edge's backhaul queue are not in owners' counts",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-ratelimit",
+            "/docs/plans#rate-limit-ceilings",
+            "/docs/rate-limits#what-a-refused-visitor-sees",
+            "/docs/rate-limits#the-four-numbers",
+            "/docs/rate-limits#different-numbers-for-one-path"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "9623e47cddbea06353cd3bdec1e1974d3f7daf4b",
+          "date": "2026-10-25",
+          "subject": "Plans 4a: warnings, grace and notice. Hourly measurement of five caps, 80% warnings (owner email, account banner, CLI warning line), grace clocks per cap, notice recorded only for owners after a cap went over; nothing cut off; dormant without CARLOS_PLAN_CATALOG",
+          "branch": "plans-4-notices-grace",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/plans-4-notices-grace",
+          "commits": 12,
+          "docs": [
+            "/docs/plans#sponsored-accounts",
+            "/docs/plans#warnings-and-grace"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "606afcb9c2ab7749ba7b5d54f5d93a54018f8bcd",
+          "date": "2026-10-25",
+          "subject": "infra: data buckets expire noncurrent versions after 7 days (#336)",
+          "branch": "data-lifecycle-336",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/data-lifecycle-336",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 21,
+              "title": "CLI-API × scoped-keys intersection follow-ups (from merge-resolution review of #25)",
+              "state": "open"
+            },
+            {
+              "id": 336,
+              "title": "S3 request bill grows with apps × boxes: every box re-walks the whole bucket on each pass (~$3/app/month)",
+              "state": "open"
+            },
+            {
+              "id": 384,
+              "title": "Flaky: internal/host TestOfflineStageThenStartThenSealSkipsThePreCopy (seal recopies pre-copied objects under CI load)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "6e2d98170ab83d27465d5d80065f3a2001b67067",
+          "date": "2026-10-25",
+          "subject": "spec: edge request protection design, draft for builder check",
+          "branch": "design-edge-request-protection",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/design-edge-request-protection",
+          "commits": 25,
+          "discussions": [
+            {
+              "id": 358,
+              "title": "Edge: per-client rate limit on public traffic (429 + Retry-After), configurable per app",
+              "state": "open"
+            },
+            {
+              "id": 369,
+              "title": "Census rulings as approvals: classify, one command to propose, approve in one action",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "15a85ddfb35b9f355e4763df7905221957421a2a",
+          "date": "2026-10-25",
+          "subject": "rootfs apps Plan 1: carlos ship --rootfs and --check, the rootfs release kind, the console ship door (#366)",
+          "branch": "rootfs-apps-1-ship",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/rootfs-apps-1-ship",
+          "commits": 59,
+          "discussions": [
+            {
+              "id": 2,
+              "title": "Managed email identities: many senders per app",
+              "state": "open"
+            },
+            {
+              "id": 122,
+              "title": "Boxes never reap extracted versions from /opt/carlos/versions",
+              "state": "closed"
+            },
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 366,
+              "title": "Rootfs apps: run any Linux app (Rails, Laravel, Django) on your own boxes, isolated like a nested instance",
+              "state": "open"
+            },
+            {
+              "id": 369,
+              "title": "Census rulings as approvals: classify, one command to propose, approve in one action",
+              "state": "open"
+            },
+            {
+              "id": 376,
+              "title": "Plan 1 Task 11: carlos ship --check against real podman (DOCS-T1)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "c83ab21072bc307d51a8a7e426e0a3a4724b19f7",
+          "date": "2026-10-25",
+          "subject": "Census approvals go to an independent reviewer; the owner keeps decisions",
+          "branch": "census-astra-approvals",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/census-astra-approvals",
+          "commits": 2,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "8c899da3a6d446022472540ff6febc3037a3f334",
+          "date": "2026-10-25",
+          "subject": "Plans 3b: never-sleep and schedule refusals on shared boxes (daemon releases at ship and every promote/rollback door, hibernate:false sidecars, schedules under the plan minimum); always-on allowed on the account's own fleet; dormant without CARLOS_PLAN_CATALOG",
+          "branch": "plans-3b-never-sleep",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/plans-3b-never-sleep",
+          "commits": 18,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.15",
+      "date": "2026-10-25",
+      "sha": "236753a70ab0fda2c556ea137e93e5135d23f52f",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.15",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Instances wake from sleep faster, especially apps with large binaries.** The service on each box no longer reads an unchanged build in full every time an instance wakes. The safety check before a staged build starts still reads the full file. A cold start also makes one fewer systemd call when the instance's limits are already in place."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.13 or earlier, read the [v0.28.14 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.14) first. A console with `CARLOS_MAIL_REGION` set needs the permissions boundary described there before it rolls."
+              },
+              {
+                "md": "**`carlos-instance-control` must restart on the roll.** A box whose updater is v0.26.0 or later restarts it by itself. A box with an older updater needs the restart by hand that the platform README describes."
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "236753a70ab0fda2c556ea137e93e5135d23f52f",
+          "date": "2026-10-25",
+          "subject": "Wake latency pass 2c: the agent hashes a staged build once per file identity; a cold start skips set-property when the slice has the tier (census-ruling-wake-latency-4)",
+          "branch": "wake-latency-4",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/wake-latency-4",
+          "commits": 5,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "f1f86334000b2c479ad7f3b95f71b34526090d1d",
+          "date": "2026-10-25",
+          "subject": "gate: repeat each failed job's verdict lines at the end of the log",
+          "branch": "gate-failure-summary",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/gate-failure-summary",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.14",
+      "date": "2026-10-25",
+      "sha": "ab4e9072dd1828be27d8e91cebb2fbf6fdd02e09",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.14",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Instances wake from sleep faster.** A box now makes fewer requests to the deployment's storage while it wakes an instance."
+              },
+              {
+                "md": "**A service can run an app's commands.** An account owner can mint a `run` credential with `carlos services create --role run --app <app> --commands \"<prefixes>\" <name>`. It can start, follow, cancel, expire and acknowledge runs of that app's instances, only for commands that start with one of the prefixes it was minted with, and it sees only the runs it started. A prefix also allows every flag and argument after it, so grant the shortest one that names the work. `carlos run --idempotency-key <key>` starts a run at most once while the key remains recorded, on a console that has turned keys on. The console keeps a key for 24 hours or until that caller makes 32 newer keyed admissions on the same instance. The CLI reference's \"Runs from a service\" section says how.",
+                "docs": [
+                  "/docs/cli#carlos-services",
+                  "/docs/cli#carlos-run"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.12 or earlier, read the [v0.28.13 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.13) first."
+              },
+              {
+                "md": "**A console that sends email needs a permissions boundary before it rolls.** On this release, a console with `CARLOS_MAIL_REGION` set must have `CARLOS_MAIL_USER_BOUNDARY` set to the ARN of a customer managed policy in the same account. Create that policy so it allows `ses:SendRawEmail` and nothing else. Set the variable on every such console and grant the console role `iam:PutUserPermissionsBoundary` and `iam:ListUsers` before you roll. Existing sending users receive the boundary when a relevant mail operation reaches them. To cover users that no operation reaches, set `CARLOS_MAIL_BOUNDARY_SWEEP=1` on one console and restart it. If the sweep reports users that are not bounded, fix the cause and run it again. A console without `CARLOS_MAIL_REGION` needs nothing."
+              },
+              {
+                "md": "**Leave `CARLOS_RUN_KEYS` unset until every box runs this release.** Without it, a run request with an idempotency key is refused with 503 `keys_not_ready`. After every box runs this release, set `CARLOS_RUN_KEYS=on` so the console accepts keyed run requests. This is a one-way switch. A box rolled back to an older build forgets the keys, and a retry could then start a second run."
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "ab4e9072dd1828be27d8e91cebb2fbf6fdd02e09",
+          "date": "2026-10-25",
+          "subject": "test-gate: split host 4 ways and root 5 ways; weights that fit parallel tests",
+          "branch": "ci-split-host",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/ci-split-host",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "bcae2a72b005abe86b99edc1a51d49b6d4f6bbe1",
+          "date": "2026-10-24",
+          "subject": "activator test: wait for the worker's spawn before it reports ready (deflake)",
+          "branch": "deflake-worker-ready",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/deflake-worker-ready",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "9c535162fb703c8971ebe7c87336a18e9ebf60cb",
+          "date": "2026-10-24",
+          "subject": "Wake latency pass 2b: one-round-trip lease, build-state write on its cached copy, config layers read together (census-ruling-wake-latency-3)",
+          "branch": "wake-latency-3",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/wake-latency-3",
+          "commits": 5,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "a5f0509124becc3028da1a084f3cbaccbd22a5de",
+          "date": "2026-10-24",
+          "subject": "Merge pro-6214-service-runs: runs started by a scoped service credential (PRO-6214)",
+          "branch": "pro-6214-service-runs",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/pro-6214-service-runs",
+          "commits": 1,
+          "docs": [
+            "/docs/cli#carlos-run",
+            "/docs/cli#runs-from-a-service",
+            "/docs/cli#the-run-api",
+            "/docs/cli#carlos-services"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "3d7cbe304a7367bd62ddeb496888db8d524cad30",
+          "date": "2026-10-24",
+          "subject": "Edge asset cache: the spec, plans 1-3, and plan 2's internal/assetcache disk store",
+          "branch": "edge-asset-cache-2",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/edge-asset-cache-2",
+          "commits": 34,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 368,
+              "title": "Edge response cache stores 206 partial responses under the full-URL key",
+              "state": "open"
+            },
+            {
+              "id": 369,
+              "title": "Census rulings as approvals: classify, one command to propose, approve in one action",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "6c75ad81897e083a7b364c3020eb9ca63460e423",
+          "date": "2026-10-24",
+          "subject": "Mail sending users are created under a permissions boundary",
+          "branch": "sec-mail-user-boundary",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/sec-mail-user-boundary",
+          "commits": 11,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.13",
+      "date": "2026-10-24",
+      "sha": "b612e710ed209a34186dc162b78ecbcd52d82899",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.13",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Nothing changes for people deploying apps with the CLI.**"
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.11 or earlier, read the [v0.28.12 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.12) first."
+              },
+              {
+                "md": "**`carlos-instance-control` restarts on the roll.** This release changes it. A box whose updater is v0.26.0 or later restarts it by itself. A box with an older updater needs the restart by hand that the platform README describes."
+              },
+              {
+                "md": "**The journal breaks a wake's time down further.** The activator's `started <unit> memory.max=...` line now times the build, the prepare (dirs, admin token, instance key, env, control socket, key gate, logs), the launch file, the gate and the root start. A pinned generation's start logs `generation N of <build>: record ..., start ..., healthy ... later`. A lease logs `acquired in ... (client ..., lock read and write ...)`. instance-control's `started <unit>` line splits its preparing time into the staged exe, the layout, the drop-in, and the check and tier. Nothing else changes."
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "b612e710ed209a34186dc162b78ecbcd52d82899",
+          "date": "2026-10-24",
+          "subject": "Wake latency pass 2a: per-step timing for the launch, prepare, pinned health, lease and instance-control (census-ruling-wake-latency-2)",
+          "branch": "wake-latency-2",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/wake-latency-2",
+          "commits": 5,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.12",
+      "date": "2026-10-24",
+      "sha": "e3fd2e0256b92c29e6f4aca7a4ba7b6bb7fde156",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.12",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Instances wake faster from sleep.** A box no longer reloads systemd before it starts a waking instance when the instance's systemd settings are already loaded. It reloads systemd when those settings are not loaded, and it checks sooner whether the instance is ready to answer."
+              },
+              {
+                "md": "**Fixes for denial-of-service bugs in the libraries the platform uses.** This release updates Go's networking and text libraries and the relay's STUN library with fixes for denial-of-service bugs."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.10 or earlier, read the [v0.28.11 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.11) first."
+              },
+              {
+                "md": "**`carlos-instance-control` restarts on the roll.** This release changes it. A box whose updater is v0.26.0 or later restarts it by itself. A box with an older updater needs the restart by hand that the platform README describes."
+              },
+              {
+                "md": "**New journal lines time each successful wake.** After a successful wake, the box logs `activator: <host>: woke in ...` with the time each step took. For a unit-backed instance, it also logs `activator: <host>: <unit> launched in ..., healthy ... later`. `instance-control`'s `started <unit>` line now says how long it spent preparing, whether it reloaded systemd, and how long the start took."
+              },
+              {
+                "md": "**A console can pause new sidecars.** Set `CARLOS_SIDECAR_ACCOUNTS` on the console to a comma-separated list of account ids (the short id, such as `bab`, never the account's name). Every other account then gets a 403 with the code `sidecars-paused` from `carlos sidecars enable` and `carlos sidecars create`. Its existing sidecars keep running, and `ls`, `wake` and `rm` still work. Unset, nothing is paused. An entry that is not an account id stops the console at startup.",
+                "docs": [
+                  "/docs/cli#carlos-sidecars"
+                ]
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "e3fd2e0256b92c29e6f4aca7a4ba7b6bb7fde156",
+          "date": "2026-10-24",
+          "subject": "console: pause native sidecar enable and create outside an allowlist",
+          "branch": "sec-sidecar-create-gate",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/sec-sidecar-create-gate",
+          "commits": 5,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 370,
+              "title": "Native sidecars run on the flat tier: move them to nested and refuse flat spawns",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-sidecars"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "9ccf6b4ff15a513b414e405d14acfc62f855704b",
+          "date": "2026-10-24",
+          "subject": "deps: bump x/net, x/text and pion/stun/v3 for reachable govulncheck findings",
+          "branch": "sec-deps-dos-bumps",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/sec-deps-dos-bumps",
+          "commits": 2,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "ef742d07737d4f65df3f001af7ea05a4f2a9a280",
+          "date": "2026-10-24",
+          "subject": "Census cards: email-signin and console-brand-name approved by Paul 2026-10-24 (#280).",
+          "branch": "census-approved-email-signin",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/census-approved-email-signin",
+          "commits": 2,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "ef156d3698fd9f7237ee87a3fcc1799ea6599286",
+          "date": "2026-10-24",
+          "subject": "region-host: require IMDSv2 on the host instance",
+          "branch": "sec-host-imdsv2-module",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/sec-host-imdsv2-module",
+          "commits": 4,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "65ca4aca77d2472fd8921fdad806d862f0b0fee3",
+          "date": "2026-10-24",
+          "subject": "Census rulings as approvals (#369): make census-card / census-propose, classified changes, approval card, no PROPOSED flip",
+          "branch": "census-approvals",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/census-approvals",
+          "commits": 5,
+          "discussions": [
+            {
+              "id": 369,
+              "title": "Census rulings as approvals: classify, one command to propose, approve in one action",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "fef28dc5aef58c8b0e8cf11e5f0faf22c4735465",
+          "date": "2026-10-24",
+          "subject": "Wake latency pass 1: no per-wake daemon-reload, 5→50 ms health poll, per-step wake timing (census-ruling-wake-latency-1)",
+          "branch": "wake-latency-1",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/wake-latency-1",
+          "commits": 6,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.11",
+      "date": "2026-10-23",
+      "sha": "64a002c8a6d28bd766ef9171c68800a359e2c049",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.11",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**`carlos db pull` can fetch a copy of an instance whose data is in another region.** Where the deployment has turned forwarding on, `carlos db pull` and `carlos db pull --at` fetch the copy's files from that region and restore them on your machine. The files are encrypted for your terminal on the way, and the requested copy is not written until all of them have arrived and been checked. A pull can fetch at most 2 GB.",
+                "docs": [
+                  "/docs/cli#carlos-db"
+                ]
+              },
+              {
+                "md": "**Reads from another region check every file of the copy.** Before a forwarded `carlos db query` or `carlos db pull` uses a file, it checks that the file holds exactly the transactions it should. If one does not, the read stops without printing query results or writing the requested copy.",
+                "docs": [
+                  "/docs/cli#carlos-db"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.9 or earlier, read the [v0.28.10 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.10) first."
+              },
+              {
+                "md": "**A forwarded pull needs a box running this release in the data's region.** Boxes on v0.28.10 still serve forwarded queries but do not serve pulls, so until one box in the region runs v0.28.11, a pull ends after 60 seconds with \"no server in region ... started the read\". The default pull cap is 2 GB of files. A box can lower it with `CARLOS_DB_PULL_MAX_BYTES` in its `host.env`, but cannot raise it."
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "64a002c8a6d28bd766ef9171c68800a359e2c049",
+          "date": "2026-10-23",
+          "subject": "db-region-forward-3: carlos db pull forwarded to the data's region; LTX header checks for query and pull",
+          "branch": "db-region-forward-3",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/db-region-forward-3",
+          "commits": 13,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 349,
+              "title": "Flaky test: internal/host TestInstallChannelPolicyRefusals/signed_by_another_key hits the system-apply lock",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-db"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.10",
+      "date": "2026-10-23",
+      "sha": "0d9e81dc31dc3c9fab20736e8c7d168fed8b7c8c",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.10",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**A static site can ship a `_redirects` file.** Put it at the top of the site directory, in the format Netlify and Cloudflare Pages use: one rule per line, with a source, a destination and an optional status. A rule can redirect, serve another file at the same URL for a single-page app, or serve the not-found page. A file at the requested path wins unless the status ends in `!`. `carlos ship` and `carlos deploy` refuse a line they cannot use, and name it. A site without the file is served as before.",
+                "docs": [
+                  "/docs/cli#carlos-ship",
+                  "/docs/cli#carlos-deploy"
+                ]
+              },
+              {
+                "md": "**`carlos db query` can read an instance whose data is in another region.** Where the deployment has turned this on, the query runs in that region and only the rows come back, encrypted for your terminal on the way. There, the copy can be at most 2 GB once restored, the query runs for at most 5 minutes, and the rows can total at most 64 MB. An older `carlos` is asked to update. `carlos db pull` cannot fetch a copy from another region yet.",
+                "docs": [
+                  "/docs/cli#carlos-db"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.8 or earlier, read the [v0.28.9 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.9) first."
+              },
+              {
+                "md": "**Forwarded `carlos db query` is off until the console sets `CARLOS_DB_FORWARD=1`.** Before you set it, apply the deployment bucket's `db-reads/` lifecycle rule from this release's `deployment-buckets` module. Forwarded reads delete nothing, so without the rule nothing under `db-reads/` is ever removed. The console sends a read only to a region where a box publishes `db-read-1` in its edges file. Boxes set up for database reads in v0.28.9 publish it, and list the read queue every 30 seconds. A console with host claims on does not forward. To turn it off, unset the variable and restart the console.",
+                "docs": [
+                  "/docs/cli#carlos-db"
+                ]
+              },
+              {
+                "md": "**Plan caps stay off without a plan catalog.** When a console with `CARLOS_PLAN_CATALOG` has turned plans on, it refuses to create more apps and instances than an account's plan allows, more workers per app, a second free account for the same person, and fleets or custom domains on plans without them. Nothing that already runs is touched. Without a catalog, every create works as before."
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_DB_FORWARD` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` as it is: a box armed for zero-downtime deploys stays armed.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "0d9e81dc31dc3c9fab20736e8c7d168fed8b7c8c",
+          "date": "2026-10-23",
+          "subject": "carlos-static-redirects: static sites honour a _redirects file (redirects, rewrites, a not-found page). Census overlay static-redirects proposed on #280.",
+          "branch": "carlos-static-redirects",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/carlos-static-redirects",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 346,
+              "title": "Review: carlos-static-redirects",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#redirects-for-a-static-site"
+          ],
+          "credit": [
+            {
+              "person": "James Adam",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "d18e619eeb0964113392cb64936bedd494abe98c",
+          "date": "2026-10-23",
+          "subject": "db-region-forward-copy-ruling: census-ruling-db-region-forward-copy recorded (two envelope re-pins accepted)",
+          "branch": "db-region-forward-copy-ruling",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/db-region-forward-copy-ruling",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "2a2d7cc9493a694c7dc2f2b1810af89ae8539647",
+          "date": "2026-10-23",
+          "subject": "db-region-forward-copy: Luna-approved copy for forwarded db reads, docs",
+          "branch": "db-region-forward-copy",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/db-region-forward-copy",
+          "commits": 1,
+          "docs": [
+            "/docs/cli#carlos-db",
+            "/docs/cli#carlos-system-db-worker"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "6e8564ad8f45920588873e84ddc41b7b675cf009",
+          "date": "2026-10-22",
+          "subject": "plan: plans 3a, creation caps",
+          "branch": "plans-3a-creation-caps",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/plans-3a-creation-caps",
+          "commits": 10,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "30c33274224a7a2c04a1b5f49c2833b25427a6b8",
+          "date": "2026-10-22",
+          "subject": "db-region-forward-2: carlos db query forwarded to the data's region (dark behind CARLOS_DB_FORWARD)",
+          "branch": "db-region-forward-2",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/db-region-forward-2",
+          "commits": 20,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.9",
+      "date": "2026-10-22",
+      "sha": "26fbd042e938e2d22a9068d31890f468515d24a4",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.9",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**The console shows its deployment's name.** Where the deployment has a name, the console now shows it in the header, the tab title, the front page and the welcome for a new account, as its emails already did. Without one, it still reads \"CARLOS console\"."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.7 or earlier, read the [v0.28.8 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.8) first."
+              },
+              {
+                "md": "**Bucket reads only when something changed.** This release stops every box and the console from reading the whole deployment bucket on every pass (#336). Writers now record which app changed in `control/changes.json`, and readers re-read only those apps. A full read of the bucket still runs every 30 minutes as a safety net.",
+                "items": [
+                  "roll every box and the console before you arm any reader. writers update the index as soon as they run the new build, and readers stay off until you arm them.",
+                  "arm a box by adding `CARLOS_CHANGE_INDEX=read` to its `host.env` and restarting it, and the console the same way in its environment. do dev first, and boxes before the console.",
+                  "to turn it off, remove the variable and restart. readers go back to reading the whole bucket, and writers keep updating the index, which does no harm.",
+                  "anyone using an older carlos CLI that writes straight to the bucket (promote, env set, trash) should update it. until they do, their changes reach boxes at the next 30-minute read, not within seconds.",
+                  "customer fleet boxes keep reading the way they do today.",
+                  "to see the effect, look at daily S3 ListBucket and GetObject requests for the deployment bucket in Cost Explorer. they should fall within a day of arming."
+                ]
+              },
+              {
+                "md": "**Boxes can set up a database read worker, but nothing uses it yet.** On a box configured for hibernation, with `CARLOS_REGION` and `CARLOS_RELEASE_PUBKEY` set, the hourly adopt pass installs and starts `carlos-dbread.socket`, and the agent lists a small request queue in the deployment bucket every 30 seconds. No console sends a request in this release. To keep a box out, set `CARLOS_DB_READS=0` in its `host.env` and restart it."
+              },
+              {
+                "md": "**Plan limits stay off without a plan catalog.** Each box now reads `control/plans.json` on every pass and applies an account's plan only when a console with `CARLOS_PLAN_CATALOG` has turned plans on. `CARLOS_PLAN_LIMITS=off` in a box's `host.env` stops even that read."
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` as it is: a box armed for zero-downtime deploys stays armed.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "26fbd042e938e2d22a9068d31890f468515d24a4",
+          "date": "2026-10-22",
+          "subject": "S3 change index: spec rev 1 and review brief (#336)",
+          "branch": "s3-polling-336",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/s3-polling-336",
+          "commits": 43,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 336,
+              "title": "S3 request bill grows with apps × boxes: every box re-walks the whole bucket on each pass (~$3/app/month)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "13e2f75f5c931b6f9ab2b8dad8192ec1553a9461",
+          "date": "2026-10-22",
+          "subject": "db-region-forward-1-nudge-flake: TestRunPassesOnANudge waits for the start probe's unit to stop (test only)",
+          "branch": "db-region-forward-1-nudge-flake",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/db-region-forward-1-nudge-flake",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "cd55508a6640f49c0b2dbd386459300604662511",
+          "date": "2026-10-22",
+          "subject": "db-region-forward-1: the box side of region-forwarded db reads (dark)",
+          "branch": "db-region-forward-1",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/db-region-forward-1",
+          "commits": 46,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "5f341f337ab71fde37f685aece3d21eef9f9d050",
+          "date": "2026-10-22",
+          "subject": "Console chrome and welcome name the deployment from CARLOS_CONSOLE_NAME (Carloku on carloku.com); defaults unchanged. Census overlay proposed on #280.",
+          "branch": "console-brand-name",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/console-brand-name",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "0235046428a9ec7b0314fb23bc420b27490482a6",
+          "date": "2026-10-22",
+          "subject": "plan: plans 2, boxes read account limits",
+          "branch": "plans-2-box-limits",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/plans-2-box-limits",
+          "commits": 9,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.8",
+      "date": "2026-10-21",
+      "sha": "f6ba4432bf92aca2ad68407dc2ba3b1d5d9e82bb",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.8",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Anyone can sign in to the console with an email address.** Type your address and press Continue. A Keymail address goes straight to Keymail to sign in. Any other address gets a link and a 6-digit code by email, and your first sign-in sets up your account."
+              },
+              {
+                "md": "**People who signed in by email confirm sensitive actions by email.** Approving a `carlos auth login`, removing a member, handing over ownership and deleting an account or app send a fresh link and code to the signed-in address. People who signed in with Keymail still confirm with their passkey.",
+                "docs": [
+                  "/docs/cli#carlos-auth"
+                ]
+              },
+              {
+                "md": "**Invitations reach any email address.** Someone invited who isn't signed in is taken through sign-in and back to the invitation."
+              },
+              {
+                "md": "**Fixed: binding a socket could make directories unusable.** While the agent bound a socket, files and directories created at the same time lost their group and other permissions, so a concurrent wake could fail with a permission error."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.6 or earlier, read the [v0.28.7 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.7) first."
+              },
+              {
+                "md": "**Console email needs a sending address and a send grant.** Set `CARLOS_MAIL_REGION` and `CARLOS_CONSOLE_MAIL_FROM` (or `CARLOS_MAIL_PLATFORM_SUFFIX`) on the console, and `console_mail_from` and `console_mail_region` in the region-host module for the console's box. `CARLOS_CONSOLE_NAME` names the deployment in the emails. Without a working sender, the console signs in Keymail addresses only and tells anyone else so."
+              },
+              {
+                "md": "**Existing sessions keep working.** The one-time sign-in links the console used to send to Keymail inboxes stop working; Keymail users now sign in through Keymail directly."
+              },
+              {
+                "md": "**Every dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_APP_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST` and `CARLOS_PLAN_CATALOG` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` as it is: a box armed for zero-downtime deploys stays armed.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "f6ba4432bf92aca2ad68407dc2ba3b1d5d9e82bb",
+          "date": "2026-10-21",
+          "subject": "Console email sign-in: one email field; Keymail addresses go to Keymail's sign-in, any other address gets a magic link and code; email sessions re-confirm by emailed link or code; invites and notices reach plain email addresses. Spec docs/superpowers/specs/2026-10-21-console-email-signin-design.md (rev 6), copy approved by Paul, census proposed on #280.",
+          "branch": "email-signin",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/email-signin",
+          "commits": 28,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "3c34fe0262bd7142d841adc94732ee3c4e7aae4a",
+          "date": "2026-10-21",
+          "subject": "Fleet-internal engines (#335): spec rev 14 (approved, rulings R1-R5) and Plan 1, the internal/sim/engines simulation with its mutation harness and census overlay",
+          "branch": "design-fleet-internal-engines",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/design-fleet-internal-engines",
+          "commits": 35,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 335,
+              "title": "doc-engine routes are reachable from the internet: engines should be fleet-internal",
+              "state": "open"
+            },
+            {
+              "id": 341,
+              "title": "Fleet-internal engines (#335): spec rev 14 + Plan 1 simulation",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "4d6f0e6cad84622e0c03904783636f7785cd0320",
+          "date": "2026-10-21",
+          "subject": "activator: tests held serial only by the umask now run in parallel",
+          "branch": "umask-parallel",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/umask-parallel",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 337,
+              "title": "edge.SecureUnixListen sets the process-wide umask to 0177; concurrent goroutines create 0600 directories",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "6f2af4ceecf17e0b4180d27e5a36a44929e4aeea",
+          "date": "2026-10-21",
+          "subject": "claim-step8-readiness: backfill phases, leo's migration census, journal-migrate --window",
+          "branch": "claim-empty-cohort-done",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/claim-empty-cohort-done",
+          "commits": 47,
+          "discussions": [
+            {
+              "id": 253,
+              "title": "Signed channel pointers carry no manifest digest: an old pointer plus a reused, pruned version name installs bytes nobody promoted",
+              "state": "open"
+            },
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 312,
+              "title": "claims: console-report evidence is overwritten by the agent's next status tick (~5 min)",
+              "state": "open"
+            },
+            {
+              "id": 315,
+              "title": "Agent's in-process adopt rolls back a console update when it can't restart console.service itself (\"Interactive authentication required\")",
+              "state": "closed"
+            },
+            {
+              "id": 316,
+              "title": "Keep bootstrap/carlos in step with the fleet: system update mirrors releases but new boxes still boot a stale binary",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-system-journal-migrate"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "abcdd57789575d9cdeb6f9cdecab54f90e3c08b6",
+          "date": "2026-10-21",
+          "subject": "system apply: a claims-on box's update gate waits 120 s and fails fast",
+          "branch": "claims-on-gate-recover",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/claims-on-gate-recover",
+          "commits": 16,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 281,
+              "title": "Agent startup is not bounded under the 20s update gate: sweep and recovery still run before the edge listens",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "521c6ee912f045967d913694cfe95eb5bf76affb",
+          "date": "2026-10-21",
+          "subject": "claim invariant: quiesce waits for two consecutive quiet windows",
+          "branch": "console-invariant-parallel",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/console-invariant-parallel",
+          "commits": 6,
+          "discussions": [
+            {
+              "id": 291,
+              "title": "Test suite speed: where the CI gate's 375 seconds go, and a ranked plan",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "4a1e4b29a7196a2a0acb505cd4f8a3dcea054ad0",
+          "date": "2026-10-21",
+          "subject": "edge: owner-only unix sockets without touching the process umask (#337)",
+          "branch": "securelisten-337",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/securelisten-337",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 337,
+              "title": "edge.SecureUnixListen sets the process-wide umask to 0177; concurrent goroutines create 0600 directories",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "c02978ad2a7c96454c73c01ecfd12d9671b5759d",
+          "date": "2026-10-21",
+          "subject": "changelog-v0.28.7: release step 10 for v0.28.5 to v0.28.7",
+          "branch": "changelog-v0.28.7",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/changelog-v0.28.7",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "4f55bfb0dcaf83a0a5aab3588ba9fa6ac94932c2",
+          "date": "2026-10-21",
+          "subject": "activator tests: wait for the fake app, not its timeout",
+          "branch": "ci-speed-activator",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/ci-speed-activator",
+          "commits": 12,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "8fee316b0b0e4952ccc13d66cb5f837e0f1b43ab",
+          "date": "2026-10-21",
+          "subject": "offline-move-runbook: the operator runbook for offline moves with stage",
+          "branch": "v0285-roll-runbook",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/v0285-roll-runbook",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 338,
+              "title": "A platform alias keeps the flat socket after its instance nests (502)",
+              "state": "open"
+            },
+            {
+              "id": 339,
+              "title": "Offline move: stage should refuse a target holding an old live link; status after a staged abort",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "6da1cd0f6e699ebfd224d0dbf5ea68572b74ce56",
+          "date": "2026-10-21",
+          "subject": "host tests: one RSA key for every handoverRecoveryIdentity",
+          "branch": "ci-speed-host",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/ci-speed-host",
+          "commits": 4,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "d9149a01cc9d8bfdb3822ccf5dcb526b45cb41f1",
+          "date": "2026-10-21",
+          "subject": "make test: run checks side by side and split the slow packages' tests",
+          "branch": "ci-speed",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/ci-speed",
+          "commits": 5,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v0.28.7",
       "date": "2026-10-21",
       "sha": "771ca01b6be00cec299a8e265c34136daa1fe0d1",
@@ -44,7 +3676,7 @@
               {
                 "md": "**Roll the boxes first, then the console.** Coming from v0.28.4, read the [v0.28.5 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.5) first. Coming from v0.28.5, upgrade the console with `carlos system claims install-console --upgrade` as the [v0.28.6 notes](https://github.com/carlosframework/releases/releases/tag/v0.28.6) describe.",
                 "docs": [
-                  "/docs/cli#carlos-system-claims"
+                  "/docs/cli#carlos-system"
                 ]
               },
               {
@@ -310,7 +3942,6 @@
                   "install-console-upgrade"
                 ],
                 "docs": [
-                  "/docs/cli#carlos-system-claims",
                   "/docs/cli#carlos-system"
                 ]
               },
@@ -366,9 +3997,6 @@
           "branch": "install-console-upgrade",
           "branch_url": "https://amadan.net/carlos/platform/-/branch/install-console-upgrade",
           "commits": 4,
-          "docs": [
-            "/docs/cli#carlos-system-claims"
-          ],
           "credit": [
             {
               "person": "Paul Campbell",
@@ -827,7 +4455,6 @@
                   "claim-step6-artifacts"
                 ],
                 "docs": [
-                  "/docs/cli#carlos-system-claims",
                   "/docs/cli#carlos-system"
                 ]
               },
@@ -849,9 +4476,6 @@
           "branch": "claim-step6-artifacts",
           "branch_url": "https://amadan.net/carlos/platform/-/branch/claim-step6-artifacts",
           "commits": 9,
-          "docs": [
-            "/docs/cli#carlos-system-claims"
-          ],
           "credit": [
             {
               "person": "Paul Campbell",
@@ -1066,7 +4690,7 @@
                   "feat/claim-files-backfill"
                 ],
                 "docs": [
-                  "/docs/cli#carlos-system-claims"
+                  "/docs/cli#carlos-system"
                 ]
               },
               {
@@ -1088,8 +4712,7 @@
           "branch_url": "https://amadan.net/carlos/platform/-/branch/feat%2Fclaim-root-trusted-state-p3",
           "commits": 102,
           "docs": [
-            "/docs/cli#carlos-proof-history",
-            "/docs/cli#carlos-system-claims"
+            "/docs/cli#carlos-proof-history"
           ],
           "credit": [
             {
