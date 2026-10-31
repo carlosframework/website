@@ -1,329 +1,61 @@
 ---
 name: building-carlos-apps
-description: Use when building or designing an app on the CARLOS architecture (Cost-efficient, Available, Replicated, Lightweight, Open, Secure) or with rastrillo (the CARLOS web framework), bringing an existing app onto it, deciding what one instance is (per person, team, customer, repo, or one shared instance; a signup that creates instances; a home or hub; reporting across tenants; SaaS customers who want on-prem), choosing a trust class (S, A1, A2, A/pub, B, C), or weighing the family's other open choices (app shape, hosting, identity). For the zero-decisions happy path to a first live app, use getting-started instead.
+description: "Design or adapt a CARLOS app: choose tenant boundaries, trust, app shape and hosting, or find the platform capability for the current task. Read task-specific references only when needed. For a first local app and deploy recipe, use getting-started."
 ---
 
 # 🤖 Building CARLOS apps
 
-## Overview
+CARLOS runs isolated instances: each tenant gets its own process, SQLite file
+and socket, with replication and hibernation managed by the platform.
 
-CARLOS is an application architecture: **one static Go binary, one
-fully-isolated instance per tenant (own process, own SQLite file, own unix
-socket), many instances on one small box behind a small router**, with
-every database continuously replicated to object storage and idle
-instances hibernating to it. What a tenant *is* (a person, a team, a
-customer company, a repository, a chat, or the whole app) is the app's
-first decision.
-Everything below is distilled from the prompt histories, repo instruction
-files and code of the apps it was extracted from. The house style is to
-state rules as laws, date and attribute decisions, and make rules
-mechanical rather than remembered.
+**Read this index first. Do not follow every link, prefetch references, or
+load the whole skill directory.** Choose the topic needed for the current
+step. Read another only when the task reaches it. Existing projects' AGENTS.md
+and the user's explicit decisions take precedence.
 
-## When to use
+## Before new app code: tenancy, then trust
 
-- Starting a new product that should join the family, especially when it
-  needs real decisions: tenancy, trust class, app shape, hosting, identity.
-- Working out what one instance of an app should be, how people reach it,
-  what the host can see, and which CARLOS benefits that earns.
-- Porting an existing app onto the model (Tito's path — see "Adopting").
-- Any question of the form "what would a CARLOS app do here?" — stack,
-  hosting, testing, deploys, process, and the trade-offs between the
-  family's sanctioned options.
+Record in AGENTS.md what one instance represents, how people reach it, and
+what the host can see. Choose the smallest unit that owns data, fails and
+leaves together. Use separate instances for separate tenants; a `tenant_id`
+column in one shared database is not the CARLOS isolation boundary. A shared
+app may deliberately have one instance. A static site has none.
 
-Not for: contributing to one of the existing apps (read that repo's
-AGENTS.md instead — it always wins over this skill). And for "just get me
-a first app live, decide everything for me", use the sibling skill
-**carlos:getting-started** — it is this skill with every decision
-pre-answered with the defaults (one instance, class C declared, server
-shape, Carloku).
+Choose a trust class per workload: S (no user data), A1/A2/A-pub (host-blind,
+with declared residue or public surfaces), B (sealed at rest, readable while
+awake), or C (server-readable, explicitly declared). Name the benefits the
+chosen design earns and the leaks it accepts. Read [tenancy and trust](references/tenancy.md)
+when making these decisions; an already settled decision needs no reread.
+For the simple first-app defaults, use [getting-started](../getting-started/SKILL.md).
 
-## Start here: tenancy, then trust
+## Rules for implementation
 
-Before stack, screens or deploys, answer three questions and write the
-answers down as a **tenancy declaration** in AGENTS.md. Everything else
-in this skill, and every benefit on carlosframework.com, hangs off them.
+- Use Rastrillo's scaffold and the framework skill at the app's installed
+  version. Default to its UI components and tokens, with thin app CSS;
+  respect an established design system or explicit design brief.
+- Keep migrations compatible with the builds that may run together. Prefer
+  server-rendered HTML with a working zero-JavaScript baseline; choose another
+  shape deliberately. Read [app choices](references/decisions.md) for that choice.
+- Use the platform for routing, TLS, replication, hibernation and process
+  control. Before implementing another platform capability, select the relevant
+  topic below. Day-to-day operations use `carlos` and the console API, never
+  SSH, direct AWS access or on-box verbs.
+- A capability being documented is not authorization to enable it. Keep
+  production changes and billable services within the user's approved scope.
 
-1. **What is one instance?** A person (Kass), a chat (Eleven), a mailbox
-   (Keymail), a team (Oficina, an internal finance ledger), a customer company (Tito), a
-   community (Woodstar), a repository (amadan), a bank connection,
-   the whole app (Movement), or nothing at all (a static site). The
-   boundary is the app's choice; there is no default. Choose the smallest
-   unit that owns data together, fails together and leaves together.
-   Sharing is membership in someone's instance, never a copy. Never
-   tenancy by a `tenant_id` column in one shared file. Totals across
-   tenants come from facts the centre owns or witnesses and fixed-shape
-   records instances push, never from opening tenant databases.
-2. **How do people reach it?** One instance with in-app accounts, a
-   simple home that lists your instances, a hub that puts every tenant
-   under one domain, or a blind home for end-to-end encrypted apps.
-   Central apps are stateless: records in object storage, no database.
-3. **What can the host see?** A trust class per workload: S (no user
-   data), A1/A2/A-pub (host-blind, with declared residue or public
-   surfaces), B (sealed at rest, readable while awake), C (plaintext,
-   chosen and written down).
+## Open only for the current task
 
-Then name the benefits the design earns, each with its mechanism (isolated
-data per tenant, blast radius of one, hibernation, per-tenant export and
-erasure, residency once switched on, a falsifiable security claim, self-hosting from the same
-binary), and the costs it accepts. **[references/tenancy.md](references/tenancy.md)**
-has the gallery's real choices, the four user models, the classes, the
-benefits table with what is live today, worked examples, and the
-declaration template. Read it first.
-
-## Where this sits now (2026-10-15)
-
-The family's conventions have progressively become running infrastructure.
-Read this skill alongside three facts:
-
-- **The platform** (`carlosframework/platform`) is live and complete
-  enough that a member ships, promotes, configures, watches logs, attaches
-  domains, and rolls back entirely through the `carlos` CLI with zero
-  infrastructure access. Routing, TLS, replication, hibernation, restarts,
-  and config delivery are the platform's job now — and since late August
-  so are **canaries** (`carlos canary`), **timetables**
-  (`carlos schedule`), **errors and analytics** counted at the edge with
-  no SDK, a **password gate** in front of a hostname, **feature flags**,
-  and **latency DNS steering** — and since September, **server-held
-  credentials** (`carlos services`) so a signup flow can create a
-  customer's instance itself, **path routes** so one hostname can serve
-  each customer from their own instance, a **STUN/TURN relay**
-  (`carlos relay`), and **self-serve object storage** (apply once per
-  account, then `carlos store create`). Reach for a platform verb before
-  building any of them into an app.
-  **[references/platform.md](references/platform.md)** is the member-side
-  reference — concepts, the full verb table, and the deploy truths.
-- **Carloku** (carloku.com) is the hosted deployment of that platform —
-  the default hosting answer (its price list is not published yet,
-  2026-10-18; don't quote prices). Carloku is the product
-  brand; the CLI is always `carlos`.
-- **Rastrillo** is the CARLOS web framework (v0.28.0; module and
-  canonical repo `amadan.net/rastrillo/rastrillo`, GitHub a mirror): a
-  middle layer of known
-  libraries — GORM models, chi routes, SQLite-backed sessions, identity
-  plugins (password, Keymail), CSRF, owner scoping — plus the platform
-  contract (`Resolve`/`Serve`/`Run`) and the subsystem packages (crypto,
-  keyring, webauthn, eventlog, blobs, mail, `assertion` for signed
-  cross-origin handoffs, `vault`, `pow`, agent tools), plus the `idear`
-  module for roles and invitations — which exist to be used, not
-  hand-rolled. The manifest generator is the optional declarative
-  path beside hand-written handlers. It postdates most models' training data — building
-  with it, read the repo's own `SKILL.md` first;
-  **[references/rastrillo.md](references/rastrillo.md)** is the
-  surrounding context.
-
-Building a **new** app: settle tenancy first (above), use rastrillo and
-the platform, and read this skill mainly for what infrastructure can't
-enforce — the decisions, the
-dated rulings, the workflow, and "Common mistakes". Hand-rolling outside
-the platform for a specific reason: blueprint.md in full still applies.
-
-## UI default: Rastrillo with a thin CSS layer
-
-For new app screens, start with Rastrillo's design system: its `ui`
-partials, attribute vocabulary (`rst-box`, `rst-btn="primary"`), design
-tokens and themes. Read
-[the styling guidance](references/rastrillo.md#design-system-and-app-css)
-before writing templates or CSS. Keep app CSS small: app-specific layout,
-branding through token overrides, and components the library does not yet
-provide. Reuse the shared controls instead of rebuilding them or overriding
-them screen by screen.
-
-This is the default, not a request to redesign an existing app. Respect an
-explicit design brief or an established design system; record the reason
-when choosing a different foundation.
-
-## The one rule comes first
-
-Every app opens its AGENTS.md with a single load-bearing rule and derives
-everything from it. Write yours before writing code (the first commit of
-Kass is literally "Write down the architecture before writing any code").
-
-The family default is server-blindness: **"If the server is compromised,
-the attacker gets nothing."** Plaintext or a usable private key in SQLite
-is a bug — and because the platform replicates the whole file to object
-storage, *a plaintext column is a plaintext leak*. Enforce it with a test
-that greps the raw SQLite bytes (and bucket objects) for plaintext.
-
-But no shipped app is absolutist: the real spectrum runs from Slopbox
-(A1) through Keymail's sealed-content-plaintext-envelopes (A2) and
-Woodstar's split-by-content-class (A2 + A/pub) to an internal finance ledger's sealed
-single-tenant (B) and Tito's deliberate server trust (C), and the
-discipline that makes any position legitimate is the same — **choose on
-day one, name every leak, publish the list**. The whole axis, with each app's recorded
-reasoning and a decision guide, is
-**[references/decisions.md](references/decisions.md)** — read it before
-settling a new app's trust model, app shape, hosting, or identity story.
-
-## Guiding principles
-
-1. **Intent before code.** AGENTS.md is written first and is binding. Design
-   docs precede big builds; the doc's decisions are taken — if one proves
-   wrong, stop and flag it in the PR rather than redesigning.
-2. **Decisions are dated, attributed, and settled.** "Paul's call,
-   2026-07-26" next to every ruling, rejected alternatives recorded beside
-   it, under a heading like "Settled decisions (don't relitigate casually)".
-3. **Built to outlive AI.** Human legibility beats AI convenience. Never add
-   machinery only an LLM can drive; operational knowledge lives in scripts
-   and docs in the repo, never solely in prompts or agent memory. "No LLM
-   cookbooks": ops run through a command, never reconstructed from prose —
-   a script drifts loudly, a document drifts silently.
-4. **Rules are mechanical, not remembered.** The module-size cap is a test.
-   Contrast ratios are computed from the token file by a test. A guard a
-   shell step can satisfy is a guard a shell step can be wrong about — put
-   guards inside the test binary. Generated configs are marked GENERATED
-   and regenerated on a timer, never hand-edited.
-5. **Blast radius is the unit of design.** One process + one DB per account:
-   a panic takes down one person. The corollary cuts both ways: strict
-   validation belongs where its blast radius is one request, not one fleet
-   (a shared package that panics at init once 502'd every process at once).
-6. **Defer until earned, with the trigger written down.** Keep a
-   "Deliberately not built yet" section. And ship a thing *off* rather
-   than untested when the only real proof needs infrastructure you don't
-   have yet.
-7. **Don't diverge gratuitously from the family.** Shared shape is what
-   makes components extractable; a local improvement to shared code is a
-   debt to upstream, noted as such.
-8. **Honesty over polish.** Publish trade-offs plainly ("Honest trade-offs
-   — read before trusting it"), never overclaim maturity, and don't let
-   the UI lie: an uncertain state is a sentence, never a fabricated number,
-   and a claim about a person ("you earned your rest") has to be true.
-9. **Every deviation from the one rule is enumerated**, justified, and
-   published — never hidden.
-
-## The eleven factors
-
-CARLOS is the architecture; the values under it are **the eleven factors**
-([11factor.org](https://11factor.org) is the canonical text — link to it,
-don't copy it). Sibling repos cite factors **by number**, so know the names:
-
-I. Trust no one · II. Let kids play · III. Encrypt everything ·
-IV. Great design is for everyone · V. Intent is the system ·
-VI. Built by humanity, owned by humanity · VII. Self-hosting is a right ·
-VIII. Many small things · IX. Inefficient builds efficient ·
-X. Humans come first · XI. Centralised infrastructure is glue.
-
-The ones the family invokes operationally:
-
-- **III — Encrypt everything** → the one rule: server-blind by default;
-  deviations are legitimate under the deviation rule, not violations.
-- **V — Intent is the system** → AGENTS.md and design docs before code;
-  "the code should have to argue with something."
-- **VI — Built by humanity, owned by humanity** → open source; private
-  until it works is allowed, but "factor VI is not optional, only
-  deferred."
-- **VII — Self-hosting is a right** → self-hosting is first-class, never a
-  degraded tier; hosted convenience (Carloku) is the product, never the
-  software.
-- **VIII — Many small things** → instance-per-account, scale by adding
-  instances, not replicas of one.
-- **X — Humans come first** → AI is "a guest with a name tag": opt-in,
-  never required, always disclosed (🤖 marking), and every path works with
-  the AI switched off. The strongest form is Kass's: the AI is an ordinary
-  member whose code never runs inside the server process, and whose
-  conclusions land as proposals into human review, never as direct writes.
-
-## Quick reference — the shape
-
-| Concern | The CARLOS answer |
+| Task | Reference |
 |---|---|
-| Language | Go, one static binary, `CGO_ENABLED=0`, thin `main.go` dispatch |
-| Dependencies | Stdlib first; "adding a dependency is a decision, not a default"; hand-roll small clients over SDKs; a scoped exception is dated and does not extend to its neighbours |
-| Storage | `modernc.org/sqlite`, WAL, one DB per instance, additive-only migrations — automatic on rastrillo |
-| Quantities | Integer cents, integer grams — "a float never touches an amount" |
-| Frontend | Two shapes, chosen deliberately: `server` (server-rendered, zero-JS baseline — the default) or `client` (Woodstar's shape) — see decisions.md §2 |
-| JS discipline | 300-line module cap enforced by test, ratchet-down only; VanJS (vendored) the one sanctioned reactive dependency |
-| Routing, TLS, replication, hibernation, restarts | The platform's job — see platform.md; hand-rolled only off-platform (blueprint.md) |
-| Periodic work | `carlos schedule` — a time and a path; each fire is a POST to a route the app already serves, over its own socket. Never cron, never a second worker. A schedule tighter than the idle window stops the instance hibernating, and that is billed — platform.md |
-| Object storage | Once per account, `carlos store apply` and a deployment operator approves; then `carlos store create` declares a bucket and credentials arrive as env; `carlos store scan` is opt-in virus scanning, off by default. It reconciles — it counts the objects it has NOT looked at — so ask for both numbers. Server-blindness wins over it: a client-encrypted store gets no coverage claim, because nothing can read the bytes — platform.md |
-| Errors and analytics | `carlos errors` needs no wiring and collects from day one (tagged log lines; edge-seen 5xx are `carlos availability`); `carlos analytics` counts at the edge with no JavaScript, no cookie, no stored IP, and is opt-in per app or account. Do not add a third-party analytics script to a CARLOS app — platform.md |
-| Canaries | `carlos canary` — a branch-only channel and hostname, outside every pipeline, seven-day lease. Review there, never on localhost. Pass `--environment` if the app carries config, or every form submission on the canary host fails — platform.md |
-| Config environments | `carlos env --environment` writes a named bundle; a route is bound to one via the instance record (`instances set-environment`), then `carlos restart --environment` cycles exactly what reads it — platform.md |
-| Feature flags | `carlos features set` — the platform serves them, only the app interprets them, and they land on the instance's next poll with no restart — platform.md |
-| Hostname-level password | `carlos gate` — one shared password at the edge in front of an app's hostnames, for a prototype or a private static site. A curtain over a hostname, never a substitute for the app's own accounts — platform.md |
-| Outbound email | `carlos email enable` — the platform mints the sending identity, publishes DKIM/SPF/DMARC, delivers SMTP credentials as env; never run an MTA or hold a cloud mail key — platform.md |
-| Scheduled work | `carlos schedule set` declares it; the app's part is a POST handler guarded by `carlos.Tick` — the instance is asleep, so never an in-process cron — platform.md |
-| Tenancy | The app chooses what one instance is; the declaration (unit, user model, class per workload, residue, benefits, costs) goes in AGENTS.md before code — tenancy.md |
-| A customer per instance | The signup app holds an `instance`-role credential (`carlos services create --role instance --app <tenant-app>`) and `POST`s `/api/cli/apps/<account>/<tenant-app>/instances` — customers are instances, never Carloku accounts. The credential is app-wide, so it lives on the signup app only — platform.md "Provisioning instances from your own app" |
-| One hostname, many instances | Path routes: the first path segment of a claimed hostname points at another route in the same account, on the same box. One hostname is one origin — platform.md "One hostname, many instances" |
-| Central apps (sign-in, directory, home) | Stateless: no SQLite of their own, records in object storage, so they run anywhere and lose nothing when moved |
-| WebRTC | `carlos relay enable` — the platform's STUN/TURN, delivered as `CARLOS_RELAY`; never a third-party TURN service — platform.md |
-| Hosting | Carloku hosted (default) / customer fleets / self-hosted platform — decisions.md §3 |
-| Deploys | `carlos deploy`: ship + promote + watch `X-Carlos-Version` until live; verify against the thing you changed with the binary you built. A static site is the same one command — `--kind static --host <h> <dir>`, which declares the route too — platform.md |
-| Activity descriptions | Pass a concise `--message` on supported mutations: say what changes and why. The console records the exact target separately. Agents supply the message even when prompts are disabled — platform.md |
-| Identity | "Sign in with Keymail" / passkeys+PRF / magic link+TOTP by trust model — decisions.md §4 |
-| Trust | A class per workload, S to C; server-blind by default; every softening named and grep-tested. Placement by class is designed, not enforced — tenancy.md §3, decisions.md §1 |
-| UI stance | Hide the machinery: no hostnames, keys, or crypto vocabulary in the default flow — "no nerdspeak"; calm UI, red for danger only, no toasts |
-| Process | Code on amadan by default (its agent house rules: `amadan agent skill -install`); worktree per session, branch, regular pushed commits; merge to main (`amadan branch merge`, optionally `-squash`) only when done, approved and CI green (CI green binds once the repo has CI — a new repo's first merges land on done + approved and add CI early); review on a deployed canary, never localhost |
-| Authorship | 🤖/👨 markers, `Co-Authored-By: Claude …` trailers, published prompt + carbon ledgers |
+| Choose instance boundaries, home/hub shape, trust or per-tenant reporting | [Tenancy](references/tenancy.md) |
+| Choose encryption, app shape, hosting or identity | [Decisions](references/decisions.md) |
+| Implement Rastrillo handlers, models or UI | [Framework](references/rastrillo.md); then the installed framework skill and its relevant topic |
+| Deploy, operate, add a platform service, debug or inspect costs | [Platform topic index](references/platform.md); open only the matching topic |
+| Set project rules or assess a departure from CARLOS principles | [Principles](references/principles.md) |
+| Adopt CARLOS in an existing app or check app conventions | [Conventions](references/conventions.md) |
+| Work on commits, tests, review or canaries | [Process](references/process.md) |
+| Implement infrastructure outside the platform | [Blueprint](references/blueprint.md), only when that is the chosen hosting model |
+| Understand the family and historical context | [Orientation](references/orientation.md), optional background |
 
-## Details
-
-- **[references/tenancy.md](references/tenancy.md)** — read first: what
-  one instance is, across every shape in the gallery; the four user
-  models (one instance, simple home, hub, blind home); stateless central
-  apps; the trust classes S to C; the benefits each choice earns, with
-  mechanism and what is live; and the tenancy declaration to write
-  before code.
-- **[references/decisions.md](references/decisions.md)** — the four axes:
-  trust model, app shape, hosting, identity — each with the family's real
-  positions, recorded reasons, and a decision guide.
-- **[references/platform.md](references/platform.md)** — the platform
-  member-side: concepts (accounts, releases, channels, instances,
-  hibernation, config bundles, canaries), the `carlos` CLI verb table,
-  deploying a static site, standing a canary beside production, scheduled
-  work (the tick contract, idempotency, one-shot timers, what a tight
-  schedule costs), errors and analytics, sending email (SMTP credentials,
-  DKIM/DMARC alignment, the credential-propagation trap), deploy truths,
-  self-hosting.
-- **[references/rastrillo.md](references/rastrillo.md)** — building an
-  app with rastrillo: the middle-layer shape, where the authoritative
-  SKILL.md lives, the safety rules, and the declarative manifest path.
-- **[references/blueprint.md](references/blueprint.md)** — the technical
-  blueprint the platform automated: the carlos core, storage rules,
-  crypto conventions, box setup. The reference for self-hosting outside
-  the platform and for understanding what it does on your behalf.
-- **[references/process.md](references/process.md)** — working
-  conventions: repo docs, git/PR workflow, canaries, the test layers
-  (including the uidump pattern), `/end-session`, ledgers and
-  AI-authorship marking.
-
-## Adopting CARLOS in an existing app (Tito's path)
-
-1. Restate the model in your first commit and at the top of README and
-   AGENTS.md.
-2. Deploy onto the platform (hosted or self-hosted) rather than porting
-   the router/replication machinery — that is what it is for. Only when
-   the app must run somewhere the platform can't: take the core into
-   `internal/carlos`, kept close to blueprint.md's shape so it can be
-   swapped for the platform later.
-3. Adopt the conventions alongside (worktrees, PR playbook, canaries,
-   additive migrations, zero-JS-first).
-4. List every deferred component with its trigger; list every deliberate
-   departure with its reason.
-5. Fixes you make to shared-shape code are candidates to upstream — record
-   them.
-
-## Common mistakes
-
-| Mistake | Reality |
-|---|---|
-| One shared instance with a `tenant_id` column for many customers | Isolation on CARLOS is a process and a file. A `WHERE` clause gives up per-tenant isolation, erasure, residency and hibernation, and one missed clause leaks everyone. Make the tenant an instance — tenancy.md |
-| Starting to code before deciding what one instance is | The unit decides the user model, the trust class's blast radius and which benefits the app can claim. Retrofitting it is a migration across every instance. |
-| Adding a framework/bundler "just for this screen" | The no-build-step rule is load-bearing (auditability, longevity). One more ES module, one concern. |
-| Choosing the client shape because it feels modern | The client shape is for client-held keys, live channels, and server-blind state — and it must self-impose the discipline the server shape gets free (decisions.md §2). |
-| Creating a Carloku account per customer, or signing up customers with a person's CLI login | Accounts are *your* tenancy on the platform; customers are instances of your app. A signup flow holds a service credential (`carlos services`) and calls the instances API — platform.md |
-| Giving every tenant its own hostname because "the edge routes by Host only" | It no longer does: path routes split one claimed hostname by its first segment, within one account and one box — platform.md |
-| Hand-rolling a router, certs, Litestream, or restart machinery | The platform's job. An app on the platform is a binary on a unix socket (`--socket`/`--db`; there is no `$PORT`). |
-| Giving a static site an instance | It has no process to run. The edge serves it off the channel pointer, so `carlos deploy --kind static --host <h> <dir>` is the whole deploy — `instances enable`/`create` is the binary recipe, and following it here builds a route that succeeds at every step and can never wake. |
-| Concluding you have no access because the console redirected you | A `curl` of the console 302s to a login page for everyone — a browser session is not what the CLI holds. `carlos auth whoami` is the only thing that answers the question, and it is the first command of any platform task. |
-| Guessing a channel name from the ladder in `--help` | Channels belong to the app. A new app has exactly one (`edge`), and `canary → edge → beta → stable` is the frozen legacy ladder for apps that declare no pipeline. `carlos channels` lists this app's; `carlos pipeline` orders them. |
-| Growing the biggest file/package | A new concern gets a new small module or package — never more growth of the biggest one. |
-| Destructive migration "to clean up" | Migrations are additive-only. New code over an old DB must always be safe. Never delete data to update. |
-| Trusting a backup that exists | "A backup you've never restored is a hope, not a backup." (Platform-run for platform apps; your job off-platform.) |
-| Verifying a deploy with a 200 | An app-shell route 200s for any build ever shipped. Only `X-Carlos-Version` on the canonical host, after the watch, is proof — and minted alias hosts carry no version header by design. |
-| Treating a promote as a deploy | Until the process cycles, the old binary serves. Platform-known units cycle automatically; hibernating tenants wake into the new build; a bespoke unit stays old until something restarts it. |
-| Reviewing on localhost | Review happens on a deployed canary, always. Shared hosts only ever run merged main. |
-| Skipping the post-deploy browser check | A JS syntax error takes the whole client down and only a real engine sees it (the keymail rule). |
-| Treating a day-one absolute as unsatisfiable and quietly skipping it | A gate a brand-new project cannot meet is a gate not written for day one. Name the bootstrap case in the rule and make satisfying it early work — a rule agents learn to step around stops working everywhere. |
-| Relitigating a settled decision in a drive-by | Settled decisions change with new facts, dated and attributed — not casually. |
-| A retired stack left owning DNS or deploy paths | It can silently undo a cutover (a legacy apply once reverted a live A record). Move the records; delete the verb that can report success while changing nothing. |
+Return to implementation once the relevant question is answered. Reference
+links are conditional reading, not a checklist to complete.

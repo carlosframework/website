@@ -5,16 +5,16 @@
     {
       "name": "getting-started",
       "type": "skill-md",
-      "description": "Use when someone wants a new app on CARLOS built and live with minimum decisions — \"start a CARLOS app\", \"put this on carloku\", a first deploy to an oncarlos.com URL, code hosted on amadan, or when an agent needs the family's default stack (rastrillo, amadan, the carlos CLI) as a recipe rather than a menu. Not for weighing trust models, app shapes, or hosting options — that is building-carlos-apps.",
+      "description": "Build a first CARLOS app with Rastrillo, then deploy it to Carloku. Start with the local build; load setup, deployment and service guidance only when the task reaches them. For tenancy, trust or hosting choices, use building-carlos-apps.",
       "url": "/.well-known/agent-skills/getting-started/SKILL.md",
-      "digest": "sha256:14249d3c6fbf35a9020a5cd1543907594022746aa6701d69de946973da4ad6ea"
+      "digest": "sha256:82ff34f431a8b44c019358b72dd05d30a3607cad72dd5c3b6090ba7afdc4c290"
     },
     {
       "name": "building-carlos-apps",
       "type": "skill-md",
-      "description": "Use when building or designing an app on the CARLOS architecture (Cost-efficient, Available, Replicated, Lightweight, Open, Secure) or with rastrillo (the CARLOS web framework), bringing an existing app onto it, deciding what one instance is (per person, team, customer, repo, or one shared instance; a signup that creates instances; a home or hub; reporting across tenants; SaaS customers who want on-prem), choosing a trust class (S, A1, A2, A/pub, B, C), or weighing the family's other open choices (app shape, hosting, identity). For the zero-decisions happy path to a first live app, use getting-started instead.",
+      "description": "Design or adapt a CARLOS app: choose tenant boundaries, trust, app shape and hosting, or find the platform capability for the current task. Read task-specific references only when needed. For a first local app and deploy recipe, use getting-started.",
       "url": "/.well-known/agent-skills/building-carlos-apps/SKILL.md",
-      "digest": "sha256:d4781686a0b1f6e33146152eadb28a99d99a6cefb02efe61843895524af3c7a8"
+      "digest": "sha256:f7fde70ba38b8c2135cc34e9fea828e28267c7586e15ca59a9373d7af7a43289"
     }
   ]
 }
