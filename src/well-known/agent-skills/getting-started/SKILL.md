@@ -5,6 +5,52 @@ description: Use when someone wants a new app on CARLOS built and live with mini
 
 # 🤖 Getting started on CARLOS
 
+## First build: read this, then build
+
+For a new Rastrillo app, get the local build working before reading the
+platform setup below. Carloku login, repo hosting and platform services
+are not prerequisites for that first build.
+
+If the app holds private personal content or gives separate customers,
+teams or people their own data spaces, first read the trust and tenancy
+guidance in **carlos:building-carlos-apps**. Choose those boundaries before
+writing app code.
+
+1. Scaffold with the framework's own tool; do not hand-write its wiring:
+
+   ```sh
+   go install amadan.net/rastrillo/rastrillo/cmd/rastrillo@latest
+   rastrillo new myapp
+   cd myapp
+   go mod tidy
+   ```
+
+   If people sign in, use `rastrillo new --auth=magic myapp` instead.
+
+2. Read the generated `AGENTS.md` and the framework's `SKILL.md` at the
+   version this app uses:
+
+   ```sh
+   cat "$(go list -m -f '{{.Dir}}' amadan.net/rastrillo/rastrillo)/SKILL.md"
+   ```
+
+   Follow its topic index for the work at hand. Use Rastrillo's UI and
+   tokens with a thin app CSS layer.
+
+3. Build the app and run its scaffolded gate:
+
+   ```sh
+   CGO_ENABLED=0 go build ./...
+   make ci
+   ```
+
+**Stop reading here for a first build.** Write the app using the framework
+guidance. Once the local build passes, return below for Carloku deployment:
+start at **What the person does, once**, then follow **Step 0** through
+**Step 4**. Read **Iterating** and the linked platform references only when
+you need those services. If the request includes deployment, continue with
+it after the build; this reading boundary does not end the task.
+
 ## Overview
 
 This skill is the recipe: empty directory to a live URL on the hosted
