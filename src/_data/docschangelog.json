@@ -3,6 +3,3016 @@
   "repo": "https://amadan.net/carlos/platform",
   "releases": [
     {
+      "tag": "v0.33.6",
+      "date": "2026-11-01",
+      "sha": "c59715e72acb4c04d29f673053eaaaefe31fed92",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.33.6",
+      "notes": {
+        "form": "markdown",
+        "md": "### carlos v0.33.6\n\n- The console app list puts your starred apps first. Search by app name or hostname.\n- Temporary apps have their own section with expiry dates. Owners can change an app's expiry in its Settings page. You can extend it up to 30 days from today.\n\n#### For operators\n\nThis release also includes regional ingress checks and cold-wake placement for regional high availability. Those features remain disabled in this rollout.\n\nThe roll order is unchanged: dev boxes, dev console, end-to-end dev verification, flagship boxes, then flagship console.\n\nNo dormant switches are enabled. Follow the [v0.33.5 operator guidance](https://github.com/carlosframework/releases/releases/tag/v0.33.5).\n\nVerify downloads with the signed `SHA256SUMS.txt` file, then use `carlos update`."
+      },
+      "changes": [
+        {
+          "sha": "c59715e72acb4c04d29f673053eaaaefe31fed92",
+          "date": "2026-11-01",
+          "subject": "Add starred app groups and expiry settings",
+          "branch": "app-lists",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/app-lists",
+          "commits": 2,
+          "credit": [
+            {
+              "person": "Paul Campbell"
+            }
+          ]
+        },
+        {
+          "sha": "322d24470702b379605d9f93e762623ed2988232",
+          "date": "2026-11-01",
+          "subject": "Region HA P1b-3a: place cold wakes on the chosen box",
+          "branch": "region-ha-p1b3-placement",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/region-ha-p1b3-placement",
+          "commits": 20,
+          "discussions": [
+            {
+              "id": 80,
+              "title": "Tenant email config on the flagship box is not in IaC — a rebuild silently loses it",
+              "state": "open"
+            },
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "f2810fdce333ff8398e1e5a47be442681f047548",
+          "date": "2026-11-01",
+          "subject": "region HA P2a: regional ingress DNS guidance and HA refusals",
+          "branch": "region-ha-p2-console",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/region-ha-p2-console",
+          "commits": 17,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 513,
+              "title": "P2a follow-ups: P3s from task and branch reviews",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-instances",
+            "/docs/cli#one-domain-one-instance-per-region",
+            "/docs/cli#carlos-move"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "b56ec321dc664cddaf0e0e8d100cb4514792a536",
+          "date": "2026-11-01",
+          "subject": "plans 6c: Stripe setup script with a guarded live mode",
+          "branch": "plans-6c-stripe-setup",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/plans-6c-stripe-setup",
+          "commits": 8,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.33.5",
+      "date": "2026-11-01",
+      "sha": "ceee7a678780b9a742800b1a304a820bbf9f11d9",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.33.5",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Terminal sessions read as sentences in Activity.** A session's rows now say what happened, such as \"Opened a terminal running bin/rails console (v4)\" or \"Terminal session ended with exit code 0 after 2m14s on box-1\". Before, they read \"Recorded interactive-start\"."
+              },
+              {
+                "md": "**A refreshed console.** The console has new styling. On a phone, each section opens as a full-screen list, with one back link to the page above it. Each app now shows a mark with the first letter of its name."
+              },
+              {
+                "md": "**A limit on bursts of probes, in watch mode.** A client that gets 60 \"not found\" answers from one app within 60 seconds starts a 10-minute cool-down on every app on the platform. Its requests for well-known probe paths that an app doesn't serve are then recorded on that app's Protection tab, under \"Bursts of probes from one address\". In this release they are only recorded. Nothing is refused. Real pages and existing static files are never refused, and requests from a browser never count."
+              },
+              {
+                "md": "**Record only, per app.** If protection gets in the way of something real, an owner can set it to record only on the app's Protection tab, or with `carlos protection --app shop --record-only on`. Protection then records what it would have blocked on that app and blocks nothing. It takes effect within seconds.",
+                "docs": [
+                  "/docs/cli#carlos-protection"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Owners of the ops account skip the daily app-creation limit.** Everyone else keeps the limit of ten new apps a day. Fleet creation and service credentials keep their own limits."
+              },
+              {
+                "md": "**Platform edges share probe-burst cool-downs with each other.** Each notice is signed and encrypted with the mesh key. Fleet boxes neither send nor accept them."
+              },
+              {
+                "md": "**Roll the boxes first, then the console, and roll a dev deployment before production.** Coming from v0.33.3 or earlier, read the [v0.33.4 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.33.4) first, and the notes they point to."
+              },
+              {
+                "md": "**Every other dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_BILLING` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "ceee7a678780b9a742800b1a304a820bbf9f11d9",
+          "date": "2026-11-01",
+          "subject": "Add the offline CARLOS team-service prototype",
+          "branch": "team-service-prototype",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/team-service-prototype",
+          "commits": 6,
+          "discussions": [
+            {
+              "id": 512,
+              "title": "Implementation review: durable team-service prototype",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "codex"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "65420a4d9e0d919743ea2e95e20b1a649605db3d",
+          "date": "2026-11-01",
+          "subject": "console: ops-account owners skip the daily app-creation limit (#500)",
+          "branch": "operator-create-limit-500",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/operator-create-limit-500",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 500,
+              "title": "Exempt the platform owner's own accounts from the daily app-creation limit",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "06bc3d73e5ea6bc4ef5a141339a0de8187683186",
+          "date": "2026-11-01",
+          "subject": "Add mobile navigation context and app identity marks",
+          "branch": "console-mobile-context",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/console-mobile-context",
+          "commits": 4,
+          "discussions": [
+            {
+              "id": 506,
+              "title": "App logos: custom override, cached favicon, and initial fallback",
+              "state": "open"
+            },
+            {
+              "id": 507,
+              "title": "Final UI build interrupted by hosted runner",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "codex"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "21738194abce6f8ff82c2d3fa49a90fd502ce905",
+          "date": "2026-11-01",
+          "subject": "Add reviewed team-service design and stabilize reload test",
+          "branch": "team-service-design",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/team-service-design",
+          "commits": 2,
+          "discussions": [
+            {
+              "id": 509,
+              "title": "Team-service design: independent Fable review accepted",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "codex"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "79d9d6a281c58c481e902c6e963b5479a016446a",
+          "date": "2026-11-01",
+          "subject": "Refresh console styling and mobile navigation",
+          "branch": "console-fiesta-depth",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/console-fiesta-depth",
+          "commits": 2,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "codex"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "b7802fd840cb3485e104d00a9a3e614b62bd15a2",
+          "date": "2026-11-01",
+          "subject": "Probe-burst limit, shared across the platform (#491)",
+          "branch": "design-probe-burst-491",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/design-probe-burst-491",
+          "commits": 25,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 491,
+              "title": "Platform-wide probe bans: a client caught probing one app is briefly blocked on every app",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-protection"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "b40f3bc8fc7c26337e846af4049c1c09072e82c8",
+          "date": "2026-11-01",
+          "subject": "Activity: terminal session rows read as sentences",
+          "branch": "activity-session-labels",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/activity-session-labels",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.33.4",
+      "date": "2026-11-01",
+      "sha": "5887f944056101f2ffeb353fd2622d39721d844a",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.33.4",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Each instance's secrets now have a sealed copy in the region's storage.** The box keeps a sealed copy of each instance's `<host>.env`. It also keeps sealed copies of the `instance.key` and `report.token` files an app keeps at the top of its own directory. These copies are stored in the region's data bucket. Each copy is sealed to the box's secrets key and bound to your app. Only a box that can already read your app's secrets can open it. When a box starts an instance whose `<host>.env` is missing, it puts the sealed copy back first. This keeps the instance's `CARLOS_ADMIN_TOKEN` and `CARLOS_INSTANCE_KEY` instead of giving it new ones. A file that is there is never replaced. You can edit other values in `<host>.env`. The box seals the new contents within a minute. `CARLOS_ADMIN_TOKEN`, `CARLOS_INSTANCE_KEY`, `instance.key` and `report.token` cannot change once sealed. If the box finds a different value, it refuses to start the instance and raises an alert. Deleting the file does not reset it. A box without the secrets key a copy was sealed to will not start that instance. This includes a box whose key was changed. Put the old key back."
+              },
+              {
+                "md": "**On boxes, rootfs app processes now get HOME=/tmp when nothing else sets it.**"
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**A box needs its `CARLOS_SECRETS_KEY` for instances that have a sealed copy.** A box whose key changes refuses those instances until the old key goes back."
+              },
+              {
+                "md": "**Roll an HA region's boxes together.** Update them back to back, with no other box in between."
+              },
+              {
+                "md": "**A box rolled back to an older release can publish a raw env again.** The box that reads the manifest raises an incident alert and names the affected host and the box that saw it."
+              },
+              {
+                "md": "**A fleet's secrets key can't be replaced while the fleet has instances.** This includes instances in the trash."
+              },
+              {
+                "md": "**Roll the boxes first, then the console, and roll a dev deployment before production.** Coming from v0.33.0 or earlier, read the [v0.33.1 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.33.1) first, and the notes they point to. Sessions need both the instance's box and the console on v0.33.1 or later."
+              },
+              {
+                "md": "**Every other dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_BILLING` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "5887f944056101f2ffeb353fd2622d39721d844a",
+          "date": "2026-11-01",
+          "subject": "Rootfs processes get HOME=/tmp when nothing sets one",
+          "branch": "rootfs-default-home",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/rootfs-default-home",
+          "commits": 2,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/rootfs#what-every-process-gets"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "581e648ef9b268d77c8da52240597694e86e5887",
+          "date": "2026-11-01",
+          "subject": "Region HA spec: record G3 finish line and G5 end goal",
+          "branch": "region-ha-end-goal",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/region-ha-end-goal",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 501,
+              "title": "Region HA: storage fencing design (N-HA9), the precondition for fast takeover",
+              "state": "open"
+            },
+            {
+              "id": 502,
+              "title": "Region HA: operator migration slice, so existing hosts can become HA (N-HA7)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.33.3",
+      "date": "2026-11-01",
+      "sha": "44d810d0222ddd26a90e39ad309b2d4e3966fd40",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.33.3",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Each instance's secrets now have a sealed copy in the region's storage.** The box keeps a sealed copy of each instance's `<host>.env`. It also keeps sealed copies of the `instance.key` and `report.token` files an app keeps at the top of its own directory. These copies are stored in the region's data bucket. Each copy is sealed to the box's secrets key and bound to your app. Only a box that can already read your app's secrets can open it. When a box starts an instance whose `<host>.env` is missing, it puts the sealed copy back first. This keeps the instance's `CARLOS_ADMIN_TOKEN` and `CARLOS_INSTANCE_KEY` instead of giving it new ones. A file that is there is never replaced. You can edit other values in `<host>.env`. The box seals the new contents within a minute. `CARLOS_ADMIN_TOKEN`, `CARLOS_INSTANCE_KEY`, `instance.key` and `report.token` cannot change once sealed. If the box finds a different value, it refuses to start the instance and raises an alert. Deleting the file does not reset it. A box without the secrets key a copy was sealed to will not start that instance. This includes a box whose key was changed. Put the old key back."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**A box needs its `CARLOS_SECRETS_KEY` for instances that have a sealed copy.** A box whose key changes refuses those instances until the old key goes back."
+              },
+              {
+                "md": "**Roll an HA region's boxes together.** Update them back to back, with no other box in between."
+              },
+              {
+                "md": "**A box rolled back to an older release can publish a raw env again.** The box that reads the manifest raises an incident alert and names the affected host and the box that saw it."
+              },
+              {
+                "md": "**A fleet's secrets key can't be replaced while the fleet has instances.** This includes instances in the trash."
+              },
+              {
+                "md": "**Roll the boxes first, then the console, and roll a dev deployment before production.** Coming from v0.33.0 or earlier, read the [v0.33.1 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.33.1) first, and the notes they point to. Sessions need both the instance's box and the console on v0.33.1 or later."
+              },
+              {
+                "md": "**Every other dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_BILLING` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "44d810d0222ddd26a90e39ad309b2d4e3966fd40",
+          "date": "2026-11-01",
+          "subject": "Durability 3a: sealed escrow for instance secrets, no raw writes (#477)",
+          "branch": "durability-3a-escrow",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/durability-3a-escrow",
+          "commits": 33,
+          "discussions": [
+            {
+              "id": 199,
+              "title": "A deleted instance's replica is inherited by whoever next creates the same host, in any account",
+              "state": "open"
+            },
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 477,
+              "title": "Born-HA hosts publish <host>.env, instance.key and report.token to the data bucket unsealed",
+              "state": "open"
+            },
+            {
+              "id": 499,
+              "title": "Durability 3a follow-ups (deferred minors and P3s)",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#what-an-instance-is-started-with"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.33.2",
+      "date": "2026-11-01",
+      "sha": "00bf5b8cb664c2e00fc7d040fceb4d4dc383f852",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.33.2",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**A fleet box could refuse to start an instance whose local copy it had to set aside (v0.33.0 and v0.33.1).** When an instance's local database on a fleet box is not marked for the box's current assignment, the box moves that copy aside and restores the instance from the fleet bucket. On a nested-layout box, that move failed, so every wake for that instance was refused and it answered 503. Now the copy is set aside, nothing is deleted, and the instance starts from the bucket on its next wake after the box updates."
+              },
+              {
+                "md": "**`carlos devbox serve` runs on macOS.** launchd binds the port and hands the open socket to the service, which runs as its own user, and `--env-file` reads its settings from a private file. infra/devbox/README.md has the steps.",
+                "docs": [
+                  "/docs/cli#carlos-devbox"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console, and roll a dev deployment before production.** Coming from v0.33.0 or earlier, read the [v0.33.1 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.33.1) first, and the notes they point to. Sessions need both the instance's box and the console on v0.33.1 or later."
+              },
+              {
+                "md": "**The binary probe reports a pts-private line.** It checks that an instance cannot reach one of the box's terminals. `/dev/pts` lists nothing and `/dev/ptmx` cannot be opened. While the new binary runs under the old probe unit during the roll, the line reads unverified. After the roll, check that every box is still ready for nested instances."
+              },
+              {
+                "md": "**Sessions need the release signing key and the nested layout.** The console must hold the release signing key, and the instance's box must be on the nested layout. A console with host claims armed refuses every session."
+              },
+              {
+                "md": "**Plans can sponsor the accounts that existed before plans went on.** Set `sponsor_accounts_before` in the catalog to a time no later than the console's start, like `\"2026-11-01T09:00:00Z\"`, and every account created before then that has no plan of its own is sponsored with no limits before any limit applies to it. If the console can't do that when it starts, it runs with plans off and logs why. A sponsored account can ship daemon and always-on releases on shared boxes."
+              },
+              {
+                "md": "**Every other dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_BILLING` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "00bf5b8cb664c2e00fc7d040fceb4d4dc383f852",
+          "date": "2026-11-01",
+          "subject": "Fleet set-aside moves through the raw instance dir (EXDEV fix)",
+          "branch": "fix-set-aside-exdev",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fix-set-aside-exdev",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "90c4d3aaeeac668193f938ba6f628b88ebf7eae1",
+          "date": "2026-11-01",
+          "subject": "Devbox mode on macOS (#488): launchd socket, LOCAL_PEERCRED, env file",
+          "branch": "devbox-macos",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/devbox-macos",
+          "commits": 8,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 488,
+              "title": "Devbox mode on macOS: peer identity and launchd",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.33.1",
+      "date": "2026-11-01",
+      "sha": "11c8c864a5b2b77cab39afff46a03b7dfd6ea8c9",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.33.1",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**A terminal on your instance: `carlos run -it` and `carlos console`.** With -it, the command runs in a terminal session instead: what you type goes to it and its screen comes back, so a REPL or a shell works. `carlos run -it --app shop --instance shop.example.com -- bin/rails console` opens one. `carlos console --app shop --instance shop.example.com` opens the console process your app's manifest declares, in a terminal session, as carlos run -it would. carlos ship fills one in for Rails, Laravel and Django apps when the manifest has none. An app without one is refused, and the message says how to name a command instead.",
+                "docs": [
+                  "/docs/cli#carlos-run",
+                  "/docs/cli#carlos-console"
+                ]
+              },
+              {
+                "md": "**Sessions are off until an owner turns them on.** `carlos apps set shop --interactive on` lets any member open a terminal session on the app's instances with carlos run -it or carlos console. A session can read and change everything the instance can, so it is off until an owner turns it on. Any member can turn it off.",
+                "docs": [
+                  "/docs/cli#carlos-apps"
+                ]
+              },
+              {
+                "md": "**Sessions have limits, and they are audited.** A session ends when the command exits, after 30 minutes without a keystroke, after 6 hours, or soon after your connection drops. A deploy, a restart or a move of the instance ends it too. Ctrl-C and Ctrl-D go to the command. One session at a time per instance, beside any run. Who opened it, where, when it ended and how are in the audit log. What you type and what it prints are not kept. A session exits with the command's own status, 124 when it ended for lack of keystrokes or at 6 hours, 125 when it was interrupted or its box's connection dropped, 130 when you cancelled it before it started, 3 when the box refused it or none opened it within 60 seconds, 2 when the console refused it, and 1 when carlos lost its connection to the console."
+              },
+              {
+                "md": "**`carlos run` works on rootfs apps and on customer fleets.** For a rootfs app the command after -- runs inside the instance's image and is found on the image's PATH. On a customer fleet, the instance's box reaches the console for the run itself, so carlos run works there as it does on any other box.",
+                "docs": [
+                  "/docs/cli#carlos-run"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console, and roll a dev deployment before production.** Coming from v0.32.2 or earlier, read the [v0.33.0 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.33.0) first, and the notes they point to. Sessions need both the instance's box and the console on v0.33.1."
+              },
+              {
+                "md": "**The binary probe gains a pts-private line.** It checks that an instance cannot reach one of the box's terminals. `/dev/pts` lists nothing and `/dev/ptmx` cannot be opened. While the new binary runs under the old probe unit during the roll, the line reads unverified. After the roll, check that every box is still ready for nested instances."
+              },
+              {
+                "md": "**Sessions need the release signing key and the nested layout.** The console must hold the release signing key, and the instance's box must be on the nested layout. A console with host claims armed refuses every session."
+              },
+              {
+                "md": "**Plans can sponsor the accounts that existed before plans went on.** Set `sponsor_accounts_before` in the catalog to a time no later than the console's start, like `\"2026-11-01T09:00:00Z\"`, and every account created before then that has no plan of its own is sponsored with no limits before any limit applies to it. If the console can't do that when it starts, it runs with plans off and logs why. A sponsored account can ship daemon and always-on releases on shared boxes."
+              },
+              {
+                "md": "**Every other dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_BILLING` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "11c8c864a5b2b77cab39afff46a03b7dfd6ea8c9",
+          "date": "2026-11-01",
+          "subject": "Rootfs Plan 6: interactive sessions, carlos run -it and carlos console",
+          "branch": "rootfs-apps-6-interactive",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/rootfs-apps-6-interactive",
+          "commits": 53,
+          "discussions": [
+            {
+              "id": 1,
+              "title": "Flagship went fully dark on memory pressure (2026-08-28): one tenant can take the box, and nothing notices",
+              "state": "open"
+            },
+            {
+              "id": 4,
+              "title": "No machine credential for programmatic instance provisioning",
+              "state": "closed"
+            },
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 431,
+              "title": "carlos run: the run directory is deleted before the command's termination is proven",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-apps",
+            "/docs/cli#carlos-run",
+            "/docs/cli#carlos-console"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "6f1f6ca6eb436b03dad13ee9e4f4bced33cce3c9",
+          "date": "2026-10-31",
+          "subject": "plans: sponsor_accounts_before sponsors every account that existed before plans went on, with no limits (settled at console start and on every account insert); sponsored accounts may ship daemon and always-on releases; Billing shows Unlimited",
+          "branch": "sponsor-existing-accounts",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/sponsor-existing-accounts",
+          "commits": 7,
+          "discussions": [
+            {
+              "id": 4,
+              "title": "No machine credential for programmatic instance provisioning",
+              "state": "closed"
+            }
+          ],
+          "docs": [
+            "/docs/plans#sponsored-accounts"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.33.0",
+      "date": "2026-10-31",
+      "sha": "8294a5203d7702ff004801102621a842a8043fa2",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.33.0",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Operators get fleet alerts in Slack, by email or by signed webhook.** The console now runs an alert engine. Once a minute it reads every box's alerts and, every five minutes, its heartbeat, groups what is firing into incidents and sends them to the connectors set up on /fleet/alerts: a Slack incoming webhook, an email address, or an https webhook signed with Ed25519. Each connector is confirmed before it receives anything else. A box now warns when its disk is on course to fill within 72 hours, so there is time to act before it fills. Other rules cover a box that stops reporting, a platform service that is down, a certificate that expires within 14 days, and disk, memory and CPU use as before. Each message says what is wrong, how much time there is and what to do, and links to the incident and to a snooze for 1 hour, 1 day or 1 week. One rule firing on several boxes is one message. The engine can send later updates and daily reminders while a condition continues. In this release alerts go to the deployment's operators only. App owners can't subscribe to them yet."
+              },
+              {
+                "md": "**`carlos deploy` creates a missing app and its first instance.** `carlos deploy --app shop --env PORT=8080 ./shop` creates the app and its first instance if they don't exist yet, then deploys the binary and waits for it to serve. Existing instances stay as they are. `--region` picks a new app's region, and checks an existing app's region. `--env KEY=value`, repeated, sets ordinary variables before shipping, on a new app or an existing one. Values are not printed but stay in your shell history, so use `carlos secrets set` for secrets. An app in the Trash is not restored.",
+                "docs": [
+                  "/docs/cli#carlos-deploy",
+                  "/docs/cli#carlos-secrets"
+                ]
+              },
+              {
+                "md": "**On a fleet with two or more boxes, each instance runs on one box.** The console chooses the box, and traffic goes straight to it. If a box stops reporting for 20 minutes, its instances move to the others. `carlos fleets drain <fleet> <box>` moves a box's instances off it. A box that has run instances detaches only with `carlos fleets detach-box --terminated`, once its machine is gone, so drain it before you terminate the machine. `carlos fleets ls` gains a LABELS PAUSED column. Fleets with one box work as before.",
+                "docs": [
+                  "/docs/cli#carlos-fleets"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console, and roll the console straight after its boxes.** Coming from v0.32.1 or earlier, read the [v0.32.2 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.32.2) first, and the notes they point to. From the box roll on, a box's own webhook and SNS topic carry only `disk` and `engine_silent`. Until the console rolls, the other warnings reach operators only by the old watcher's email."
+              },
+              {
+                "md": "**The alert engine replaces the alert watcher.** On its first pass the console takes over what the watcher already mailed, so a rule already firing is not announced again, and gives each operator an already-confirmed email connector for their sign-in address. A console with host claims does not start the engine. After the roll, check that /fleet/alerts lists each operator's email connector as On, and that the \"Alert checks\" job on the operator dashboard ran in the last minute with no note. Beside console.db, `alert-connectors.key` (32 bytes, mode 0600) should exist and `alert-engine.beat` should change every minute. Back up `alert-connectors.key` off the box. It is kept out of the database replica on purpose, and without it every Slack and webhook connector needs its URL again after a restore."
+              },
+              {
+                "md": "**A box's own sinks now carry only the two alerts that matter when the console is down.** `CARLOS_ALERT_WEBHOOK` and `CARLOS_ALERT_SNS_TOPIC_ARN` get `disk` (the disk is full now) and `engine_silent`. Memory, CPU, mail relay lag, location database and the disk forecast reach operators through the alert engine. A Slack incoming-webhook URL in `CARLOS_ALERT_WEBHOOK` now gets a body Slack accepts. To have the console box page its own sinks when the engine stops, set `CARLOS_ALERT_ENGINE_BEAT=/data/console/alert-engine.beat` in that box's host.env once the console has rolled and the file exists, then restart its agent. The README's \"Fleet alerts\" section has the details."
+              },
+              {
+                "md": "**Placing instances on boxes stays off until every box runs v0.33.0.** The console places a fleet's instances only when the fleet has two or more active boxes and every box in the deployment, platform and fleet boxes alike, and the console itself run v0.33.0 or later. A fleet with a sidecar, or with an instance the platform does not run, keeps today's behaviour, and a sidecar can't be created on a fleet with more than one box. If a box in a placed fleet later reports an older release, the console stops moving that fleet's instances, logs an ERROR naming the fleet, box and version, and `carlos fleets ls` shows `yes` under LABELS PAUSED until the box is updated.",
+                "docs": [
+                  "/docs/cli#carlos-fleets"
+                ]
+              },
+              {
+                "md": "**The ops account is exempt from plans.** The deployment's built-in ops account has no plan limits, caps or billing, and owning it doesn't count as anyone's free account. `carlos accounts plan` on it says so and changes nothing. If it was under a plan before, the console removes its limits record and cap rows.",
+                "docs": [
+                  "/docs/cli#carlos-accounts-plan"
+                ]
+              },
+              {
+                "md": "**The operator activity pages group bursts.** The /fleet dashboard's Latest activity shows one row per person: when they were last active, how many actions, the latest one and on which apps. /fleet/activity folds a run of actions by one person on one account and one app, each within 10 minutes of the last, into one row you can expand. A CLI ship followed within 10 minutes by the promote of the same build by the same person on the same account and app shows as one row. Stored audit rows are unchanged."
+              },
+              {
+                "md": "**With billing on, Checkout takes a VAT number.** A business customer can add one at checkout, and Stripe Tax applies reverse charge for qualifying EU business sales."
+              },
+              {
+                "md": "**Every other dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_BILLING` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "8294a5203d7702ff004801102621a842a8043fa2",
+          "date": "2026-10-31",
+          "subject": "Managed fleets design: 1b addendum (records name their box, one runner, relabel on loss, #470), 1c merged",
+          "branch": "managed-fleets-1b",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/managed-fleets-1b",
+          "commits": 44,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 457,
+              "title": "Self-service managed fleets: rent EC2 boxes in carloku’s AWS account for rootfs apps",
+              "state": "open"
+            },
+            {
+              "id": 470,
+              "title": "Multi-box fleets: a box re-waking an instance boots its own stale local DB",
+              "state": "closed"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-fleets"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "27173ed85e33e5da1d103c30da8b92a635bee03e",
+          "date": "2026-10-31",
+          "subject": "Fleet alerts Plan 1: alert engine, connectors and fleet rules (spec docs/superpowers/specs/2026-10-30-fleet-alerts-and-traffic-design.md, plan rev 4). Each box forecasts disk full (Theil-Sen over a 6 h ring, fires at 72 h held 2 h) and keeps only incident rules (disk, engine_silent) on its own sinks; Slack-shaped sink bodies, no redirects, URL-free errors. The console alert engine replaces the alert watcher: conditional reads of alerts/boxes every minute and status/boxes every 5th pass, a pure noise-rule step (5-minute grouping, one fire and one clear, flapping hold, daily reminder, snooze; 500-seed invariant simulation), incidents and outbox committed in one transaction, at-least-once delivery. Connectors: Slack incoming webhooks, signed webhooks (Ed25519, label carlos-alert, key at /alerts/signing-key) and email via deliver(); a dial-time address guard with no proxy, AES-GCM sealed targets in a key file beside console.db (reconciled every start), recipient confirmation for every kind, unsubscribe that only the recipient can lift. Operators get a confirmed email connector once each, the old watcher's per-recipient state is migrated once, and host-claim consoles refuse the engine. /fleet/alerts pages (Connectors, Rules, History) and public confirm/unsubscribe/snooze doors (GET shows, POST acts, 4 KiB bodies). Copy approved by delegation (Luna). Reviews: spec builder check; plan Astra R1-R3 (Paul: fix and build, one-offs cut); per-task Opus/Sonnet reviews with fix rounds; whole-branch Astra R1 NOT READY (2 P1 fixed), R2 READY. Census fleet-alerts-1 approved by Astra on #280 (re-checked after merging main). 46 build rulings in discussion 495. Not released.",
+          "branch": "design-fleet-alerts",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/design-fleet-alerts",
+          "commits": 57,
+          "discussions": [
+            {
+              "id": 7,
+              "title": "Multi-region is a copy-paste exercise: the platform ships a host module but no shape around it",
+              "state": "open"
+            },
+            {
+              "id": 12,
+              "title": "Can a granted store bucket carry a CORS policy? Browser-direct upload depends on it",
+              "state": "open"
+            },
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 495,
+              "title": "Fleet alerts Plan 1: build rulings R-1..R-45",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-status"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "cbd8a0b56fb46df9f774b7e56d17843d7ab2d322",
+          "date": "2026-10-31",
+          "subject": "billingstripe: Checkout collects a VAT number (tax_id_collection) so Stripe Tax applies reverse charge to qualifying EU business sales",
+          "branch": "checkout-tax-id",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/checkout-tax-id",
+          "commits": 3,
+          "docs": [
+            "/docs/plans#buying-a-plan"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "5b328bf2359b4790f32c925b27e20f43d4cc2549",
+          "date": "2026-10-31",
+          "subject": "Deploy creates a missing app and first instance, with --env support (#493)",
+          "branch": "first-deploy-493",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/first-deploy-493",
+          "commits": 2,
+          "discussions": [
+            {
+              "id": 493,
+              "title": "carlos deploy creates what a first deploy needs",
+              "state": "closed"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-deploy"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell"
+            }
+          ]
+        },
+        {
+          "sha": "e89bcf6a25361593ed643917d7ba2ba8d3d638ef",
+          "date": "2026-10-31",
+          "subject": "Operator activity grouping, so one person's burst no longer hides everyone else (Paul, 2026-10-31). The /fleet dashboard's Latest activity is one row per person (newest 200 audit rows, up to 10 people): last active, action count, latest action and apps. /fleet/activity folds consecutive rows by the same actor on the same account and app within 10 minutes of each other into one expandable row, '{n} actions on {app}', with paging and filters unchanged. A CLI ship followed by the promote of the same build within 10 minutes shows as one 'shipped and promoted {build} to {channel} (cli)' row on the dashboard, Activity and person pages; stored audit rows are unchanged. Copy: 11 strings approved by Paul in copy review (internal/console/opactivity_copy.go); OPS-60 and OPS-62 now name the Activity template. Review: Astra whole-branch round 1 READY AFTER FIXES, its one P2 (a merged row timed only at the promote could split a burst) fixed with a regression test. Not released.",
+          "branch": "fleet-activity-grouping",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fleet-activity-grouping",
+          "commits": 4,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "a2e23ba0aafc26fd1a4ead05e8093590cff40dbc",
+          "date": "2026-10-31",
+          "subject": "console: the ops account is exempt from plans (no caps, limits or billing; not counted as a free account); settlement clears the limits record and cap rows",
+          "branch": "ops-plan-exempt",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/ops-plan-exempt",
+          "commits": 10,
+          "discussions": [
+            {
+              "id": 1,
+              "title": "Flagship went fully dark on memory pressure (2026-08-28): one tenant can take the box, and nothing notices",
+              "state": "open"
+            },
+            {
+              "id": 455,
+              "title": "ops-plan-exempt: stopping rule 2 on the ops mail-pause clean-up",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/plans#the-ops-account"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.32.2",
+      "date": "2026-10-31",
+      "sha": "eab053aedd9919bc2b92d20e669096c756434768",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.32.2",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Each app's console shows how much traffic edge protection caught.** A new Protection tab on every app says how many requests to the app looked like attacks in the last 7 or 30 days, how many protection blocked and how many it recorded and let through, and, when it caught any, what share of the requests it checked that was. Bars show each day, a list shows what the requests were after (secret files such as .env, admin pages, database dumps and so on), and a link opens those requests in Logs, which gains a filter for protection matches. Logs keep these requests for 7 days, so the 30-day view counts older ones but no longer lists them."
+              },
+              {
+                "md": "**`carlos devbox` gives your dev server an HTTPS link on a shared development machine.** On a machine that an operator has set up on the tailnet, `carlos devbox share --port 5173 shop` publishes a link such as https://shop.devbox.example.com to your own dev server, and live reload passes through. `carlos devbox share --dir ./dist docs` publishes a folder instead, with its `_headers` rules. A link belongs to the account that made it: nobody else can repoint or remove it. `carlos devbox list` shows every link and its owner.",
+                "docs": [
+                  "/docs/cli#carlos-devbox"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.32.0 or earlier, read the [v0.32.1 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.32.1) first, and the notes they point to."
+              },
+              {
+                "md": "**Update every box, fleet boxes included, to v0.32.2 for the counts.** Boxes count protection checks and matches into the usage figures they already write every 5 minutes, so there are no new storage writes. Counting starts on a box when it runs v0.32.2, and only while protection is on. Until then the tab says \"No protection counts yet for this app.\""
+              },
+              {
+                "md": "**The operator console has a Protection page at /fleet/protection.** It lists, by account and app, how many requests looked like attacks, how many were blocked and their share of the checked requests. It names any fleet whose counts could not be read and leaves it out."
+              },
+              {
+                "md": "**Rate-limit counts now include fleet boxes.** An app's count of requests refused by its rate limit, over the last 24 hours, now adds the refusals on the boxes of the fleets its account owns."
+              },
+              {
+                "md": "**Devbox mode needs a one-time install by root on the shared machine.** It runs only as `carlos devbox serve` under its own systemd unit, so fleet boxes and consoles do not run it. The install creates a service user, a unit that may bind port 443 and nothing else, one wildcard DNS record pointing at the machine's private address, and an AWS key for the DNS-01 certificate check whose policy allows changing only the one challenge TXT record. After that nobody needs root. The steps are in infra/devbox/README.md.",
+                "docs": [
+                  "/docs/cli#carlos-devbox"
+                ]
+              },
+              {
+                "md": "**Every other dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_BILLING` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "eab053aedd9919bc2b92d20e669096c756434768",
+          "date": "2026-10-31",
+          "subject": "Protection tab follow-ups (discussion 479): singular headlines for counts of one on the tab and the operator page (PT-C50..C55), an operator empty state when nothing was checked (PT-C56) and the approved 'nothing looked like an attack' line (PT-C06) when nothing was caught, the tab's range nav aria-label 'Period' (PT-C57), a same-box Logs-cap regression test for the protection filter, and an hourly throttle on the console's unreadable-fleet log line. Copy PT-C50..C57 approved by Paul unchanged. Review: Astra whole-branch R1, no findings. Not released.",
+          "branch": "protection-tab-followups",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/protection-tab-followups",
+          "commits": 4,
+          "discussions": [
+            {
+              "id": 479,
+              "title": "Protection tab: follow-ups (P3s and deferred minors)",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "62e19e362b1a0286a0a69f8c36cd2ce1d7b94707",
+          "date": "2026-10-31",
+          "subject": "Fix the #471 tunnelclient flake in TestRoundTripUpgradeEndsWithItsContext/during_the_handshake (test only, no production defect). The test cancelled once the hub had the box's marked 200, but that does not mean the box's Hijack had returned: x/net (v0.60.0, serverConn.writeHeaders) queues the reply to the flush before the 200 reaches the wire, and the handler then selects on that reply and on the stream's close. When the handler goroutine had not run by the time the hub's RST_STREAM was processed, both were ready and Go picked at random; picking the close made Hijack fail with \"http2: stream closed\", the fixture returned before its conn Read, and the test's wait for that Read timed out. The hub did reset the stream on every run; the box only learned of it in Hijack rather than in Read, which is correct behaviour (the box edge's reverse proxy treats a failed hijack as an error and closes the app conn). The fixture now closes boxEnd.hijacked once Hijack returns, and the test waits for that event as well as the hub's handshake hook before cancelling. Before: 88 of 200 runs failed without -race on DOCS-T1. After: 200/200 under -race, 200/200 without, 500 per -cpu=1,2,4,8, package -count=20 and go vet clean.",
+          "branch": "fix-tunnelclient-upgrade-flake",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fix-tunnelclient-upgrade-flake",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 471,
+              "title": "Fleet tunnel does not carry WebSocket upgrades (fleet apps behind the router)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "2c66e5636bb356a725eedd500035a300ec1e5b26",
+          "date": "2026-10-31",
+          "subject": "Devbox mode (#474): carlos devbox publishes owned, tailnet-only https://<name>.<devbox domain> links on a shared workstation, either to a user's loopback dev server (live reload passes through) or to a folder snapshot served with its _headers rules. An unprivileged edge entrypoint (edge.ServeDevbox) runs wildcard-only TLS by DNS-01 on one private address, with no :80, no per-host ACME, no cache, no guard and no rate limit. A registrar on a Unix socket identifies callers by SO_PEERCRED uid, keeps per-name ownership, writes ordinary registry routes and enforces 200 MiB per folder and a 5 GiB spool cap. infra/devbox has the systemd unit (CAP_NET_BIND_SERVICE only), the Route53 challenge-record policy and the runbook. Spec, plan and copy deck are under docs/superpowers. Reviews: Astra per task (T2, T3, T5) and whole-branch at xhigh, with all findings fixed. Root-read and record-write census approved by Astra on #280. Copy DBX-C1..C57 approved by Paul. Not released.",
+          "branch": "design-devbox-mode",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/design-devbox-mode",
+          "commits": 23,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 474,
+              "title": "Devbox mode: the platform on a shared workstation, for local apps, mockups and dev servers",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-devbox"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "b4d8db833ad77acf7d9c86f0410dbc10fcdfe7bd",
+          "date": "2026-10-31",
+          "subject": "durability design: every byte off the box, every box rebuildable (draft)",
+          "branch": "design-carloku-durability",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/design-carloku-durability",
+          "commits": 20,
+          "discussions": [
+            {
+              "id": 352,
+              "title": "Escrow instance .env files and platform box secrets, sealed to the deployment key",
+              "state": "open"
+            },
+            {
+              "id": 353,
+              "title": "Replication misses databases a route doesn't name: extra DBs, instance-dir trees, addr routes",
+              "state": "open"
+            },
+            {
+              "id": 354,
+              "title": "An off-account copy: carlos ops offsite to any S3-compatible destination",
+              "state": "open"
+            },
+            {
+              "id": 355,
+              "title": "Are files apps write on disk durable?",
+              "state": "open"
+            },
+            {
+              "id": 356,
+              "title": "Per-app store buckets are unversioned; versioning needs a version-aware delete first",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "66c324fd3937d1cbf1c838bb12c9f856f217694e",
+          "date": "2026-10-31",
+          "subject": "Console Protection tab (per app) and operator /fleet/protection page: say plainly how much bad traffic edge protection caught. The edge counts protection checks and matches per host+account+app (hourly counts and a daily group tally, burst rules excluded, counted where records are filed incl. the far-asset path) into the usage edge day it already writes every 5 minutes: no new storage writes. The console reads root and fleet edge days through the settled-day cache, scoping fleets by owning account before any I/O (ownerless fleets vouch for nobody; dot segments refused), sums whole UTC days, and renders the tab (headline, share of checked requests, day bars, what they were after, Logs link) and the operator page; Logs gains a protection filter applied before collection caps. No coverage claims (Paul's ruling): zero checked reads 'No protection counts yet'. Rate-limit counts move onto the shared reader and now include fleet boxes. Also fixes a race in three #471 tunnel tests (the box server now gets the bytes the test's bufio.Reader took). Copy PT-C01..C43 approved by Paul unchanged. Reviews: spec builder check (Astra); plan Astra R1-R3; task reviews (Astra) on Tasks 1-3 with one fix round each; whole-branch Astra R1 with fixes (one test P2 fixed). Census console-protection-tab approved by Astra on #280 (re-approved after merging main twice). Follow-ups in discussion 479. Not released.",
+          "branch": "design-console-protection-tab",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/design-console-protection-tab",
+          "commits": 22,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 471,
+              "title": "Fleet tunnel does not carry WebSocket upgrades (fleet apps behind the router)",
+              "state": "open"
+            },
+            {
+              "id": 479,
+              "title": "Protection tab: follow-ups (P3s and deferred minors)",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.32.1",
+      "date": "2026-10-31",
+      "sha": "d937c467acafb2767b01bf93a762de056392c31c",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.32.1",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Apps on a fleet can use WebSockets at their public URL.** A WebSocket to an app placed on a fleet, such as a Rails app's Action Cable connection, now reaches the app through the platform's router. The router carries it down the fleet's tunnel to the box that runs the app. The app's own handshake reaches the browser unchanged, so subprotocols and compression work. The router applies the app's rate limit and plan throttle when it admits the WebSocket, and closes open WebSockets when the account is throttled."
+              },
+              {
+                "md": "**Open WebSockets close when the app stops being served there.** If the router stops serving the app for the account, app or fleet that opened a WebSocket, for example because the app moved, its route was removed or the box left the fleet, the socket closes within seconds."
+              },
+              {
+                "md": "**The rails-shop sample has a live page.** Its counts update over an Action Cable socket, and the page reconnects with capped backoff after the socket drops."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.31.2 or earlier, read the [v0.32.0 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.32.0) first, and the notes they point to."
+              },
+              {
+                "md": "**Update fleet boxes to v0.32.1.** A WebSocket reaches a fleet app only when both the hub and the fleet box run v0.32.1. Until then it gets a 502, as before. There is no release floor and no switch: nothing refuses an older box, and nothing needs turning on. Once the hub is updated, a 502 from a box that is not yet updated shows in the app's availability errors as \"the fleet box runs a release that cannot carry WebSockets\"."
+              },
+              {
+                "md": "**Each fleet box carries at most 128 open WebSockets.** The next one gets a 503 with `Retry-After: 5` and the page \"Too many open connections to this app's box. Try again shortly.\" The app's availability errors list it as \"the fleet box has too many open connections\". A slot frees as soon as a socket closes."
+              },
+              {
+                "md": "**A tunnel route with its password page on the box now takes the password through the router.** The router passes the login down the tunnel to the box only when the login is for that tunnel route itself."
+              },
+              {
+                "md": "**Every other dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_BILLING` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "d937c467acafb2767b01bf93a762de056392c31c",
+          "date": "2026-10-31",
+          "subject": "WebSockets through the fleet tunnel (#471)",
+          "branch": "design-tunnel-websockets-471",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/design-tunnel-websockets-471",
+          "commits": 33,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 471,
+              "title": "Fleet tunnel does not carry WebSocket upgrades (fleet apps behind the router)",
+              "state": "open"
+            },
+            {
+              "id": 480,
+              "title": "Hub startup logs a false forward-row refusal per row before tunnels are enabled",
+              "state": "open"
+            },
+            {
+              "id": 482,
+              "title": "edge flake: TestProbedClientCancelDuringHoldDoesNotEject times out waiting for the dial on the CI runner",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "c24e7a04b16ebafe305f662bdd19fd915e5ff8c5",
+          "date": "2026-10-30",
+          "subject": "Fleet public routes follow-ups (#457 Phase 1a deferred minors, triaged by Astra on the whole-branch review). PutForward refuses a non-forward kind, an empty Host or a non-fleet Region with the sentinel ErrNotForward (carried over the remote transport) and builds its kept-column list from one production literal checked against PRAGMA. One owner map, Registry.FleetOwners, is used by both Edge.Reload and the hub's forward phase. New tests pin the membership subquery's fleet condition, dns_checked_at preservation, the upgrade close cancelling the request, the HTTP plan-throttle path for a forward row, the box's throttle exemption, the display reader keeping forward rows, the edges-file removal PUT, the catch-all after trash, a time-aware rate ceiling, no first-dial 401 and the gate's origin; comment and spec wording fixes. No behaviour change beyond PutForward's up-front refusals. Reviews: Astra R1 READY AFTER FIXES (two test P2s fixed); census fleet-routes-followups approved by Astra on #280. Not released.",
+          "branch": "fleet-routes-followups",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fleet-routes-followups",
+          "commits": 10,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 457,
+              "title": "Self-service managed fleets: rent EC2 boxes in carloku’s AWS account for rootfs apps",
+              "state": "open"
+            },
+            {
+              "id": 471,
+              "title": "Fleet tunnel does not carry WebSocket upgrades (fleet apps behind the router)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.32.0",
+      "date": "2026-10-30",
+      "sha": "65fd806078551d08d43de423b2e83d1c90ff65b5",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.32.0",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**An app on a fleet now has a public URL.** Place an app on a fleet and it answers at its public URL through the platform's router, with its certificate and any custom domain attached to it. Nobody writes a route by hand. The router passes each request down the fleet's tunnel to the box that runs the app. The app's rate limit and plan throttle apply once, at the router, and the fleet box still shows the app's password page."
+              },
+              {
+                "md": "**If another route already holds the name, it keeps it.** An existing route is not overwritten. A hand-written route keeps serving, and requests do not reach the fleet. An older route for the same app and fleet can still serve through the fleet. `carlos instances list` gives the reason in its REASON column when another route prevents the fleet route. The deployment's operator can remove the route.",
+                "docs": [
+                  "/docs/cli#carlos-instances"
+                ]
+              },
+              {
+                "md": "**Route commands leave a fleet app's host alone.** `carlos add`, `carlos route` and `carlos remove` refuse a forward host for a fleet app, because its route follows the app's instance record. Change the app instead, with `carlos apps place` or `carlos instances delete`.",
+                "docs": [
+                  "/docs/cli#carlos-add",
+                  "/docs/cli#carlos-route",
+                  "/docs/cli#carlos-remove",
+                  "/docs/cli#carlos-apps",
+                  "/docs/cli#carlos-instances"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.31.1 or earlier, read the [v0.31.2 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.31.2) first, and the notes they point to."
+              },
+              {
+                "md": "**The hub serves fleet apps.** The hub is the box that holds the fleets' tunnels: the console's box, with `CARLOS_TUNNEL_HOST` set and `CARLOS_FLEET` unset. It writes a forward route for each instance placed on a fleet that the instance's account owns. It updates or retires that route when the instance moves or is deleted, and retires it when the app is put in the trash, unless production retention keeps it. Nothing runs on the hub for these apps, and the hub never answers one from its caches. A fleet box can now bind only hosts of its own fleet. Before this release, a fleet box could steer another fleet's host."
+              },
+              {
+                "md": "**Check your fleet routes before rolling.** A route that already holds a host keeps it, and the hub writes no forward route there. A route placed on a fleet whose account does not own that fleet is no longer served by the hub. Before rolling, check that every route on the hub that sends requests to a fleet belongs to the account that owns that fleet."
+              },
+              {
+                "md": "**v0.32.0 is a release floor while any fleet exists.** An older hub serves forward routes but cannot remove them. So while a fleet exists, the console refuses to move a channel below v0.32.0, or to publish a channel's first release below it. `--allow-below-fleet-forward-floor` on `carlos system update` and `carlos system rollback` overrides that. A hub below the floor keeps serving fleet apps it can no longer remove, so remove their routes first. Creating a fleet is refused until every channel is on v0.32.0 or later, unless that channel was published with `--allow-below-fleet-forward-floor`.",
+                "docs": [
+                  "/docs/cli#carlos-system"
+                ]
+              },
+              {
+                "md": "**WebSockets do not cross the fleet tunnel yet.** An app on a fleet answers ordinary requests at its public URL, but a WebSocket connection to it through the router does not reach the box."
+              },
+              {
+                "md": "**Every other dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_BILLING` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "65fd806078551d08d43de423b2e83d1c90ff65b5",
+          "date": "2026-10-30",
+          "subject": "Fleet public routes (#457 Phase 1a): an app placed on a fleet serves at its public URL through the router with no hand-written route. The hub (the box with CARLOS_TUNNEL_HOST set and CARLOS_FLEET unset, the console's box) writes a `forward` route row for each fleet-placed instance record whose fleet its own fleets table says the record's account owns, and serves it down that fleet's tunnel to the bound box; nothing runs on the hub. One refusal decision, edge.FleetArmVerdict (with the shared DispatchArm and foldPlatformAliases), decides what Reload serves, what the edges file publishes, which wildcard parents the alias pass keeps, and what `instances list` reports, so they cannot disagree; a refused name stays refused through aliases, catch-alls, platform aliases and certificates (exact and wildcard). The forward row has one exact persisted shape (InertForward); only PutForward, DeleteForward, SetFleetBoxIf, SetDNSStatus and SetCertExpiresAt write it, every other routes writer refuses or skips it before any side effect (a go/ast inventory test keeps it so), and every other reader ignores it (root egress boxWhollyNested, root adoption, retention, canary status, domains trash). The hub enforces the app's rate limit and plan throttle once; the fleet box owns the password gate and the hub forwards the login untouched; the hub's caches never store a fleet app. The forward phase mints, keeps or retires rows from declineMint and removable (uncertainty keeps a row; production apps keep theirs), treats a host whose record cannot be read as disputed, gives a host named by both a platform and a fleet record neither row while armed, and leaves any existing row at a host in place (reported once per pass; instances list shows FPR-C08). Bindings bind only their own fleet at write time (SetFleetBoxIf, one statement; closes a pre-existing hole where a fleet box could steer another fleet's host). Edge reloads on route identity changes (fingerprint). A release floor, release.FleetForwardFloor = v0.32.0 (override --allow-below-fleet-forward-floor, signed in the pointer), refuses any channel move or first publication below it while a fleet exists, and creating a fleet is refused while any published pointer is below it (FPR-C02..C07). carlos add/route/remove refuse a forward host (FPR-C01). Copy FPR-C01..C08 approved by Paul unchanged. Request budget: about what a platform app costs its own box per fleet app; the bindings pass now runs on the hub only. Known limit: WebSockets do not cross the fleet tunnel (pre-existing, #471). Reviews: spec Astra R1-R3 (READY AFTER FIXES), plan Astra R1-R3, per-task Astra or Claude reviews with fix rounds, whole-branch Astra R1 NOT READY (P1 reload fingerprint), R2 READY AFTER FIXES (P2 C08 destination after folding, fixed and checked); census fleet-public-routes approved by Astra on #280. Not released; the first release with this is v0.32.0.",
+          "branch": "design-fleet-public-routes",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/design-fleet-public-routes",
+          "commits": 49,
+          "discussions": [
+            {
+              "id": 11,
+              "title": "No CLI or API answers \"who is using what right now\" — the operator's per-account view is browser-only",
+              "state": "open"
+            },
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 457,
+              "title": "Self-service managed fleets: rent EC2 boxes in carloku’s AWS account for rootfs apps",
+              "state": "open"
+            },
+            {
+              "id": 471,
+              "title": "Fleet tunnel does not carry WebSocket upgrades (fleet apps behind the router)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.31.2",
+      "date": "2026-10-30",
+      "sha": "4029ac561cc03327d6de078568b33800c4d30c6c",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.31.2",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**A rebooted box serves again at once.** After a box restarts, it takes back an unexpired legacy lease lock left by its own previous kernel boot when the lock has the same instance and box reference but a different boot ID. Apps on a rebooted box come back as soon as the box is up. A lock held by another box, by the same box without a restart, or by a high-availability lease is still respected. If a systemctl state read fails while the box is shutting down, its log now includes systemctl's reason."
+              },
+              {
+                "md": "**Analytics shows more, and counts crawlers as bots.** Top pages and Referrers show 25 rows, and \"See all pages\" lists every page by folder. New Bots, Browsers and Devices cards show bot requests by name and page views by browser and device. Only those names are stored, never a user agent string. From the 20th page view in a minute, a visitor is counted as an unnamed crawler. Those views count as bot requests, not page views, visitors, pages, referrers, countries, browsers or devices. The numbers refresh once a minute while the page is open, and each daily bar opens that day's view. Named events are no longer shown."
+              },
+              {
+                "md": "**The billing page shows what you use.** When billing is enabled, the billing page shows available usage beside your plan and packs, using measurements the console already stores. It stays off while `CARLOS_BILLING` is unset. If a measurement is stale or unavailable, the page says usage is not known yet."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.31.0 or earlier, read the [v0.31.1 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.31.1) first, and the notes they point to."
+              },
+              {
+                "md": "**The box agent changes.** Legacy lease locks now name the kernel boot they were taken under. A box running an older version reads them as before. The edge counts bots, browsers and devices in each app's analytics day files. Region HA: a dead holder costs one lock read and one dial per 10 s per box. That changes nothing while `CONSOLE_HA_REGIONS` is unset."
+              },
+              {
+                "md": "**Every other dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_BILLING` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "4029ac561cc03327d6de078568b33800c4d30c6c",
+          "date": "2026-10-30",
+          "subject": "Managed fleets design draft (#457)",
+          "branch": "managed-fleets-1c-451",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/managed-fleets-1c-451",
+          "commits": 15,
+          "discussions": [
+            {
+              "id": 359,
+              "title": "CI on self-serve-moves-2: five runs died without gate output (3 timeouts, 3 terminations)",
+              "state": "open"
+            },
+            {
+              "id": 451,
+              "title": "Rootfs resident is dark ~15 min after a box reboot: shutdown can't prove the instance unit stopped, so the lease is never released",
+              "state": "closed"
+            },
+            {
+              "id": 457,
+              "title": "Self-service managed fleets: rent EC2 boxes in carloku’s AWS account for rootfs apps",
+              "state": "open"
+            },
+            {
+              "id": 460,
+              "title": "Flaky: TestReleaseLeaseLossUnprovenLeavesTheHold (internal/activator) misses its settle deadline by ~0.1 ms",
+              "state": "open"
+            },
+            {
+              "id": 467,
+              "title": "edge flake: TestProbedLocalUpstreamWaitsForReadmission loses a port re-bind race (address already in use)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "a67f37715b97b988dffd6dea9c804a10ed82c3c5",
+          "date": "2026-10-30",
+          "subject": "Region HA dead-holder backoff (P1b-2 follow-up). A forward for a born-HA host that cannot connect to its holder now marks that holder suspect for 10 s (holderSuspectTTL) in the activator's holder cache instead of dropping the entry. While a host is suspect, ForwardTarget answers a refusal (edge.ForwardDecision{Refuse: true}, which replaces the bare ref string) and the edge's frontForwardHA answers it at the front door with the existing unreachable answer, 503, Retry-After: 10, \"instance is waking elsewhere; retry shortly\", with no lock read, no dial, no note, no local wake and no per-request step (N-HA10 kept). After the window the next request reads lock.json once; if it still names the same box, only the caller that read forwards (one dial), queued callers are refused, and the box is suspect again until that forward's outcome says otherwise. So a dead holder whose lease has not run out costs each box one lock GET and one failed dial per 10 s per host instead of one of each per request. ForwardResult gains Ref (the box forwarded to). A suspect entry is cleared when this box takes the lease, when a forward to any box comes back with an answer (that box becomes the holder), and when an X-Carlos-Holder names a box (or drops on none or this box); an old unreachable forward never overwrites a negative entry or one naming another box. Once the lease expires and OwnerTerminated says the holder is terminated, the first request after the window reads no live holder and P1b-1's takeover serves it here. Legacy hosts, scheduled ticks, regional names and hops are unchanged; no new copy, no new S3 polling. Tests: TestDeadHolderCostsOneReadAndDialPerWindow, TestSuspectWindowEndForwardsOnce, TestSuspectClearedByTakingTheLease, TestSuspectClearedByAHolderHeader, TestSuspectClearedByASuccessfulForward, TestUnreachableKeepsNewerNews, TestSuspectThenExpiredLeaseTakesOver, TestFrontForwardSuspectRefusalRunsNoLocalStep. Census region-ha-dead-holder-backoff proposed (Edge.frontForwardHA body, Service.ForwardTarget sites; activator and edge envelopes re-pinned), awaiting the reviewer. Not reviewed, not released.",
+          "branch": "region-ha-dead-holder-backoff",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/region-ha-dead-holder-backoff",
+          "commits": 5,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "16a55c9a5e875b804b57b2c68f9bc1d70203421d",
+          "date": "2026-10-30",
+          "subject": "Console analytics: a pages view, bots by name, browsers and devices, and the pace check (Paul, 2026-10-30, after a crawler walked paulca.com's /posts/ with a browser user agent). Top pages and Referrers show 25 rows; 'See all N pages' opens ?show=pages: every page by top folder (a folder holding only its own index joins the top level; the overflow row stays its own group, last), each with its share and, over 7 or 30 days, a line of its days, with a filter the minute refresh keeps. Per-day page counts are read only for that view and stripped before the memo otherwise. Named events are removed until carlos.js exists. The edge names each bot request from a fixed list (and IsBot now matches every named bot), counts page views by browser family and device class, and stores only those names (bot_names, browsers, devices: additive day-file maps); no user agent string is stored. Pace check: per box and app, a visitor (the day's salted hash, in memory only) with 20 page views inside a minute is an Unnamed crawler from that view until 30 minutes after their latest view; those views are bot requests, not page views, visitors, pages, referrers, countries, browsers or devices; at most 50,000 visitors held, idle ones pruned. The tab gains Browsers (with Devices) and Bots cards once an edge counts them; the CLI API carries the maps. Reviews: Astra R1 READY AFTER FIXES (3 P2s fixed: named bots counted as people, overflow folded into the top level, out-of-order timestamps shortening the hold); Luna copy pass; census census-ruling-analytics-agents (internal/analytics envelope) approved by Astra on #280. Supersedes branch analytics-pages. Not released.",
+          "branch": "analytics-agents",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/analytics-agents",
+          "commits": 8,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "06e58894cfb340440560d8232cf8cde764d529d9",
+          "date": "2026-10-30",
+          "subject": "console: the billing page shows current usage beside packs and plan cards, from the plan-limits pass's stored measurements (no new requests); stale periods show as unknown; copy approved by Paul",
+          "branch": "billing-usage",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/billing-usage",
+          "commits": 2,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "6848807e3d2a3ec7875361608a8d26bac485fb26",
+          "date": "2026-10-30",
+          "subject": "Console analytics: live refresh, a day view with click-through from every daily bar, one tooltip at a time (Paul, 2026-10-29). The Analytics tab's numbers part and the Overview card refresh once a minute from GET /a/{sqid}/apps/{app}/analytics/live while the page is visible and active (never under a pointer or focus, never closer than 55 s), through the traffic memo, which now coalesces concurrent misses (one read a minute per app and view however many tabs); answers carry no-store and X-Carlos-Live so a lapsed session's sign-in page is never pasted in. ?date=YYYY-MM-DD (last 30 UTC days) shows that day's hours with Previous day / Next day; every daily bar on the Overview card and the 7- and 30-day charts links to its day. The period row refreshes with the numbers, so a page left open across midnight names the right day; a past day's restart note names the day. A column left focused by a click no longer shows its tip while another is hovered. Route census, claim fixture and read probe, perf walk (2 S3 calls a refresh, both telemetry settings) and the record-write census (NewServer re-pinned, layered on rootfsFleetFollowupsWriteCensusInventory) updated. Reviews: Astra R1 READY AFTER FIXES, 4 P2s fixed. Checked in Chromium. Not released.",
+          "branch": "analytics-live",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/analytics-live",
+          "commits": 7,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.31.1",
+      "date": "2026-10-30",
+      "sha": "bfc668c815bff785e7f13c129fd8778c3e36c7cb",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.31.1",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Response headers for a static site.** Put a `_headers` file at the top of a static site to set response headers on the paths you choose, in the format Netlify and Cloudflare Pages use: a path on its own line, then its headers on indented lines below it. You can set `Cache-Control`, `Access-Control-Allow-Origin: *`, `Access-Control-Expose-Headers`, `Cross-Origin-Resource-Policy` and `Timing-Allow-Origin`. Paths match the way `_redirects` sources do, against the address the browser asked for, and every matching rule applies, with the lower rule winning for the same header. The headers are sent with files served normally, including 304 and range responses, but not with redirects, not-found pages or errors. A `Cache-Control` rule replaces the default `no-cache`. `carlos ship` and `carlos deploy` refuse a `_headers` file with a line they cannot use, or any other header, and name the line. A file can have up to 100 paths. A site without a `_headers` file is served exactly as before.",
+                "docs": [
+                  "/docs/cli#carlos-ship",
+                  "/docs/cli#carlos-deploy"
+                ]
+              },
+              {
+                "md": "**`carlos logs` names the process of a rootfs app.** Each line from a rootfs app carries `process=web`, `release` or the worker's declared name, so `carlos logs --field process=web` shows only the web process. In `carlos instances list`, `HEALTH` for an instance placed on a fleet comes from its fleet box: `Running`, `Asleep`, `Failed`, or `unknown` when the box's view is not available yet.",
+                "docs": [
+                  "/docs/cli#carlos-logs",
+                  "/docs/cli#carlos-instances"
+                ]
+              },
+              {
+                "md": "**Clearer exits for rootfs processes.** A rootfs process that was killed is now reported as a failure, not as `instance exited (exit 0)`. A worker that ended without any exit status says it is starting again, and `REASON` for a held build says why that build failed on the box."
+              },
+              {
+                "md": "**`carlos ship --check` keeps its data between containers.** The check's data volume now survives from the release container to the web container, so migrations run in the release step are still there when the app starts.",
+                "docs": [
+                  "/docs/cli#carlos-ship"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.30.3 or earlier, read the [v0.31.0 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.31.0) first, and the notes they point to."
+              },
+              {
+                "md": "**The box agent changes.** Static `_headers`, rootfs process names, exit reporting and fleet health change the boxes. Static-kind routes no longer use the edge's shared response cache. The region high availability forwarding in this release changes nothing while `CONSOLE_HA_REGIONS` is unset. The console's purchase screens change, but billing stays off while `CARLOS_BILLING` is unset."
+              },
+              {
+                "md": "**Every other dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_BILLING` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "bfc668c815bff785e7f13c129fd8778c3e36c7cb",
+          "date": "2026-10-30",
+          "subject": "Region HA P1b-2 plan (forwarding between boxes), rev 1, with the Astra round 1 brief",
+          "branch": "region-ha-p1b2-forwarding",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/region-ha-p1b2-forwarding",
+          "commits": 18,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "d3908d930af403f7e6fa5edcec497c4748bf30a9",
+          "date": "2026-10-30",
+          "subject": "Rootfs worker exit status and held REASON (#366, found by Task 11 on dev fleet box r10r). On systemd 257 with PrivatePIDs a SIGKILLed process's exit record held result success with an empty code, because systemd kills a not-our-child main pid before recording its exit. observe now falls back to systemd's ExecMainCode, ExecMainStatus and SuccessExitStatus from systemctl show, only when the InvocationID matches the handle's; each unit's clean exits (129, 130, 141, 143 and systemd's clean signals) stay clean and 137 is corrected to a failure. This also fixes web generations reporting a kill as \"instance exited (exit 0)\". A worker that ran and ended with no status at all tells the member RFS-3-C35 \"worker %s exited. starting it again in %s\" (Paul approved), paced like C09; failed starts keep their old lines. instances list REASON says \"held: build %s failed on this box, because %s\" with the box's reason (zdd.state.held-because, Paul approved). Reviews: Astra R1 READY AFTER FIXES (P2: clean exits read from the unit's policy, fixed; format checked on r10r systemd 257.13); census rootfs-worker-exit approved by Astra on #280. Not released.",
+          "branch": "rootfs-worker-exit",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/rootfs-worker-exit",
+          "commits": 7,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 366,
+              "title": "Rootfs apps: run any Linux app (Rails, Laravel, Django) on your own boxes, isolated like a nested instance",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "a66482c90ec2050d9655df63b9014f1e129022ae",
+          "date": "2026-10-30",
+          "subject": "console: a full-page success screen after every purchase (checkout, upgrade, packs) replaces the panel and the old 'Done' flash; '1 member, 10 seats paid for'; copy approved by Paul",
+          "branch": "billing-success",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/billing-success",
+          "commits": 6,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "11c6f199fb5e12ff093415e17c211b09e3d3e0f7",
+          "date": "2026-10-30",
+          "subject": "Rootfs fleet follow-ups from Task 11 (#366). carlos logs names the process: rootfs app lines carry the field process=web, release or the worker's declared name (applog.Sink.AppProcess through an optional processSink; the platform's value wins over the app's own JSON key; the stream stays app; binary instances unchanged), so carlos logs --field process=web filters them (row RFS-4-C99). carlos instances list HEALTH for a fleet-placed instance comes from its fleet box's rollout view under the existing tenant join: Running, Asleep or Failed, and unknown when the view is unavailable, transient, or was generated before the record was created. The console's Running tab is unchanged, because fleet reports are an uncached per-request read. No new copy. Reviews: Astra R1 READY AFTER FIXES (P2: health from a report older than the record, fixed); census rootfs-fleet-followups approved by Astra on #280, re-sealed unchanged on main 43c8677a. Not released.",
+          "branch": "rootfs-fleet-followups",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/rootfs-fleet-followups",
+          "commits": 5,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 366,
+              "title": "Rootfs apps: run any Linux app (Rails, Laravel, Django) on your own boxes, isolated like a nested instance",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "43c8677af4e43959beabb10de1d6fb7391209cc3",
+          "date": "2026-10-30",
+          "subject": "carlos ship --check keeps its data volume between containers (#366, found by rootfs Plan 4 Task 11 on r10r). The data volume was a tmpfs local volume that Docker and Podman unmount when no container holds it, so the release container's migrations were gone before web started and examples/rails-shop failed the Rails guide's check with a 500. The data volume is now a plain local named volume; a one-shot helper container <prefix>_prepare (named outside the worker grammar) runs the CLI's own linux binary already mounted as the probe, with the hidden verb __rootfs-check-prepare, as root with only CAP_CHOWN, --read-only, --network none and no-new-privileges: it Lstats the directory, refuses a symlink or non-directory, chmods 0700 then lchowns 65534:65534, no recursion. Every volume mount carries :nocopy, so no runtime refills an empty volume from the image and resets its owner. Cleanup covers the helper on every path. Box witness on r10r (rootful podman): shop and a variant with an empty /data/instances/check both pass (release 2.9 s, web 200 after 2.8 s, worker running), no leftovers. No new user copy. Reviews: Astra R1 NOT READY (P1 helper name collision with a worker named prepare, P2 test gap), R2 NOT READY (P1 copy-up resets the owner), R3 READY; census rootfs-check-volumes approved by Astra on #280. Not released.",
+          "branch": "rootfs-check-volumes",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/rootfs-check-volumes",
+          "commits": 10,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 366,
+              "title": "Rootfs apps: run any Linux app (Rails, Laravel, Django) on your own boxes, isolated like a nested instance",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "1fa2a99b17d031bf2be0f53d1599eb2776c68bae",
+          "date": "2026-10-29",
+          "subject": "spec: static sites set response headers by path with _headers (#195 item 2, #450), rev 1",
+          "branch": "static-headers",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/static-headers",
+          "commits": 18,
+          "discussions": [
+            {
+              "id": 195,
+              "title": "Static apps: send Cache-Control (HTML revalidates; let an app say what is immutable)",
+              "state": "open"
+            },
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 359,
+              "title": "CI on self-serve-moves-2: five runs died without gate output (3 timeouts, 3 terminations)",
+              "state": "open"
+            },
+            {
+              "id": 450,
+              "title": "Static sites: CORS on chosen paths",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#response-headers-for-a-static-site"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.31.0",
+      "date": "2026-10-29",
+      "sha": "ea01d8313e2a7cf790f7a1e8b1c0383f2de3f49c",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.31.0",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**One address for each folder on a static site.** When a folder with an `index.html` is requested without its trailing slash, such as `/blog/post`, it answers with a 301 whose `Location` is the relative `./post/`. The query string is kept. This gives the page one address for analytics and makes relative links resolve against its folder. The automatic redirect does not apply to files. A folder without `index.html` remains a 404. The site's `_redirects` rules are checked first. A rule naming the path, or a rule that would redirect its slash form, prevents this automatic redirect so the request is handled as asked."
+              },
+              {
+                "md": "**One custom domain, one instance per region.** A regional domain is served in each named region by that region's own instance of the app. A request is answered in the region it reaches and is never sent to another region. If that region's instance is not running, the request gets a 503. Create one with `carlos domains placements --app shop --set ie=shop-ie.example.net --set uk=shop-uk.example.net example.com`, and add `--wildcard --catchall` when creating its one-label catch-all. Without `--set`, the command shows each region's instance, whether it is ready, and the addresses to use for latency-based DNS. A hostname already attached as an ordinary domain, or covered by a catch-all, is refused. An existing regional claim can have its placements replaced, but `--wildcard` and `--catchall` cannot be changed after creation. Path prefixes, static sites, fleet placements and TCP-backed targets are not supported on a regional domain. The domains list, domain details and settings page show it as `regional`.",
+                "docs": [
+                  "/docs/cli#carlos-domains"
+                ]
+              },
+              {
+                "md": "**Each fleet gets its own secrets key.** If you run your own fleet, secrets and credentials the console creates for apps placed on it are sealed to that fleet's key. The private half stays on the fleet's boxes. The platform receives only the public half. An app on a fleet cannot hold a secret until its fleet has a key. Set one up in this order:\n1. Update your `carlos` CLI to v0.31.0 or later. The console refuses a secret from an older CLI for a fleet app.\n2. Run `carlos secrets genkey` to make the pair.\n3. Put the private half in `/etc/carlos/host.env` on every box as `CARLOS_SECRETS_KEY`, then run `systemctl restart carlos-edge` on each box.\n4. Register the public half with `carlos fleets secrets-key <fleet> <pubkey>`, or use `carlos fleets secrets-key --file <path> <fleet>` with a file containing `CARLOS_SECRETS_PUBKEY=` or the bare key. Only an account owner can register it. The command prints the fingerprint.\n5. On each box, run `carlos secrets fingerprint`. Its fingerprint should start with the first 12 characters after `sha256:` in the `SECRETS KEY` column of `carlos fleets ls`.\n6. If registration lists values that the fleet's boxes cannot open, set each one again with `carlos secrets set --app <app> <var>=<value>`. For a credential the console created, run `carlos store rotate --app <app>` or `carlos email rotate --app <app>`. The `STALE` column of `carlos fleets ls` counts what remains.",
+                "docs": [
+                  "/docs/cli#carlos-secrets",
+                  "/docs/cli#carlos-fleets",
+                  "/docs/cli#carlos-store",
+                  "/docs/cli#carlos-email"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Boxes and console both change.** The static-site redirect, regional-domain serving and named-unit config delivery change the boxes. Regional-domain placement, fleet-key registration and sealing, and named-unit route records change the console. The fleet secrets key itself has no box-side change in this release. Roll the boxes first, then the console, as always. Coming from v0.30.2 or earlier, read the [v0.30.3 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.30.3) first, and the notes they point to."
+              },
+              {
+                "md": "**Config delivery to named units needs a declaration.** A route stamped with a systemd unit (`carlos route --unit`) can now get its config from the box's root pass. Root renders the config to `/etc/carlos/apps/<host>.env`, writes a drop-in under `/etc/systemd/system/<unit>.d/` that makes the box's `/etc/carlos/units/<unit>.base.env` and that file the unit's only environment files, reloads systemd and restarts the unit. It does this only for a unit that `/etc/carlos/named-units.json` names with the route's host, account and app. Nothing happens without that file, so a box with none behaves as on v0.30.3. Each stamped unit needs a line in the file before delivery starts. Install the file with `carlos system named-units install <file>`, as root, and do not edit it by hand while carlos runs. Removing a unit's line is what removes its drop-in. A unit that loads any other environment file, or a variable named in both the base file and the route's config, is refused and the reason is logged on the box.",
+                "docs": [
+                  "/docs/cli#carlos-route",
+                  "/docs/cli#carlos-system-named-units"
+                ]
+              },
+              {
+                "md": "**v0.31.0 becomes a floor once a regional domain exists.** Creating a regional domain is refused until every box, and every channel a box follows, is on v0.31.0 or later. From then on, no channel moves below v0.31.0 unless you pass `--allow-below-regional-floor`, because a box below it cannot read regional domains and stops serving them. Until someone creates a regional domain, nothing changes."
+              },
+              {
+                "md": "**Every other dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_BILLING` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "ea01d8313e2a7cf790f7a1e8b1c0383f2de3f49c",
+          "date": "2026-10-29",
+          "subject": "Prompts:",
+          "branch": "design-fleet-secrets-key",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/design-fleet-secrets-key",
+          "commits": 46,
+          "discussions": [
+            {
+              "id": 359,
+              "title": "CI on self-serve-moves-2: five runs died without gate output (3 timeouts, 3 terminations)",
+              "state": "open"
+            },
+            {
+              "id": 366,
+              "title": "Rootfs apps: run any Linux app (Rails, Laravel, Django) on your own boxes, isolated like a nested instance",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-apps",
+            "/docs/cli#carlos-secrets",
+            "/docs/cli#carlos-instances",
+            "/docs/cli#carlos-fleets",
+            "/docs/rails#ship-it"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "bf4df27de88df334d7505b7eb36210b85cceeea5",
+          "date": "2026-10-29",
+          "subject": "Named-unit config delivery (#114) on current main, with the console config design's base layer (#453 §4.1). A route stamped with a systemd unit gets its config rendered to /etc/carlos/apps/<host>.env and a carlos drop-in that makes the box's /etc/carlos/units/<unit>.base.env and that file the unit's only EnvironmentFile sources; root reloads and restarts the unit on change. Authority is a root-owned declaration only (Paul, 2026-10-28): root writes, replaces or removes for a unit only when /etc/carlos/named-units.json names that unit, host, account and app exactly; the registry selects and never authorizes; drop-ins are reaped only when the declaration goes, and env files a surviving drop-in loads are kept. The declaration is read once per pass under the config-sync flock, and the new root verb carlos system named-units install validates and installs it under the same lock. Base files must be plain ASCII NAME=value lines; a unit loading any other environment file, or a name in both layers, is refused and reported. Every root read goes through rootstate's trusted descriptor walk. Astra: four branch rounds (round 4 with Paul's go; the last P1 closed by serialising declaration edits, Paul's ruling), census APPROVED at round 4 (#280), re-proposed unchanged on main's chain. Copy approved by Paul unedited. Each stamped unit needs a named-units.json line before delivery starts. Not released.",
+          "branch": "named-unit-delivery-114",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/named-unit-delivery-114",
+          "commits": 26,
+          "discussions": [
+            {
+              "id": 110,
+              "title": "A region-placed instance is staged and routed, then never runs: five of six armed regions serve 502",
+              "state": "open"
+            },
+            {
+              "id": 114,
+              "title": "Secrets and env never reach hand-built unit routes (the Woodstar shape): nothing is rendered, and the only path left is SSM",
+              "state": "open"
+            },
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 449,
+              "title": "Team-scoped service credentials (tenant role): design review",
+              "state": "open"
+            },
+            {
+              "id": 453,
+              "title": "Product gap: no carlos command sets a console's configuration or secrets",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-env",
+            "/docs/cli#carlos-secrets",
+            "/docs/cli#carlos-add",
+            "/docs/cli#carlos-route",
+            "/docs/cli#carlos-system-named-units"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "a8b52609cd7a026b950dcc895bd2b475bd711f3f",
+          "date": "2026-10-29",
+          "subject": "Static sites: a folder requested without its trailing slash (/blog/post) now answers a 301 to the slash form (./post/, relative, query kept), as GitHub Pages and Netlify do, so analytics counts one page once (Paul, 2026-10-29, on paulca.com's /blog/deshittification and /blog/deshittification/) and relative links resolve against the page's own folder. Files are never redirected, a folder with no index.html stays a 404, rewritten requests are left alone, and the site's _redirects come first: a rule naming the path, or any rule that would redirect the slash form (named, splat, placeholder or host-specific, redirectRules.redirectsSlashForm), leaves the path served as asked, so no loop. Docs: docs/site/cli.md. Reviews: Astra R1 NOT READY (1 P1, the loop with splat/placeholder rules, fixed), R2 READY; census census-ruling-static-dir-slash (serveTree, redirectsSlashForm, internal/edge envelope) approved by Astra on #280. CI flake TestHeldDialWebSocketUpgrade filed as #466. Not released.",
+          "branch": "static-dir-slash",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/static-dir-slash",
+          "commits": 6,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 466,
+              "title": "Flaky: TestHeldDialWebSocketUpgrade (internal/edge) loses its reserved port to another listener",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#redirects-for-a-static-site"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "5340da57c6922103e7a07cbf04401d24ef746ac6",
+          "date": "2026-10-29",
+          "subject": "Regional custom-domain placements (#447): one verified custom domain, with its one-label catch-all if wanted, served by a different instance of the same app in each region, and never served from or sent to another region. carlos domains placements --app APP --set REGION=INSTANCE ... [--wildcard --catchall] HOST creates it; without --set it shows each region's instance, readiness and the per-region EIPs for latency DNS (Paul's ruling 1). API GET/PUT .../domains/{host}/placements; the domains list, per-host GET and settings page show the state 'regional'. Each box derives a regional domain's apex and *.X rows in one transaction (pair or nothing), the edge's regional gate answers only from the local bound instance and denies otherwise before any backhaul or asset fill, a regional row beats a real route at its own key, and carlos add refuses a host a regional claim holds. Refused up front: live conversion of a domain that has served as an ordinary alias, overlap with ordinary catch-alls in either direction, path maps, TCP-backed targets, capability changes after creation (detach and recreate). The heartbeat reports aliases_read, and missing evidence refuses. Release floor release.RegionalDomainsFloor = v0.31.0 (Paul's ruling 2): while a regional claim exists no channel moves below it without --allow-below-regional-floor, and the PUT refuses unless every fresh box and followed channel is at the floor. Stated limit: a box stale at switch-on can return on an old binary holding an alias from an earlier detach. Reviews: design R1 Opus, R2-R4 Astra (rulings 4-6), per-task Astra and Sonnet reviews (P1s fixed under rulings 7-8 and a floor race), whole-branch Astra READY AFTER FIXES with every P2 fixed; census census-ruling-regional-domains-447 approved by Astra on #280; copy RD-1..46 by Luna. Instance create now makes 52 S3 requests (was 51). Not released: the first release containing this must be v0.31.0.",
+          "branch": "regional-domains-447",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/regional-domains-447",
+          "commits": 67,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 447,
+              "title": "Woodstar World: serve one custom domain from a writable placement in every region",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#one-domain-one-instance-per-region"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.30.3",
+      "date": "2026-10-29",
+      "sha": "1c5db50e0fa69fa2c25f0329db751aed34f42313",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.30.3",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**A clearer Analytics tab.** Page views, visitors and data served lead the tab. Sizes use KB, MB and GB, and counts are grouped, like 1,284. Hover over, focus or tap a column on the chart to see its numbers, and move between columns with the arrow keys. Hours that have not happened yet are left empty, and the period still in progress is marked. Under the chart are the busiest hour or day and, for 7 and 30 days, the average per full day. Pages, referrers, countries and events are listed with their share of the total. Known countries show their names and flags. If an edge restarted during the period, one note says counts may be missing for the affected day or days."
+              },
+              {
+                "md": "**Traffic on the Overview.** An app's Overview page now shows its page views and visitors for the last 7 days, with the same chart and a link to the Analytics tab. The page waits up to 300 ms from the start of the request for the numbers. If they are still loading, it says so. If the read fails, it says that traffic could not be read and links to Analytics. If analytics is off and there are no saved numbers, the card explains how to turn it on. If saved numbers remain from when it was on, the card shows them and says analytics is off."
+              },
+              {
+                "md": "**Analytics pages load faster.** Settled days are cached for up to six hours, and files in a range are read concurrently. Once a 30-day view has warmed the cache, a later view reads today's and yesterday's files, two per box, not thirty, plus the box listing."
+              },
+              {
+                "md": "**A thank-you after you buy a plan.** After a completed purchase, owners see a thank-you panel on the billing page only when the account has a live paid subscription. It names the account and its new plan. When the plan limits are available, it says how much room the plan gives. It always links to Go to your apps. Add packs appears when packs can be added. Upgrade appears when a higher plan is available. The plan summary lists each pack on its own line, like \"4 Apps packs\", and currency codes are shown in capitals, like USD."
+              },
+              {
+                "md": "**Typing a pack quantity replaces the 0.** On the billing page, a quantity box selects its number when you click or tab into it, so the first digit you type replaces it."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Console only.** Every change in this release is in the console. The boxes get the new build but behave as on v0.30.2. Roll the boxes first, then the console, as always. Coming from v0.30.1 or earlier, read the [v0.30.2 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.30.2) first, and the notes they point to."
+              },
+              {
+                "md": "**The Overview reads analytics.** Each app's Overview page now reads that app's last 7 days of analytics, beside its other reads. The page waits at most 300 ms from the start of the request for them, and the counts are kept for a minute, so reloading the page does not read them again."
+              },
+              {
+                "md": "**Every other dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_BILLING` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "1c5db50e0fa69fa2c25f0329db751aed34f42313",
+          "date": "2026-10-29",
+          "subject": "Console Analytics tab overhaul and an Overview traffic card. The tab leads with page views, visitors and data served in decimal units; the chart is HTML columns with tooltips on hover, focus and tap (arrow keys move), future hours undrawn and the current period hatched; busiest hour or day and the full-day average under it; pages, referrers, countries (names and flags) and events as share lists; one restart note. Overview gains Traffic, last 7 days, waiting at most 300 ms from request start (perf.Started), counts held 60 s. Analytics day files go through the settled-day cache and are read concurrently: a warm 30-day view reads 2 files per box, not 30. Perf session S3 ceiling 401 to 415 and the region-label baseline name the card's reads. Reviews: Astra UX suggestions; Luna copy pass; Astra R1 NOT READY (1 P1, 4 P2) fixed, R2 READY AFTER FIXES, 2 P2 fixed; census clean. Approved by Paul from the preview, 2026-10-29. Not released.",
+          "branch": "console-analytics-ui",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/console-analytics-ui",
+          "commits": 6,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "0c39af302dc11066d184d8d496add4ed579453c2",
+          "date": "2026-10-28",
+          "subject": "console: a thank-you panel after a completed purchase (owners only, live paid subscriptions only) with Add packs, Upgrade and Go to your apps; readable packs (\"4 Apps packs\") and upper-case currency codes in the plan summary; copy approved by Paul",
+          "branch": "billing-thanks",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/billing-thanks",
+          "commits": 5,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "89491675a7e58a619427c95eb95178c73d3af299",
+          "date": "2026-10-28",
+          "subject": "console: billing quantity boxes select their number on focus, so typing replaces the 0 (enhancement only)",
+          "branch": "qty-select",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/qty-select",
+          "commits": 2,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.30.2",
+      "date": "2026-10-28",
+      "sha": "803c6800cb6cb5c79a940819dbb4d5a72dcde874",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.30.2",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Rootfs apps can run workers.** A rootfs app can declare up to four worker processes beside its web. Each worker uses the same image and environment as web. Workers start after web is healthy. If a worker exits, the platform restarts it with a delay that doubles from two seconds until it reaches a one-minute cap. A worker that keeps crashing never takes web down. Rootfs apps run only on boxes your account owns: a fleet owned by your account, or any box in a deployment that serves one customer."
+              },
+              {
+                "md": "**Rootfs apps are documented.** A new Rootfs apps page in the docs says what an image is started with, what it can write and where it can run. A Rails guide takes a Rails 8 app from a Dockerfile to a running instance, with web, a job worker, a release process for migrations, and uploads to the app's own bucket. Notes for Laravel and Django say what differs for those frameworks. The finished app is in the platform repository under `examples/rails-shop`. `carlos run` does not reach rootfs instances yet.",
+                "docs": [
+                  "/docs/cli#carlos-run"
+                ]
+              },
+              {
+                "md": "**Check a rootfs release with placeholder settings.** `carlos ship --check --env KEY=VALUE` gives every process in the check a variable, such as a placeholder secret. Repeat it for more than one. The check never reads the app's real config or secrets. It sets `CARLOS_SOCKET`, `CARLOS_DB`, `CARLOS_HOST` and `CARLOS_REGION` itself, so `--env` cannot set those, and `--env` without `--check` is refused.",
+                "docs": [
+                  "/docs/cli#carlos-ship"
+                ]
+              },
+              {
+                "md": "**See a rootfs instance's runtime and workers.** `carlos instances list` has two new columns. RUNTIME says `rootfs`, or `rootfs, hibernates` for an instance that sleeps when idle. WORKERS counts the instance's running workers out of the ones it declares. If a worker reaches the restart limit after repeated crashes, WORKERS names it as restarting. A binary instance shows `binary` and `-`. `carlos instances create` says whether a new rootfs instance is always on or hibernates, and `carlos apps place` refuses a rootfs app.",
+                "docs": [
+                  "/docs/cli#carlos-instances",
+                  "/docs/cli#carlos-apps"
+                ]
+              },
+              {
+                "md": "**Billing changes reach Stripe again.** On a console with billing on, every change the console sent to Stripe failed with no response, such as starting a payment, opening the billing portal or changing a quantity. They now go through."
+              },
+              {
+                "md": "**A clearer billing page.** The billing page shows a summary of your plan, a card for each plan with what it includes, a currency switch and a row for each pack. Native form controls across the console follow its dark theme. Continue to payment shows a spinner for at least 650 ms and cannot be pressed twice. Without JavaScript, the form submits as before."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.30.1 or earlier, read the [v0.30.1 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.30.1) first, and the notes they point to."
+              },
+              {
+                "md": "**A freshly bootstrapped box can use its agent before its first reboot (#446).** `carlos bootstrap` now applies the box's temporary-file settings before it starts any unit. Before, the control socket directory could be owned only by root, so the agent could not use it until the box rebooted. With region HA, an instance created on a new box also gets the nested layout paths it needs immediately, before the box has chosen its default layout.",
+                "docs": [
+                  "/docs/cli#carlos-bootstrap"
+                ]
+              },
+              {
+                "md": "**Workers change nothing until a release declares one.** A box runs no worker until a rootfs release declares workers. Each box now reports its instances' worker states, which `carlos instances list` shows in WORKERS.",
+                "docs": [
+                  "/docs/cli#carlos-instances"
+                ]
+              },
+              {
+                "md": "**Every other dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_BILLING` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "803c6800cb6cb5c79a940819dbb4d5a72dcde874",
+          "date": "2026-10-28",
+          "subject": "Rootfs apps Plan 4 (#366): the console and CLI show a rootfs instance's runtime and workers, the docs, the sample Rails app, and carlos ship --check --env. carlos instances list gains RUNTIME and WORKERS; worker states come from each box's rollout report through the console's rollout join and cross only under its tenant check (TestInstanceListWorkersStayInTheirTenant, three arms). instances create prints the rootfs line. carlos apps place refuses every rootfs app (witness tests, API and browser). carlos ship --check takes --env KEY=VALUE placeholders for every process (Paul, 2026-10-28): only the local container runtime sees them, as -e argv; CARLOS_SOCKET, CARLOS_DB, CARLOS_HOST and CARLOS_REGION are refused; --env without --check is refused. Docs: the rootfs contract page (docs/site/rootfs.md), the Rails guide (rails.md) with a drift test against the sample, Laravel and Django notes, and the CLI page; six revised rows and the --env and C104 rows approved by Paul in copy review. examples/rails-shop: Rails 8.1 with web, a Solid Queue worker, a release process for migrations, Active Storage on the app's store, and a token-gated crash endpoint. Reviews: whole branch Astra R1 2 P1 1 P2 (docs), R2 READY; census census-ruling-rootfs-apps-4 approved by Astra (#280; cli.go runShip), re-sealed on main's chain with the same units and claims. Not released. Task 11 (dev fleet end-to-end on r10r) follows a release.",
+          "branch": "rootfs-apps-4-console",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/rootfs-apps-4-console",
+          "commits": 12,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 366,
+              "title": "Rootfs apps: run any Linux app (Rails, Laravel, Django) on your own boxes, isolated like a nested instance",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-apps",
+            "/docs/cli#carlos-ship",
+            "/docs/cli#carlos-instances",
+            "/docs/laravel-and-django#laravel",
+            "/docs/laravel-and-django#django"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "32e3e6442c6323742c77ac7607ca8770d710cb9f",
+          "date": "2026-10-28",
+          "subject": "fresh-box-446: a freshly bootstrapped box can run a born-HA host",
+          "branch": "fresh-box-446",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fresh-box-446",
+          "commits": 5,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "674fec48b7365f38af404c51436d4dba644f30de",
+          "date": "2026-10-28",
+          "subject": "console: native controls follow the dark theme (color-scheme); Continue to payment spins for at least 650 ms and can't be pressed twice (progressive enhancement; without JS the form submits as before)",
+          "branch": "console-color-scheme",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/console-color-scheme",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "a9536235caa1679132d866f80b7076e9aed8bcf9",
+          "date": "2026-10-28",
+          "subject": "Rootfs apps Plan 3 Group W: workers (#366). A rootfs app's declared worker processes (up to 4) run beside its web under its lease, from the generation's staged image and composed environment, in the generation's tier. They start only from the 2 s tick on an awake instance whose lease watch is present, through one gate (ownership, swept, generation, no open release record, no stray of another generation or the same name, and at least 82 s of lease headroom to start, stop and prove). doWake and an overlap swap's step 8 only register workers (Paul's ruling after stopping rule 2 on W1: up to ~2 s with no workers after a wake or swap). An exit, clean or not, restarts with the co-spawn backoff (2 s doubling to 60 s, crash loop at the cap, RFS-3-C08..C10); a worker never takes web down. Stop proves every worker gone before the lease goes and stops them at once at lease loss; an unproven worker is a stray that keeps its files, its build pin, the stop and the lease until the sweep or Shutdown proves it; a never-started declaration needs no proof; a proven handle is released only once its observer and listeners have ended (W1.17), so a replacement never reuses a log socket an old handle may unlink. An overlap swap stops and proves the old set before registering the new one, so two sets never run. The box's rollout report carries each host's worker states. No internal/instancectl change. Reviews: W1 Astra R1 1 P1 2 P2, R2 1 P1 (rule 2, Paul cut wake-time starts), R3 READY AFTER FIXES (P2s applied); W2 R1 1 P1, R2 READY; whole branch R1 READY; census census-ruling-rootfs-apps-3-workers approved by Astra (#280). Not released; dormant until a rootfs release declares workers.",
+          "branch": "rootfs-apps-3-workers",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/rootfs-apps-3-workers",
+          "commits": 12,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 366,
+              "title": "Rootfs apps: run any Linux app (Rails, Laravel, Django) on your own boxes, isolated like a nested instance",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "cca7c9c33714b1b633fb2be7302605d4670b3fd9",
+          "date": "2026-10-28",
+          "subject": "billingstripe: the write transport offers only HTTP/1.1 by ALPN. It cloned DefaultTransport, whose TLS config offered h2, so Stripe negotiated h2 and every billing POST failed as no response (found in the dev sandbox rehearsal).",
+          "branch": "stripe-write-http1",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/stripe-write-http1",
+          "commits": 2,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "20a826706173b86cc75377369be9ccc5f8b2869b",
+          "date": "2026-10-28",
+          "subject": "console: the billing page gets a plan summary, plan cards with inclusions, a currency switch and pack rows (styling only; no client JS; currency and action invariants unchanged)",
+          "branch": "billing-page-style",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/billing-page-style",
+          "commits": 4,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.30.1",
+      "date": "2026-10-28",
+      "sha": "de23fa5ec21dddbae95a6be44867abd2652baa81",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.30.1",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Team credentials.** A new service role, `team`, is for a server that provisions instances for teams inside one app without reaching the app's own config. Mint one with `carlos services create --role team --app <app> --scope <scope> <credential-name>`. It reaches only the environments its scope owns, the instances bound to them and their hostnames. It never sees the app's default config, and anything outside its scope answers as if it did not exist. An account owner marks an environment with `carlos env adopt --app <app> --environment <environment> --scope <scope>`, clears it with `carlos env release --app <app> --environment <environment>`, and copies it with `carlos env fork --app <app> --from <environment> --to <new-environment> --scope <scope>`. An owned environment never inherits the app's default config. When email is provisioned, it gets its own SES sending user and key. When relay is enabled, it gets its own relay identity. Binding an instance into one takes `--scope <scope>` on `carlos instances create` or `carlos instances set-environment`.",
+                "docs": [
+                  "/docs/cli#carlos-services",
+                  "/docs/cli#carlos-env",
+                  "/docs/cli#carlos-instances"
+                ]
+              },
+              {
+                "md": "**A rootfs app's deploy overlaps.** A rootfs app's deploy now overlaps: the new web starts beside the serving one, after its release process, instead of the instance stopping for the deploy. Releases that ask for hold still hold."
+              },
+              {
+                "md": "**Rootfs apps can run a release process.** A rootfs app can declare a `release` process, such as a database migration. The box runs it from the new image before the new web serves, and the new web serves only after it passes. A failed or timed-out release marks that build failed. A cancelled release, a release the box cannot prove stopped, or a lost lease aborts the attempt without marking the build failed. During an overlap deploy, the old web keeps serving in all of these cases. Workers and `carlos run` for rootfs apps come in a later release, and rootfs apps are not documented yet.",
+                "docs": [
+                  "/docs/cli#carlos-run"
+                ]
+              },
+              {
+                "md": "**Fewer 502s while a box's own services restart.** When a local service on the box itself restarts, such as the console, the edge holds requests while it retries for up to 13 seconds instead of failing them immediately with 502 or 503. A route with health checks can wait longer for readmission, up to 30 seconds total."
+              },
+              {
+                "md": "**Faster CLI writes.** `carlos ship`, `carlos instances create` and `carlos apps create` now do independent reads at once. Instance and app creation also read less. `carlos promote` reads the release manifest and pipeline at once. A release manifest larger than 1 MiB now fails the ship check. On a test copy shaped like a large deployment, measured after the request body was read, instance create went from about 2 seconds to about 0.6 seconds, ship from about 1 second to about 0.4 seconds, and app create from about 1 second to about 0.4 seconds. No write happens in a different order.",
+                "docs": [
+                  "/docs/cli#carlos-ship",
+                  "/docs/cli#carlos-instances",
+                  "/docs/cli#carlos-apps",
+                  "/docs/cli#carlos-promote"
+                ]
+              },
+              {
+                "md": "**A new hostname's first certificate waits for every edge.** On a deployment with more than one edge, the first certificate order for a new hostname waits up to 45 seconds after the issuer first sees the name. This gives the other edges time to learn the name before certificate validation starts. A one-edge deployment does not wait."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.30 or earlier, read the [v0.29.0 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.29.0) first, and the notes they point to."
+              },
+              {
+                "md": "**Owned environments need every box on v0.30.0.** The console refuses to create an instance in an owned environment, or to move one into it, while any fresh box in the placement where the instance could run, or its current host when it is fresh, is on a release older than v0.30.0. It names that box. An older box would add the app's default config to the owned environment."
+              },
+              {
+                "md": "**Owned environments get their own AWS users.** Installing this release by itself creates nothing in AWS. An owned environment of an app with email provisioned gets its own SES sending user and key. It gets its own relay identity when the app's relay is enabled. These credentials are created as ownership and the relevant service converge, and are removed when the environment is released."
+              },
+              {
+                "md": "**The edge's own restart is unchanged.** The 13-second wait covers services on the box, not the edge itself, so a box roll still has its short gap. Each edge start now logs one `edge: listeners:` line naming the ports it bound."
+              },
+              {
+                "md": "**An agent restart fails a rootfs deploy.** If the box agent restarts while a rootfs deploy is under way, that deploy fails. Retrying it runs the release process again for the new attempt."
+              },
+              {
+                "md": "**The hourly adopt pass removes the old join units.** A box that left the join-era build by a hand roll no longer keeps `carlos-system-join.path` and `carlos-system-join.service`."
+              },
+              {
+                "md": "**The console is faster and its scan pass stops failing.** Several slow operator pages now read the bucket in parallel. `/fleet/economics` also keeps settled usage days between views. The scan pass now skips old app release prefixes that appear before account names, instead of failing on them every run."
+              },
+              {
+                "md": "**The console has a speed budget.** Warm pages, which make no S3 or box request before their first byte, have a 150 ms budget. Cold pages, which make at least one such request, have a 500 ms budget. A change is timed from when the console has read the whole request body to its first byte and has a 500 ms budget. The Console speed section on `/fleet/metrics` shows pages and changes separately. The background jobs table shows each job's total and average S3 requests. The CI performance check uses median timings for its gate, so these budgets are targets rather than a promise that every request finishes within them."
+              },
+              {
+                "md": "**Every other dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_BILLING` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "de23fa5ec21dddbae95a6be44867abd2652baa81",
+          "date": "2026-10-28",
+          "subject": "console-slow-writes: the slow CLI writes read less, and at once. Ship's wrong-program rule reads its 20 manifests ten at a time, streamed and capped at 1 MiB each, and an over-cap manifest fails the check closed (975 -> ~410 ms after the upload). Instance create reads the live edges snapshot once per request, prefetched under the door's 15 s deadline in a write memo that holds only box-written objects; memo readers honour their own context and a panicked load panics again in every reader, so a failed read never becomes a write; holder, claim and cap reads are narrowed and run together (70 -> 51 S3, 2,050 -> ~590 ms). App create gets the same changes (~1,200 -> ~410 ms); promote reads manifest and pipeline at once. No write moved or reordered. TestPerfWriteRoutesMeetTheBudget locks each write door's S3 count and its time after the body, stamped server-side. Astra round 1 NOT READY (2 P1, 2 P2) fixed with witnesses; round 2 READY AFTER FIXES, the P2 fixed; census census-ruling-console-slow-writes (runningThings 9B8, internal/release and internal/edgesfile envelopes, new unit readProgramManifest) approved by Astra on #280 at 54233a0a. Not released.",
+          "branch": "console-slow-writes",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/console-slow-writes",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "bb7d095395344b62b6797d4de73f626bce7c8306",
+          "date": "2026-10-28",
+          "subject": "console-budget-cold-warm: a two-tier performance budget (150 ms warm, 500 ms cold, writes 500 ms after the body) and S3 requests per background job. internal/perf classifies every request: a GET or HEAD with no S3 or box request before its first byte is warm, one with any is cold; POST, PUT, PATCH and DELETE are judged from the read that finished the body. The Console speed section on /fleet/metrics shows pages and Changes. Every jobs.Run carries a perf.Counter, so a job's S3 requests, tenant-bucket listings included (objstore.NewAWSProvisionerWith wraps the S3 HTTP doer for counting only), land on its row on Boxes and the dashboard. The CI walk holds warm views to a 150 ms median, cold views and the promote write to 500 ms. Astra round 1 READY AFTER FIXES, five P2s fixed; census census-ruling-console-budget-cold-warm (internal/objstore envelope) approved by Astra on #280 at 8e9238a5. Not released.",
+          "branch": "console-budget-cold-warm",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/console-budget-cold-warm",
+          "commits": 6,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "4638a74076ce08ecef6d6f0b3fdca7de201a180f",
+          "date": "2026-10-28",
+          "subject": "edge: hold a new name's first cert order until every edge knows it (#443)",
+          "branch": "cert-warm-propagation-443",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/cert-warm-propagation-443",
+          "commits": 9,
+          "discussions": [
+            {
+              "id": 443,
+              "title": "Dev home-region hosts fail their first cert warm (no viable challenge type) and stay dark for the 1 h retry",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.30.0",
+      "date": "2026-10-28",
+      "sha": "9665606d0ec6562ba95880971713cddcc74c375d",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.30.0",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Team credentials.** A new service role, `team`, is for a server that provisions instances for teams inside one app without reaching the app's own config. Mint one with `carlos services create --role team --app <app> --scope <scope> <credential-name>`. It reaches only the environments its scope owns, the instances bound to them and their hostnames. It never sees the app's default config, and anything outside its scope answers as if it did not exist. An account owner marks an environment with `carlos env adopt --app <app> --environment <environment> --scope <scope>`, clears it with `carlos env release --app <app> --environment <environment>`, and copies it with `carlos env fork --app <app> --from <environment> --to <new-environment> --scope <scope>`. An owned environment never inherits the app's default config. When email is provisioned, it gets its own SES sending user and key. When relay is enabled, it gets its own relay identity. Binding an instance into one takes `--scope <scope>` on `carlos instances create` or `carlos instances set-environment`.",
+                "docs": [
+                  "/docs/cli#carlos-services",
+                  "/docs/cli#carlos-env",
+                  "/docs/cli#carlos-instances"
+                ]
+              },
+              {
+                "md": "**A rootfs app's deploy overlaps.** A rootfs app's deploy now overlaps: the new web starts beside the serving one, after its release process, instead of the instance stopping for the deploy. Releases that ask for hold still hold."
+              },
+              {
+                "md": "**Rootfs apps can run a release process.** A rootfs app can declare a `release` process, such as a database migration. The box runs it from the new image before the new web serves, and the new web serves only after it passes. A failed or timed-out release marks that build failed. A cancelled release, a release the box cannot prove stopped, or a lost lease aborts the attempt without marking the build failed. During an overlap deploy, the old web keeps serving in all of these cases. Workers and `carlos run` for rootfs apps come in a later release, and rootfs apps are not documented yet.",
+                "docs": [
+                  "/docs/cli#carlos-run"
+                ]
+              },
+              {
+                "md": "**Fewer 502s while a box's own services restart.** When a local service on the box itself restarts, such as the console, the edge holds requests while it retries for up to 13 seconds instead of failing them immediately with 502 or 503. A route with health checks can wait longer for readmission, up to 30 seconds total."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.30 or earlier, read the [v0.29.0 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.29.0) first, and the notes they point to."
+              },
+              {
+                "md": "**Owned environments need every box on v0.30.0.** The console refuses to create an instance in an owned environment, or to move one into it, while any fresh box in the placement where the instance could run, or its current host when it is fresh, is on a release older than v0.30.0. It names that box. An older box would add the app's default config to the owned environment."
+              },
+              {
+                "md": "**Owned environments get their own AWS users.** Installing this release by itself creates nothing in AWS. An owned environment of an app with email provisioned gets its own SES sending user and key. It gets its own relay identity when the app's relay is enabled. These credentials are created as ownership and the relevant service converge, and are removed when the environment is released."
+              },
+              {
+                "md": "**The edge's own restart is unchanged.** The 13-second wait covers services on the box, not the edge itself, so a box roll still has its short gap. Each edge start now logs one `edge: listeners:` line naming the ports it bound."
+              },
+              {
+                "md": "**An agent restart fails a rootfs deploy.** If the box agent restarts while a rootfs deploy is under way, that deploy fails. Retrying it runs the release process again for the new attempt."
+              },
+              {
+                "md": "**The hourly adopt pass removes the old join units.** A box that left the join-era build by a hand roll no longer keeps `carlos-system-join.path` and `carlos-system-join.service`."
+              },
+              {
+                "md": "**The console is faster and its scan pass stops failing.** Several slow operator pages now read the bucket in parallel. `/fleet/economics` also keeps settled usage days between views. The scan pass now skips old app release prefixes that appear before account names, instead of failing on them every run."
+              },
+              {
+                "md": "**Every other dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_BILLING` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "9665606d0ec6562ba95880971713cddcc74c375d",
+          "date": "2026-10-28",
+          "subject": "Platform rolls: the edge holds requests to a restarting local upstream instead of answering 502/503 (#434 option 2). A loopback TCP or unix-socket upstream that refuses, or whose socket is missing, is redialled every 100 ms for up to 13 s under one deadline set when the dial starts (unix upstreams already had this window and now share the code); non-local upstreams are unchanged. A probed route with a local upstream waits for the prober to readmit it, never dialling an ejected upstream: 13 s plus the prober's real readmission time, capped at 30 s (19 s with default health settings). The edge binds :80/:443 before serving and logs one 'edge: listeners:' line naming them. No socket unit, and no unit, root, updater or rollback change: the socket (option 3) comes later in a release that refuses rollback below the first socket-aware build (Paul's ruling, #434). Local witness TestLocalUpstreamRestartWitness: 0 failed requests across tcp, unix and probed routes during an upstream restart under load; 2126 x 502 with the hold off. Known limit: a request already queued at the upstream when it closes is reset (0-4 per restart). Reviews: Astra spec R1 2 P1, R2 1 P1 (rule 2, Paul ruled option 2 then 3), R3 READY AFTER FIXES; whole branch R1 READY AFTER FIXES, fixes applied; census census-ruling-edge-roll-blip approved by Astra (#280), re-sealed on main's chain with the same units and claims.",
+          "branch": "edge-roll-blip",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/edge-roll-blip",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 434,
+              "title": "Platform rolls as a queued blip: no 503s while the edge restarts",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "5f90f2accc5feb7d27f3500dabfab05ef7378f89",
+          "date": "2026-10-28",
+          "subject": "rollout: a rootfs adoption reads its demand from the rootfs image artifact, so it can overlap (#366). release.CanonicalDemand looked the staged build up under Artifacts[platform]; a rootfs release's image sits under rootfs-<platform> (BoxArtifact), so every rootfs adoption ran in hold: the old web stopped, the release ran in a cold wake, and visitors waited about 17 s on the dev Rails test (railsdemo r3, 2026-10-28). It now reads m.BoxArtifact(platform): binary releases unchanged, a rootfs release with no demand overlaps, one asking for hold still holds, a box with no image for its platform still holds. Astra: code READY, census census-ruling-rootfs-overlap-demand approved (#280; internal/release envelope only).",
+          "branch": "rootfs-overlap-demand",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/rootfs-overlap-demand",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 366,
+              "title": "Rootfs apps: run any Linux app (Rails, Laravel, Django) on your own boxes, isolated like a nested instance",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "5e6ed9644ad1c5c74f355d8f96d898816c72a367",
+          "date": "2026-10-28",
+          "subject": "Rootfs apps Plan 3 Group R: the release process (#366). A rootfs app's declared release command (migrations) runs from the new image, in the rootfs cmd unit inside the instance's slice and tier, before the new web serves: before an overlap swap is admitted, and inside a wake (hold swaps, planned wakes, cold wakes, resident starts). The new web never serves unless this release passed for this build in this attempt; a failed, timed-out, cancelled or unproven release never stops the old web under overlap. One per-host release record outlives the entry, keeps the lease and blocks every transition until the release's unit is proven gone, and is reaped by the pass the sweep and Shutdown share; lease loss stops the release before the safety deadline. Only a proven release failure is the build's failure. An interrupted adoption recovers as a binary one does (a failure on restart, an explicit retry re-runs the release; stopping rule 2, overnight ruling for Paul). Copy RFS-3-C01..C07 and C29. Reviews: per-task Astra rounds (R1 2, R2 3, R3 2), whole-branch round 1 READY AFTER FIXES (P2 fixed), census census-ruling-rootfs-apps-3-release approved by Astra (#280). Dormant until a rootfs release declares a release process.",
+          "branch": "rootfs-apps-3-release",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/rootfs-apps-3-release",
+          "commits": 15,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 366,
+              "title": "Rootfs apps: run any Linux app (Rails, Laravel, Django) on your own boxes, isolated like a nested instance",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "9bcbab0f5646c11c7d05c9346dcfcea8c84f0751",
+          "date": "2026-10-28",
+          "subject": "Team-scoped service credentials: the team role, standalone owned environments, and per-environment platform credentials (#449). A team credential is bound to one app and a scope and reaches only the environments its scope owns (owner_scope, schema 2, rendered standalone), the instances bound to them and their hostnames, through thirteen doors registered by cliScopedRoute with one deciding function, teamInScope; the default bundle and every app-wide verb are never in scope, out-of-scope targets answer the unknown target's bytes, names a record references cannot be captured, and a person binds into an owned environment only with an explicit scope re-checked under the record lock. Owners adopt, release and fork (carlos env adopt|release|fork). Per Paul's §3a ruling, an owned environment receives its own SES SMTP user and key and its own relay identity, reaped on release; scan and mail-events keys are not delivered. Design approved by Fable round 3 on #449; whole-branch review approved by Fable (P2s fixed); census approved by Astra on #280 at 1cc27cc4a, overlay re-proposed on ee0661836's chain (seal 9e0c4a0c → b6f3a369). The merge creates nothing in AWS; per-environment IAM users appear only when owned environments are created, with Paul's scoped approval. Not released.",
+          "branch": "team-scoped-credentials",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/team-scoped-credentials",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 449,
+              "title": "Team-scoped service credentials (tenant role): design review",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-env",
+            "/docs/cli#carlos-services"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "ee066183642d4b8e374f4fa5052b0b92349a60fc",
+          "date": "2026-10-28",
+          "subject": "retire-join-units-on-adopt: the hourly root adopt pass (ensureSystemUnits) disables, stops and removes the exact-named retiredUnits (carlos-system-join.path and .service), under the apply lock and before its already-armed early return, so a box that left the join-era build by a hand roll no longer keeps them until a re-bootstrap. retireUnits split into a wrapper and retireUnitsIn(unitDir, units, systemctl); a failed disable leaves the unit for the next pass and never stops the arming. Census census-ruling-retire-join-units-on-adopt approved by Astra (round 1, READY AFTER FIXES; P2 test fix applied). #454. Not released.",
+          "branch": "retire-join-units-on-adopt",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/retire-join-units-on-adopt",
+          "commits": 2,
+          "discussions": [
+            {
+              "id": 454,
+              "title": "Stale carlos-system-join units: what they do now, and retiring them on the hourly adopt pass",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "26578a2cbce0f046e9838c6c0a814fdb27237bcf",
+          "date": "2026-10-28",
+          "subject": "README: plainer wording for the scan's --targets file (Luna pass)",
+          "branch": "readme-targets-copy",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/readme-targets-copy",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "6c4dccc39a4f17749de1a342c5bd31582940c548",
+          "date": "2026-10-28",
+          "subject": "activator: HA wake request counts leave out litestream's level listings",
+          "branch": "ci-flakes-1028",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/ci-flakes-1028",
+          "commits": 10,
+          "discussions": [
+            {
+              "id": 425,
+              "title": "rollout flake: TestAMoveOntoTheInstalledGoodBuildWaitsForASignedRollback times out waiting for the move onto v1 on the CI runner",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "90d36e641fffbb972e6ea6b0850b356cfd813095",
+          "date": "2026-10-28",
+          "subject": "Prompts:",
+          "branch": "console-economics-speed",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/console-economics-speed",
+          "commits": 5,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "080ce5974139dee0ec460005521a379c2393745d",
+          "date": "2026-10-27",
+          "subject": "console: the scan pass skips apps/ prefixes that are not accounts",
+          "branch": "scanpass-skip-non-accounts",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/scanpass-skip-non-accounts",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "e15fe6108823a3a84c9f00471453f0103d9632b2",
+          "date": "2026-10-27",
+          "subject": "console-perf-hot-routes: the slowest console GETs read at once, each object once",
+          "branch": "console-perf-hot-routes",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/console-perf-hot-routes",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.29.0",
+      "date": "2026-10-27",
+      "sha": "2d224b1e030c2176147ef40be17be95b8bbb2307",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.29.0",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**Boxes can run a rootfs app's web process.** A rootfs app is an OCI image shipped with `carlos ship --rootfs`. Its always-on instances now start on a box that has passed its rootfs check, take new releases with an overlap swap, stay awake, and restart after a crash. They run only on boxes your account owns: one of your fleets, or any box of a single-tenant deployment. Workers, the release process and `carlos run` for rootfs apps come in a later release, and rootfs apps are not documented yet.",
+                "docs": [
+                  "/docs/cli#carlos-ship",
+                  "/docs/cli#carlos-run"
+                ]
+              },
+              {
+                "md": "**Creating a rootfs instance checks where it can run.** The console refuses a rootfs instance outside your account's own boxes, in a dedicated pool, seeded from another database, or as a replica. It also refuses one while any box it could run on is on a release older than v0.29.0, and names that box. An app's first rootfs release is refused while the app still has instances made for a binary app. Moving a rootfs app's instances, or placing the app somewhere else with `carlos apps place`, is refused.",
+                "docs": [
+                  "/docs/cli#carlos-apps"
+                ]
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.29 or earlier, read the [v0.28.30 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.30) first, and the notes they point to."
+              },
+              {
+                "md": "**v0.29.0 is a rollback floor.** Once a channel points at v0.29.0 or later, `carlos system update` and `carlos system rollback` refuse to move it to an earlier release, because an earlier box cannot run rootfs instances. A hand-run `carlos system apply` on a box running v0.29.0 or later refuses an earlier release too. Pass `--allow-below-rootfs-floor` to do it anyway. A box's automatic rollback after a failed update is not affected.",
+                "docs": [
+                  "/docs/cli#carlos-system"
+                ]
+              },
+              {
+                "md": "**The box agent changes.** It runs rootfs instances through their whole lifecycle. The first boot of a rootfs instance writes a marker beside its replica, `<hibernate prefix>/rootfs-initialized/<incarnation>.json`, and a box that finds the marker but no database or replica refuses to start the instance empty. When it adds a socket-backed instance record with no runtime and no existing row, the agent reads the app's kind marker once per app per pass. Binary instances, static sites and services behave as before."
+              },
+              {
+                "md": "**Leave `CARLOS_DEPLOYMENT_SINGLE_TENANT` unset on a shared deployment.** It is a new console setting for a deployment that serves one customer, and it lets that customer's rootfs instances run on any ready box in the deployment, not only on a fleet box that account owns."
+              },
+              {
+                "md": "**The hostname history scan copes with busy boxes.** `scripts/hosts-used-scan-aws.sh` now lists each box into a snapshot file in `/run` and pages that, so a box whose files change while it is listed can be scanned."
+              },
+              {
+                "md": "**Every other dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_BILLING` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "2d224b1e030c2176147ef40be17be95b8bbb2307",
+          "date": "2026-10-27",
+          "subject": "last-seen witnesses through the real routes",
+          "branch": "operator-people-detail",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/operator-people-detail",
+          "commits": 5,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "57aec0adf93b088b4ab41ea2e322f768e1b69484",
+          "date": "2026-10-27",
+          "subject": "hosts-used-scan-snapshot (#444): the hostname history scan lists each box with one find into a mktemp scratch file in /run (with -ignore_readdir_race) and pages that snapshot over SSM, keeping the sha256, length and line-count check over it, so a busy box whose SQLite -wal/-shm files come and go between commands can be scanned. The scratch file is removed by exact path after paging, on failure too; a failed snapshot command removes its own, and a detached timer removes the exact path after HOSTS_SCAN_EXPIRE (900 s) if its name never reached the scan. Tests: TestHostsUsedScanAWSPagesOneSnapshot (failed first with the old 'changed while it was paged'), TestHostsUsedScanAWSExpiresALostSnapshot. Astra round 1 READY AFTER FIXES, the one P2 fixed.",
+          "branch": "hosts-used-scan-snapshot",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/hosts-used-scan-snapshot",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 444,
+              "title": "hosts-used scan can't list annie-welding: its /data listing changes between SSM pages, so flagship activation (Task 15) would refuse",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "7de0f081ed93870dc02ac45b78bf069aaa64fe01",
+          "date": "2026-10-27",
+          "subject": "Rootfs apps Plan 3 Group A and Plan 4's first console slice (#366). A box runs a rootfs instance through its whole lifecycle: the registry's runtime column and Record.Runtime are fixed at mint (an unknown runtime is inert); reconcile, the readers, the cmd environment, swaps, holds, planned wakes, start placement, the wake bound and residency (always-on rootfs instances started at boot, restarted with backoff) all take the rootfs path, and every binary launch asks the runtime first. A first boot is guarded across boxes by a lifetime-scoped marker beside the replica, confirmed by a read back before the empty database is placed (Paul: refuse interrupted init; operator recipe in docs/superpowers/notes/rootfs-first-boot-marker.md). Moves and apps place refuse rootfs apps. The rollback floor is v0.29.0, judged at the console before any activation reservation, with --allow-below-rootfs-floor. Console: CARLOS_DEPLOYMENT_SINGLE_TENANT, rootfs instances only on the account's own boxes and only when every fresh box of the placement runs v0.29.0 or later (RFS-4-C139/C140), instance create mints rootfs records from the creating release, an app's first rootfs ship is refused while binary instances exist, and the fleet owner record. Workers, the release process and carlos run on rootfs come later. Reviews: per-task Astra rounds, whole-branch round 3 READY; census census-ruling-rootfs-apps-3 approved by Astra (#280); copy approved. Ships as v0.29.0; no release without it may be numbered v0.29.0 or higher.",
+          "branch": "rootfs-apps-3-lifecycle",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/rootfs-apps-3-lifecycle",
+          "commits": 79,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 328,
+              "title": "How should an isolated tenant reach a private service its operator runs? (Gotenberg on 172.31.x is fenced off by the nested layout)",
+              "state": "open"
+            },
+            {
+              "id": 338,
+              "title": "A platform alias keeps the flat socket after its instance nests (502)",
+              "state": "open"
+            },
+            {
+              "id": 366,
+              "title": "Rootfs apps: run any Linux app (Rails, Laravel, Django) on your own boxes, isolated like a nested instance",
+              "state": "open"
+            },
+            {
+              "id": 397,
+              "title": "Flake: TestInstallChannelPolicyRefusals/unpublished_mode fails with 'an update is running on this box' (EAGAIN)",
+              "state": "open"
+            },
+            {
+              "id": 431,
+              "title": "carlos run: the run directory is deleted before the command's termination is proven",
+              "state": "open"
+            },
+            {
+              "id": 435,
+              "title": "activator flake?: TestHAWakeRequestCounts sees an extra LIST <host>/0009/ during the first HA wake on the CI runner",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.28.30",
+      "date": "2026-10-27",
+      "sha": "5f4df955c674d2caf667de79aa1faed90a8d28d7",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.28.30",
+      "notes": {
+        "form": "bullets",
+        "sections": [
+          {
+            "title": "",
+            "bullets": [
+              {
+                "md": "**A surviving box takes over a terminated box's high-availability hosts.** A high-availability host whose box has been terminated now comes back on another box that serves its pool, but only after the host's lease has expired and EC2 confirms that the old box is terminated. That can take up to about 15 minutes after the old box stopped renewing the lease. Before, the host stayed down until someone acted. A box that is only stopped or hung keeps its hosts. Only hosts whose records carry `ha` use this path. The console stamps new records with `ha` in regions listed in `CONSOLE_HA_REGIONS`."
+              }
+            ]
+          },
+          {
+            "title": "For operators",
+            "bullets": [
+              {
+                "md": "**Roll the boxes first, then the console.** Coming from v0.28.28 or earlier, read the [v0.28.29 operator notes](https://github.com/carlosframework/releases/releases/tag/v0.28.29) first, and the notes they point to."
+              },
+              {
+                "md": "**The box agent changes.** A box now reads its AWS account and region, as well as its instance id, from its instance identity document, and it refuses to wake a high-availability host until it knows all three. To confirm a termination it calls EC2 `DescribeInstances`, at most once every 10 seconds for each box it asks about. The box role already allows that call. Hosts without high availability behave as before."
+              },
+              {
+                "md": "**Every other dormant switch stays off.** Leave `CARLOS_MOVES_PHASE1`, `CARLOS_HOST_CLAIM`, `CARLOS_HOST_CLAIM_ORIGINS`, `CARLOS_HOST_CLAIM_RETIRED_LOCATIONS`, `CARLOS_CONSOLE_ID`, `CARLOS_REGION_HA`, `CONSOLE_HA_REGIONS`, `CARLOS_TEMPORARY_APPS`, `CARLOS_REQUIRE_POINTER_DIGEST`, `CARLOS_PLAN_CATALOG` and `CARLOS_BILLING` unset, don't put `CARLOS_BOX_REFERENCE=group` in any host.env, and don't run `carlos channels digests on`. Keep `CARLOS_SWAP` and `CARLOS_DB_FORWARD` as they are: a box armed for zero-downtime deploys stays armed, and a console that forwards database reads keeps forwarding.",
+                "docs": [
+                  "/docs/cli#carlos-channels-digests"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "changes": [
+        {
+          "sha": "5f4df955c674d2caf667de79aa1faed90a8d28d7",
+          "date": "2026-10-27",
+          "subject": "changelog-v0.28.29: release step 10 for v0.28.8 to v0.28.29 (docs/site/changelog.json from the published notes; branch links for v0.28.28 and v0.28.29)",
+          "branch": "changelog-v0.28.29",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/changelog-v0.28.29",
+          "commits": 2,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "dcd205593412736ab95733e457849a23b5b8f1dd",
+          "date": "2026-10-27",
+          "subject": "CI: raise the linux/arm64 binary ceiling to 64 MB (Paul, 2026-10-27)",
+          "branch": "binary-ceiling-64mb",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/binary-ceiling-64mb",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 275,
+              "title": "carlos binary doubled to 74.5 MB: the EC2 SDK client via internal/awsinv",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "896977ad7aed921cdec093d0e8cead30bf6fd6a3",
+          "date": "2026-10-27",
+          "subject": "Region HA P1b-1 plan: takeover on confirmed termination and same-box re-take before expiry (rev 1), with the Astra round 1 brief",
+          "branch": "region-ha-p1b1-takeover",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/region-ha-p1b1-takeover",
+          "commits": 16,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v0.28.29",
       "date": "2026-10-27",
       "sha": "50c0cb14b429993b89bcb71dbf51a645580cc4aa",

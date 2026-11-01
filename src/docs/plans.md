@@ -44,6 +44,10 @@ carlos accounts plan --account bac --set personal --reason "upgraded"
 
 The console writes each account's limits to `accounts/<sqid>/limits.json` in the deployment bucket, and the boxes read them from there. A change reaches the bucket straight away, or within a minute if the bucket was unavailable.
 
+## The ops account
+
+The deployment's built-in ops account (`bab`) is exempt from plans. It has no limits, caps or billing, and owning it doesn't count toward anyone's free account. `carlos accounts plan --account bab` says so and changes nothing. If it was under a plan before, the console removes the limits and warnings that plan left.
+
 ## Sponsored accounts
 
 A sponsored account keeps its plan but gets limits of its own where those are more generous, for example the usage it already had when plans were turned on:
@@ -53,6 +57,8 @@ carlos accounts plan --account bac --set free --sponsored limits.json --reason "
 ```
 
 `limits.json` holds any of the limit names from the catalog. A sponsored limit can go above a ceiling: that is a decision you made for that account.
+
+Set `sponsor_accounts_before` in the catalog to a time no later than the console's start, like `"2026-11-01T09:00:00Z"`, and every account created before then that has no plan of its own is sponsored with no limits before any limit applies to it. If the console can't do that when it starts, it runs with plans off and logs why.
 
 ## Rate limit ceilings
 
@@ -207,7 +213,7 @@ Where billing is on, an account's owners buy and change their plan on the accoun
 
 ### Buying a plan
 
-Under **Choose a plan**, pick a currency (`usd`, `eur` or `gbp`), a plan, and any packs, then press **Continue to payment**. You go to Stripe to pay. When you come back, the page shows your new plan as soon as the payment is confirmed. Prices are for a year, and tax is added where it applies.
+Under **Choose a plan**, pick a currency (`usd`, `eur` or `gbp`), a plan, and any packs, then press **Continue to payment**. You go to Stripe to pay. When you come back, the page shows your new plan as soon as the payment is confirmed. Prices are for a year, and tax is added where it applies. Business customers can add a VAT number at checkout. Stripe then applies reverse charge where the sale qualifies.
 
 The currency is fixed by the first purchase. After that the page says which currency the account pays in, and changing it means asking an operator.
 
