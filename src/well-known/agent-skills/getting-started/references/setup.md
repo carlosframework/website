@@ -5,8 +5,8 @@
 An agent can do everything below except these. Ask for them up front, in
 one message, rather than discovering them one at a time:
 
-1. **A Keymail identity** (keymail.dev). Carloku and amadan both sign in
-   through it; there are no passwords.
+1. **An email address they can access.** Carloku supports email signup and
+   does not require Keymail.
 2. **Sign in to the Carloku console** (`https://console.carloku.com`).
    That first sign-in is the account.
 3. **Approve the `carlos auth login` code** in that browser (Step 0).
@@ -77,8 +77,10 @@ go install amadan.net/amadan/amadan/cmd/amadan@latest
 Keep `carlos` fresh with `carlos update` (it needs a terminal; otherwise
 repeat the download).
 
-Create an account at `https://console.carloku.com` (passkey sign-in
-through Keymail — no password), then connect the terminal:
+Sign up with email at
+[https://console.carloku.com](https://console.carloku.com). Non-Keymail
+addresses receive a link and code by email; Keymail addresses sign in
+through Keymail. Then connect the terminal:
 
 ```sh
 carlos auth login --console https://console.carloku.com
