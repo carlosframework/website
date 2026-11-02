@@ -199,9 +199,9 @@ positions:
   third-party apps: the `client_id` is the app's origin (no registration
   queue — DNS+TLS already establish what a registry would), PKCE, one
   grant per origin, and an app token authorizes delivery and identity,
-  never reading. The hosted consoles authenticate this way, and
-  sensitive console actions use passkey step-up that deliberately never
-  mints a stronger credential than the caller had.
+  never reading. Carloku supports both Keymail and email sign-in and
+  signup. Sensitive console actions still require fresh authentication
+  without widening the caller's authority.
 - **Per-instance passkeys + PRF** (Kass): the WebAuthn PRF output wraps
   the data seed, so possession of the passkey — not the server — is the
   security boundary. Recovery is an explicit table of wrapped seeds:
