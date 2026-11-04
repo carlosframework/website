@@ -112,7 +112,8 @@ grows it).
   This is Tito, the platform console, and every admin/CRUD/dashboard
   surface in the family. It is also what hibernation likes:
   request/response apps sleep well, and Rastrillo's `live` package
-  updates server-rendered regions without changing shape.
+  updates server-rendered regions without changing shape or keeping a
+  sleeping instance awake (the edge holds its streams, from v0.33.0).
 - **`client`: the app runs in the browser and owns its state.** Chosen
   when the product needs what server rendering cannot do: client-held
   keys and client-side crypto (sealing DMs, encrypting blobs, proof-of-

@@ -48,7 +48,9 @@ Out of the box, through the `carlos` CLI and console:
   each with its own process, database and hostname; path routes under a
   hub; regions; fleets of boxes you own.
 - **Sleep and wake.** Idle instances hibernate and wake on the next
-  request, adding no instance-hours while asleep.
+  request, adding no instance-hours while asleep. An open live page does
+  not keep one awake: the edge holds marked event streams while it
+  sleeps, which Rastrillo's live pages use from v0.33.0.
 - **Backups and restore.** Every database replicates continuously to
   object storage; `carlos db` restores a copy to your machine without
   touching the live one.
@@ -97,7 +99,10 @@ pinned versions against the latest release before following it.
 
 **A plain server.** No code changes: `rastrillo.Run` and `Serve` take
 `-addr host:port` and `-db path`, a bare `serve` subcommand, systemd
-socket activation and `$STATE_DIRECTORY`. What the platform did becomes
+socket activation, `$STATE_DIRECTORY` and, from v0.33.0, `$PORT`.
+Rastrillo's own guide, `docs/site/hosting-elsewhere.md` in the
+installed module (v0.33.0 and later), has a systemd unit, a Caddy file,
+Litestream and a container image. What the platform did becomes
 the operator's:
 
 - **TLS**: a reverse proxy in front (Caddy, nginx, the host's own).
@@ -132,9 +137,10 @@ docs, since limits and plans move. What holds across them:
 
 - **The service.** A container image holding the static binary and CA
   certificates (a distroless static base), or the provider's own Go
-  build. Start it with a fixed port the provider is told about:
-  `myapp -addr :8080 -db /data/myapp.db` (Rastrillo does not read
-  `$PORT`).
+  build. Start it as `myapp -db /data/myapp.db`: from rastrillo
+  v0.33.0 an app given no `-addr` listens on `$PORT`, which these
+  platforms set. An older app, or a platform that sets no `$PORT`,
+  takes `-addr :8080` and the provider is told that port.
 - **A persistent volume at `/data`.** SQLite lives there, so it is one
   instance per volume: no horizontal scaling, and a deploy has a short
   gap while the volume moves to the new machine (Render documents

@@ -32,7 +32,7 @@ The full working conventions are building-carlos-apps'
 
 | Mistake | Reality |
 |---|---|
-| Reading `$PORT` and calling `http.ListenAndServe` | The contract is `--socket <path> --db <path>` on a unix socket. `rastrillo.Resolve`+`Serve` handle it; hand-rolled servers must too. |
+| Reading `$PORT` yourself and calling `http.ListenAndServe` | The contract is `--socket <path> --db <path>` on a unix socket. `rastrillo.Resolve`+`Serve` handle it; hand-rolled servers must too. |
 | Building for the local machine | Build for the target host's architecture, with `CGO_ENABLED=0`. Carloku's boxes are linux/arm64, the scaffold's `make release` default; other hosts may be linux/amd64 (`make release RELEASE_GOARCH=amd64`, and `"target": "linux-amd64"` on that destination in `.carlos/config`). Check before you ship. |
 | A bare `First(&x, id)` on a user-owned row | Every such query goes through `scope.Owned` — reads, writes, and transactions alike. The isolation test suite in `examples/notes` is the regression guard to copy. |
 | Binding a form onto a GORM model | Mass assignment. Explicit `map[string]any` + `.Select` allowlist, per SKILL.md. |
