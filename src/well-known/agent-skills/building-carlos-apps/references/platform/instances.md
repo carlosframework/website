@@ -28,8 +28,15 @@ Nothing here needs a box, and nothing here is a workaround:
    record and announces it, and a box mints the route within seconds.
 4. **Wait for the real thing** before sending the person there: poll
    `https://<host>/api/version` for a 200 (a sub-500 answer is not
-   evidence), behind a zero-JS "getting your space ready" page that
-   refreshes itself.
+   evidence), behind a "getting your space ready" page that refreshes
+   itself.
+
+From a Rastrillo app, the `provision` package makes these calls
+(`Console.Create`, `Ready`/`WaitReady`, `PublishPaths`, `CheckRoute`) and
+names the answers to branch on; `provisiontest` is a fake console and edge
+with the platform's own answers, for tests. Its reference page
+(`docs/site/reference/provision.md` in the installed module) lists the
+records your app must keep, since the package keeps none.
 
 Give every label a random suffix (`<slug>-<6 random base32 chars>`, the
 label being the host's first DNS segment). That makes a collision with

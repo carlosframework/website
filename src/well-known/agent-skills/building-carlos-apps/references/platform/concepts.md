@@ -13,8 +13,8 @@ Read only when the current task requires a platform concept; do not load this as
   a second — / `batched`, five minutes / `daily`), a loss-window trade an
   operator makes on a large, rarely-written database.
 - **Hibernation** — provisioned instances doze when idle and wake on
-  request; live and default-on, not a future feature. Cents-per-month
-  idle cost is the platform's economic story.
+  request; live and default-on, not a future feature. An idle instance
+  costs storage, not a running process.
 - **Process supervision and restarts** — instances are converged from
   bucket records; `carlos restart` cycles them in seconds, console-side.
 - **Config delivery** — `carlos env` / `carlos secrets` writes converge
@@ -37,7 +37,8 @@ Read only when the current task requires a platform concept; do not load this as
 - **Errors, availability and analytics** — the edge and the log stream
   feed all three, with no SDK, no JavaScript, no cookie and no stored IP.
   Errors and availability collect from the day an app ships; analytics is
-  opt-in. See [observability](observe.md) when needed.
+  on by default for new accounts, switchable per app or account. See
+  [observability](observe.md) when needed.
 - **Password gate** — `carlos gate` puts one shared password in front of
   an app's hostnames, enforced at the edge ahead of the cache and the
   activator, so the app behind it never sees the cookie. A curtain over a
@@ -158,7 +159,18 @@ Read only when the current task requires a platform concept; do not load this as
   verb that takes `--console` (`carlos config destinations` edits them). Project values are honored only when the file's
   console matches the session's, so a committed config cannot silently
   redirect someone else's credentials.
-- **Default addresses** — `<app>.<sqid>.<apps-domain>` (on the hosted
-  platform, `oncarlos.com`); canary form `<canary>-<app>.<sqid>.<domain>`.
+- **Plans and limits**: a deployment may give each account a plan that
+  caps apps and instances running, how soon apps sleep, storage, email,
+  bandwidth, PDFs and the shortest schedule. Plans are dormant unless the
+  deployment configures a plan catalog; with none there are no limits.
+  Near a limit, owners get warnings and a grace period, after which the
+  capped action is refused; at twice a limit some stages skip notice
+  and reach running apps: email pauses for the day, PDFs answer `402`,
+  bandwidth is throttled, and over awake hours live connections close
+  and instances are put to sleep after 15 minutes (docs/site/plans.md). Don't promise a plan's
+  numbers; read them from the deployment.
+- **Default addresses** — `<app>.<sqid>.<apps-domain>`; on Carloku the
+  apps domain is `oncarlos.com`, so the hostnames in examples here are
+  Carloku's. Canary form `<canary>-<app>.<sqid>.<domain>`.
   Minted **alias** hosts intentionally carry no `X-Carlos-Version` —
   verify on the canonical host.

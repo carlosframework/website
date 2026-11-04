@@ -159,8 +159,9 @@ every instance:
 ## Frontend
 
 - **Server-generated markup is the default, not the fallback.** The core
-  flow ships with zero JS and must work without it (confirm pages for
-  destructive actions, form posts); JS is progressive enhancement on top.
+  flow is links and forms first (confirm pages for destructive actions,
+  form posts), and works without JS wherever a form can do the job;
+  scripts then make it as rich as the product needs.
 - **Hide the machinery.** Every instance has a URL, a key, a cipher — the
   person sees none of them by default. Instance hostnames are deliberately
   meaningless (sqids, hidden behind home); no nerdspeak in the default

@@ -5,12 +5,15 @@
 The platform mechanized the infrastructure, not the discipline:
 
 - The gate (`make ci`) green before every commit, with `CGO_ENABLED=0`
-  builds throughout; add `rastrillo generate --check` to it only if the
-  app declares manifest resources.
+  builds throughout. A new app's gate already runs the code budgets,
+  `make routes` and `generate --check`; after editing templates, run
+  `rastrillo generate` and commit `rastrillo_templates_gen.go`.
 - Migrations are additive-only — new code over an old DB must always be
   safe. Never delete data to update.
-- Zero-JS first; when JS is earned, small ES modules, no bundler, no
-  build step, 300-line cap.
+- Links and forms first, then enhance with small vanilla scripts as
+  freely as the product needs: ES modules, an import map under a CSP
+  hash, and esbuild through `go run` once the graph outgrows that
+  (Rastrillo's `skill/scripts.md`).
 - Worktree per session, on a branch, with regular commits pushed as you
   go. Merge to main only once the work is done, a human has
   approved it, and CI is green (on amadan, `amadan branch merge`: a merge
@@ -30,12 +33,12 @@ The full working conventions are building-carlos-apps'
 | Mistake | Reality |
 |---|---|
 | Reading `$PORT` and calling `http.ListenAndServe` | The contract is `--socket <path> --db <path>` on a unix socket. `rastrillo.Resolve`+`Serve` handle it; hand-rolled servers must too. |
-| Building for the local machine | Boxes are linux/arm64. `GOOS=linux GOARCH=arm64 CGO_ENABLED=0`, always. |
+| Building for the local machine | Build for the target host's architecture, with `CGO_ENABLED=0`. Carloku's boxes are linux/arm64, the scaffold's `make release` default; other hosts may be linux/amd64 (`make release RELEASE_GOARCH=amd64`, and `"target": "linux-amd64"` on that destination in `.carlos/config`). Check before you ship. |
 | A bare `First(&x, id)` on a user-owned row | Every such query goes through `scope.Owned` — reads, writes, and transactions alike. The isolation test suite in `examples/notes` is the regression guard to copy. |
 | Binding a form onto a GORM model | Mass assignment. Explicit `map[string]any` + `.Select` allowlist, per SKILL.md. |
 | Hand-rolling a router, certs, or Litestream | Platform's job. Your app is one binary on one socket. |
-| Verifying with a 200 or a cached DNS answer | Only `X-Carlos-Version` is proof, on the canonical host, after the deploy watch. |
-| Waiting for an SSH step that never comes | Every step is a `carlos` command. A step that needs box access is a wrong turn (or a product gap to file — not a workaround to build). |
+| Verifying with a 200 or a cached DNS answer | Proof is the build the process reports: set `carlos apps build-probe --app myapp /api/version` so the deploy asks it. `X-Carlos-Version` is stamped from the route row when adoption lands, whether or not the process restarted. |
+| Waiting for an SSH step that never comes | On a CARLOS platform, every step is a `carlos` command. A step that needs box access is a wrong turn (or a product gap to file — not a workaround to build). |
 | Destructive migration "to clean up" | Additive-only, forever. |
 | Skipping the trade-offs line in the README | The trust default is legitimate only when declared. One dated line. |
 

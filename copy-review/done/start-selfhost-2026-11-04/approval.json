@@ -1,0 +1,14 @@
+{
+  "source": "luna",
+  "reviewer": "codex exec -m gpt-6-luna (copy review gate for agent-run work)",
+  "date": "2026-11-04",
+  "scope": "/start/ agent prompt and By hand deploy steps; /platform/self-host/ sign-in and first-deploy steps",
+  "applied": [
+    "start.hand.deploy.after: 'sets its public address' -> 'sets the public address'",
+    "selfhost: kept 'Go 1.26 or later', merged into the build sentence"
+  ],
+  "not_applied": [
+    "selfhost.deploy.commands: kept 'carlos apps create --app notes'; step 7 has no earlier app creation and instances enable needs the app"
+  ],
+  "approved": true
+}

@@ -74,10 +74,11 @@ runtime for every process; keep them out of the image and process file.
 `web` listens on `CARLOS_SOCKET` and must answer `GET /` with a status below 500
 within 120 seconds. Workers start only after that health check passes. `release`
 runs before a new web generation and must finish successfully (a ten-minute
-default timeout). `console` is reserved and is never started by the platform.
+default timeout). `console` is optional, at most one: the command an
+interactive session starts. The platform never starts it on its own.
 
 The filesystem is read-only except for the directory containing `CARLOS_DB`
-and `/tmp`. The former survives restarts and deploys; `/tmp` is emptied at
+and `/tmp`. `HOME` is `/tmp` unless the image or the app sets it. The former survives restarts and deploys; `/tmp` is emptied at
 each start and counts against memory. Private-network egress requires an
 operator allow; a rootfs image cannot grant it to itself.
 All processes in one instance share its memory and CPU tier. A process exceeding
@@ -101,7 +102,11 @@ Do not design around capabilities the source explicitly excludes:
 - no multi-box copies of one rootfs app in the current contract.
 
 Use `carlos instances list`, `carlos logs`, and `carlos run` through the console
-for supported inspection and one-off work. A rootfs log line may be filtered by
+for supported inspection and one-off work. For a REPL or a shell, an owner first
+runs `carlos apps set <app> --interactive on`; then `carlos run -it ... -- <cmd>`
+or `carlos console` (the declared `console` process) opens a terminal session on
+one instance. A session can read and change everything the instance can, and
+it is logged in the audit log (who, where, when), not what was typed. A rootfs log line may be filtered by
 its platform process field (`web`, `release`, or a worker name). Never replace
 these member doors with SSH, SSM, container-runtime commands, or box-local file
 inspection.

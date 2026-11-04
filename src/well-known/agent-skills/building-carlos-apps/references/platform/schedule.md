@@ -103,8 +103,13 @@ specific time; a daily schedule whose handler asks its own database
   5-minute schedule against a 15-minute window never sleeps and accrues
   instance-hours around the clock; an hourly one sleeps about three
   quarters of each hour. `carlos schedule ls` and `set` now say so in one
-  line rather than leaving it to be found on a bill. The platform warns
-  and never refuses: a tight schedule is a legitimate thing to want.
+  line rather than leaving it to be found on a bill. Usually the platform
+  warns rather than refuses: a tight schedule is a legitimate thing to
+  want. The exception is a deployment that runs plans (docs/site/plans.md):
+  where the account's plan sets a minimum interval, `schedule set` refuses
+  a tighter schedule on shared boxes, and a sidecar set never to sleep is
+  refused there too. An app placed on the account's own fleet is exempt,
+  and a deployment with no plan catalog has no minimum.
 - **Unit-backed instances are not delivered to** in this release — `ls`
   says `unsupported` against them. Exec-backed instances (the default)
   and sidecars work.

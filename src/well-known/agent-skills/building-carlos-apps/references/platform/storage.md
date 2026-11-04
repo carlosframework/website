@@ -51,6 +51,9 @@ carlos instances enable --app jam --private-storage
 carlos instances create --app jam --host acme.jam.bab.oncarlos.com
 ```
 
+(The host is a Carloku hostname; on another deployment, use its apps
+domain.)
+
 The host's first label becomes the environment name: lowercase letters, digits,
 or hyphens, at most 32 characters, and not `default`. The account must be
 approved and the backend configured. A service credential cannot enable the

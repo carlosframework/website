@@ -93,8 +93,9 @@ such as `301!`, to force the rule to win. Query strings carry through unless
 the destination supplies one. CARLOS refuses unsupported lines, conditions
 and cross-host proxy rewrites; the limit is 2,000 rules.
 
-A directory path without its trailing slash normally redirects to the slash
-form before serving `index.html`. If `_redirects` names the unslashed path or
+A directory path without its trailing slash, such as `/blog/post`, is
+redirected with a 301 to `/blog/post/`, where its `index.html` is served, so
+each page has one address and relative links resolve against its folder. If `_redirects` names the unslashed path or
 redirects its slash form, that rule takes precedence and CARLOS serves the
 folder at the requested path.
 

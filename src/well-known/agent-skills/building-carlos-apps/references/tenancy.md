@@ -7,8 +7,9 @@ data home. Settle it on day one and write it down as a **tenancy
 declaration** (§6). Changing it later is a data migration across every
 instance, not an edit.
 
-Status as of 2026-10-18. Carloku serves platform v0.28.0; rastrillo is
-v0.28.0. Where a piece below is designed but not shipped, it says so.
+Where a piece below is designed but not shipped, it says so. For what
+shipped since this was written, read the installed Rastrillo version's
+SKILL.md and CHANGELOG, and the platform's own docs.
 
 ## 1. The boundary: what is one instance?
 
@@ -99,18 +100,15 @@ your own and record why.
   hub's session-signing key is the product's crown jewel. **Today a path
   target must live on the same box as the hostname**, so a path-routed
   product is one box big.
-  How it fits together: the tenant receives `/acme/...` unchanged, so the
-  tenant app serves everything (routes, assets, redirects, form actions)
-  under its base path, and its own direct hostname redirects to the
-  product path. Because hub and tenants share one origin, there is one
-  session: the hub mints a short-lived signed cookie (15 minutes, with a
-  per-user epoch so "sign out everywhere" works), and tenants hold the
-  hub's public key (`carlos env set`) and verify it on every request,
-  never minting their own. Ordinary per-tenant rastrillo sessions do not
-  work under model C: every tenant would set the same cookie name on the
-  same origin and sign the others out. The hub delivers roster changes to the
-  instance first, with a signed request, then records its directory
-  copy.
+  How it fits together: the tenant serves everything under its base
+  path and its direct hostname sends visitors to the product path; one
+  origin means one session, which the hub signs and tenants only verify,
+  never minting their own (per-tenant sessions on one origin would sign
+  each other out). The hub delivers roster changes to the instance first,
+  with a signed request, then records its directory copy. In Rastrillo
+  this is `basepath` (`Options.BasePath`) in the tenant and
+  `sessions.Signed` on both sides: the hub signs, tenants hold its public
+  key and verify (`skill/data.md`, `skill/signin.md`).
 - **D** is B's shape for server-blind apps: the home holds credential
   public keys and one sealed blob per person and can read neither.
 
@@ -121,6 +119,10 @@ with `If-None-Match: *` and updated with `If-Match`, at keys it can
 compute (`users/<uid>.json`, `tenants/<slug>.json`). Nothing to
 replicate, restore or migrate, and it moves between boxes with nothing
 to copy. Anything relational (reporting, search) belongs in an instance.
+In Rastrillo, `objrec` is that record store, and `auth.Config{Records,
+Pepper, Signed}` keeps users and sign-in links in it with signed-cookie
+sessions; `Blind` stores only a hash of each address
+(`docs/site/reference/objrec.md`, `docs/site/sessions.md`).
 
 **Safety invariants, whichever model:**
 
@@ -129,7 +131,9 @@ to copy. Anything relational (reporting, search) belongs in an instance.
    It is app-wide today: it can also delete any sibling instance. Publish
    that as a leak until the platform ships a create-only role. The same
    goes for any `instance`-role token (`CARLOS_INSTANCE_TOKEN`): never put
-   one in the tenant app's secrets, whatever the convenience.
+   one in the tenant app's secrets, whatever the convenience. Rastrillo's
+   `provision` makes the calls with that credential and `provisiontest`
+   tests them; neither narrows what the credential can do.
 2. An instance decides access from its own roster. A signature proves
    who, never what.
 3. Handoff tokens never ride in URLs, and the receiver enforces single
@@ -137,14 +141,15 @@ to copy. Anything relational (reporting, search) belongs in an instance.
 4. Model C only where every tenant runs the app's own code.
 5. Every model publishes its leak profile (§3).
 
-**What is real today, and what is not** (2026-10-15):
+**What is real today, and what is not** (2026-11-04):
 
 | Piece | State |
 |---|---|
 | Instances API, `instance` service role, path routes, `assertion`, `vault`, `idear`, stores | Shipped. Use them. platform.md "Provisioning instances from your own app" |
 | Create-only, quota-bounded provisioning role | Not built (platform #185). Use the `instance` role and name the leak |
 | Path targets on another box | Not built (platform #186). Model C is one box big |
-| rastrillo `objrec`, stateless auth store, signed-cookie sessions, `provision`, base-path serving, `rastrillo new --model home\|hub` | Not released (`objrec` is on a branch). Hand-build on the patterns above, and don't claim the framework does it |
+| rastrillo `objrec`, the stateless auth store (`auth.Config.Records`), signed-cookie sessions (`sessions.Signed`), `provision`/`provisiontest`, base-path serving (`basepath`) | Shipped. Use them: `docs/site/reference/objrec.md`, `provision.md`, `basepath.md`, and `docs/site/sessions.md` in the installed module |
+| `rastrillo new --model home\|hub` | Not built. Scaffold an ordinary app and add the pieces above |
 
 ### Seeing across tenants
 
@@ -288,7 +293,7 @@ the ones your tenancy actually earns.
 | **Residency per app or per instance** | an instance only wakes on a host in its region | per-unit instances, so each customer can be pinned | released, switched off on Carloku |
 | **Self-hostable, first class** | one binary, a bucket and DNS; same binary hosted, on a customer's boxes (`carlos fleets`), or on a self-run platform | nothing; licence class decides what customers may do | live |
 | **One codebase, every deployment** (vendors) | one instance per customer means on-prem is a fleet you administer, not a fork | per-customer instances | customer fleets live; Tito self-hosts in three regions |
-| **API- and agent-driveable** | actions opt in as tools that reach the same handler a form does | rastrillo `tools` (manifest-generated) | in rastrillo; no app has published tools yet |
+| **API- and agent-driveable** | a JSON API at `/api/v1` and an MCP server at `/api/v1/mcp` over the same operations the pages call; a person mints a token, and an agent's token acts for that person | rastrillo `api`, `mcp`, `apitoken` (`skill/api.md`, `skill/mcp.md`) | in rastrillo; a new app has the wiring |
 
 What a tenancy choice **costs** belongs in the same declaration:
 cross-unit queries are hard by design; a stateless centre makes writes
@@ -338,7 +343,7 @@ Central app:          none | home | hub; stateless, records in its store
 Workloads and class:  instance = <S|A1|A2|A/pub|B|C>; sidecar = <…>; central = <…>
 Declared residue:     <every plaintext surface, one per line>
 Keys live:            <browsers | instance memory while awake | n/a>
-Hosting:              Carloku | customer fleets | self-hosted platform
+Hosting:              <where it runs, and why; hosting.md>
 Licence class:        L1–L5, or "not published yet"
 Benefits claimed:     <each with its mechanism, from §4>
 Costs accepted:       <each, plainly>
@@ -349,12 +354,12 @@ Waiting on:           <unshipped platform or rastrillo pieces relied on, by name
 
 | Mistake | Reality |
 |---|---|
-| A Carloku account per customer | Accounts are the app author's tenancy on the platform. Customers are instances of your app. |
+| A platform account per customer | Accounts are the app author's tenancy on the platform. Customers are instances of your app. |
 | A `tenant_id` column in one shared instance | Gives up isolation, erasure, residency and hibernation per tenant. Make the tenant an instance. |
 | A stateful home or hub with its own SQLite | Central apps are stateless; records are objects in the store. |
 | The provisioning credential on the tenant app | Every instance would hold a token that can delete its siblings. It lives on the central app only. |
 | Trusting the hub's membership list for access | The instance's own roster decides. The hub's copy is a directory. |
 | One class for the whole product | Class is per workload. A sidecar or central app that sees plaintext gets its own letter. |
-| Claiming the platform enforces your class or residency | Neither is enforced on Carloku as of 2026-10-15. Declare; don't overclaim. |
+| Claiming the platform enforces your class or residency | The platform enforces neither (2026-10-15). Declare; don't overclaim. |
 | Copying data between instances to share it | Sharing is membership. Data never crosses a boundary. |
 | A reporting job that opens every tenant's database | The centre reports what it owns or witnesses; instances push fixed-shape facts through an outbox; a person's cross-space view fans out in the browser — §2 "Seeing across tenants". |

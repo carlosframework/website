@@ -6,9 +6,10 @@ Read only when diagnosing errors or downtime, inspecting logs or configuring ana
 
 All three read from the terminal or the app's dashboard tabs. **Errors
 and availability collect from the day the app ships** — nothing to turn
-on. **Analytics is off
-until you switch it on** (a deliberate ruling, 2026-09-07: counting
-visitors is the app's call, not the platform's).
+on. **Analytics is on by default for new accounts**, and stays the app's
+call: the switch is per app or account-wide, and `carlos apps create
+--analytics` or `--no-analytics` sets it for a new app (choosing
+differently from the account is owner only).
 
 ```
 carlos errors --app hello --since 24h
@@ -37,14 +38,29 @@ daily visitors, bytes served, top pages, top referers —
 **no JavaScript, no cookie, no stored IP**, which is why an app on CARLOS
 has no business reaching for a third-party analytics script. Visitors are
 a sketch, so a multi-day total is daily visitors summed rather than a
-deduplicated unique count. The switch is per-app or account-wide.
-Where the deployment publishes a GeoIP database, page views are counted
+deduplicated unique count. Where the deployment publishes a GeoIP database, page views are counted
 by country too.
 
 Neither replaces `carlos logs`, still the merged app + platform + edge
 timeline (`-f`, `--grep`, `--since`, `--stream app`, `--host`) with no
 box access.
 
+
+## Edge protection
+
+The edge checks every request an app serves against a built-in catalogue.
+Its hard tier (33 rules: path traversal, `.env`, `.git`, keys and other
+secrets files) **blocks by default**, answering a 404 page with a
+reference code; the probe tier (well-known attack paths the app would not
+serve) only records. An app never needs its own rule for these.
+
+If protection is stopping something real, switch the app to record-only
+while you fix it, then back:
+
+```
+carlos protection --app hello --record-only on
+carlos protection --app hello --record-only off
+```
 
 ## Explain a blocked request
 
@@ -62,4 +78,5 @@ about the current console. Check the deployed version before relying on a
 new diagnostic field.
 
 Sources: platform `docs/site/cli.md`, `analytics_cmd.go`,
-`internal/analytics/read.go`, `logs.go` at `a2e23ba0`.
+`internal/analytics/read.go`, `logs.go` at `a2e23ba0`; edge protection
+and the analytics default checked against v0.34.1.
