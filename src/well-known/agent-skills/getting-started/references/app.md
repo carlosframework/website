@@ -11,69 +11,55 @@ framework source in advance. The framework docs are also available at
 
 ```sh
 go install amadan.net/rastrillo/rastrillo/cmd/rastrillo@latest
-rastrillo new myapp && cd myapp && go mod tidy && go test ./...
+rastrillo new --auth=magic myapp && cd myapp && go mod tidy && go test ./...
 ```
 
-The scaffold is SKILL.md's shape (five files plus `migrations.go`),
-tests passing before you write a line:
-
-```
-internal/myapp/models.go     plain GORM structs
-internal/myapp/migrations.go Schema and BootSchema; `rastrillo migration generate` writes the SQL
-internal/myapp/app.go        migrate.Apply, sessions, identity plugin, chi router
-internal/myapp/handlers.go   the owner-scoped CRUD
-internal/myapp/render.go     embedded templates, flash/session-aware pages
-cmd/myapp/main.go            Resolve -> db.Open -> App -> Serve
-```
+`--auth=magic` gives the app sign-in by emailed link from its first
+commit: proof of work in front of it, a sign-in screen, rows owned by
+the signed-in address, and tests that sign in for you. Leave it out only
+for an app nobody signs in to. The scaffold compiles, passes its tests
+and serves before you write a line, so never hand-write any of it; its
+`AGENTS.md` says where each piece is.
 
 The gate, before every commit, is the scaffold's own `Makefile`:
 
 ```sh
-make ci        # vet, gofmt, staticcheck, govulncheck, gitleaks, tests, budgets, migration check
+make ci        # vet, gofmt, staticcheck, govulncheck, gitleaks, budgets, routes, tests, perf, migration and generate checks
 ```
 
 After changing a model, run `rastrillo migration generate` and read the
-SQL before committing; never edit a shipped migration.
+SQL before committing; never edit a shipped migration. After editing
+templates, run `rastrillo generate` and commit
+`rastrillo_templates_gen.go`, or `make ci` fails.
 
-The three rules that keep the app safe (SKILL.md has the full set):
-every query touching user-owned rows goes through `scope.Owned` —
-reads AND writes, transactions included (a row that isn't yours 404s,
-never 403s); never bind a request body onto a GORM model (explicit
-`map[string]any` + `.Select` allowlist); sessions/CSRF are defaults
-you opt out of, not machinery you assemble. Accounts come from an
-identity plugin — the family default is `auth` (magic-link email that
-auto-upgrades to sign-in-with-Keymail when the address has a claimed
-inbox; works for every address), with `password` (email+password,
-rate-limited) as the classic alternative — and either one is a few
-lines in `app.go`; guard routes with `sess.Require`. **On a live app the
-magic link has to be sent**: `carlos email enable --app myapp` (after
-the person approves) delivers `CARLOS_SMTP_*` to the instance, and
-`Mailer: mail.FromEnv("CARLOS", logger)` in the `auth` config uses it.
-Leave the mailer unset and every link goes only to the log, which is a
-development convenience, not sign-in.
+Tenancy is an instance, never a `WHERE` clause: a product with many
+customers gives each its own instance, and owner scoping separates the
+people within one. The rest of the safety rules are in SKILL.md, with
+the checklist to run before calling the app done. Owned pages sit
+behind `app.auth.RequireSession`.
 
-(The manifest generator — `rastrillo new`, `manifest/*.toml`,
-`rastrillo generate` — is the optional declarative path: declare a
-resource once and its store, screens, and locale keys are generated;
-`scope = "user"` (v0.11.0+) owner-filters the generated queries for
-user-owned resources. Mix declared and hand-written resources freely.
-building-carlos-apps' `references/rastrillo.md` covers it.)
+**On a live app the magic link has to be sent.** The scaffold builds its
+mailer from `MYAPP_SMTP_HOST`, `MYAPP_SMTP_FROM` and the rest
+(`mail.FromEnv("MYAPP", logger)` in `cmd/myapp/main.go`); until they are
+set, every link goes only to the log, which is a development
+convenience, not sign-in. On a CARLOS platform,
+`carlos email enable --app myapp --env-prefix MYAPP_SMTP` (after the
+person approves) delivers exactly those names. On another host, set them
+from the person's SMTP provider.
 
 `rastrillo.Resolve` + `Serve` speak the platform's process contract —
 your binary accepts `--socket <path> --db <path>` and serves
 `GET /healthz` and `GET /api/version`. **There is no `$PORT`**;
-instances listen on unix sockets the platform hands them. Do not
+on the platform, instances listen on unix sockets it hands them, and
+elsewhere `-addr host:port` serves on an address you choose. Do not
 hand-roll flag parsing.
 
-For the screens, use Rastrillo's `ui` partials and its attribute
-vocabulary (`<form rst-form>`, `rst-btn="primary"` — not classes), and
-no `style` attributes or `<style>` blocks: the baseline CSP drops them
-silently. Load
-its vendored `tokens.css` before a small app stylesheet; use that layer for
-app layout, token overrides and components Rastrillo does not provide.
-Read [the design-system guidance](../../building-carlos-apps/references/rastrillo.md#design-system-and-app-css)
-before writing templates or CSS, and follow the docs for the app's installed
-Rastrillo version. Keep shared controls and their interaction states intact.
+Before the first screen, ask the person how polished the app should be
+and for its personality (Rastrillo's `skill/screens.md`, "Before the
+first screen"): the design system is the base their personality goes
+on, not the finished look. Then follow `skill/design.md` for the screens
+and stylesheet. Build each screen from links and forms, and enhance it
+with small scripts as freely as the product needs (`skill/scripts.md`).
 
 ### Put the code on amadan
 

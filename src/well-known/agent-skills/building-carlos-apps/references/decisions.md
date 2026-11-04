@@ -100,19 +100,24 @@ the `server` shape is what `rastrillo new` ships today, the `client`
 shape is hand-built on the Woodstar/Eleven pattern until the framework
 grows it).
 
-- **`server` (the default): server-rendered HTML, zero-JS baseline as a
-  non-negotiable.** Every screen and primary action works with scripts
-  stripped; JS is enhancement only, enforceable by a test (fetch the
-  page script-stripped, diff for every affordance) rather than a
-  browser. Interactive components are real HTML first (a dropdown is
-  `<details>/<summary>`). This is Tito, the platform console,
-  and every admin/CRUD/dashboard surface in the family.
-  It is also what hibernation likes: request/response apps sleep well.
+- **`server` (the default): server-rendered HTML, links and forms
+  first, enhanced with vanilla scripts.** Wherever a form can do the
+  job it still does with scripts off; on top of that, scripts make the
+  experience as rich as the product needs: drag and drop, searchable
+  selects, live regions, transitions between pages, rich text. A rich
+  interaction is never a reason to change shape or drop a feature
+  (Rastrillo skill/scripts.md: plain scripts, ES modules, an import map
+  under a CSP hash, esbuild when the graph outgrows that). Interactive
+  components are real HTML first (a dropdown is `<details>/<summary>`).
+  This is Tito, the platform console, and every admin/CRUD/dashboard
+  surface in the family. It is also what hibernation likes:
+  request/response apps sleep well, and Rastrillo's `live` package
+  updates server-rendered regions without changing shape.
 - **`client`: the app runs in the browser and owns its state.** Chosen
   when the product needs what server rendering cannot do: client-held
   keys and client-side crypto (sealing DMs, encrypting blobs, proof-of-
-  work — work that must happen where the seed is), live feeds over
-  WebSocket/SSE, and reader-owned state the server never learns.
+  work — work that must happen where the seed is), and reader-owned
+  state the server never learns.
   This is Woodstar: a hand-written no-build-step ES-module SPA, VanJS
   (140 vendored lines) as a thin reactive shell — views return
   `{ el, update }` — with local caches merged against server-blind
@@ -144,22 +149,29 @@ never assume it), wildcard customer domains via ACME delegation, and a
 held socket that interacts with hibernation. All supported — none free.
 
 **Choosing:** default to `server`. Move to `client` only for a product
-that genuinely needs client-side crypto, live channels, or server-blind
-reader state — not because a richer client feels more modern. The zero-JS
-baseline binds server-shape surfaces; a screen that cannot honor its
-promise without JS (sealing in the browser) *is* a client-shape surface,
+that genuinely needs client-side crypto or server-blind reader state,
+not because a richer client feels more modern: richness is
+progressive enhancement on the server shape. A screen that cannot honor
+its promise without JS (sealing in the browser) *is* a client-shape surface,
 and the two compose within one product: Woodstar's status page is a
 plain static app beside the SPA, and a sealed app's marketing and
 settings pages can stay server-shape beside its client-shape editor.
 
-## 3. Hosting — Carloku, your boxes, or your platform
+## 3. Hosting: ask, don't assume
 
-- **Carloku (hosted) — the default.** Zero infra: the getting-started
-  path. The pricing design is per app (baseline + instance-hours;
-  hibernating apps cost ~the baseline; egress/storage metered
-  separately; free rungs), but no price list is published yet
-  (2026-10-18): don't quote prices or promise a free tier. Nothing about
-  the other axes locks you out of moving later.
+Hosting is the operator's choice, asked in the first conversation, and
+every option runs the same binary. [Hosting](hosting.md) sets out the
+options: Carloku (the hosted CARLOS Platform, zero operations), a
+self-hosted CARLOS Platform (open source, for when they must be the
+operator of record), their own boxes joined to a console as a customer
+fleet, a host they already use (Fly, Render, Railway) with the app on a
+volume, or a plain server running the binary with TLS, backups, email
+and schedules as theirs. Present Carloku as the convenient option it
+is, never as the only one.
+
+- **Pricing.** Carloku's pricing design is per app (baseline plus
+  instance-hours; egress and storage metered separately), but no price
+  list is published: don't quote prices or promise a free tier.
 - **Vendors: one codebase, hosted and customer-run.** With one instance
   per customer, an on-prem request stops being a fork: the customer's
   instance runs on their boxes and bucket (a customer fleet) or their own
@@ -167,23 +179,14 @@ settings pages can stay server-shape beside its client-shape editor.
   half in three regions; no vendor has yet shipped to customers this way
   (Jelly is in development). Publish a licence class (L1 to L5,
   tenancy.md §3) so customers know what they may run.
-- **Customer fleets — your boxes, the hosted control plane.** `carlos
-  fleets` attaches boxes you own (a Pi, an office server, edge devices)
-  to your account; apps place onto them with `carlos apps place`. Pay
-  per box, apps free — the family rule is *you pay per app or per box,
-  never both*. The path for hardware you must own without operating a
-  whole platform.
-- **Self-hosted platform — Tito's path.** Run the platform software
-  yourself: own cloud account, own console, own boxes; your members use
-  the same `carlos` CLI against your console. Choose it when you must be
-  the operator of record (residency, regulation, or the trust model
-  itself). The cost is real operations: provisioning, platform rolls,
-  the adopt/restart cadence, and being the one who debugs below the API.
-- **Hand-rolled (no platform) — the historical path, now a deliberate
-  exception.** blueprint.md remains the complete recipe (it is what the
-  platform automated), for the app that must run somewhere the platform
-  doesn't. Keep the core close to the blueprint's shape so it can be
-  swapped for the platform later.
+- **Customer fleets.** `carlos fleets` attaches boxes you own (a Pi, an
+  office server, edge devices) to your account; apps place onto them
+  with `carlos apps place`. The family rule is *you pay per app or per
+  box, never both*.
+- **A product with an instance per customer, off the platform**, needs
+  something to start and route those instances: [blueprint.md](blueprint.md)
+  is the complete recipe the platform automated. Keep the core close to
+  its shape so a platform can take it over later.
 
 ## 4. Identity — how people sign in
 
@@ -199,9 +202,9 @@ positions:
   third-party apps: the `client_id` is the app's origin (no registration
   queue — DNS+TLS already establish what a registry would), PKCE, one
   grant per origin, and an app token authorizes delivery and identity,
-  never reading. The hosted consoles authenticate this way, and
-  sensitive console actions use passkey step-up that deliberately never
-  mints a stronger credential than the caller had.
+  never reading. Carloku supports both Keymail and email sign-in and
+  signup. Sensitive console actions still require fresh authentication
+  without widening the caller's authority.
 - **Per-instance passkeys + PRF** (Kass): the WebAuthn PRF output wraps
   the data seed, so possession of the passkey — not the server — is the
   security boundary. Recovery is an explicit table of wrapped seeds:
@@ -214,14 +217,20 @@ positions:
   are stripped-and-re-minted, and signing (not stripping alone) is what
   stops a peer socket from forging them.
 
-**Choosing:** hosted-platform apps get console sign-in for free and
+**Rastrillo ships** magic links (`auth`), passwords, passkeys, second
+factors (TOTP, passkeys as a second factor, recovery codes) and
+sign-in with Microsoft Entra ID or Google Workspace (`oidc`); roles and
+invitations inside a team are the `idear` addon. SAML is not built.
+
+**Choosing:** apps on a CARLOS console get console sign-in for free and
 should reach for `rastrillo/auth` before inventing anything — the
 family default: magic-link email that auto-upgrades to "Sign in with
 Keymail" when the address has a claimed inbox, so every address works.
 `rastrillo/password` is the classic email+password alternative, and
 step-up (`sessions.RequireFresh`) is the hardening seam.
-Server-blind apps: passkeys + PRF, and treat recovery as product
-surface. Server-trust apps: magic link + TOTP. Passkey RPs pin to a
+Customer organisations on Microsoft or Google: `oidc`. Server-blind
+apps: passkeys + PRF, and treat recovery as product surface.
+Server-trust apps: magic link + TOTP (`secondfactor`). Passkey RPs pin to a
 hostname — pick the credential origin deliberately and early (renaming
 an RP later is a multi-phase drill), and never share it with an origin
 that carries third-party or account-authored content.

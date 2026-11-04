@@ -9,7 +9,8 @@ an operation, run `carlos auth whoami` and inspect project `.carlos/config`.
 For exact flags, use `carlos <verb> --help`. An installed CLI may be newer
 than its console; a feature in source does not prove it is enabled there.
 
-Capability coverage checked against platform source `a2e23ba0` on 2026-10-31.
+Capability coverage checked against platform source `a2e23ba0` on 2026-10-31,
+with later additions checked against v0.34.1 (2026-11-04).
 Existing release dates describe historical rollouts, not a guarantee about
 a particular deployment. Check the console response and the app's own channels.
 
@@ -23,6 +24,7 @@ a particular deployment. Check the console response and the app's own channels.
 | Investigate errors, downtime, logs or analytics | [Observability](platform/observe.md) |
 | Store uploaded objects, rotate store credentials or request malware scans/callbacks | [Storage and scanning](platform/storage.md) |
 | Send mail or configure a sending domain | [Email](platform/email.md) |
+| Render a PDF from HTML, convert an Office file, or merge PDFs | [PDFs](platform/pdf.md) |
 | Run recurring or one-off scheduled work | [Schedules](platform/schedule.md) |
 | Ship a root filesystem or a non-Go runtime on an owned fleet | [Rootfs apps](platform/rootfs.md) |
 | Share a temporary static site, set response headers or cache public assets at edges | [Static delivery and assets](platform/delivery.md) |

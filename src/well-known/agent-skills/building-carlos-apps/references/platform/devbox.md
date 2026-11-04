@@ -1,16 +1,25 @@
 # 🤖 Private workstation links
 
 Read only when sharing a local server or static folder from a configured
-CARLOS devbox. This is a workstation feature, not a Carloku deployment or
-public hosting recipe. If the installed devbox skill is available, use it
+CARLOS devbox. This is a workstation feature, not a deployment or public
+hosting recipe. If the installed devbox skill is available, use it
 for the complete workstation workflow.
 
 ```sh
 carlos devbox list
 carlos devbox share --port 5173 preview
 carlos devbox share --dir ./public mockup
+carlos devbox share --port 5173 --allow alice@github preview   # Linux devboxes
 carlos devbox unshare preview
 ```
+
+A devbox may be Linux or macOS. On Linux, `--socket <path>` shares a Unix
+socket inside the devbox's sockets folder instead of a port, and
+`--allow <logins>` limits a link to named tailnet logins (`carlos devbox
+list` shows each link's access, `--allowed` lists who). Every link's
+upstream receives `Carlos-Visitor-Login`, `-Name` and `-Node` headers the
+devbox sets itself and strips from visitors, so a tool behind the link can
+trust them.
 
 Run the development server on `127.0.0.1:5173`, never a public or LAN bind.
 The returned HTTPS link is tailnet-only and owned by the account that created
@@ -27,5 +36,5 @@ If the devbox service is unavailable, check the local setup; an installed CLI
 alone does not make the machine a devbox. Respect the sandbox and machine
 network policy.
 
-Source: platform `devbox_cli.go`, `docs/site/cli.md` at `a2e23ba0`;
-CARLOS plugin `skills/devbox/SKILL.md`.
+Source: platform `devbox_cli.go`, `docs/site/cli.md`, the devbox install
+runbook (v0.34.1); CARLOS plugin `skills/devbox/SKILL.md`.

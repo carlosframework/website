@@ -35,6 +35,14 @@ running build and last apply outcome; `carlos system rollback` undoes it;
 `--spread 10m` staggers a stable roll. The console is an app — update it
 with `carlos deploy --app console`. Owner of the ops account only.
 
+To stand one up, follow the public walkthrough,
+[https://carlosframework.com/platform/self-host/](https://carlosframework.com/platform/self-host/).
+It is AWS-oriented and uses OpenTofu templates from a public repository,
+starting with a single-host trial. The templates provision hosts but give
+no automatic high availability or failover, and nothing backs up the
+console and registry databases for you: configure continuous backups for
+them and test a restore before customers depend on the deployment.
+
 For the underlying machinery — registry, router, replication, hibernation
 internals — see [blueprint](../blueprint.md), which is the reference for what the
 platform does on your behalf and for hand-rolling outside it.
@@ -61,4 +69,5 @@ scoped authorization unless an established preauthorized workflow covers it.
 Specify resources, permissions, traffic, cost, duration and cleanup. Merely
 reading this topic or having credentials does not grant that authorization.
 
-Source: platform `docs/site/cli.md` and `main.go` at `a2e23ba0`.
+Source: platform `docs/site/cli.md` and `main.go` at `a2e23ba0`; the public
+self-host walkthrough (checked 2026-11-04).

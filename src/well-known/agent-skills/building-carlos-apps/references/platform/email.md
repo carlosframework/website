@@ -17,7 +17,7 @@ carlos email enable --app <app>
 ```
 
 The identity defaults to the app's **own host**
-(`<app>.<sqid>.oncarlos.com`), so the signing domain matches the domain of
+(`<app>.<sqid>.<apps domain>`, `oncarlos.com` on Carloku), so the signing domain matches the domain of
 the links inside the mail. Credentials arrive as env —
 `CARLOS_SMTP_HOST`, `_PORT`, `_USER`, `_PASS`, `_FROM`. Transport is
 submission on 587 with STARTTLS. `--env-prefix MAILER` renames the whole set

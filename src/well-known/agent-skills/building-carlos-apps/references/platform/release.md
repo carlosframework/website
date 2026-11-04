@@ -11,6 +11,9 @@ carlos apps create --app mysite
 carlos deploy --app mysite --kind static --host mysite.<sqid>.oncarlos.com ./site
 ```
 
+The hostnames in this topic are Carloku's (`<sqid>.oncarlos.com`); on
+another deployment, use its apps domain.
+
 That ships the directory as an immutable release, promotes it to the app's
 entry channel, declares the route, and watches the URL until
 `X-Carlos-Version` reports the build. Nothing else is needed — not
@@ -171,6 +174,26 @@ were serving, and `carlos deploy` names the failure and exits non-zero;
 - **When CI ships for you, verify by ancestry, not equality** — a PR
   merging behind yours cancels your run and ships a commit *containing*
   yours.
-- **Stamp your build version.** For rastrillo apps,
-  `-ldflags "-X amadan.net/rastrillo/rastrillo.BuildVersion=<sha>"`
-  — or every release's `/api/version` reports `dev`.
+- **Stamp your build version.** A rastrillo app's scaffolded
+  `make release` does it: it stamps `git describe` into
+  `rastrillo.BuildVersion`, refuses a dirty tree, and builds for the
+  target in `RELEASE_GOOS`/`RELEASE_GOARCH` (linux/arm64 unless you say
+  otherwise). Hand-built binaries report `dev` from `/api/version`.
+  `carlos deploy` expects the short sha by default, and `git describe`
+  is a tag on a tagged commit, so pass one version to both:
+  `V=$(git describe --always --dirty --exclude='*')`, `make release
+  VERSION=$V`, `carlos deploy --version $V`.
+- **Build for the target's architecture.** Carloku's boxes are
+  linux/arm64, but a remote deployment or fleet can be linux/amd64: give
+  that destination `"target": "linux-amd64"` in `.carlos/config` and
+  build with `RELEASE_GOARCH=amd64`. Check the target's arch before you
+  ship.
+
+## Releases that keep no data on the box
+
+`carlos ship --stateless` publishes a release whose app keeps its data
+somewhere else: it gets no local database, no `CARLOS_DB` and no
+Litestream, and you provide and run its database and other data
+services. This is a platform release shape, unrelated to Rastrillo's
+"stateless central apps" (a home or hub that keeps its records in an
+object store, tenancy.md), which still ship as ordinary releases.

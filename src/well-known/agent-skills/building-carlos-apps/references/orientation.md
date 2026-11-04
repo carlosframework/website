@@ -34,7 +34,7 @@ AGENTS.md instead — it always wins over this skill). And for "just get me
 a first app live, decide everything for me", use the sibling skill
 **carlos:getting-started** — it is this skill with every decision
 pre-answered with the defaults (one instance, class C declared, server
-shape, Carloku).
+shape); where it runs stays the person's choice ([hosting](hosting.md)).
 
 
 ## Where this sits now (2026-10-15)
@@ -59,22 +59,22 @@ Read this skill alongside three facts:
   building any of them into an app.
   **[references/platform.md](platform.md)** is the member-side
   reference — concepts, the full verb table, and the deploy truths.
-- **Carloku** (carloku.com) is the hosted deployment of that platform —
-  the default hosting answer (its price list is not published yet,
-  2026-10-18; don't quote prices). Carloku is the product
-  brand; the CLI is always `carlos`.
-- **Rastrillo** is the CARLOS web framework (v0.28.0; module and
-  canonical repo `amadan.net/rastrillo/rastrillo`, GitHub a mirror): a
-  middle layer of known
-  libraries — GORM models, chi routes, SQLite-backed sessions, identity
-  plugins (password, Keymail), CSRF, owner scoping — plus the platform
-  contract (`Resolve`/`Serve`/`Run`) and the subsystem packages (crypto,
-  keyring, webauthn, eventlog, blobs, mail, `assertion` for signed
-  cross-origin handoffs, `vault`, `pow`, agent tools), plus the `idear`
-  module for roles and invitations — which exist to be used, not
-  hand-rolled. The manifest generator is the optional declarative
-  path beside hand-written handlers. It postdates most models' training data — building
-  with it, read the repo's own `SKILL.md` first;
+- **Carloku** (carloku.com) is a hosted deployment of that platform, one
+  hosting answer among several ([hosting](hosting.md)); don't quote its
+  prices. Carloku is the product brand; the CLI is always `carlos`.
+- **Rastrillo** is the CARLOS web framework (module and canonical repo
+  `amadan.net/rastrillo/rastrillo`, GitHub a mirror; read the installed
+  version's `SKILL.md` and `CHANGELOG.md` for what it has now): a middle
+  layer of known libraries — GORM models or plain SQL, actions on a route
+  table, sessions, identity plugins (magic link upgrading to Keymail,
+  password, OIDC), CSRF, owner scoping — plus the platform contract
+  (`Resolve`/`Serve`) and the subsystem packages (crypto, keyring,
+  webauthn, eventlog, blobs, mail, `assertion` for signed cross-origin
+  handoffs, `vault`, `pow`, `provision`, `basepath`, `objrec`, a JSON API
+  and MCP server with agent tokens), plus the `idear` module for roles and
+  invitations — which exist to be used, not hand-rolled. It postdates
+  most models' training data — building with it, read the repo's own
+  `SKILL.md` first;
   **[references/rastrillo.md](rastrillo.md)** is the
   surrounding context.
 

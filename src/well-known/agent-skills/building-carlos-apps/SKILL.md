@@ -1,6 +1,6 @@
 ---
 name: building-carlos-apps
-description: "Design or adapt a CARLOS app: choose tenant boundaries, trust, app shape and hosting, or find the platform capability for the current task. Read task-specific references only when needed. For a first local app and deploy recipe, use getting-started."
+description: "Design, port or adapt a CARLOS app: choose tenant boundaries, trust, app shape and where to host, or find the platform capability for the current task. Read task-specific references only when needed. For the first conversation with the operator and a first build, use getting-started."
 ---
 
 # 🤖 Building CARLOS apps
@@ -30,14 +30,21 @@ For the simple first-app defaults, use [getting-started](../getting-started/SKIL
 
 ## Rules for implementation
 
+- Before new app code, the operator has been asked what they hope to
+  achieve, how much they will replace, how polished the first slice
+  should be and with what personality, and where to host: the interview
+  in [getting-started](../getting-started/SKILL.md). For a port, take
+  their reason as given and show the gains first.
 - Use Rastrillo's scaffold and the framework skill at the app's installed
-  version. Default to its UI components and tokens, with thin app CSS;
-  respect an established design system or explicit design brief.
+  version. Its UI components and tokens are the base the operator's
+  personality goes on, through a thin app CSS layer; respect an
+  established design system or explicit design brief.
 - Keep migrations compatible with the builds that may run together. Prefer
-  server-rendered HTML with a working zero-JavaScript baseline; choose another
-  shape deliberately. Read [app choices](references/decisions.md) for that choice.
-- Use the platform for routing, TLS, replication, hibernation and process
-  control. Before implementing another platform capability, select the relevant
+  server-rendered HTML, links and forms first, enhanced with vanilla
+  scripts as richly as the product needs; choose the client shape
+  deliberately. Read [app choices](references/decisions.md) for that choice.
+- On a CARLOS console, use the platform for routing, TLS, replication,
+  hibernation and process control. Before implementing another platform capability, select the relevant
   topic below. Day-to-day operations use `carlos` and the console API, never
   SSH, direct AWS access or on-box verbs.
 - A capability being documented is not authorization to enable it. Keep
@@ -48,13 +55,15 @@ For the simple first-app defaults, use [getting-started](../getting-started/SKIL
 | Task | Reference |
 |---|---|
 | Choose instance boundaries, home/hub shape, trust or per-tenant reporting | [Tenancy](references/tenancy.md) |
-| Choose encryption, app shape, hosting or identity | [Decisions](references/decisions.md) |
+| Choose encryption, app shape or identity | [Decisions](references/decisions.md) |
+| Lay out where to host, or run off the platform | [Hosting](references/hosting.md) |
 | Implement Rastrillo handlers, models or UI | [Framework](references/rastrillo.md); then the installed framework skill and its relevant topic |
 | Deploy, operate, add a platform service, debug or inspect costs | [Platform topic index](references/platform.md); open only the matching topic |
 | Set project rules or assess a departure from CARLOS principles | [Principles](references/principles.md) |
+| Port an app from another stack | The interview in [getting-started](../getting-started/SKILL.md), then Rastrillo's skill/port.md |
 | Adopt CARLOS in an existing app or check app conventions | [Conventions](references/conventions.md) |
 | Work on commits, tests, review or canaries | [Process](references/process.md) |
-| Implement infrastructure outside the platform | [Blueprint](references/blueprint.md), only when that is the chosen hosting model |
+| Run many instances outside the platform | [Blueprint](references/blueprint.md), only when that is the chosen hosting model |
 | Understand the family and historical context | [Orientation](references/orientation.md), optional background |
 
 Return to implementation once the relevant question is answered. Reference

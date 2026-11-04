@@ -84,6 +84,17 @@ The layers, in order:
    *inside* the test binary, never in a shell step around it — a guard a
    shell step can satisfy is a guard a shell step can be wrong about
    (one browser-required check went silently unrun for weeks).
+   In a Rastrillo app this layer is the scaffold's `make ci`, which also
+   enforces: the readable-code budgets (80-column lines, 400-line files,
+   40-line functions and 15-line actions, spelled-out names); `make
+   routes`, so no action goes unmounted; each page's framework CSS and JS
+   within its weight budget (16 kB gzipped for most pages, more for live
+   pages and component scripts; the installed framework's check says
+   which); each GET screen within 150 ms to first byte and a
+   cold boot within 500 ms (timing fails on CI only). A GET handler never
+   changes anything, because the shell prerenders likely next pages before
+   they are tapped. Rastrillo's `skill/screens.md` "Tests and budgets" and
+   `skill/code.md` say what each failure means.
 2. **Prefer a parsing test to a browser for anything computable from
    source.** Contrast ratios computed from the token file's declarations
    (WCAG AA, both themes, no browser); network reachability rules parsed
@@ -167,6 +178,12 @@ account IDs, no third-party personal data in anything published.
 - A person marker (👨/👤/🧑) certifies human text: an LLM must not rewrite,
   rephrase, condense, or delete it. No marker means ambiguous — never claim
   human authorship for unmarked text.
+- Agents use a product the way a person delegates to them: through the
+  app's JSON API and MCP server (Rastrillo's `api` and `mcp`, at `/api/v1`
+  and `/api/v1/mcp`, over the same operations the pages call), with a
+  token the person mints. The agent acts for that person, never with
+  authority of its own, and the event log records it as the agent acting
+  for them (Rastrillo `skill/api.md`, `skill/mcp.md`).
 - Disclosure extends to product: AI features are opt-in, never required,
   always disclosed, and every path works with the AI switched off — this is
   a hard constraint, not an aspiration. Nothing assumes AI stays cheap.

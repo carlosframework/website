@@ -178,7 +178,7 @@ curl -fsS http://127.0.0.1:8090/healthz
 <p>The response should be <code>ok v0.28.15</code>. The health endpoint alone does not confirm that promotions are enabled: the console also starts without a signing key. Check the service log for configuration errors and for “promotions disabled” before deploying. Grant the first operator before external sign-in:</p>
 <pre><code class="language-sh">runuser -u carlos -- /opt/carlos/console grant --operator YOU@example.com
 </code></pre>
-<p>Use the email address you will sign in with through Keymail. No OAuth client registration is needed.</p>
+<p>Use a Keymail address. The console can sign in any email address once console email is set up, but this walkthrough does not set it up, so until then it signs in Keymail addresses only. No OAuth client registration is needed.</p>
 <h2 id="6.-add-the-console-route-and-dns-records" tabindex="-1">6. Add the console route and DNS records</h2>
 <p>Register the console with the edge service:</p>
 <pre><code class="language-sh">runuser -u carlos -- /opt/carlos/carlos add \
@@ -198,15 +198,21 @@ curl -fsS http://127.0.0.1:8090/healthz
 <p>Check the public console:</p>
 <pre><code class="language-sh">curl -fsS https://console.example.com/healthz
 </code></pre>
-<p>Open the console in a browser and sign in with Keymail. Follow the onboarding steps to create your first account. Do not expose port 8090.</p>
+<p>Open the console in a browser and sign in with that Keymail address. Follow the onboarding steps to create your first account. Do not expose port 8090.</p>
 <h2 id="7.-deploy-your-first-app" tabindex="-1">7. Deploy your first app</h2>
 <p>On your workstation, point the CARLOS CLI at your console:</p>
 <pre><code class="language-sh">carlos auth login --console https://console.example.com
 carlos auth default --project https://console.example.com
 carlos auth whoami
 </code></pre>
-<p>Follow the <a href="/start/#panel-hand">hand-built app instructions</a> and the <a href="/docs/cli/">CARLOS CLI guide</a>. Use your console and app domain in every example. A Notes host would look like <code>notes.YOUR_ACCOUNT_ID.apps.example.com</code>, not a <code>carloku.com</code> host.</p>
-<p>Build the Notes sample with Go 1.26 or later.</p>
+<p>Download, test and build the Notes sample with Go 1.26 or later, as in the <a href="/start/#panel-hand">hand-built app instructions</a>. CARLOS CLI v0.28.15 does not create the instance during a deploy, so create it and set its address first, then deploy:</p>
+<pre><code class="language-sh">carlos apps create --app notes
+carlos instances enable --app notes
+carlos instances create --app notes --host notes.YOUR_ACCOUNT_ID.apps.example.com --channel edge
+carlos env set --app notes NOTES_ORIGIN=https://notes.YOUR_ACCOUNT_ID.apps.example.com
+carlos deploy --app notes ./notes-linux-arm64
+</code></pre>
+<p>Replace <code>YOUR_ACCOUNT_ID</code> with the account short ID printed by <code>whoami</code>, and <code>apps.example.com</code> with your app domain. The <a href="/docs/cli/">CARLOS CLI guide</a> covers the other commands.</p>
 <p>After deployment, check the URL printed by the CLI and confirm the response includes the expected <code>X-Carlos-Version</code> value.</p>
 <p>For apps that need secrets, run <code>carlos secrets genkey</code> on your trusted workstation. Put <code>CARLOS_SECRETS_KEY</code> in <code>/etc/carlos/host.env</code> on each host and <code>CARLOS_SECRETS_PUBKEY</code> in <code>/etc/carlos/console.env</code>. Keep both files root-owned with mode <code>0600</code>, then run <code>systemctl restart carlos-edge console</code> on the host. These sealing keys are a separate pair from your release signing keys; keep the private key out of Git and OpenTofu state.</p>
 <h2 id="8.-prepare-before-customers-use-it" tabindex="-1">8. Prepare before customers use it</h2>

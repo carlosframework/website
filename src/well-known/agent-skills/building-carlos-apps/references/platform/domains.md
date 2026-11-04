@@ -34,6 +34,28 @@ Domain restrictions depend on deployment policy: CARLOS always protects its
 own exact console names and other accounts' platform namespaces, while a
 hosting deployment may reserve all platform domains.
 
+## Buying a domain
+
+Where the deployment's operator has turned domain buying on:
+
+```sh
+carlos domains check shop.example
+carlos domains buy shop.example --app shop
+```
+
+`check` reports whether the name is available and the deployment's price
+for a year; `buy` goes through a checkout and waits until the name serves
+the app. Elsewhere, buy the name at a registrar and `attach` it.
+
+## Cookies on platform hostnames
+
+On a platform hostname (`<app>.<account>.<apps domain>`), an app may set a
+cookie for its own hostname or for its own account's platform domain, so
+an account's apps can share one. If a cookie's `Domain` names anything
+wider, or another account, the edge strips the `Domain` and the cookie
+goes back only to the hostname that set it. Custom domains are left as
+they are.
+
 ## One domain, one instance in each region
 
 The regional-domain source in pinned platform commit `a2e23ba0` adds:
@@ -109,4 +131,5 @@ instances; they do not create or relocate them.
 Sources: `docs/site/cli.md` (`carlos apps`, `carlos deploy`, `carlos domains`);
 `domains_cli.go`; `internal/console/apiplacements.go`;
 `internal/domains/claims.go`; `internal/edge/regional.go`; pinned platform
-source `a2e23ba0` (2026-10-31).
+source `a2e23ba0` (2026-10-31). Buying and cookie `Domain` handling:
+`docs/site/cli.md` at v0.34.1.
