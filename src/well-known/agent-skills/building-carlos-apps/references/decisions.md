@@ -164,8 +164,8 @@ every option runs the same binary. [Hosting](hosting.md) sets out the
 options: Carloku (the hosted CARLOS Platform, zero operations), a
 self-hosted CARLOS Platform (open source, for when they must be the
 operator of record), their own boxes joined to a console as a customer
-fleet, a host they already use (Fly, Render, Railway) with the app on a
-volume, or a plain server running the binary with TLS, backups, email
+fleet, a host or cluster they already use (Fly, Render, Railway, Miren,
+Kubernetes) with the app on a volume, or a plain server running the binary with TLS, backups, email
 and schedules as theirs. Present Carloku as the convenient option it
 is, never as the only one.
 

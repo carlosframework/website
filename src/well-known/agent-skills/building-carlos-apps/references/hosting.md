@@ -16,9 +16,15 @@ locked here". Then ask which they prefer, or whether they want to
 decide after the first slice runs locally. A local build needs no host
 at all.
 
+Always ask whether they already run something else: a platform account,
+a Kubernetes cluster, a server. Anything that runs one container with a
+persistent volume can run the app, and what they already operate often
+beats a new account.
+
 If they ask for a recommendation, recommend by what they told you:
 zero operations, Carloku; must be the operator of record, a self-hosted
-platform; boxes they already own, a customer fleet or a plain server.
+platform; something they already run, that; boxes they already own, a
+customer fleet or a plain server.
 Do not quote prices or promise a free tier: no public price list
 exists.
 
@@ -29,7 +35,8 @@ exists.
 | **Carloku** | Nothing | Routing, TLS, replication to object storage, hibernation, schedules, email, logs, analytics, edge protection, the `carlos` CLI | A hosted vendor; billed per app |
 | **Self-hosted CARLOS Platform** | The platform on their own cloud account | The same platform and CLI against their own console | Real operations: provisioning, platform upgrades, backups of the console's own databases, HA they build |
 | **Their boxes, Carloku's control plane** (a customer fleet) | Boxes they own, joined with `carlos fleets` | Apps placed on their hardware, managed by the same CLI | Box upkeep; a plan may gate own boxes |
-| **A platform they already use** (Fly, Render, Railway and the like) | The app as one service with a volume | Their existing account, TLS, domains, secrets, often scale to zero | One instance per volume; backups, email and schedules mostly theirs |
+| **A platform they already use** (Fly, Render, Railway, a self-hosted Miren, and the like) | The app as one service with a volume | Their existing account or servers, TLS, domains, secrets, often scale to zero | One instance per volume; backups, email and schedules mostly theirs |
+| **Their Kubernetes cluster** | One pod with a volume | Their existing cluster, ingress, secrets and CronJobs | Everything in the plain-server list, as manifests |
 | **A plain server** | The app binary alone | An always-on app, no platform | Everything below is theirs |
 
 **Self-hosting the platform.** The public walkthrough is
@@ -72,8 +79,9 @@ the operator's:
 - **Architecture**: build for the server's CPU, `make release
   RELEASE_GOARCH=amd64` for most x86 hosts.
 
-**A platform they already use.** Fly, Render, Railway and similar hosts
-run the app as one container or service; check the provider's current
+**A platform they already use.** Fly, Render, Railway, Miren (a
+self-hosted, Apache-2.0 container platform for your own Linux servers)
+and similar hosts run the app as one container or service; check the provider's current
 docs, since limits and plans move. What holds across them:
 
 - **The service.** A container image holding the static binary and CA
@@ -90,15 +98,41 @@ docs, since limits and plans move. What holds across them:
 - **Scale to zero, where offered** (Fly's auto-stop and auto-start,
   Railway's serverless sleep) behaves much like hibernation: background
   jobs end when the machine stops, so keep them idempotent. A disk on
-  Render needs an always-on paid instance.
+  Render needs an always-on paid instance, and a Miren service with a
+  disk runs a fixed single instance.
+- **Miren specifics.** `miren deploy` builds from a `Dockerfile.miren`
+  or detects Go. In `.miren/app.toml`, give the web service `mode =
+  "fixed"`, `num_instances = 1` and a `[[services.web.disks]]` at
+  `/data`, or use the `miren-sqlite` addon and start the app with `-db
+  $SQLITE_PATH`. Its scheduled `[tasks]` cannot reach a disk, so a task
+  calls the app's scheduled path over HTTP with the admin-token bearer.
 - **The plain-server list still applies** for origin, instance key,
   email, files and schedules: set them as the provider's secrets, and
   point the provider's cron (or a scheduled job) at the scheduled path
   with the admin-token bearer.
 
+**Their Kubernetes cluster.** The app is a StatefulSet (or a Deployment
+with the `Recreate` strategy) of exactly one replica, so two pods never
+open the same database:
+
+- the container as above, `-addr :8080 -db /data/myapp.db`, with a
+  `ReadWriteOnce` PersistentVolumeClaim at `/data`;
+- a Service and an Ingress, with their TLS (cert-manager or the
+  cluster's own);
+- Secrets for the origin, instance key, SMTP and bucket variables in
+  the plain-server list, and a long random `CARLOS_ADMIN_TOKEN`;
+- a CronJob per schedule that calls the scheduled path with that
+  token as the bearer;
+- Litestream as a sidecar replicating `/data` to a bucket, since a
+  volume snapshot alone is not point-in-time recovery.
+
+A deploy restarts the one pod, a short gap. There is no scale to zero
+without extra machinery (KEDA, Knative), and none is needed.
+
 A product with an instance per customer needs something to start and
 route those instances (on these hosts, one service per customer through
-the provider's API); off the platform that is a hand-rolled host.
+the provider's API; on Kubernetes, one StatefulSet per customer through
+an operator or the cluster API); off the platform that is a hand-rolled host.
 [Blueprint](blueprint.md) is the complete recipe the platform automated.
 
 ## Moving later

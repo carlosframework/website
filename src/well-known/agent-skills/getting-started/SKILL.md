@@ -47,7 +47,9 @@ words. Keep working on whatever does not depend on the answers.
    option, a convenience running CARLOS Platform, an open-source stack
    built for these apps; they can also self-host that platform, join
    their own boxes, use a host they already have an account with (Fly,
-   Render, Railway), or run the binary on any server.
+   Render, Railway, Miren), deploy to their Kubernetes cluster, or run
+   the binary on any server. Ask what they already run: anything that
+   runs one container with a persistent volume can host it.
    [Hosting](../building-carlos-apps/references/hosting.md) has the
    detail. "Decide later" is a fine answer: the first slice runs
    locally.
