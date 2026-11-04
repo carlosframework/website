@@ -14,7 +14,6 @@ carlos apps create --app myapp --build-probe /api/version
 V=$(git describe --always --dirty --exclude='*')   # short sha, never a tag
 make release VERSION=$V            # refuses a -dirty version: commit first
 carlos deploy --app myapp --version $V \
-  --env MYAPP_ORIGIN=https://myapp.<sqid>.oncarlos.com \
   --message "Publish the first working app" releases/myapp-linux-arm64
 ```
 
@@ -22,12 +21,16 @@ One version for both: `make release` alone stamps `git describe`, which
 on a tagged commit is the tag, while deploy defaults to the short sha
 and would wait for a build that never reports. `--dirty` keeps the
 guard: an uncommitted tree gets a `-dirty` version, which `make release`
-refuses. `MYAPP_ORIGIN` (the
-scaffold's package name in capitals) is the public origin the app's
-CSRF check and emailed sign-in links use; unset, it defaults to
-`http://localhost:8080`. The host shown is Carloku's shape (`carlos
-auth whoami` prints the sqid); on another console use its platform
-domain, or the custom domain once attached.
+refuses.
+
+The app's public origin, which its CSRF check and emailed sign-in links
+use, comes from `MYAPP_ORIGIN` (the scaffold's package name in
+capitals). An app scaffolded with rastrillo v0.32.0 or later falls back
+to `https://$CARLOS_HOST`, the instance's own hostname, so a first
+deploy needs nothing. Set it with `--env MYAPP_ORIGIN=https://…` behind
+a custom domain, under a hub's `/<slug>`, or for an app scaffolded
+earlier (its `main.go` still has `originFrom`), which otherwise falls
+back to `http://localhost:8080`.
 
 `carlos deploy` creates the app's first instance (and the app itself,
 if you skipped `apps create`) when they are missing (with `--region` to choose a new app's region; otherwise the
