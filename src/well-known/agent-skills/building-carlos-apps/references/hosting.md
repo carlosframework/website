@@ -16,6 +16,12 @@ locked here". Then ask which they prefer, or whether they want to
 decide after the first slice runs locally. A local build needs no host
 at all.
 
+Show what the platform includes, so they compare like for like: the
+list below is what Carloku or a self-hosted CARLOS Platform does with
+no work from them, and every item it holds is something an off-platform
+option makes theirs to build or go without. Say it plainly, without
+selling: the list makes the case on its own.
+
 Always ask whether they already run something else: a platform account,
 a Kubernetes cluster, a server. Anything that runs one container with a
 persistent volume can run the app, and what they already operate often
@@ -28,11 +34,51 @@ customer fleet or a plain server.
 Do not quote prices or promise a free tier: no public price list
 exists.
 
+## What CARLOS Platform does for you
+
+Out of the box, through the `carlos` CLI and console:
+
+- **Deploys without downtime.** `carlos deploy` ships, promotes and
+  waits until the new build serves; on an awake instance the new build
+  starts beside the old one and takes over within seconds. Channels,
+  pipelines, `carlos canary` (a branch's own host and channel) and
+  `carlos rollback`.
+- **Instances, per customer if you want.** Create, move and delete
+  instances from the CLI or from your own app (Rastrillo's `provision`),
+  each with its own process, database and hostname; path routes under a
+  hub; regions; fleets of boxes you own.
+- **Sleep and wake.** Idle instances hibernate and wake on the next
+  request, adding no instance-hours while asleep.
+- **Backups and restore.** Every database replicates continuously to
+  object storage; `carlos db` restores a copy to your machine without
+  touching the live one.
+- **Uploads.** `carlos store` gives an app an S3-compatible bucket with
+  presigned uploads, and virus scanning where the deployment runs it.
+- **Email.** `carlos email enable` sets up a verified sending domain and
+  hands the app its SMTP credentials.
+- **Schedules and background work.** `carlos schedule` wakes the app on
+  a clock; `carlos sidecars` runs a process with no request behind it;
+  `carlos run` and `carlos console` run a command as an instance.
+- **Domains and TLS.** Certificates issued and renewed, custom domains
+  attached (and bought, where the deployment offers it), a password gate
+  for prototypes.
+- **Watching it.** `carlos logs`, `errors` and `availability` with no
+  wiring, `analytics` counted at the edge (no JavaScript, no cookie, no
+  stored IP), edge protection that blocks known attack paths, per-app
+  rate limits.
+- **More, when needed.** A PDF service, a TURN relay for WebRTC calls,
+  interactive sessions, rootfs apps for software that is not one
+  binary.
+
+Check the deployment's own docs for which optional services it runs
+(storage, scanning, PDFs, buying domains), and never enable a billable
+one without the operator's approval.
+
 ## The options
 
 | Option | What they run | What they get | What it costs them |
 |---|---|---|---|
-| **Carloku** | Nothing | Routing, TLS, replication to object storage, hibernation, schedules, email, logs, analytics, edge protection, the `carlos` CLI | A hosted vendor; billed per app |
+| **Carloku** | Nothing | Everything in the list above, run for them | A hosted vendor; billed per app |
 | **Self-hosted CARLOS Platform** | The platform on their own cloud account | The same platform and CLI against their own console | Real operations: provisioning, platform upgrades, backups of the console's own databases, HA they build |
 | **Their boxes, Carloku's control plane** (a customer fleet) | Boxes they own, joined with `carlos fleets` | Apps placed on their hardware, managed by the same CLI | Box upkeep; a plan may gate own boxes |
 | **A platform they already use** (Fly, Render, Railway, a self-hosted Miren, and the like) | The app as one service with a volume | Their existing account or servers, TLS, domains, secrets, often scale to zero | One instance per volume; backups, email and schedules mostly theirs |
