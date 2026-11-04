@@ -49,10 +49,11 @@ from the person's SMTP provider.
 
 `rastrillo.Resolve` + `Serve` speak the platform's process contract —
 your binary accepts `--socket <path> --db <path>` and serves
-`GET /healthz` and `GET /api/version`. **There is no `$PORT`**;
-on the platform, instances listen on unix sockets it hands them, and
-elsewhere `-addr host:port` serves on an address you choose. Do not
-hand-roll flag parsing.
+`GET /healthz` and `GET /api/version`. On the platform there is no
+`$PORT`: instances listen on unix sockets it hands them. Elsewhere
+`-addr host:port` serves on an address you choose, and from rastrillo
+v0.33.0 an app given no `-addr` listens on `$PORT` when it is set. Do
+not hand-roll flag parsing.
 
 Before the first screen, ask the person how polished the app should be
 and for its personality (Rastrillo's `skill/screens.md`, "Before the
