@@ -7,7 +7,7 @@
       "type": "skill-md",
       "description": "Start a CARLOS app, new or ported from another stack, from the first conversation with the operator to a polished first slice and, when they want it, a deploy. Begins with an interview; load setup, deployment and service guidance only when the task reaches them. For tenancy, trust or hosting detail, use building-carlos-apps.",
       "url": "/.well-known/agent-skills/getting-started/SKILL.md",
-      "digest": "sha256:f8a335bb690204c483fa4188ff81684c6cd5af465e41159fd50c50f87890595c"
+      "digest": "sha256:f4769e9d1d24b68ed0243b641af0d5b13273e2c07a490ae1087e8f6b4c454e39"
     },
     {
       "name": "building-carlos-apps",
