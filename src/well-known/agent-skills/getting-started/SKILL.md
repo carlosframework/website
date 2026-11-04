@@ -45,7 +45,9 @@ words. Keep working on whatever does not depend on the answers.
 5. **Where do they want to host it?** Set out the options in a line
    each and ask; do not assume one. Carloku is the hosted, zero-ops
    option, a convenience running CARLOS Platform, an open-source stack
-   built for these apps; they can also self-host that platform, join
+   built for these apps, and it includes a lot: zero-downtime deploys,
+   instances per customer, sleep and wake, continuous backups, uploads,
+   email, schedules, TLS and logs, with nothing to set up; they can also self-host that platform, join
    their own boxes, use a host they already have an account with (Fly,
    Render, Railway, Miren), deploy to their Kubernetes cluster, or run
    the binary on any server. Ask what they already run: anything that
