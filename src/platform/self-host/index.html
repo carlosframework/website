@@ -27,7 +27,7 @@
 <main class="hosting-guide self-host-tutorial">
 <h1 id="%F0%9F%A4%96-self-host-carlos-platform" tabindex="-1">🤖 Self-host CARLOS Platform</h1>
 <p>A single AWS host can run a CARLOS console and your first app. This walkthrough starts with one host and covers the console, DNS and your first app.</p>
-<p>Install Git, OpenTofu 1.11 or later (below 2.0), the AWS CLI, and the <a href="https://github.com/carlosframework/releases/releases/tag/v0.34.1">CARLOS CLI v0.34.1</a>. Authenticate the AWS CLI with an account allowed to provision infrastructure. You also need a domain you control. The download checks below use OpenSSL 3 and <code>curl</code>.</p>
+<p>Install Git, OpenTofu 1.11 or later (below 2.0), the AWS CLI, and the <a href="https://github.com/carlosframework/releases/releases/tag/v0.34.3">CARLOS CLI v0.34.3</a>. Authenticate the AWS CLI with an account allowed to provision infrastructure. You also need a domain you control. The download checks below use OpenSSL 3 and <code>curl</code>.</p>
 <p>The example uses Debian 13 on an ARM64 host with a <code>t4g.small</code> instance, 2 virtual CPUs, 2 GiB of memory, and a 20 GiB encrypted general-purpose SSD. Size storage and memory for your apps as they grow. You do not need a separate SQL server or container orchestrator.</p>
 <h2 id="1.-choose-a-topology" tabindex="-1">1. Choose a topology</h2>
 <p>The public <a href="https://amadan.net/carlos/opentofu">OpenTofu repository</a> provides these examples:</p>
@@ -96,7 +96,7 @@ chmod 0700 &quot;$install_dir&quot;
 trap 'rm -rf &quot;$install_dir&quot;' EXIT
 cd &quot;$install_dir&quot;
 
-release_url=https://github.com/carlosframework/releases/releases/download/v0.34.1
+release_url=https://github.com/carlosframework/releases/releases/download/v0.34.3
 curl -fSLO &quot;$release_url/carlos-console-linux-arm64&quot;
 curl -fSLO &quot;$release_url/CONSOLE_SHA256SUMS.txt&quot;
 curl -fSLO &quot;$release_url/CONSOLE_SHA256SUMS.txt.sig&quot;
@@ -175,7 +175,7 @@ WantedBy=multi-user.target
 systemctl enable --now console
 curl -fsS http://127.0.0.1:8090/healthz
 </code></pre>
-<p>The response should be <code>ok v0.34.1</code>. The health endpoint alone does not confirm that promotions are enabled: the console also starts without a signing key. Check the service log for configuration errors and for “promotions disabled” before deploying. Grant the first operator before external sign-in:</p>
+<p>The response should be <code>ok v0.34.3</code>. The health endpoint alone does not confirm that promotions are enabled: the console also starts without a signing key. Check the service log for configuration errors and for “promotions disabled” before deploying. Grant the first operator before external sign-in:</p>
 <pre><code class="language-sh">runuser -u carlos -- /opt/carlos/console grant --operator YOU@example.com
 </code></pre>
 <p>Use a Keymail address. The console can sign in any email address once console email is set up, but this walkthrough does not set it up, so until then it signs in Keymail addresses only. No OAuth client registration is needed.</p>
