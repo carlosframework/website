@@ -9,7 +9,7 @@
     "check:starter": "node --test test/starter-pack.test.mjs && node hack/check-starter.mjs",
     "sync-docs": "node hack/sync-docs.mjs",
     "sync-skills": "node hack/sync-skills.mjs",
-    "check:start": "node --test test/start-protocol.test.mjs test/start-build.test.mjs"
+    "check:start": "node --test test/start-protocol.test.mjs test/start-build.test.mjs test/start-pages.test.mjs"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0",

@@ -9,7 +9,7 @@
     "proofSeconds": 900,
     "transferSeconds": 300,
     "statusAfterOriginalExpirySeconds": 86400,
-    "evidence": "internal/console/demo_claim_auth.go:56-59; internal/console/demo_claim_store.go:124-130,186-189,227-246"
+    "evidence": "internal/console/demo_claim_auth.go:56-59; internal/console/demo_claim_store.go:120-127,181-184,227-246"
   },
   "start": {
     "method": "POST",
@@ -118,7 +118,7 @@
         "body": "404 page not found\n"
       }
     ],
-    "evidence": "internal/console/demo_claim_auth.go:348-361; internal/console/demo_claim_target.go:261-278"
+    "evidence": "internal/console/demo_claim_auth.go:348-361; internal/console/demo_claim_target.go:263-278"
   },
   "status": {
     "method": "GET",
@@ -207,6 +207,6 @@
     "credentialIssued": false,
     "evidence": "internal/console/demo_claim_auth.go:445-452; internal/console/demo_claim_transfer.go:648-667",
     "movedNoticeImplemented": false,
-    "movedEvidence": "internal/console/demo_claim_transfer.go:673-675"
+    "movedEvidence": "internal/console/demo_claim_transfer.go:676-678"
   }
 }

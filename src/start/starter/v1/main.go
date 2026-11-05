@@ -22,15 +22,14 @@ import (
 	_ "amadan.net/rastrillo/rastrillo/locales/en"
 )
 
-// DRAFT copy, pending review
-// 🤖 All starter UI copy is keyed here for the controller's review.
+// 🤖 Approved starter UI copy, keyed to the website copy archive.
 var starterCopy = map[string]string{
 	"starter.title":   "Shop list",
-	"starter.empty":   "Nothing here yet. Add the first item.",
+	"starter.empty":   "No items yet. Add the first one.",
 	"starter.name":    "Item",
 	"starter.add":     "Add",
-	"starter.invalid": "Enter a name between 1 and 120 characters.",
-	"starter.full":    "This list is full. It holds up to 100 items.",
+	"starter.invalid": "Enter a name with 1 to 120 characters.",
+	"starter.full":    "This list is full. It can hold up to 100 items.",
 	"starter.error":   "Something went wrong. Try again.",
 	"starter.aria":    "Add an item to the shop list",
 }

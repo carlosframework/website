@@ -20,6 +20,14 @@ export async function buildStart(outputDir,config) {
  let html=original, agent;
  if(config.enabled) {
   const copy=JSON.parse(await read('src/_data/start-copy.json'));
+  const region=/<!-- start-demo:hero -->[\s\S]*?<!-- \/start-demo:hero -->/;
+  if(!region.test(home)) throw configError('homepage hero marker is missing');
+  const human='<!-- 👨 Constellation selected and copy supplied in chat -->';
+  const hero=`<span class="start-authorship">🤖</span><p class="hero-promise"><strong>${escapeHTML(copy['home.hero.promise'])}</strong></p><p class="hero-demo-intro">${escapeHTML(copy['home.hero.intro'])}</p>${promptHTML(config,copy,'home-prompt')}<div class="actions"><a href="/start/">${escapeHTML(copy['home.hero.action'])}</a><a href="#architecture"><span>Learn more</span>&nbsp;↓</a></div>`;
+  home=home.replace(human,'').replace(/<p class="hero-subtitle">[\s\S]*?<\/p>/,p=>human+p+'<!-- /👨 -->').replace(region,()=>hero)
+   .replace(/<meta name="description" content="[^"]*">/,()=>`<meta name="description" content="${escapeHTML(copy['home.meta.description'])}">`)
+   .replace(/<meta property="og:description" content="[^"]*">/,()=>`<meta property="og:description" content="${escapeHTML(copy['home.og.description'])}">`)
+   .replace('</head>','<link rel="stylesheet" href="/start/start.css?v=0">\n<script src="/start/start-tabs.js?v=0" defer></script>\n</head>');
   const contract=JSON.parse(await read('src/_data/start-claim-contract.json'));
   const starter=JSON.parse(await read(`src/start/starter/${config.starterVersion}/manifest.json`));
   agent=renderAgent(await read('src/start/agent.md'),config,contract,starter);
@@ -32,6 +40,7 @@ export async function buildStart(outputDir,config) {
    .replace(/<link rel="canonical" href="[^"]*">/,()=>`<link rel="canonical" href="${escapeHTML(config.siteOrigin)}/start/">`)
    .replace('</head>','<link rel="stylesheet" href="/start/start.css?v=0">\n</head>');
  }
+ home=home.replaceAll('<!-- start-demo:hero -->','').replaceAll('<!-- /start-demo:hero -->','');
  // Remove previously generated or accidentally passthrough-copied source, also on watch rebuilds.
  const dir=join(outputDir,'start');await mkdir(dir,{recursive:true});
  for(const e of await readdir(dir)) if(!['start.css','start-tabs.js'].includes(e)) await rm(join(dir,e),{recursive:true,force:true});

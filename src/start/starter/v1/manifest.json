@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "archiveSHA256": "232c1e386567f0bdffaaa9cf840f0c117250ed69e7a80a27dc65730ef1ccd6b5",
+  "archiveSHA256": "2c7c1694ec022eb98bacca1e9b7bb17bb8391893ef51fabca2c5e1141b9f1f99",
   "files": [
     {
       "path": "LICENSE.fiesta",
@@ -16,7 +16,7 @@
     },
     {
       "path": "main.go",
-      "sha256": "6d9c7355ae531437a7d7c9647ee8b4d2a5fd1f2bc49a03f43ca7725181e82d27"
+      "sha256": "98fa89c1740db2e43438905198cc84a627c41f464b4e11a79a04385b0071f24c"
     },
     {
       "path": "static/fiesta-plain.css",

@@ -24,8 +24,16 @@ Durable product context for design tooling lives in
 `PRODUCT.md`.
 
 `index.html`, `platform/index.html` and the 2026-09 pages (`letters/`,
-`apps/`, `trust/`, `start/`, `attributes/`) are written by hand;
-each is an `addPassthroughCopy` entry in `eleventy.config.js`. The build adds
+`apps/`, `trust/`, `attributes/`) are written by hand;
+each is an `addPassthroughCopy` entry in `eleventy.config.js`.
+
+🤖 `hack/build-start.mjs` preserves the original homepage and `src/start/index.html`
+when disabled. Enabled builds replace the marked hero region and generate the
+start HTML/Markdown twins from `src/start/agent.md`, before footer/disclosure
+injection. Only the starter archive, manifest and source listing are published;
+raw starter files, config and claim fixtures stay private build inputs.
+
+The build adds
 the shared AI disclaimer to every HTML page, including docs, through
 `hack/add-disclaimer.mjs`. Its human-authored copy lives in
 `src/_data/ai-disclaimer.json`. Every
@@ -193,6 +201,12 @@ resolves, and every carlosframework.com link in `llms.txt` points at a
 built file.
 
 ## Deploying
+
+🤖 The demo journey defaults off. See README for explicit origin inputs and the
+development-only draft claim override. Do not release that override publicly.
+Before public activation, bind the claim fixture to merged handlers, verify
+Plans 2 and 3, and verify Plan A's Accept negotiation on the serving edges.
+Website builds do not enable console admission or claim support.
 
 Use the console API and the `carlos` CLI. Do not use bucket-mode credentials,
 AWS commands or on-box operations for website releases. The registered app is

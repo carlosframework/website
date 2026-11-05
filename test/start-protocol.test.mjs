@@ -34,6 +34,13 @@ test('claim gate requires merged SHA unless both explicit draft switches are set
  const broken=structuredClone(contract); broken.status.responses=[]; assert.throws(() => validateClaimContract(broken,config));
  assert.match(rendered,/Claiming is not yet available on this deployment's merged code/);
 });
+test('claim gate rejects missing status fields, completion drift and missing merge evidence',()=>{
+ for(const [state,key] of [['claiming','phase'],['claiming','retryAfter'],['claiming','recoveryPending'],['claimed','url'],['claimed','accountId'],['email_required','expiresAt']]) {
+  const broken=structuredClone(contract); delete broken.status.responses.find(r=>r.body.state===state).body[key]; assert.throws(()=>validateClaimContract(broken,config));
+ }
+ const missing=structuredClone(contract);delete missing.producerMerged;assert.throws(()=>validateClaimContract(missing,config));
+ const drift=structuredClone(contract);drift.complete.response.body.url='https://different.example.com';assert.throws(()=>validateClaimContract(drift,config));
+});
 test('render substitutes only known placeholders and fixtures round trip as JSON', () => {
  assert.equal(renderAgent('unchanged\n{{siteOrigin}}\n',config,contract,manifest),'unchanged\nhttps://site.example.com\n');
  assert.throws(() => renderAgent('{{unknown}}',config,contract,manifest));
@@ -46,17 +53,17 @@ test('render substitutes only known placeholders and fixtures round trip as JSON
 });
 // These are authored protocol transcripts, not evidence of an LLM or live API run.
 function audit(trace) {
- let asked=false, confirmed=false, creates=0, token, flow, live, permanent, selected, lost=false, stop=false, repairs=0, lastPoll=-Infinity, retry=0;
+ let asked=false, confirmed=false, creates=0, token, flow, live, permanent, selected, accounts=[], claimAvailable=false, claimed=false, lost=false, stop=false, repairs=0, lastPoll=-Infinity, retry=0;
  const secrets=new Set();
  for (const e of trace) {
   if(e.kind==='ask') asked=true;
   if(e.kind==='confirm') { assert.ok(asked); confirmed=true; }
   if(e.kind==='build') assert.ok(confirmed);
-  if(e.kind==='choose') selected=e.accountId;
+  if(e.kind==='choose') { assert.ok(accounts.some(a=>a.id===e.accountId)); selected=e.accountId; }
   if(e.kind==='request') {
    const u=new URL(e.url); assert.equal(u.origin,config.consoleOrigin); assert.equal(e.redirect,'error');
    if(e.method==='POST' && u.pathname==='/api/demo/apps') {
-    assert.ok(confirmed && !lost && !stop);
+    assert.ok(confirmed && !lost && !stop && !claimed);
     assert.equal(e.headers['Content-Type'],'application/gzip');
     assert.ok(e.headers['X-Carlos-Client']);
     if(e.headers.Authorization) { assert.equal(e.headers.Authorization,`Bearer ${token}`); assert.ok(++repairs<=2); }
@@ -69,13 +76,19 @@ function audit(trace) {
    }
    if(u.pathname.endsWith('/select')) {assert.ok(selected);assert.equal(e.body.accountId,selected);assert.equal(e.body.flowToken,flow);}
    if(u.pathname.endsWith('/verify')) assert.equal(e.body.flowToken,flow);
+   if(u.pathname.startsWith('/api/demo/claims') && e.method==='POST') {
+    assert.ok(claimAvailable && !stop && !claimed);
+    assert.equal(e.headers['Content-Type'],'application/json');
+    if(e.body?.code) secrets.add(e.body.code);
+   }
    if(e.body?.claimToken) assert.equal(e.body.claimToken,token);
   }
   if(e.kind==='response') {
-   if(e.body?.claimToken) {token=e.body.claimToken;secrets.add(token);secrets.add(e.body.claimUrl);}
+   if(e.body?.claimToken) {token=e.body.claimToken;claimAvailable=e.body.claimAvailable===true;secrets.add(token);secrets.add(e.body.claimUrl);secrets.add(e.body.statusUrl);}
    if(e.body?.flowToken) {flow=e.body.flowToken;secrets.add(flow);}
    if(e.body?.state==='live') live=e.body.url;
-   if(e.body?.state==='claimed') permanent=e.body.url;
+   if(e.body?.state==='claimed') {permanent=e.body.url;claimed=true;}
+   if(e.body?.state==='account_required' && e.body.accounts) accounts=e.body.accounts;
    retry=Math.max(e.retryAfter??5,e.body?.retryAfter??0);
    if([401,404,410,429,503].includes(e.status)) stop=true;
   }

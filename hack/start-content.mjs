@@ -2,6 +2,7 @@
 import { configError } from '../src/_data/start-config.mjs';
 export function validateClaimContract(c, config) {
  if (!/^[a-f0-9]{40}$/.test(c?.producerCommit ?? '')) throw configError('claim producerCommit must be a 40-hex SHA');
+ if (typeof c.producerMerged !== 'boolean') throw configError('claim producerMerged must be a boolean');
  if (c.producerMerged !== true && !(config.enabled && config.claimDraft === true)) throw configError('claim producerMerged must be true; draft builds require both explicit switches');
  if (config.claimContractRevision && config.claimContractRevision !== c.producerCommit) throw configError('claim producer revision mismatch');
  const paths={start:'/api/demo/claims',verify:'/api/demo/claims/verify',chooseAccount:'/api/demo/claims/select',status:'/api/demo/claims/status',browser:'/demo/claim#<claimToken>'};
@@ -12,7 +13,20 @@ export function validateClaimContract(c, config) {
  for(const [name,keys] of Object.entries({start:['claimToken','email'],verify:['flowToken','code'],chooseAccount:['flowToken','accountId']})) {
   if(keys.some(k=>typeof c[name].request?.[k]!=='string')) throw configError(`claim request ${name} is incomplete`);
  }
- const states=c.status.responses.map(r=>r.body.state);
+ const requireReply=(operation,state,status,fields)=>{
+  const replies=c[operation].responses.filter(r=>r.body?.state===state);
+  if(!replies.length || replies.some(r=>r.status!==status || Object.entries(fields).some(([key,type])=>typeof r.body[key]!==type || (type==='string' && !r.body[key])))) throw configError(`claim ${operation} ${state} fixture is incomplete`);
+ };
+ requireReply('start','email_required',202,{flowToken:'string',expiresAt:'string'});
+ requireReply('start','browser_required',200,{claimUrl:'string'});
+ requireReply('status','claiming',202,{phase:'string',retryAfter:'number',recoveryPending:'boolean'});
+ requireReply('status','claimed',200,{accountId:'string',app:'string',url:'string',next:'string'});
+ requireReply('status','aborted',200,{});
+ for(const state of ['email_required','account_required']) requireReply('status',state,200,{expiresAt:'string'});
+ const completed=c.status.responses.find(r=>r.body?.state==='claimed');
+ if(JSON.stringify(completed)!==JSON.stringify(c.complete?.response)) throw configError('claim completion fixtures disagree');
+ if(c.limits?.proofSeconds!==900 || c.limits?.transferSeconds!==300 || c.limits?.statusAfterOriginalExpirySeconds!==86400) throw configError('claim lifetime fixture is incomplete');
+ const states=c.status.responses.map(r=>r.body?.state);
  if(!['claiming','claimed','aborted','email_required','account_required'].every(s=>states.includes(s)) || c.complete?.response?.body?.next!=='cli_login' || !c.complete?.evidence || c.complete.credentialIssued!==false || !c.start.resend?.flowToken || !c.producerPlan || c.limits?.jsonBytes!==4096) throw configError('claim completion or limits fixture is incomplete');
  if(c.start.responses[0]?.body?.state!=='email_required' || typeof c.start.responses[0]?.body?.expiresAt!=='string' || !c.start.responses[0]?.body?.flowToken || !c.verify.responses.some(r=>r.body.state==='account_required' && r.body.accounts?.every(a=>a.id&&a.name&&a.role))) throw configError('claim proof fixture is incomplete');
 }
