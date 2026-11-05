@@ -2,55 +2,55 @@
 
 | Record field | Value |
 |---|---|
-| Website SHA | |
-| Platform SHA | |
-| Plan A merged SHA | |
+| Website SHA | 961877b4b8bc46fe9a36f9d3cdbd1e73ad934610 (deployed), verifier fix f6b0223 |
+| Platform SHA | ddbc0297 (main at build; read-only) |
+| Plan A merged SHA | ffcf01b5 |
 | Plan 2 merged SHA | |
-| Plan 3 merged SHA | |
-| Serving edge release | |
-| Starter archive SHA-256 | |
-| Console origin | |
-| Site origin | |
-| Account URL | |
-| Previous static version for rollback | |
-| Website version / X-Carlos-Version | |
-| Markdown SHA-256 | |
-| Returned public demo URL | |
-| Returned permanent URL | |
-| Agent / harness version | |
-| Phone browser version | |
-| Raw machine evidence | |
+| Plan 3 merged SHA | not merged; dev build uses CARLOS_START_CLAIM=off |
+| Serving edge release | dev edge serving v0.34.7 canary (Plan A in v0.34.5+) |
+| Starter archive SHA-256 | 2c7c1694ec022eb98bacca1e9b7bb17bb8391893ef51fabca2c5e1141b9f1f99 |
+| Console origin | https://platform.dev.carlosframework.com |
+| Site origin | https://tmp-pj4lpm.bab.dev.oncarlos.com (dev temporary static app, trashed 2026-11-12) |
+| Account URL | https://platform.dev.carlosframework.com/ |
+| Previous static version for rollback | placeholder |
+| Website version / X-Carlos-Version | 961877b |
+| Markdown SHA-256 | 1de546e91086b210f1695fe51bcbb4d226a004911dcccc9e470437a736d18809 |
+| Returned public demo URL | https://kind-lake-34.dev.trycarlos.com/ (Codex local); https://breezy-lark-42.dev.trycarlos.com/ (Claude Code local) |
+| Returned permanent URL | none: claiming not available on dev |
+| Agent / harness version | codex-cli 0.165.0 (default model, clean HOME); Claude Code 2.1.312 (claude-opus-5-5, clean config) |
+| Phone browser version | not run |
+| Raw machine evidence | controller scratch transcripts (JSONL), not committed: they hold demo tokens |
 
 | Scenario | Result | URLs | Elapsed time | Request counts | Agent / harness version | Evidence |
 |---|---|---|---|---|---|---|
-| Feature off: account path, no anonymous instructions | not run | | | | | |
-| Plan A merged and released to the serving edge | not run | | | | | |
-| Plans 2 and 3 merged, enabled and verified; claim availability | not run | | | | | |
+| Feature off: account path, no anonymous instructions | pass (local build) |  |  |  |  | disabled / and /start byte-identical to main c8d55e7; no index.md or starter outputs |
+| Plan A merged and released to the serving edge | pass | https://tmp-pj4lpm.bab.dev.oncarlos.com/start/ |  |  |  | merged ffcf01b5; negotiation observed on dev 2026-11-05 |
+| Plans 2 and 3 merged, enabled and verified; claim availability | partial |  |  |  |  | Plan 2 live on dev (CSP header seen on demo); Plan 3 unmerged; claimAvailable false |
 | Before deployment: expected content failure | not run | | | | | |
-| Slash redirect, browser HTML, complete visible agent section | not run | | | | | |
-| Markdown negotiation and index.md byte equality | not run | | | | | |
-| Vary: Accept, mixed Accept, HEAD | not run | | | | | |
-| TLS, release header, starter checksum | not run | | | | | |
-| Unknown fetcher UA: complete visible HTML | not run | | | | | |
-| Cloud witness without Go or CLI: paste to first working URL | not run | | | | | |
-| Console-host allowlist intervention | not run | | | | | |
+| Slash redirect, browser HTML, complete visible agent section | pass | https://tmp-pj4lpm.bab.dev.oncarlos.com/start |  |  |  | verifyStartOrigin 19/19 checks |
+| Markdown negotiation and index.md byte equality | pass |  |  |  |  | text/markdown; charset=utf-8; bytes equal /start/index.md |
+| Vary: Accept, mixed Accept, HEAD | pass |  |  |  |  | Vary: Accept on both; mixed gets HTML; HEAD agrees (redirect HEAD omits Content-Length, accepted) |
+| TLS, release header, starter checksum | pass |  |  |  |  | fetch default TLS; X-Carlos-Version 961877b; archive digest = manifest = Markdown |
+| Unknown fetcher UA: complete visible HTML | pass |  |  |  | Codex local | agent fetched with plain curl (HTML) and followed the visible section |
+| Cloud witness without Go or CLI: paste to first working URL | blocked | https://claude.ai/code/session_01DhirXdrvJaqf85JmMgpyW8 |  |  | Claude Code cloud (default environment) | default network policy blocks the site host before /start is read; agent explained allowing the domain in environment settings; settings not drivable from this machine |
+| Console-host allowlist intervention | not run |  |  |  |  | cloud environments not reachable to change from here |
 | Phone browser operation | not run | | | | | |
-| Create row, bearer update, preserved row and expiry | not run | | | | | |
-| Compile error, diagnostics and repair | not run | | | | | |
-| Claim: email verification | not run | | | | | |
-| Claim: transfer | not run | | | | | |
-| Permanent URL: copied row | not run | | | | | |
-| Demo moved page, old demo token rejected | not run | | | | | |
-| Claim account choice: fixture / live | not run | | | | | |
-| Claim unavailable: fixture / live | not run | | | | | |
-| Keymail: fixture / live | not run | | | | | |
-| Post-claim CLI login, second change, existing row | not run | | | | | |
-| Claude Code local: create / live / update | not run | | | | | |
-| Claude Code cloud: create / live / update | not run | | | | | |
-| Codex local: create / live / update | not run | | | | | |
-| Codex cloud: create / live / update | not run | | | | | |
-| Cursor: create / live / update | not run | | | | | |
-| Local website, Node and starter checks | not run | | | | | |
+| Create row, bearer update, preserved row and expiry | pass | https://kind-lake-34.dev.trycarlos.com/; https://breezy-lark-42.dev.trycarlos.com/ |  |  | Codex local; Claude Code local | person-added rows survived bearer updates; versions demo.3 and demo.2; expiry unchanged per responses |
+| Compile error, diagnostics and repair | pass | https://kind-lake-34.dev.trycarlos.com/ | about 70 s for broken + fixed update | 2 publishes | Codex local | diagnostic main.go:212: undefined: missingBuildTestValue returned; fixed update live |
+| Claim: email verification | outstanding |  |  |  |  | dev console has no mailer; Plan 3 unmerged |
+| Claim: transfer | outstanding |  |  |  |  |  |
+| Permanent URL: copied row | outstanding |  |  |  |  |  |
+| Demo moved page, old demo token rejected | outstanding |  |  |  |  |  |
+| Claim account choice: fixture / live | fixture only |  |  |  |  | draft fixture vs Plan 3 tip 8f2b67d5 |
+| Claim unavailable: fixture / live | pass (live) |  |  |  | Codex local; Claude Code local | both agents told the person the demo cannot be kept on this deployment |
+| Keymail: fixture / live | fixture only |  |  |  |  |  |
+| Post-claim CLI login, second change, existing row | outstanding |  |  |  |  |  |
+| Claude Code local: create / live / update | pass | https://breezy-lark-42.dev.trycarlos.com/ | about 2 min 33 s paste to live (agent time) | 2 publishes | Claude Code 2.1.312 | asked first; compiled locally by choice (experienced user); update preserved row |
+| Claude Code cloud: create / live / update | blocked | https://claude.ai/code/session_01DhirXdrvJaqf85JmMgpyW8 |  | 0 | Claude Code cloud | site host blocked by default network policy |
+| Codex local: create / live / update | pass | https://kind-lake-34.dev.trycarlos.com/ | about 2 min 6 s paste to live (agent time) | 3 publishes | codex-cli 0.165.0 | asked first; non-technical path; no install asked of the person |
+| Codex cloud: create / live / update | outstanding |  |  |  |  | needs a Codex Cloud environment ID (web UI); none configured |
+| Cursor: create / live / update | outstanding |  |  |  |  | Cursor not available on this machine |
+| Local website, Node and starter checks | pass |  |  |  |  | check:start 87, release 17, verifier 30, starter pack 17, contract and runtime Go tests, npm run check |
 | Whole-branch review, green tip CI | not run | | | | | |
 | Public activation: three hosts, representations, docs, skills, paste line | not run | | | | | |
 | Rollback | not run | | | | | |
