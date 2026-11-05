@@ -20,9 +20,9 @@ Two audiences, one per page (confirmed 2026-08-05):
 
 The site exists to win adoption, and each page has a concrete success action:
 
-- 🤖 index → when the demo journey is enabled, the visitor copies one line to
-  their coding agent and tries a small public app for 24 hours. Larger projects
-  and existing apps use the account path. Disabled builds retain the existing
+- 🤖 index → When the demo journey is enabled, visitors copy one line into
+  their coding agent and try a small public app for 24 hours. Larger projects
+  and existing apps use the account path. Disabled builds keep the existing
   hero and setup page.
 - /platform/ → the visitor gets started at platform.carlosframework.com, or
   takes the hosted route at carloku.com.

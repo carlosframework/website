@@ -7,10 +7,11 @@ small enough to understand, sealed so tightly the operator is not a party to
 it, and yours to run. Extracted — not designed — from five systems that kept
 rebuilding the same shape.
 
-🤖 Eleventy builds the site into `_site/`, with shared footer and disclosure
-injection. Enabled demo builds generate `/start/index.html` and
-`/start/index.md` from one agent source and publish the pinned starter.
-The browser uses local disclosure, clipboard and Attributes sidebar scripts.
+🤖 Eleventy builds the site into `_site/` and injects the shared footer and
+disclosure. Enabled demo builds generate `/start/index.html` and
+`/start/index.md` from one agent source and publish the pinned starter. The
+browser runs local scripts for disclosure, clipboard controls and the
+Attributes sidebar.
 
 🤖 The demo journey defaults off. To build it, set `CARLOS_START_DEMO=1` and
 explicitly set `CARLOS_START_SITE_ORIGIN`, `CARLOS_START_CONSOLE_ORIGIN` and
@@ -21,12 +22,13 @@ explicitly set `CARLOS_START_SITE_ORIGIN`, `CARLOS_START_CONSOLE_ORIGIN` and
 enabled builds still require all three. Origins must use HTTPS, and the
 account URL must use the console origin.
 
-🤖 The claim contract is unmerged. An enabled build refuses it unless you also
-set `CARLOS_START_CLAIM_DRAFT=1` for a development preview. That preview marks
-claiming unavailable. Normal enablement requires a merged producer SHA and
-`producerMerged: true`. Unset demo builds preserve the original pages and
-remove stale anonymous downloads and Markdown. Run `npm run check:start` with
-`STARTER_SCRATCH` set to an on-disk scratch directory, then `npm run check`.
+🤖 The claim contract is not merged in the platform yet. An enabled build
+refuses it unless you also set `CARLOS_START_CLAIM_DRAFT=1` for a development
+preview. The preview marks claiming unavailable. Normal enablement requires a
+merged producer SHA and `producerMerged: true`. When the demo is unset, builds
+preserve the original pages and remove stale anonymous downloads and Markdown.
+Run `npm run check:start` with `STARTER_SCRATCH` set to an on-disk scratch
+directory, then run `npm run check`.
 
 **The rule for adding a page:** if a URL on carlosframework.com should return
 it, the file goes under `src/` — either as Eleventy build input, or as a raw
@@ -75,12 +77,18 @@ and is informed by building [Eleven](https://elevenmessenger.com).
 
 ## Deploying
 
-🤖 Publish only built `_site/` from a clean export of a reviewed, merged commit,
-using the console API and CLI recipe in [`AGENTS.md`](AGENTS.md). Public demo
-activation also requires Plan A on the serving edges and Plans 2 and 3 merged,
-enabled and verified. Plan A negotiates HTML/Markdown by Accept; the full HTML
-instructions remain visible. Keep the previous static version for rollback.
-Live acceptance is separate from the local build checks.
+🤖 Publish only the built `_site/` directory from a clean export of a reviewed,
+merged commit. Use the console API and CLI recipe in [`AGENTS.md`](AGENTS.md).
+Public demo activation requires the platform's Accept-header negotiation change
+on the serving edges, in
+`docs/superpowers/plans/2026-11-04-static-markdown-twins.md`. It also requires
+the demo protection and claim-by-email changes in
+`docs/superpowers/plans/2026-11-04-agent-start-demo-2-edge-protections.md` and
+`docs/superpowers/plans/2026-11-04-agent-start-demo-3-claim.md` to be merged,
+enabled and verified. Accept negotiation serves HTML or Markdown based on the
+`Accept` header. The full HTML instructions remain visible. Keep the previous
+static version for rollback. Verify live acceptance separately from the local
+build checks.
 
 ## License
 

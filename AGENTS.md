@@ -27,11 +27,12 @@ Durable product context for design tooling lives in
 `apps/`, `trust/`, `attributes/`) are written by hand;
 each is an `addPassthroughCopy` entry in `eleventy.config.js`.
 
-🤖 `hack/build-start.mjs` preserves the original homepage and `src/start/index.html`
-when disabled. Enabled builds replace the marked hero region and generate the
-start HTML/Markdown twins from `src/start/agent.md`, before footer/disclosure
-injection. Only the starter archive, manifest and source listing are published;
-raw starter files, config and claim fixtures stay private build inputs.
+🤖 `hack/build-start.mjs` preserves the homepage and `src/start/index.html` when
+the demo is disabled. When enabled, it replaces the marked homepage hero and
+generates `/start/index.html` and `/start/index.md` from `src/start/agent.md`.
+It does this before footer and disclosure injection. The build publishes only
+the starter archive, manifest and source listing. Raw starter files, config and
+claim fixtures remain private build inputs.
 
 The build adds
 the shared AI disclaimer to every HTML page, including docs, through
@@ -202,11 +203,15 @@ built file.
 
 ## Deploying
 
-🤖 The demo journey defaults off. See README for explicit origin inputs and the
-development-only draft claim override. Do not release that override publicly.
-Before public activation, bind the claim fixture to merged handlers, verify
-Plans 2 and 3, and verify Plan A's Accept negotiation on the serving edges.
-Website builds do not enable console admission or claim support.
+🤖 The demo journey defaults off. See README for the explicit origin inputs and
+development-only draft claim override. Do not use that override in a public
+release. Before public activation, bind the claim fixture to merged handlers.
+Verify the platform's demo protection and claim-by-email changes in
+`docs/superpowers/plans/2026-11-04-agent-start-demo-2-edge-protections.md` and
+`docs/superpowers/plans/2026-11-04-agent-start-demo-3-claim.md`. Also verify
+the platform's Accept-header negotiation change in
+`docs/superpowers/plans/2026-11-04-static-markdown-twins.md` on the serving
+edges. Website builds do not enable console admission or claim support.
 
 Use the console API and the `carlos` CLI. Do not use bucket-mode credentials,
 AWS commands or on-box operations for website releases. The registered app is
