@@ -27,7 +27,7 @@
 <main class="hosting-guide self-host-tutorial">
 <h1 id="%F0%9F%A4%96-self-host-carlos-platform" tabindex="-1">🤖 Self-host CARLOS Platform</h1>
 <p>A single AWS host can run a CARLOS console and your first app. This walkthrough starts with one host and covers the console, DNS and your first app.</p>
-<p>Install Git, OpenTofu 1.11 or later (below 2.0), the AWS CLI, and the <a href="https://github.com/carlosframework/releases/releases/tag/v0.28.15">CARLOS CLI v0.28.15</a>. Authenticate the AWS CLI with an account allowed to provision infrastructure. You also need a domain you control. The download checks below use OpenSSL 3 and <code>curl</code>.</p>
+<p>Install Git, OpenTofu 1.11 or later (below 2.0), the AWS CLI, and the <a href="https://github.com/carlosframework/releases/releases/tag/v0.34.4">CARLOS CLI v0.34.4</a>. Authenticate the AWS CLI with an account allowed to provision infrastructure. You also need a domain you control. The download checks below use OpenSSL 3 and <code>curl</code>.</p>
 <p>The example uses Debian 13 on an ARM64 host with a <code>t4g.small</code> instance, 2 virtual CPUs, 2 GiB of memory, and a 20 GiB encrypted general-purpose SSD. Size storage and memory for your apps as they grow. You do not need a separate SQL server or container orchestrator.</p>
 <h2 id="1.-choose-a-topology" tabindex="-1">1. Choose a topology</h2>
 <p>The public <a href="https://amadan.net/carlos/opentofu">OpenTofu repository</a> provides these examples:</p>
@@ -43,7 +43,7 @@
 <p>Clone the templates and create a private repository for your copy.</p>
 <pre><code class="language-sh">git clone https://amadan.net/carlos/opentofu carlos-infrastructure
 cd carlos-infrastructure
-git checkout --detach 8600447
+git checkout --detach TEMPLATE_COMMIT
 git switch -c infrastructure
 git remote rename origin upstream
 git remote add origin YOUR_PRIVATE_REPOSITORY_URL
@@ -96,7 +96,7 @@ chmod 0700 &quot;$install_dir&quot;
 trap 'rm -rf &quot;$install_dir&quot;' EXIT
 cd &quot;$install_dir&quot;
 
-release_url=https://github.com/carlosframework/releases/releases/download/v0.28.15
+release_url=https://github.com/carlosframework/releases/releases/download/v0.34.4
 curl -fSLO &quot;$release_url/carlos-console-linux-arm64&quot;
 curl -fSLO &quot;$release_url/CONSOLE_SHA256SUMS.txt&quot;
 curl -fSLO &quot;$release_url/CONSOLE_SHA256SUMS.txt.sig&quot;
@@ -175,7 +175,7 @@ WantedBy=multi-user.target
 systemctl enable --now console
 curl -fsS http://127.0.0.1:8090/healthz
 </code></pre>
-<p>The response should be <code>ok v0.28.15</code>. The health endpoint alone does not confirm that promotions are enabled: the console also starts without a signing key. Check the service log for configuration errors and for “promotions disabled” before deploying. Grant the first operator before external sign-in:</p>
+<p>The response should be <code>ok v0.34.4</code>. The health endpoint alone does not confirm that promotions are enabled: the console also starts without a signing key. Check the service log for configuration errors and for “promotions disabled” before deploying. Grant the first operator before external sign-in:</p>
 <pre><code class="language-sh">runuser -u carlos -- /opt/carlos/console grant --operator YOU@example.com
 </code></pre>
 <p>Use a Keymail address. The console can sign in any email address once console email is set up, but this walkthrough does not set it up, so until then it signs in Keymail addresses only. No OAuth client registration is needed.</p>
@@ -205,14 +205,12 @@ curl -fsS http://127.0.0.1:8090/healthz
 carlos auth default --project https://console.example.com
 carlos auth whoami
 </code></pre>
-<p>Download, test and build the Notes sample with Go 1.26 or later, as in the <a href="/start/#panel-hand">hand-built app instructions</a>. CARLOS CLI v0.28.15 does not create the instance during a deploy, so create it and set its address first, then deploy:</p>
-<pre><code class="language-sh">carlos apps create --app notes
-carlos instances enable --app notes
-carlos instances create --app notes --host notes.YOUR_ACCOUNT_ID.apps.example.com --channel edge
-carlos env set --app notes NOTES_ORIGIN=https://notes.YOUR_ACCOUNT_ID.apps.example.com
-carlos deploy --app notes ./notes-linux-arm64
+<p>Download, test and build the Notes sample with Go 1.26 or later, as in the <a href="/start/#panel-hand">hand-built app instructions</a>. Then deploy it:</p>
+<pre><code class="language-sh">carlos deploy --app notes \
+  --env NOTES_ORIGIN=https://notes.YOUR_ACCOUNT_ID.apps.example.com \
+  ./notes-linux-arm64
 </code></pre>
-<p>Replace <code>YOUR_ACCOUNT_ID</code> with the account short ID printed by <code>whoami</code>, and <code>apps.example.com</code> with your app domain. The <a href="/docs/cli/">CARLOS CLI guide</a> covers the other commands.</p>
+<p>The deploy command creates the app and its first instance, sets <code>NOTES_ORIGIN</code> to the app’s public origin and prints the live URL. Replace <code>YOUR_ACCOUNT_ID</code> with the account short ID printed by <code>whoami</code>, and <code>apps.example.com</code> with your app domain. The <a href="/docs/cli/">CARLOS CLI guide</a> covers the other commands.</p>
 <p>After deployment, check the URL printed by the CLI and confirm the response includes the expected <code>X-Carlos-Version</code> value.</p>
 <p>For apps that need secrets, run <code>carlos secrets genkey</code> on your trusted workstation. Put <code>CARLOS_SECRETS_KEY</code> in <code>/etc/carlos/host.env</code> on each host and <code>CARLOS_SECRETS_PUBKEY</code> in <code>/etc/carlos/console.env</code>. Keep both files root-owned with mode <code>0600</code>, then run <code>systemctl restart carlos-edge console</code> on the host. These sealing keys are a separate pair from your release signing keys; keep the private key out of Git and OpenTofu state.</p>
 <h2 id="8.-prepare-before-customers-use-it" tabindex="-1">8. Prepare before customers use it</h2>
