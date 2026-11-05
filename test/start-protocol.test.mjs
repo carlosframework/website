@@ -34,6 +34,39 @@ test('claim gate requires merged SHA unless both explicit draft switches are set
  const broken=structuredClone(contract); broken.status.responses=[]; assert.throws(() => validateClaimContract(broken,config));
  assert.match(rendered,/Claiming is not yet available on this deployment's merged code/);
 });
+test('claim-off requires an enabled demo and refuses draft or unsupported claim modes', () => {
+ const off={...env,CARLOS_START_CLAIM_DRAFT:undefined,CARLOS_START_CLAIM:'off'};
+ assert.equal(loadStartConfig(off).claimOff,true);
+ assert.equal(loadStartConfig(off).claimContractRevision,'');
+ assert.equal(config.claimOff,false);
+ assert.equal(loadStartConfig({...env,CARLOS_START_CLAIM:''}).claimOff,false);
+ assert.throws(()=>loadStartConfig({...off,CARLOS_START_DEMO:undefined}),/requires CARLOS_START_DEMO=1/);
+ assert.throws(()=>loadStartConfig({...off,CARLOS_START_DEMO:''}),/requires CARLOS_START_DEMO=1/);
+ assert.throws(()=>loadStartConfig({...env,CARLOS_START_CLAIM:'off'}),/mutually exclusive/);
+ for(const value of ['on','0','1','OFF',' off']) assert.throws(()=>loadStartConfig({...off,CARLOS_START_CLAIM:value}),/must be unset or off/);
+});
+test('claim-off renders without a contract and preserves all other instruction bytes', () => {
+ const off={...config,claimOff:true,claimDraft:false};
+ const markdown=renderAgent(template,off,undefined,manifest);
+ assert.doesNotMatch(markdown,/claims|flowToken|Contract producer|claim contract/);
+ assert.deepEqual([...markdown.matchAll(/```json\n([\s\S]*?)\n```/g)].map(m=>JSON.parse(m[1]).operation),['create','job-status','update']);
+ assert.ok(!markdown.includes(contract.producerCommit));
+ assert.doesNotMatch(markdown,/Give the person the exact secret claim link|carlos auth|carlos deploy/);
+ assert.match(markdown,/Do not share the claim link\./);
+ const sections=markdown.split(/(?=^## \d+\.)/m);
+ const normal=rendered.split(/(?=^## \d+\.)/m);
+ assert.equal(sections.length,11);
+ assert.equal(sections[0],'# 🤖 Agent directions: make a small app\n\n');
+ for(const n of [1,2,3,4,6,7,8]) assert.equal(sections[n],normal[n],`section ${n}`);
+ assert.equal(sections[5],normal[5].replace('Give the person the exact secret claim link once, privately, as recovery information; explain that it is unavailable when `claimAvailable` is false. If you have no private channel, ask them to use a private session before exposing it.','Do not share the claim link.'));
+ assert.match(sections[9],/Claiming is not available on this deployment/);
+ assert.match(sections[9],/Do not attempt any claim request, even if a response says `claimAvailable` is true/);
+ assert.match(sections[9],/demo cannot be kept and ends at the returned `expiresAt`/);
+ assert.match(sections[9],/Keep the create response's `claimToken` private and use it only as the update bearer/);
+ assert.equal(sections[10],`## 10. For a permanent app\n\nPoint the person to the [account path](${config.accountUrl}) and stop.\n`);
+ assert.throws(()=>renderAgent(template,{...off,enabled:false},undefined,manifest),/CARLOS_START_DEMO=1/);
+ assert.throws(()=>renderAgent(template,{...off,claimDraft:true},contract,manifest),/mutually exclusive/);
+});
 test('claim gate rejects missing status fields, completion drift and missing merge evidence',()=>{
  for(const [state,key] of [['claiming','phase'],['claiming','retryAfter'],['claiming','recoveryPending'],['claimed','url'],['claimed','accountId'],['email_required','expiresAt']]) {
   const broken=structuredClone(contract); delete broken.status.responses.find(r=>r.body.state===state).body[key]; assert.throws(()=>validateClaimContract(broken,config));

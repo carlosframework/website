@@ -20,7 +20,8 @@ explicitly set `CARLOS_START_SITE_ORIGIN`, `CARLOS_START_CONSOLE_ORIGIN` and
 [https://console.carloku.com](https://console.carloku.com) and
 [https://console.carloku.com/](https://console.carloku.com/), respectively;
 enabled builds still require all three. Origins must use HTTPS, and the
-account URL must use the console origin.
+account URL must use the console origin. 🤖 Set `CARLOS_START_CLAIM=off` for a
+development-only mode with no claim instructions.
 
 🤖 The claim contract is not merged in the platform yet. An enabled build
 refuses it unless you also set `CARLOS_START_CLAIM_DRAFT=1` for a development

@@ -42,10 +42,11 @@ test('TTL implies temporary, defaults stay with CLI, and valid bounds match CLI 
  for (const ttl of ['0d','31d','59m','721h','1.5d','garbage','1hgarbage','Infinityd']) assert.throws(() => parseReleaseArgs([...argv(values),'--ttl',ttl]));
 });
 test('ambient live origins and draft switches are removed; only explicit claim-draft enables draft',() => {
- const inherited = {CARLOS_START_CLAIM_DRAFT:'1',CARLOS_START_LIVE_ORIGIN:'https://never.example.com',CARLOS_START_SITE_ORIGIN:'https://wrong.example.com',CARLOS_DESTINATION:'flagship',CARLOS_DEPLOYMENT_BUCKET:'bucket',CARLOS_DEPLOYMENT_DIR:'/private',PATH:'/bin'};
+ const inherited = {CARLOS_START_CLAIM:'off',CARLOS_START_CLAIM_DRAFT:'1',CARLOS_START_LIVE_ORIGIN:'https://never.example.com',CARLOS_START_SITE_ORIGIN:'https://wrong.example.com',CARLOS_DESTINATION:'flagship',CARLOS_DEPLOYMENT_BUCKET:'bucket',CARLOS_DEPLOYMENT_DIR:'/private',PATH:'/bin'};
  const options = parseReleaseArgs(argv());
  const env = releaseEnvironment(options,inherited);
  assert.equal(env.CARLOS_START_CLAIM_DRAFT,undefined);
+ assert.equal(env.CARLOS_START_CLAIM,undefined);
  assert.equal(env.CARLOS_START_LIVE_ORIGIN,undefined);
  assert.equal(env.CARLOS_START_SITE_ORIGIN,input['site-origin']);
  assert.equal(env.CARLOS_START_DEMO,'1');
@@ -55,6 +56,16 @@ test('ambient live origins and draft switches are removed; only explicit claim-d
  assert.equal(env.PATH,'/bin');
  assert.equal(inherited.CARLOS_START_CLAIM_DRAFT,'1');
  assert.equal(releaseEnvironment({...options,'claim-draft':true},{}).CARLOS_START_CLAIM_DRAFT,'1');
+});
+test('claim-off passes through only to the build and is mutually exclusive with claim-draft',() => {
+ const options=parseReleaseArgs([...argv(),'--claim-off']);
+ assert.equal(options['claim-off'],true);
+ const env=releaseEnvironment(options,{CARLOS_START_CLAIM_DRAFT:'1'});
+ assert.equal(env.CARLOS_START_CLAIM,'off');
+ assert.equal(env.CARLOS_START_CLAIM_DRAFT,undefined);
+ assert.ok(!deployArgs(options,'abc1234').includes('--claim-off'));
+ for(const flags of [['--claim-off','--claim-draft'],['--claim-draft','--claim-off']]) assert.throws(()=>parseReleaseArgs([...argv(),...flags]),/mutually exclusive/);
+ assert.throws(()=>parseReleaseArgs([...argv(),'--claim-off','--claim-off']),/duplicate --claim-off/);
 });
 test('clean merged commits pass; unmerged commits require an override and a warning',() => {
  assert.equal(validateReleaseTree('',true,false),'');

@@ -10,8 +10,12 @@ export function loadStartConfig(env = process.env) {
  };
  const enabled = flag('CARLOS_START_DEMO');
  const claimDraft = flag('CARLOS_START_CLAIM_DRAFT');
+ if (env.CARLOS_START_CLAIM !== undefined && env.CARLOS_START_CLAIM !== '' && env.CARLOS_START_CLAIM !== 'off') throw configError('CARLOS_START_CLAIM must be unset or off');
+ const claimOff = env.CARLOS_START_CLAIM === 'off';
+ if (claimOff && !enabled) throw configError('CARLOS_START_CLAIM=off requires CARLOS_START_DEMO=1');
+ if (claimOff && claimDraft) throw configError('CARLOS_START_CLAIM=off and CARLOS_START_CLAIM_DRAFT=1 are mutually exclusive');
  if (claimDraft && !enabled) throw configError('CARLOS_START_CLAIM_DRAFT requires CARLOS_START_DEMO=1');
- const config = {enabled,claimDraft,...productionDefaults,starterVersion:'v1',claimContractRevision:''};
+ const config = {enabled,claimDraft,claimOff,...productionDefaults,starterVersion:'v1',claimContractRevision:''};
  if (!enabled) return config;
  for(const [field,key] of Object.entries({siteOrigin:'CARLOS_START_SITE_ORIGIN',consoleOrigin:'CARLOS_START_CONSOLE_ORIGIN',accountUrl:'CARLOS_START_ACCOUNT_URL'})) {
   const raw=env[key]; let u;
@@ -21,8 +25,10 @@ export function loadStartConfig(env = process.env) {
   config[field]=field==='accountUrl'?u.href:u.origin;
  }
  if(new URL(config.accountUrl).origin!==config.consoleOrigin) throw configError('CARLOS_START_ACCOUNT_URL must use CARLOS_START_CONSOLE_ORIGIN');
- const contract=JSON.parse(readFileSync(new URL('./start-claim-contract.json',import.meta.url),'utf8'));
- config.claimContractRevision=contract.producerCommit;
+ if (!claimOff) {
+  const contract=JSON.parse(readFileSync(new URL('./start-claim-contract.json',import.meta.url),'utf8'));
+  config.claimContractRevision=contract.producerCommit;
+ }
  return config;
 }
 export default () => loadStartConfig();

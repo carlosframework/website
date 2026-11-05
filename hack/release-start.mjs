@@ -7,9 +7,9 @@ import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { loadStartConfig } from '../src/_data/start-config.mjs';
 
-const usage = 'usage: node hack/release-start.mjs --console <origin> --account <account> --app <app> --channel <channel> --site-origin <origin> --console-origin <origin> --account-url <url> [--allow-unmerged-dev] [--claim-draft] [--execute] [--temporary --ttl <duration>]';
+const usage = 'usage: node hack/release-start.mjs --console <origin> --account <account> --app <app> --channel <channel> --site-origin <origin> --console-origin <origin> --account-url <url> [--allow-unmerged-dev] [--claim-draft | --claim-off] [--execute] [--temporary --ttl <duration>]';
 const values = new Set(['console','account','app','channel','site-origin','console-origin','account-url','ttl']);
-const switches = new Set(['allow-unmerged-dev','claim-draft','execute','temporary']);
+const switches = new Set(['allow-unmerged-dev','claim-draft','claim-off','execute','temporary']);
 
 export function parseReleaseArgs(argv) {
  const options = {};
@@ -53,6 +53,7 @@ export function releaseEnvironment(options, inherited = process.env) {
  for (const key of ['CARLOS_DESTINATION','CARLOS_DEPLOYMENT_BUCKET','CARLOS_DEPLOYMENT_DIR']) delete env[key];
  Object.assign(env,{CARLOS_START_DEMO:'1',CARLOS_START_SITE_ORIGIN:options['site-origin'],CARLOS_START_CONSOLE_ORIGIN:options['console-origin'],CARLOS_START_ACCOUNT_URL:options['account-url']});
  if (options['claim-draft']) env.CARLOS_START_CLAIM_DRAFT = '1';
+ if (options['claim-off']) env.CARLOS_START_CLAIM = 'off';
  return env;
 }
 

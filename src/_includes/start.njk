@@ -9,9 +9,9 @@
 <ol>{% for step in copy['start.steps'] %}<li>{{ step }}</li>{% endfor %}</ol>
 <p>{{ copy['start.lifetime'] }}</p>
 <p>{{ copy['start.data'] }}</p>
-<h2>{{ copy['start.claim'][0] }}</h2>
+{% if not config.claimOff %}<h2>{{ copy['start.claim'][0] }}</h2>
 <p>{{ copy['start.claim'][1] }}</p>
-<p>{{ copy['start.account'][0] }} <a href="#account">{{ copy['start.account'][1] }}</a></p>
+{% endif %}<p>{{ copy['start.account'][0] }} <a href="#account">{{ copy['start.account'][1] }}</a></p>
 </div></section>
 <section class="inner-section" id="account"><div class="wrap">
 {{ accountHTML | safe }}

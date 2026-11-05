@@ -28,7 +28,7 @@ export async function buildStart(outputDir,config) {
    .replace(/<meta name="description" content="[^"]*">/,()=>`<meta name="description" content="${escapeHTML(copy['home.meta.description'])}">`)
    .replace(/<meta property="og:description" content="[^"]*">/,()=>`<meta property="og:description" content="${escapeHTML(copy['home.og.description'])}">`)
    .replace('</head>','<link rel="stylesheet" href="/start/start.css?v=0">\n<script src="/start/start-tabs.js?v=0" defer></script>\n</head>');
-  const contract=JSON.parse(await read('src/_data/start-claim-contract.json'));
+  const contract=config.claimOff ? undefined : JSON.parse(await read('src/_data/start-claim-contract.json'));
   const starter=JSON.parse(await read(`src/start/starter/${config.starterVersion}/manifest.json`));
   agent=renderAgent(await read('src/start/agent.md'),config,contract,starter);
   const account=original.match(/<div class="start-tabs">[\s\S]*?(?=<\/div><\/section><\/main>)/)?.[0];

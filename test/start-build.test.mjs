@@ -47,16 +47,50 @@ test('disabled pages match original build bytes; reused output loses all anonymo
   assert.equal(createHash('sha256').update(bytes).digest('hex'),baseline[name],name);
  }
 }));
+test('claim-off builds identical Markdown and visible HTML without claim instructions or Keep it',()=>scratch(async dir=>{
+ await buildStart(dir,config);
+ const normalHTML=await read(join(dir,'start/index.html'));
+ const normalHome=await read(join(dir,'index.html'));
+ const off=loadStartConfig({...env,CARLOS_START_CLAIM_DRAFT:undefined,CARLOS_START_CLAIM:'off'});
+ await buildStart(dir,off);
+ const markdown=await read(join(dir,'start/index.md'));
+ const html=await read(join(dir,'start/index.html'));
+ const starter=JSON.parse(await read('src/start/starter/v1/manifest.json'));
+ const contract=JSON.parse(await read('src/_data/start-claim-contract.json'));
+ const copy=JSON.parse(await read('src/_data/start-copy.json'));
+ assert.equal(markdown,renderAgent(await read('src/start/agent.md'),off,undefined,starter));
+ assert.equal(html.split('<!-- agent-content -->')[1].split('<!-- /agent-content -->')[0],renderMarkdown(markdown));
+ for(const text of [markdown,html]) {
+  assert.doesNotMatch(text,/claims|flowToken|Contract producer/);
+  assert.ok(!text.includes(contract.producerCommit));
+ }
+ for(const text of copy['start.claim']) assert.ok(!html.includes(text));
+ const withoutAgent=text=>text.replace(/<!-- agent-content -->[\s\S]*?<!-- \/agent-content -->/,'');
+ assert.equal(withoutAgent(html),withoutAgent(normalHTML).replace(`<h2>${copy['start.claim'][0]}</h2>\n<p>${copy['start.claim'][1]}</p>\n`,''));
+ assert.equal(await read(join(dir,'index.html')),normalHome);
+}));
 test('enabled build refuses unmerged or incomplete claims and invalid origins',()=>scratch(async dir=>{
  await assert.rejects(buildStart(dir,loadStartConfig({...env,CARLOS_START_CLAIM_DRAFT:undefined})),/producerMerged/);
  for(const key of ['CARLOS_START_SITE_ORIGIN','CARLOS_START_CONSOLE_ORIGIN','CARLOS_START_ACCOUNT_URL']) assert.throws(()=>loadStartConfig({...env,[key]:undefined}));
 }));
+test('Eleventy refuses claim-off without the demo or together with claim-draft',()=>scratch(async dir=>{
+ const {spawnSync}=await import('node:child_process');
+ const clean={...process.env};for(const key of Object.keys(clean)) if(key.startsWith('CARLOS_START_')) delete clean[key];
+ for(const [inputs,message] of [
+  [{CARLOS_START_CLAIM:'off'},/requires CARLOS_START_DEMO=1/],
+  [{...env,CARLOS_START_CLAIM:'off'},/mutually exclusive/],
+ ]) {
+  const result=spawnSync(process.execPath,['node_modules/@11ty/eleventy/cmd.cjs',`--output=${dir}`],{env:{...clean,...inputs},encoding:'utf8'});
+  assert.notEqual(result.status,0);
+  assert.match(result.stdout+result.stderr,message);
+ }
+}));
 
 test('Eleventy integration: enabled then disabled rebuild keeps main pages byte-identical',()=>scratch(async dir=>{
  const {spawnSync}=await import('node:child_process');
- const build=enabled=>{
+ const build=(enabled,overrides={})=>{
   const clean={...process.env};for(const key of Object.keys(clean)) if(key.startsWith('CARLOS_START_')) delete clean[key];
-  const result=spawnSync(process.execPath,['node_modules/@11ty/eleventy/cmd.cjs',`--output=${dir}`],{env:{...clean,...(enabled?env:{})},encoding:'utf8'});
+  const result=spawnSync(process.execPath,['node_modules/@11ty/eleventy/cmd.cjs',`--output=${dir}`],{env:{...clean,...(enabled?env:{}),...overrides},encoding:'utf8'});
   assert.equal(result.status,0,result.stderr+'\n'+result.stdout);
  };
  build(true);
@@ -66,6 +100,13 @@ test('Eleventy integration: enabled then disabled rebuild keeps main pages byte-
  assert.ok(inventory.includes('docs/cli.md'));
  assert.ok(inventory.includes('.well-known/agent-skills/index.json'));
  assert.doesNotMatch(inventory.join('\n'),/start\/agent|start\/starter\/v1\/main.go|start-config|start-copy|start-claim-contract/);
+ build(true,{CARLOS_START_CLAIM:'off',CARLOS_START_CLAIM_DRAFT:''});
+ const markdown=await read(join(dir,'start/index.md'));
+ const html=await read(join(dir,'start/index.html'));
+ assert.match(markdown,/Claiming is not available on this deployment/);
+ assert.doesNotMatch(markdown,/claims|flowToken/);
+ assert.doesNotMatch(html,/claims|flowToken|Keep it/);
+ assert.equal(html.split('<!-- agent-content -->')[1].split('<!-- /agent-content -->')[0],renderMarkdown(markdown));
  build(false);
  const baseline=JSON.parse(await read('test/fixtures/start-baseline.json'));
  for(const name of Object.keys(baseline)) assert.equal(createHash('sha256').update(await readFile(join(dir,name))).digest('hex'),baseline[name]);
