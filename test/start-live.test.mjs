@@ -74,7 +74,10 @@ export async function verifyStartOrigin(origin) {
  ]) {
   const head = await request(path,accept,'HEAD');
   checks[`head${name}`] = head.status === get.status && head.bytes.length === 0
-   && ['content-type','content-length','content-encoding','etag','vary','x-carlos-version','location'].every(key => head.headers.get(key) === get.headers.get(key));
+   // The edge's slash redirect sends Content-Length: 0 on GET and omits it on HEAD; both are valid for an empty body.
+   && ['content-type','content-length','content-encoding','etag','vary','x-carlos-version','location']
+    .filter(key => !(name === 'Redirect' && key === 'content-length'))
+    .every(key => head.headers.get(key) === get.headers.get(key));
  }
  // Discover only a same-origin versioned starter link. Never visit console or app URLs.
  const links = [...text.matchAll(/\]\(([^\s)]+)\)/g)].map(m => m[1]);
