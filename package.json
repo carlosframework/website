@@ -6,6 +6,7 @@
     "build": "eleventy",
     "serve": "eleventy --serve",
     "check": "eleventy && node hack/check-docs.mjs && node hack/check-skills.mjs",
+    "check:starter": "node --test test/starter-pack.test.mjs && node hack/check-starter.mjs",
     "sync-docs": "node hack/sync-docs.mjs",
     "sync-skills": "node hack/sync-skills.mjs"
   },

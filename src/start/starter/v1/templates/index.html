@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>🤖 {{copy "starter.title"}}</title>
+  <link rel="stylesheet" href="/static/fiesta.css">
+</head>
+<body>
+  <main>
+    <h1>🤖 {{copy "starter.title"}}</h1>
+    {{if .Error}}<p role="alert">{{.Error}}</p>{{end}}
+    {{if .Items}}<ul>{{range .Items}}<li>{{.}}</li>{{end}}</ul>
+    {{else}}<p>{{copy "starter.empty"}}</p>{{end}}
+    <form method="post" action="/items" aria-label="{{copy "starter.aria"}}">
+      <label for="name">{{copy "starter.name"}}</label>
+      <input id="name" name="name" type="text" required>
+      <button type="submit">{{copy "starter.add"}}</button>
+    </form>
+  </main>
+</body>
+</html>
