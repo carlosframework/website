@@ -45,7 +45,7 @@
 | Claim unavailable: fixture / live | pass (live) |  |  |  | Codex local; Claude Code local | both agents told the person the demo cannot be kept on this deployment |
 | Keymail: fixture / live | fixture only |  |  |  |  |  |
 | Post-claim CLI login, second change, existing row | outstanding |  |  |  |  |  |
-| Claude Code local: create / live / update | pass | https://breezy-lark-42.dev.trycarlos.com/ | about 2 min 33 s paste to live (agent time) | 2 publishes | Claude Code 2.1.312 | asked first; compiled locally by choice (experienced user); update preserved row |
+| Claude Code local: create / live / update | pass | https://breezy-lark-42.dev.trycarlos.com/ | about 3 min 3 s paste to live (agent time: 31 s + 152 s) | 2 publishes | Claude Code 2.1.312 | asked first; compiled locally by choice (experienced user); update preserved row |
 | Claude Code cloud: create / live / update | blocked | https://claude.ai/code/session_01DhirXdrvJaqf85JmMgpyW8 |  | 0 | Claude Code cloud | site host blocked by default network policy |
 | Codex local: create / live / update | pass | https://kind-lake-34.dev.trycarlos.com/ | about 2 min 6 s paste to live (agent time) | 3 publishes | codex-cli 0.165.0 | asked first; non-technical path; no install asked of the person |
 | Codex cloud: create / live / update | outstanding |  |  |  |  | needs a Codex Cloud environment ID (web UI); none configured |
