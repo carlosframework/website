@@ -9,9 +9,11 @@
     "check:starter": "node hack/check-starter.mjs",
     "sync-docs": "node hack/sync-docs.mjs",
     "sync-skills": "node hack/sync-skills.mjs",
-    "check:start": "node --test test/start-protocol.test.mjs test/start-build.test.mjs test/start-pages.test.mjs"
+    "check:start": "node --test test/start-protocol.test.mjs test/start-build.test.mjs test/start-pages.test.mjs test/start-live-verifier.test.mjs test/release-start.test.mjs",
+    "check:start-live": "node --test test/start-live.test.mjs"
   },
   "devDependencies": {
+    "htmlparser2": "^7.2.0",
     "@11ty/eleventy": "^3.0.0",
     "markdown-it": "^14.1.0",
     "markdown-it-anchor": "^9.2.0",
