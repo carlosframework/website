@@ -1,0 +1,34 @@
+// 🤖 One substitution pass; JSON examples remain mechanically comparable to the fixture.
+import { configError } from '../src/_data/start-config.mjs';
+export function validateClaimContract(c, config) {
+ if (!/^[a-f0-9]{40}$/.test(c?.producerCommit ?? '')) throw configError('claim producerCommit must be a 40-hex SHA');
+ if (c.producerMerged !== true && !(config.enabled && config.claimDraft === true)) throw configError('claim producerMerged must be true; draft builds require both explicit switches');
+ if (config.claimContractRevision && config.claimContractRevision !== c.producerCommit) throw configError('claim producer revision mismatch');
+ const paths={start:'/api/demo/claims',verify:'/api/demo/claims/verify',chooseAccount:'/api/demo/claims/select',status:'/api/demo/claims/status',browser:'/demo/claim#<claimToken>'};
+ for(const [name,path] of Object.entries(paths)) {
+  const op=c[name];
+  if(!op || op.path!==path || op.method!==(name==='status'||name==='browser'?'GET':'POST') || !op.auth || !op.evidence || !Array.isArray(op.responses) || !op.responses.length || op.responses.some(r=>!Number.isInteger(r.status)||r.body===undefined)) throw configError(`claim fixture ${name} is incomplete`);
+ }
+ for(const [name,keys] of Object.entries({start:['claimToken','email'],verify:['flowToken','code'],chooseAccount:['flowToken','accountId']})) {
+  if(keys.some(k=>typeof c[name].request?.[k]!=='string')) throw configError(`claim request ${name} is incomplete`);
+ }
+ const states=c.status.responses.map(r=>r.body.state);
+ if(!['claiming','claimed','aborted','email_required','account_required'].every(s=>states.includes(s)) || c.complete?.response?.body?.next!=='cli_login' || !c.complete?.evidence || c.complete.credentialIssued!==false || !c.start.resend?.flowToken || !c.producerPlan || c.limits?.jsonBytes!==4096) throw configError('claim completion or limits fixture is incomplete');
+ if(c.start.responses[0]?.body?.state!=='email_required' || typeof c.start.responses[0]?.body?.expiresAt!=='string' || !c.start.responses[0]?.body?.flowToken || !c.verify.responses.some(r=>r.body.state==='account_required' && r.body.accounts?.every(a=>a.id&&a.name&&a.role))) throw configError('claim proof fixture is incomplete');
+}
+export function renderAgent(template, config, claimContract, starter) {
+ if(!config.enabled) throw configError('agent instructions require CARLOS_START_DEMO=1');
+ validateClaimContract(claimContract,config);
+ if(config.starterVersion!=='v1' || !/^[a-f0-9]{64}$/.test(starter?.archiveSHA256 ?? '') || starter?.schema!==1 || !starter.files?.length) throw configError('starter manifest is incomplete');
+ const claimExamples=['start','verify','chooseAccount','status','browser','complete'].map(operation=>'```json\n'+JSON.stringify({operation,contract:claimContract[operation]},null,2)+'\n```').join('\n\n');
+ const values={siteOrigin:config.siteOrigin,consoleOrigin:config.consoleOrigin,consoleHost:new URL(config.consoleOrigin).host,accountUrl:config.accountUrl,starterVersion:config.starterVersion,starterSHA256:starter.archiveSHA256,producerCommit:claimContract.producerCommit,claimExamples,
+ claimNote:claimContract.producerMerged===true?'The claim contract is pinned to the merged producer below. Check claimAvailable before offering to claim.':"DRAFT FOR AGENTS: Claiming is not yet available on this deployment's merged code. These claim examples describe an unmerged producer. Do not attempt them here, even if an unexpected response says claimAvailable is true."};
+ // Resolve fixture origins separately, then substitute the template once.
+ values.claimExamples=values.claimExamples.replaceAll('{{consoleOrigin}}',config.consoleOrigin);
+ const result=template.replace(/\{\{([a-zA-Z][a-zA-Z0-9]*)\}\}/g,(_,key)=>{
+  if(!Object.hasOwn(values,key)) throw configError(`unknown agent placeholder ${key}`);
+  return values[key];
+ });
+ if(/\{\{/.test(result)) throw configError('unresolved agent placeholder');
+ return result;
+}

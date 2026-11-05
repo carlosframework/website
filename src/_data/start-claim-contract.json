@@ -1,0 +1,212 @@
+{
+  "producerCommit": "8f2b67d5abacf18beaa30d19f21fc75cfbab8aa6",
+  "producerMerged": false,
+  "producerPlan": "2026-11-04-agent-start-demo-3-claim",
+  "routesEvidence": "internal/console/apidemo.go:272-275",
+  "availabilityEvidence": "internal/console/demo_claim_auth.go:18-20; internal/console/apidemo.go:279-282",
+  "limits": {
+    "jsonBytes": 4096,
+    "proofSeconds": 900,
+    "transferSeconds": 300,
+    "statusAfterOriginalExpirySeconds": 86400,
+    "evidence": "internal/console/demo_claim_auth.go:56-59; internal/console/demo_claim_store.go:124-130,186-189,227-246"
+  },
+  "start": {
+    "method": "POST",
+    "path": "/api/demo/claims",
+    "auth": "none",
+    "request": {
+      "claimToken": "synthetic-demo-token",
+      "email": "person@example.com"
+    },
+    "responses": [
+      {
+        "status": 202,
+        "body": {
+          "state": "email_required",
+          "flowToken": "synthetic-flow-token",
+          "expiresAt": "2026-11-05T12:15:00Z"
+        }
+      },
+      {
+        "status": 200,
+        "body": {
+          "state": "browser_required",
+          "claimUrl": "{{consoleOrigin}}/demo/claim#synthetic-demo-token"
+        }
+      }
+    ],
+    "evidence": "internal/console/demo_claim_auth.go:110-198",
+    "resend": {
+      "claimToken": "synthetic-demo-token",
+      "email": "person@example.com",
+      "flowToken": "synthetic-flow-token"
+    }
+  },
+  "verify": {
+    "method": "POST",
+    "path": "/api/demo/claims/verify",
+    "auth": "none",
+    "request": {
+      "flowToken": "synthetic-flow-token",
+      "code": "123456"
+    },
+    "responses": [
+      {
+        "status": 200,
+        "body": {
+          "state": "account_required",
+          "accounts": [
+            {
+              "id": "a1",
+              "name": "Shop",
+              "role": "owner"
+            },
+            {
+              "id": "a2",
+              "name": "Team",
+              "role": "member"
+            }
+          ]
+        }
+      },
+      {
+        "status": 202,
+        "body": {
+          "state": "claiming",
+          "phase": "copying",
+          "retryAfter": 2,
+          "recoveryPending": false
+        }
+      },
+      {
+        "status": 401,
+        "body": {
+          "error": "This code cannot be used. Request another email."
+        }
+      }
+    ],
+    "evidence": "internal/console/demo_claim_auth.go:200-237,317-345"
+  },
+  "chooseAccount": {
+    "method": "POST",
+    "path": "/api/demo/claims/select",
+    "auth": "none",
+    "request": {
+      "flowToken": "synthetic-flow-token",
+      "accountId": "a2"
+    },
+    "responses": [
+      {
+        "status": 202,
+        "body": {
+          "state": "claiming",
+          "phase": "copying",
+          "retryAfter": 2,
+          "recoveryPending": false
+        }
+      },
+      {
+        "status": 409,
+        "body": {
+          "error": "synthetic plan refusal",
+          "code": "cap"
+        }
+      },
+      {
+        "status": 404,
+        "body": "404 page not found\n"
+      }
+    ],
+    "evidence": "internal/console/demo_claim_auth.go:348-361; internal/console/demo_claim_target.go:261-278"
+  },
+  "status": {
+    "method": "GET",
+    "path": "/api/demo/claims/status",
+    "auth": "Bearer <flowToken>",
+    "request": null,
+    "responses": [
+      {
+        "status": 202,
+        "body": {
+          "state": "claiming",
+          "phase": "copying",
+          "retryAfter": 2,
+          "recoveryPending": false
+        }
+      },
+      {
+        "status": 202,
+        "body": {
+          "state": "claiming",
+          "phase": "committed",
+          "retryAfter": 2,
+          "recoveryPending": true
+        }
+      },
+      {
+        "status": 200,
+        "body": {
+          "state": "claimed",
+          "accountId": "a2",
+          "app": "shop",
+          "url": "https://shop.example.com",
+          "next": "cli_login"
+        }
+      },
+      {
+        "status": 200,
+        "body": {
+          "state": "aborted"
+        }
+      },
+      {
+        "status": 200,
+        "body": {
+          "state": "email_required",
+          "expiresAt": "2026-11-05T12:15:00Z"
+        }
+      },
+      {
+        "status": 200,
+        "body": {
+          "state": "account_required",
+          "expiresAt": "2026-11-05T12:15:00Z"
+        }
+      }
+    ],
+    "evidence": "internal/console/demo_claim_auth.go:364-395,445-452"
+  },
+  "browser": {
+    "method": "GET",
+    "path": "/demo/claim#<claimToken>",
+    "auth": "fragment retained in private link",
+    "request": null,
+    "responses": [
+      {
+        "status": 503,
+        "body": {
+          "error": "Claiming is not available in this release."
+        }
+      }
+    ],
+    "evidence": "internal/console/apidemo.go:279-282",
+    "implemented": false
+  },
+  "complete": {
+    "response": {
+      "status": 200,
+      "body": {
+        "state": "claimed",
+        "accountId": "a2",
+        "app": "shop",
+        "url": "https://shop.example.com",
+        "next": "cli_login"
+      }
+    },
+    "credentialIssued": false,
+    "evidence": "internal/console/demo_claim_auth.go:445-452; internal/console/demo_claim_transfer.go:648-667",
+    "movedNoticeImplemented": false,
+    "movedEvidence": "internal/console/demo_claim_transfer.go:673-675"
+  }
+}
