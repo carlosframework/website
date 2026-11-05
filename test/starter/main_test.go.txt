@@ -212,6 +212,14 @@ func TestStarterFlagsAndPersistence(t *testing.T) {
 			mux.ServeHTTP(w, r)
 			return w.Code
 		}
+		// 🤖 Empty form segments add bytes without changing the valid one-rune name.
+		oversized := "name=x" + strings.Repeat("&", 4091)
+		if len(oversized) != 4097 {
+			t.Fatalf("body bytes: %d", len(oversized))
+		}
+		if status := post(oversized); status != 413 {
+			t.Fatalf("4097-byte valid form: got %d, want 413", status)
+		}
 		for _, body := range []string{"name=", "name=+", "name=a&name=b", "other=a", "name=%FF", "name=" + strings.Repeat("a", 121), "name=" + strings.Repeat("a", 4092)} {
 			if status := post(body); status != 400 && status != 413 {
 				t.Fatalf("invalid input accepted: %d", status)

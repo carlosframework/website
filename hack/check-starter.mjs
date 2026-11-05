@@ -5,11 +5,12 @@ import { createHash } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
+import { gunzipSync } from 'node:zlib';
 
 const root = resolve(import.meta.dirname, '..');
 const source = join(root, 'src/start/starter/v1');
 const args = process.argv.slice(2);
-assert.equal(args.length, 2, 'usage: node hack/check-starter.mjs --platform <checkout>');
+assert.equal(args.length, 2, 'usage: npm run check:starter -- --platform <checkout> (requires STARTER_SCRATCH or TMPDIR on disk, outside /tmp)');
 assert.equal(args[0], '--platform');
 const platform = resolve(args[1]);
 const base = process.env.STARTER_SCRATCH || tmpdir();
@@ -27,6 +28,7 @@ function run(command, argv, cwd = root, extra = {}) {
  return result.stdout.trim();
 }
 try {
+ run(process.execPath,['--test','test/starter-pack.test.mjs']);
  const manifest = JSON.parse(readFileSync(join(source,'manifest.json'),'utf8'));
  const lock = readFileSync(join(platform,'internal/demobuild/toolchain.lock.json'));
  assert.equal(hash(lock), 'a858eb184a5255068a4a56470e3549a2a7d4718635a90fe69f40e9faff3948c5');
@@ -35,13 +37,20 @@ try {
  assert.equal(manifest.platformCommit,commit);
  const archive = join(scratch,'source.tar.gz');
  run('python3',['-B',join(root,'hack/pack-starter.py'),source,archive]);
- assert.equal(hash(readFileSync(archive)),manifest.archiveSHA256);
- assert.deepEqual(readFileSync(archive),readFileSync(join(source,'source.tar.gz')));
+ const published = readFileSync(join(source,'source.tar.gz'));
+ const repacked = readFileSync(archive);
+ assert.equal(hash(published),manifest.archiveSHA256);
+ // 🤖 Deflate bytes can vary across zlib versions; the tar and gzip metadata cannot.
+ for (const bytes of [published,repacked]) {
+  assert.deepEqual([...bytes.subarray(0,8)],[31,139,8,0,0,0,0,0]);
+  assert.equal(bytes[9],255);
+ }
+ assert.deepEqual(gunzipSync(repacked),gunzipSync(published));
  for (const file of ['go.mod','go.sum']) assert.deepEqual(readFileSync(join(source,file)),readFileSync(join(platform,'internal/console/testdata/demo',file)));
  assert.match(run('go',['version']),/^go version go1\.26\.10 /);
  const overlay = join(scratch,'overlay.json');
  writeFileSync(overlay,JSON.stringify({Replace:{[join(platform,'internal/demobuild/website_starter_contract_test.go')]:join(root,'test/starter/website_starter_contract_test.go.txt')}}));
- run('go',['test',`-overlay=${overlay}`,'-mod=readonly','./internal/demobuild','-run','^TestWebsiteStarterContract$','-count=1','-v'],platform,{WEBSITE_STARTER_ARCHIVE:archive});
+ run('go',['test',`-overlay=${overlay}`,'-mod=readonly','./internal/demobuild','-run','^TestWebsiteStarterContract$','-count=1','-v'],platform,{WEBSITE_STARTER_ARCHIVE:join(source,'source.tar.gz')});
  const app = join(scratch,'app');
  mkdirSync(app);
  for (const {path,digest} of manifest.files.map(f=>({path:f.path,digest:f.sha256}))) {

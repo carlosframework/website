@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-# 🤖 Deterministic source packaging. Publication metadata stays outside the archive.
+# 🤖 Deterministic tar and gzip metadata; deflate bytes depend on the local zlib.
+# Publication metadata stays outside the archive and hashes the published bytes.
 import argparse
 import gzip
 import hashlib
