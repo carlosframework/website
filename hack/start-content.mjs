@@ -35,7 +35,11 @@ export function renderAgent(template, config, claimContract, starter) {
  if(config.claimOff && config.claimDraft) throw configError('claim-off and claim-draft are mutually exclusive');
  if(!config.claimOff) validateClaimContract(claimContract,config);
  if(config.starterVersion!=='v1' || !/^[a-f0-9]{64}$/.test(starter?.archiveSHA256 ?? '') || starter?.schema!==1 || !starter.files?.length) throw configError('starter manifest is incomplete');
- const values={siteOrigin:config.siteOrigin,consoleOrigin:config.consoleOrigin,consoleHost:new URL(config.consoleOrigin).host,accountUrl:config.accountUrl,starterVersion:config.starterVersion,starterSHA256:starter.archiveSHA256};
+ const values={siteOrigin:config.siteOrigin,consoleOrigin:config.consoleOrigin,apiOrigin:config.apiOrigin,apiHost:new URL(config.apiOrigin).host,accountUrl:config.accountUrl,starterVersion:config.starterVersion,starterSHA256:starter.archiveSHA256};
+ // Preserve the existing instructions when both services share an origin.
+ values.urlValidation=config.apiOrigin===config.consoleOrigin
+  ? 'Validate returned status and claim URLs as HTTPS with the exact configured console origin, no userinfo; reject unexpected origins.'
+  : `Validate returned status URLs as HTTPS with the exact configured API origin \`${config.apiOrigin}\`, and returned claim URLs as HTTPS with the exact configured console origin \`${config.consoleOrigin}\`, no userinfo; reject unexpected origins.`;
  if(!config.claimOff) {
   values.producerCommit=claimContract.producerCommit;
   values.claimExamples=['start','verify','chooseAccount','status','browser','complete'].map(operation=>'```json\n'+JSON.stringify({operation,contract:claimContract[operation]},null,2)+'\n```').join('\n\n');

@@ -13,15 +13,49 @@ const rendered = renderAgent(template, config, contract, manifest);
 const examples = [...rendered.matchAll(/```json\n([\s\S]*?)\n```/g)].map(m => JSON.parse(m[1]));
 test('default off, explicit origins, strict HTTPS inputs and safe diagnostics', () => {
  assert.equal(loadStartConfig({}).enabled, false);
+ assert.equal(config.apiOrigin,config.consoleOrigin);
+ assert.equal(loadStartConfig({...env,CARLOS_START_API_ORIGIN:''}).apiOrigin,config.consoleOrigin);
+ assert.equal(loadStartConfig({...env,CARLOS_START_API_ORIGIN:'https://api.example.com/'}).apiOrigin,'https://api.example.com');
  for (const key of ['CARLOS_START_SITE_ORIGIN','CARLOS_START_CONSOLE_ORIGIN','CARLOS_START_ACCOUNT_URL']) {
   assert.throws(() => loadStartConfig({...env,[key]:undefined}), /The start page could not be built:/);
  }
  for (const bad of ['http://example.com','https://user:SECRET@example.com','https://example.com/path','https://example.com?x','https://example.com#x','https://example.com/../','https://example.com\\evil',' https://example.com']) {
-  assert.throws(() => loadStartConfig({...env,CARLOS_START_SITE_ORIGIN:bad}), e => e.message.startsWith('The start page could not be built:') && !e.message.includes('SECRET'));
+  for(const key of ['CARLOS_START_SITE_ORIGIN','CARLOS_START_CONSOLE_ORIGIN','CARLOS_START_API_ORIGIN']) assert.throws(() => loadStartConfig({...env,[key]:bad}), e => e.message.startsWith('The start page could not be built:') && !e.message.includes('SECRET'));
  }
  assert.throws(() => loadStartConfig({...env,CARLOS_START_ACCOUNT_URL:'https://other.example.com/'}));
  assert.throws(() => loadStartConfig({CARLOS_START_DEMO:'0'}));
  assert.throws(() => loadStartConfig({CARLOS_START_CLAIM_DRAFT:'1'}));
+});
+test('API calls and status validation use API origin; browser claims and CLI retain console origin',()=>{
+ const split=loadStartConfig({...env,CARLOS_START_API_ORIGIN:'https://api.example.com:8443'});
+ const markdown=renderAgent(template,split,contract,manifest);
+ assert.ok(markdown.includes(`The sole API origin is \`${split.apiOrigin}\``));
+ const urls=[...markdown.matchAll(/https:\/\/[^\s`"<>]+\/api\/demo\/[^\s`"<>]+/g)].map(m=>new URL(m[0]));
+ assert.ok(urls.length>=6);
+ for(const url of urls) assert.equal(url.origin,split.apiOrigin);
+ const examples=[...markdown.matchAll(/```json\n([\s\S]*?)\n```/g)].map(m=>JSON.parse(m[1]));
+ for(const operation of ['create','update']) {
+  const example=examples.find(e=>e.operation===operation);
+  assert.equal(example.request.url,`${split.apiOrigin}/api/demo/apps`);
+  assert.equal(new URL(example.response.body.statusUrl).origin,split.apiOrigin);
+ }
+ assert.equal(examples.find(e=>e.operation==='create').response.body.claimUrl,`${split.consoleOrigin}/demo/claim#synthetic-demo-token`);
+ for(const operation of ['start','verify','chooseAccount','status']) {
+  const fixture=examples.find(e=>e.operation===operation).contract;
+  assert.equal(new URL(fixture.path,split.apiOrigin).origin,split.apiOrigin);
+  assert.equal(fixture.path,contract[operation].path);
+ }
+ assert.equal(examples.find(e=>e.operation==='start').contract.responses.find(r=>r.body.state==='browser_required').body.claimUrl,`${split.consoleOrigin}/demo/claim#synthetic-demo-token`);
+ assert.ok(markdown.includes(`exact host \`api.example.com:8443\``));
+ assert.ok(markdown.includes(`Validate returned status URLs as HTTPS with the exact configured API origin \`${split.apiOrigin}\`, and returned claim URLs as HTTPS with the exact configured console origin \`${split.consoleOrigin}\`, no userinfo; reject unexpected origins.`));
+ assert.match(markdown,/Preserve accepted URLs byte-for-byte, including the claim fragment/);
+ assert.match(markdown,/Never follow a credential-bearing redirect to another origin/);
+ for(const command of ['carlos auth login','carlos auth whoami','carlos deploy']) assert.ok(markdown.includes(`${command} --console ${split.consoleOrigin}`));
+ assert.ok(markdown.includes(`[account path](${split.accountUrl})`));
+ const off=renderAgent(template,{...split,claimOff:true,claimDraft:false},undefined,manifest);
+ assert.ok(off.includes(`POST ${split.apiOrigin}/api/demo/apps`));
+ assert.doesNotMatch(off,/\/api\/demo\/claims|flowToken/);
+ assert.ok(off.includes(`[account path](${split.accountUrl})`));
 });
 test('claim gate requires merged SHA unless both explicit draft switches are set', () => {
  assert.equal(contract.producerMerged,false);

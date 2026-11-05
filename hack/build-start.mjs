@@ -11,8 +11,15 @@ const templates=new nunjucks.Environment(null,{autoescape:true,throwOnUndefined:
 export const renderMarkdown = text => md.render(text);
 export const escapeHTML = text => String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const pasteLine = config => `Follow the directions on ${config.siteOrigin}/start`;
+export function hostsHTML(config,copy) {
+ const siteHost=new URL(config.siteOrigin).hostname, apiHost=new URL(config.apiOrigin).hostname;
+ const hosts={siteHost,apiHost,host:siteHost};
+ const text=escapeHTML(copy[siteHost===apiHost?'start.hosts.one':'start.hosts.two'])
+  .replace(/\{(siteHost|apiHost|host)\}/g,(_,key)=>`<code>${escapeHTML(hosts[key])}</code>`);
+ return `<p class="start-hosts">${text}</p>`;
+}
 export function promptHTML(config,copy,id) {
- return `<div class="start-prompt"><pre><code id="${id}">${escapeHTML(pasteLine(config))}</code></pre><button type="button" class="copy-button primary" hidden data-copy-target="${id}" data-original="${escapeHTML(copy['copy.label'])}" data-copied="${escapeHTML(copy['copy.done'])}" data-copy-fallback="${escapeHTML(copy['copy.fallback'])}" data-copy-status="${id}-status" aria-label="${escapeHTML(copy['copy.aria'])}"><span>${escapeHTML(copy['copy.label'])}</span></button><p id="${id}-status" class="copy-status" role="status" aria-live="polite"></p></div>`;
+ return `<div class="start-prompt"><pre><code id="${id}">${escapeHTML(pasteLine(config))}</code></pre><button type="button" class="copy-button primary" hidden data-copy-target="${id}" data-original="${escapeHTML(copy['copy.label'])}" data-copied="${escapeHTML(copy['copy.done'])}" data-copy-fallback="${escapeHTML(copy['copy.fallback'])}" data-copy-status="${id}-status" aria-label="${escapeHTML(copy['copy.aria'])}"><span>${escapeHTML(copy['copy.label'])}</span></button>${hostsHTML(config,copy)}<p id="${id}-status" class="copy-status" role="status" aria-live="polite"></p></div>`;
 }
 export async function buildStart(outputDir,config) {
  const original=await read('src/start/index.html');

@@ -213,5 +213,19 @@
     "context": "Website build failure prefix, followed by the variable name and the problem",
     "status": "approved by Luna delegation, pending Paul's final review",
     "luna": "The start page could not be built:"
+  },
+  {
+    "id": "start.hosts.two",
+    "text": "If your agent has limited network access, allow {siteHost} and {apiHost} in its network settings before pasting. Most local agents do not need this.",
+    "context": "Under the paste line and copy button, homepage and /start, when the site and API hostnames differ",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "If your agent has limited network access, allow {siteHost} and {apiHost} in its network settings before pasting. Most local agents do not need this."
+  },
+  {
+    "id": "start.hosts.one",
+    "text": "If your agent has limited network access, allow {host} in its network settings before pasting. Most local agents do not need this.",
+    "context": "Under the paste line and copy button, homepage and /start, when the site and API hostnames match",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "If your agent has limited network access, allow {host} in its network settings before pasting. Most local agents do not need this."
   }
 ]

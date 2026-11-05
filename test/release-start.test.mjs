@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { parseReleaseArgs, releaseEnvironment, validateReleaseTree, deployArgs, channelVersion } from '../hack/release-start.mjs';
+import { loadStartConfig } from '../src/_data/start-config.mjs';
 
 const input = {
  console:'https://release.example.com',account:'test-account',app:'shop',channel:'canary/dev',
@@ -21,10 +22,23 @@ test('rejects unknown, duplicate, positional, missing, blank and control-charact
  for (const extra of [['--unknown'],['--console',input.console],['--execute','--execute'],['site'],['--ttl'],['--ttl',''],['--ttl','--execute'],['--ttl',' 1d'],['--ttl','1d\n'],['--execute=yes']]) assert.throws(() => parseReleaseArgs([...argv(),...extra]));
 });
 test('rejects non-HTTPS, credentials, query, fragment and path in console and site origins',() => {
- for (const key of ['console','site-origin','console-origin']) {
+ for (const key of ['console','site-origin','console-origin','api-origin']) {
   for (const bad of ['http://example.com','https://user:secret@example.com','https://example.com/path','https://example.com?query','https://example.com#fragment','https://example.com\\evil']) assert.throws(() => parseReleaseArgs(argv({...input,[key]:bad})));
  }
  assert.throws(() => parseReleaseArgs(argv({...input,'account-url':'https://other.example.com/'})));
+});
+test('optional API origin passes only to the build and cannot inherit an ambient origin',()=>{
+ const inherited={CARLOS_START_API_ORIGIN:'https://wrong.example.com'};
+ const defaults=releaseEnvironment(parseReleaseArgs(argv()),inherited);
+ assert.equal(defaults.CARLOS_START_API_ORIGIN,undefined);
+ assert.equal(loadStartConfig(defaults).apiOrigin,input['console-origin']);
+ const options=parseReleaseArgs([...argv(),'--api-origin','https://api.example.com']);
+ const env=releaseEnvironment(options,inherited);
+ assert.equal(env.CARLOS_START_API_ORIGIN,'https://api.example.com');
+ assert.equal(loadStartConfig(env).apiOrigin,'https://api.example.com');
+ assert.equal(loadStartConfig(env).consoleOrigin,input['console-origin']);
+ assert.deepEqual(deployArgs(options,'abc1234'),deployArgs(input,'abc1234'));
+ for(const extra of [['--api-origin'],['--api-origin',''],['--api-origin','--execute'],['--api-origin','https://one.example.com','--api-origin','https://two.example.com']]) assert.throws(()=>parseReleaseArgs([...argv(),...extra]));
 });
 test('temporary deployment does not require a channel and forwards TTL and execute explicitly',() => {
  const values = {...input}; delete values.channel;

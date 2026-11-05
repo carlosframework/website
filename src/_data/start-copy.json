@@ -37,5 +37,7 @@
   "starter.full": "This list is full. It can hold up to 100 items.",
   "starter.error": "Something went wrong. Try again.",
   "starter.aria": "Add an item to the shop list",
-  "start.config.error": "The start page could not be built:"
+  "start.config.error": "The start page could not be built:",
+  "start.hosts.two": "If your agent has limited network access, allow {siteHost} and {apiHost} in its network settings before pasting. Most local agents do not need this.",
+  "start.hosts.one": "If your agent has limited network access, allow {host} in its network settings before pasting. Most local agents do not need this."
 }

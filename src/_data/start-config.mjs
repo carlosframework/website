@@ -15,10 +15,10 @@ export function loadStartConfig(env = process.env) {
  if (claimOff && !enabled) throw configError('CARLOS_START_CLAIM=off requires CARLOS_START_DEMO=1');
  if (claimOff && claimDraft) throw configError('CARLOS_START_CLAIM=off and CARLOS_START_CLAIM_DRAFT=1 are mutually exclusive');
  if (claimDraft && !enabled) throw configError('CARLOS_START_CLAIM_DRAFT requires CARLOS_START_DEMO=1');
- const config = {enabled,claimDraft,claimOff,...productionDefaults,starterVersion:'v1',claimContractRevision:''};
+ const config = {enabled,claimDraft,claimOff,...productionDefaults,apiOrigin:productionDefaults.consoleOrigin,starterVersion:'v1',claimContractRevision:''};
  if (!enabled) return config;
- for(const [field,key] of Object.entries({siteOrigin:'CARLOS_START_SITE_ORIGIN',consoleOrigin:'CARLOS_START_CONSOLE_ORIGIN',accountUrl:'CARLOS_START_ACCOUNT_URL'})) {
-  const raw=env[key]; let u;
+ for(const [field,key] of Object.entries({siteOrigin:'CARLOS_START_SITE_ORIGIN',consoleOrigin:'CARLOS_START_CONSOLE_ORIGIN',apiOrigin:'CARLOS_START_API_ORIGIN',accountUrl:'CARLOS_START_ACCOUNT_URL'})) {
+  const raw=field==='apiOrigin' && (env[key]===undefined || env[key]==='') ? config.consoleOrigin : env[key]; let u;
   try {u=new URL(raw);} catch {throw configError(`${key} requires an explicit HTTPS URL`);}
   if (!raw || raw.trim()!==raw || /[\s\\<>"'`{}]/u.test(raw) || u.protocol!=='https:' || u.username || u.password || raw.includes('?') || raw.includes('#')) throw configError(`${key} is not an allowed HTTPS URL`);
   if(field!=='accountUrl' && raw!==u.origin && raw!==u.origin+'/') throw configError(`${key} must be an origin without a path`);

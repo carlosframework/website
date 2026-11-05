@@ -9,7 +9,7 @@ const read=p=>readFile(p,'utf8');
 const copy=JSON.parse(await read('src/_data/start-copy.json'));
 const env={CARLOS_START_DEMO:'1',CARLOS_START_CLAIM_DRAFT:'1',CARLOS_START_SITE_ORIGIN:'https://carlosframework.com',CARLOS_START_CONSOLE_ORIGIN:'https://console.carloku.com',CARLOS_START_ACCOUNT_URL:'https://console.carloku.com/'};
 const base=process.env.STARTER_SCRATCH||tmpdir();assert.ok(!/^\/tmp(?:\/|$)/.test(base),'use disk scratch');
-async function pages(fn,origin) {await mkdir(base,{recursive:true});const dir=await mkdtemp(join(base,'start-pages-'));try{await buildStart(dir,loadStartConfig({...env,...(origin?{CARLOS_START_SITE_ORIGIN:origin}:{})}));await fn(await read(join(dir,'index.html')),await read(join(dir,'start/index.html')));}finally{await rm(dir,{recursive:true,force:true});}}
+async function pages(fn,overrides={}) {await mkdir(base,{recursive:true});const dir=await mkdtemp(join(base,'start-pages-'));try{await buildStart(dir,loadStartConfig({...env,...overrides}));await fn(await read(join(dir,'index.html')),await read(join(dir,'start/index.html')));}finally{await rm(dir,{recursive:true,force:true});}}
 test('enabled hero uses approved copy, one primary paste action and preserved subtitle',()=>pages(async(home,start)=>{
  const hero=home.match(/<section class="hero">[\s\S]*?<\/section>/)[0];
  assert.doesNotMatch(hero,/\b\d+\s*[x×]/i);
@@ -34,11 +34,33 @@ test('enabled hero uses approved copy, one primary paste action and preserved su
 }));
 test('dev builds share a dev-origin paste line',()=>pages((home,start)=>{
  for(const html of [home,start]) {assert.ok(html.includes('>Follow the directions on https://dev.example.com/start</code>'));assert.ok(!html.includes('>Follow the directions on https://carlosframework.com/start</code>'));}
-},'https://dev.example.com'));
+},{CARLOS_START_SITE_ORIGIN:'https://dev.example.com'}));
+for(const [name,overrides,hosts] of [
+ ['production defaults',{},['carlosframework.com','console.carloku.com']],
+ ['dev defaults',{CARLOS_START_SITE_ORIGIN:'https://dev.example.com',CARLOS_START_CONSOLE_ORIGIN:'https://console.dev.example.com',CARLOS_START_ACCOUNT_URL:'https://console.dev.example.com/'},['dev.example.com','console.dev.example.com']],
+ ['separate API',{CARLOS_START_SITE_ORIGIN:'https://dev.example.com',CARLOS_START_API_ORIGIN:'https://api.dev.example.com'},['dev.example.com','api.dev.example.com']],
+ ['shared site and API',{CARLOS_START_API_ORIGIN:'https://carlosframework.com'},['carlosframework.com']],
+ ['shared hostname with distinct ports',{CARLOS_START_SITE_ORIGIN:'https://dev.example.com:8443',CARLOS_START_API_ORIGIN:'https://dev.example.com:9443'},['dev.example.com']],
+ ['escaped hosts',{CARLOS_START_SITE_ORIGIN:'https://site&dev.example.com',CARLOS_START_API_ORIGIN:'https://api&dev.example.com'},['site&dev.example.com','api&dev.example.com']],
+]) test(`host note appears once directly under each paste line: ${name}`,()=>pages((home,start)=>{
+ const expected=`<p class="start-hosts">If your agent has limited network access, allow ${hosts.map(host=>`<code>${escapeHTML(host)}</code>`).join(' and ')} in its network settings before pasting. Most local agents do not need this.</p>`;
+ for(const [html,id] of [[home,'home-prompt'],[start,'start-prompt']]) {
+  assert.equal((html.match(/class="start-hosts"/g)||[]).length,1);
+  assert.ok(html.includes(`</button>${expected}<p id="${id}-status"`));
+  const prompt=html.match(/<div class="start-prompt">[\s\S]*?<\/div>/)[0];
+  assert.ok(prompt.includes(expected));
+  assert.ok(prompt.indexOf(`<code id="${id}">`)<prompt.indexOf(expected));
+  const site=loadStartConfig({...env,...overrides}).siteOrigin;
+  assert.ok(prompt.includes(`>${escapeHTML(`Follow the directions on ${site}/start`)}</code>`));
+ }
+ const hero=home.match(/<section class="hero">[\s\S]*?<\/section>/)[0];
+ assert.ok(hero.indexOf('<span class="start-authorship">🤖</span>')<hero.indexOf(expected));
+ assert.ok(!hero.slice(hero.indexOf('<span class="start-authorship">🤖</span>'),hero.indexOf(expected)).includes('<!-- 👨'));
+},overrides));
 test('start order, approved text arrays, complete instructions and unchanged account block',()=>pages(async(_,start)=>{
  const positions=['<h1>','class="intro"','id="start-prompt"','<ol>','Keep it','href="#account"','id="account"','id="for-your-agent"','<!-- agent-content -->'].map(s=>start.indexOf(s));
  assert.ok(positions.every((p,i)=>p>=0 && (!i||p>positions[i-1])));
- for(const [id,value] of Object.entries(copy).filter(([id])=>id.startsWith('start.')&&!['start.prompt','start.config.error'].includes(id))) for(const text of [value].flat()) assert.ok(start.includes(escapeHTML(text)),id);
+ for(const [id,value] of Object.entries(copy).filter(([id])=>id.startsWith('start.')&&!id.startsWith('start.hosts.')&&!['start.prompt','start.config.error'].includes(id))) for(const text of [value].flat()) assert.ok(start.includes(escapeHTML(text)),id);
  const account=(await read('src/start/index.html')).match(/<div class="start-tabs">[\s\S]*?(?=<\/div><\/section><\/main>)/)[0];assert.ok(start.includes(account));
  const section=start.split('id="for-your-agent"')[1];assert.doesNotMatch(section,/<details|\bhidden\b/);assert.match(section,/GOOS=linux GOARCH=arm64/);
 }));

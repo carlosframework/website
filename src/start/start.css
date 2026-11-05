@@ -27,6 +27,9 @@
 .start-prompt { display:flex; flex-wrap:wrap; gap:.75rem; align-items:center; width:100%; max-width:40rem; margin-top:1.5rem; }
 .start-prompt pre { flex:1 1 22rem; min-width:0; margin:0; padding:1rem; border:1px solid var(--rule); border-radius:7px; background:var(--page-alt); color:var(--ink); white-space:pre-wrap; overflow-wrap:anywhere; }
 .start-prompt code { font: .95rem/1.6 var(--mono); }
+.start-prompt .start-hosts { flex-basis:100%; margin:0; font-size:.85rem; line-height:1.5; color:var(--muted); }
+.start-prompt .start-hosts code { font-size:inherit; overflow-wrap:anywhere; }
+.inner-hero .start-hosts { color:#c4d5ce; }
 .start-prompt .copy-button { position:static; border:1px solid var(--rule); border-radius:7px; padding:.75rem 1.1rem; background:var(--accent); color:var(--page); font:600 .95rem var(--sans); cursor:pointer; }
 .start-prompt [hidden], .copy-button:not([data-copy-ready]) { display:none!important; }
 .start-prompt .copy-button:focus-visible { outline:3px solid var(--focus); outline-offset:4px; }
