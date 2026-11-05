@@ -2,7 +2,7 @@
 
 | Record field | Value |
 |---|---|
-| Website SHA | 961877b4b8bc46fe9a36f9d3cdbd1e73ad934610 (deployed), verifier fix f6b0223 |
+| Website SHA | 6ee4406c960113ad4ecb358813bbb92090de7102 (deployed; witnesses ran on 961877b) |
 | Platform SHA | ddbc0297 (main at build; read-only) |
 | Plan A merged SHA | ffcf01b5 |
 | Plan 2 merged SHA | |
@@ -12,8 +12,8 @@
 | Console origin | https://platform.dev.carlosframework.com |
 | Site origin | https://tmp-pj4lpm.bab.dev.oncarlos.com (dev temporary static app, trashed 2026-11-12) |
 | Account URL | https://platform.dev.carlosframework.com/ |
-| Previous static version for rollback | placeholder |
-| Website version / X-Carlos-Version | 961877b |
+| Previous static version for rollback | 961877b |
+| Website version / X-Carlos-Version | 6ee4406 (witnesses on 961877b) |
 | Markdown SHA-256 | 1de546e91086b210f1695fe51bcbb4d226a004911dcccc9e470437a736d18809 |
 | Returned public demo URL | https://kind-lake-34.dev.trycarlos.com/ (Codex local); https://breezy-lark-42.dev.trycarlos.com/ (Claude Code local) |
 | Returned permanent URL | none: claiming not available on dev |
@@ -37,7 +37,7 @@
 | Phone browser operation | not run | | | | | |
 | Create row, bearer update, preserved row and expiry | pass | https://kind-lake-34.dev.trycarlos.com/; https://breezy-lark-42.dev.trycarlos.com/ |  |  | Codex local; Claude Code local | person-added rows survived bearer updates; versions demo.3 and demo.2; expiry unchanged per responses |
 | Compile error, diagnostics and repair | pass | https://kind-lake-34.dev.trycarlos.com/ | about 70 s for broken + fixed update | 2 publishes | Codex local | diagnostic main.go:212: undefined: missingBuildTestValue returned; fixed update live |
-| Claim: email verification | outstanding |  |  |  |  | dev console has no mailer; Plan 3 unmerged |
+| Claim: email verification | outstanding |  |  |  |  | dev console has no mailer; Paul's ruling: emailed-code path witnessed later on flagship; Keymail browser claim by Paul on dev (checklist below) |
 | Claim: transfer | outstanding |  |  |  |  |  |
 | Permanent URL: copied row | outstanding |  |  |  |  |  |
 | Demo moved page, old demo token rejected | outstanding |  |  |  |  |  |
@@ -63,3 +63,17 @@
 | Email codes | Redact |
 | Personal email | Redact |
 | Cookies | Redact |
+
+## Paul's live claim on dev (Keymail, browser path)
+
+🤖 Run this once the claim-on build is on the dev site and claiming is enabled on the dev console. The emailed-code path is witnessed later on flagship.
+
+1. In a local coding agent (Claude Code or Codex), paste the line shown on [https://tmp-pj4lpm.bab.dev.oncarlos.com/start/](https://tmp-pj4lpm.bab.dev.oncarlos.com/start/). Describe a small app and approve the first version.
+2. Check the agent gives you a live `*.dev.trycarlos.com` link and, privately and once, a claim link on `platform.dev.carlosframework.com/demo/claim#…`. Keep the claim link out of screenshots.
+3. Open the demo and save one invented row.
+4. Tell the agent you want to keep it and give your Keymail address. Expected: the agent says your address finishes in the browser and hands you the claim link. It must not ask for an emailed code.
+5. Open the claim link. Sign in with Keymail on the dev console. Check that the page shows the identity you signed in with. If you have several accounts, the page must make you choose one; it must not pick one for you. Confirm the claim.
+6. Expected result: the page reports the claim complete with a permanent `*.dev.oncarlos.com` address. Open it and check your row is there.
+7. Open the old `*.dev.trycarlos.com` address. Expected: a moved page pointing to the new address.
+8. Ask the agent to send one more update with the demo token. Expected: refused (the token is consumed). The agent must not create a new demo to recover.
+9. Note the time from step 4 to step 6 and anything that surprised you. Then tell the controller, or add it on PR #106.
