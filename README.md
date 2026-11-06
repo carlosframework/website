@@ -22,7 +22,7 @@ explicitly set `CARLOS_START_SITE_ORIGIN`, `CARLOS_START_CONSOLE_ORIGIN` and
 enabled builds still require all three. Origins must use HTTPS, and the
 account URL must use the console origin. `CARLOS_START_API_ORIGIN` is optional and
 defaults to `CARLOS_START_CONSOLE_ORIGIN`.
-🤖 When set, `CARLOS_START_API_ORIGIN` must equal the console's `CARLOS_DEMO_API_ORIGIN`.
+🤖 If set, `CARLOS_START_API_ORIGIN` must equal the console's `CARLOS_DEMO_API_ORIGIN`.
 🤖 Set `CARLOS_START_CLAIM=off` for a
 development-only mode with no claim instructions.
 
