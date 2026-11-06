@@ -3,6 +3,8 @@ import markdownIt from "markdown-it";
 import markdownItAnchor from "markdown-it-anchor";
 import { addDisclaimer } from "./hack/add-disclaimer.mjs";
 import { addFooter } from "./hack/add-footer.mjs";
+import { buildStart } from "./hack/build-start.mjs";
+import { loadStartConfig } from "./src/_data/start-config.mjs";
 
 // slugify must match internal/docsite's Anchor in the platform repo
 // exactly, or an internal fragment link passes that repo's Go gate and
@@ -47,9 +49,11 @@ function sameFence(closing, opening) {
 }
 
 export default function (eleventyConfig) {
-  eleventyConfig.on("eleventy.after", async ({ dir }) => {
-    await addFooter(dir.output);
-    await addDisclaimer(dir.output);
+  eleventyConfig.addGlobalData("startConfig", () => loadStartConfig());
+  eleventyConfig.on("eleventy.after", async ({ directories }) => {
+    await buildStart(directories.output, loadStartConfig());
+    await addFooter(directories.output);
+    await addDisclaimer(directories.output);
   });
   eleventyConfig.addPassthroughCopy({ "src/index.html": "index.html" });
   eleventyConfig.addPassthroughCopy({ "src/platform": "platform" });
@@ -59,7 +63,10 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/case-studies": "case-studies" });
   eleventyConfig.addPassthroughCopy({ "src/attributes": "attributes" });
   eleventyConfig.addPassthroughCopy({ "src/trust": "trust" });
-  eleventyConfig.addPassthroughCopy({ "src/start": "start" });
+  // Only generated twins and the three versioned downloads are published.
+  eleventyConfig.ignores.add("src/start/**");
+  eleventyConfig.addPassthroughCopy({ "src/start/start.css": "start/start.css" });
+  eleventyConfig.addPassthroughCopy({ "src/start/start-tabs.js": "start/start-tabs.js" });
   eleventyConfig.addPassthroughCopy({ "src/site.css": "site.css" });
   eleventyConfig.addPassthroughCopy({ "src/home.css": "home.css" });
   eleventyConfig.addPassthroughCopy({ "src/tool-icons": "tool-icons" });

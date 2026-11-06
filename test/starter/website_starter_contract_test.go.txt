@@ -1,0 +1,100 @@
+package demobuild
+
+import (
+	"archive/tar"
+	"bytes"
+	"compress/gzip"
+	"io"
+	"os"
+	"strings"
+	"testing"
+)
+
+func TestWebsiteStarterContract(t *testing.T) {
+	archive, err := os.ReadFile(os.Getenv("WEBSITE_STARTER_ARCHIVE"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	lock, err := DefaultLock()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Run("published", func(t *testing.T) {
+		source, diagnostics, err := ValidateSource(bytes.NewReader(archive), lock)
+		if err != nil {
+			t.Fatalf("ValidateSource: %v: %+v", err, diagnostics)
+		}
+		if len(source.Files) != 8 {
+			t.Fatalf("files = %d", len(source.Files))
+		}
+	})
+	for _, mutation := range []string{"none", "dependency", "checksum", "pax", "dot-prefix", "symlink", "hardlink"} {
+		t.Run(mutation, func(t *testing.T) {
+			gz, err := gzip.NewReader(bytes.NewReader(archive))
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer gz.Close()
+			in := tar.NewReader(gz)
+			var b bytes.Buffer
+			zip := gzip.NewWriter(&b)
+			out := tar.NewWriter(zip)
+			for {
+				h, err := in.Next()
+				if err == io.EOF {
+					break
+				}
+				if err != nil {
+					t.Fatal(err)
+				}
+				body, err := io.ReadAll(in)
+				if err != nil {
+					t.Fatal(err)
+				}
+				h.Format = tar.FormatUSTAR
+				if h.Name == "go.mod" && mutation == "dependency" {
+					body = bytes.ReplaceAll(body, []byte("v0.30.2"), []byte("v0.30.1"))
+				}
+				if h.Name == "go.sum" && mutation == "checksum" {
+					body = []byte(strings.SplitN(string(body), "\n", 2)[1])
+				}
+				if h.Name == "main.go" && mutation == "pax" {
+					h.Format = tar.FormatPAX
+					h.PAXRecords = map[string]string{"comment": "forbidden"}
+				}
+				if h.Name == "main.go" && (mutation == "symlink" || mutation == "hardlink") {
+					h.Typeflag = tar.TypeSymlink
+					if mutation == "hardlink" {
+						h.Typeflag = tar.TypeLink
+					}
+					h.Linkname = "go.mod"
+					body = nil
+				}
+				if mutation == "dot-prefix" {
+					h.Name = "./" + h.Name
+				}
+				h.Size = int64(len(body))
+				if err := out.WriteHeader(h); err != nil {
+					t.Fatal(err)
+				}
+				if _, err := out.Write(body); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if err := out.Close(); err != nil {
+				t.Fatal(err)
+			}
+			if err := zip.Close(); err != nil {
+				t.Fatal(err)
+			}
+			_, diagnostics, err := ValidateSource(bytes.NewReader(b.Bytes()), lock)
+			if mutation == "none" {
+				if err != nil {
+					t.Fatalf("unmutated repack rejected: %v: %+v", err, diagnostics)
+				}
+			} else if err == nil {
+				t.Fatal("mutated archive accepted")
+			}
+		})
+	}
+}

@@ -20,9 +20,10 @@ Two audiences, one per page (confirmed 2026-08-05):
 
 The site exists to win adoption, and each page has a concrete success action:
 
-- index → the visitor starts building on the model, beginning with the
-  [Claude Code skill](https://github.com/carlosframework/skills). That is the
-  hero's primary action; everything else on the page is subordinate to it.
+- 🤖 index → When the demo journey is enabled, visitors copy one line into
+  their coding agent and try a small public app for 24 hours. Larger projects
+  and existing apps use the account path. Disabled builds keep the existing
+  hero and setup page.
 - /platform/ → the visitor gets started at platform.carlosframework.com, or
   takes the hosted route at carloku.com.
 

@@ -1,0 +1,24 @@
+<main class="demo-start">
+<section class="inner-hero"><div class="wrap">
+<span class="start-authorship">🤖</span>
+<h1>{{ copy['start.title'] }}</h1>
+<p class="intro">{{ copy['start.intro'] }}</p>
+{{ promptHTML | safe }}
+</div></section>
+<section class="inner-section"><div class="wrap start-prose">
+<ol>{% for step in copy['start.steps'] %}<li>{{ step }}</li>{% endfor %}</ol>
+<p>{{ copy['start.lifetime'] }}</p>
+<p>{{ copy['start.data'] }}</p>
+{% if not config.claimOff %}<h2>{{ copy['start.claim'][0] }}</h2>
+<p>{{ copy['start.claim'][1] }}</p>
+{% endif %}<p>{{ copy['start.account'][0] }} <a href="#account">{{ copy['start.account'][1] }}</a></p>
+</div></section>
+<section class="inner-section" id="account"><div class="wrap">
+{{ accountHTML | safe }}
+</div></section>
+<section class="inner-section" id="for-your-agent"><div class="wrap agent-prose">
+<h2>{{ copy['start.agent.heading'] }}</h2>
+<p class="start-authorship">{{ copy['start.authorship'] }}</p>
+<div class="agent-content"><!-- agent-content -->{{ agentHTML | safe }}<!-- /agent-content --></div>
+</div></section>
+</main>

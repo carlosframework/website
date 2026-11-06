@@ -7,12 +7,29 @@ small enough to understand, sealed so tightly the operator is not a party to
 it, and yours to run. Extracted — not designed — from five systems that kept
 rebuilding the same shape.
 
-The hand-written pages — [`src/index.html`](src/index.html), `src/platform/`,
-`src/rastrillo/` — ship as plain HTML and CSS: no build step, no dependencies,
-no JavaScript. The framework's own rules apply to its website. `/docs` is the
-one exception: a dozen reference pages sharing a sidebar go through Eleventy
-(see `AGENTS.md`), so that part of the repo does have a devDependency and a
-build step, run before you ship rather than in anyone's browser.
+🤖 Eleventy builds the site into `_site/` and injects the shared footer and
+disclosure. Enabled demo builds generate `/start/index.html` and
+`/start/index.md` from one agent source and publish the pinned starter. The
+browser runs local scripts for disclosure, clipboard controls and the
+Attributes sidebar.
+
+🤖 The demo journey defaults off. To build it, set `CARLOS_START_DEMO=1` and
+explicitly set `CARLOS_START_SITE_ORIGIN`, `CARLOS_START_CONSOLE_ORIGIN` and
+`CARLOS_START_ACCOUNT_URL`. Production defaults are
+[https://carlosframework.com](https://carlosframework.com),
+[https://console.carloku.com](https://console.carloku.com) and
+[https://console.carloku.com/](https://console.carloku.com/), respectively;
+enabled builds still require all three. Origins must use HTTPS, and the
+account URL must use the console origin. `CARLOS_START_API_ORIGIN` is optional and
+defaults to `CARLOS_START_CONSOLE_ORIGIN`.
+🤖 If set, `CARLOS_START_API_ORIGIN` must equal the console's `CARLOS_DEMO_API_ORIGIN`.
+🤖 Set `CARLOS_START_CLAIM=off` for a
+development-only mode with no claim instructions.
+
+🤖 Normal enablement requires a
+merged producer SHA and `producerMerged: true`. When the demo is unset, builds
+preserve the original pages and remove stale anonymous downloads and Markdown.
+Run `npm run check` with `STARTER_SCRATCH` set to an on-disk scratch directory.
 
 **The rule for adding a page:** if a URL on carlosframework.com should return
 it, the file goes under `src/` — either as Eleventy build input, or as a raw
@@ -61,14 +78,18 @@ and is informed by building [Eleven](https://elevenmessenger.com).
 
 ## Deploying
 
-The apex runs on the CARLOS flagship as a static app, not GitHub Pages
-(retired 2026-08-05) — pushing to `main` does not publish it. Deploying is
-`ship`/`promote` via the operator pinfra scripts — that pair IS the
-deploy for this static, instance-less app; `carlos deploy`'s
-wait-until-serving watch doesn't cover it yet (platform#112). Convergence
-is seconds; verify by content (STATIC routes don't carry
-`X-Carlos-Version`) or with `carlos channels --app carlosframework`. Full
-details, env, and rollback are in [`AGENTS.md`](AGENTS.md).
+🤖 Publish only the built `_site/` directory from a clean export of a reviewed,
+merged commit. Use the console API and CLI recipe in [`AGENTS.md`](AGENTS.md).
+Public demo activation requires the platform's Accept-header negotiation change
+on the serving edges, in
+`docs/superpowers/plans/2026-11-04-static-markdown-twins.md`. It also requires
+the demo protection and claim-by-email changes in
+`docs/superpowers/plans/2026-11-04-agent-start-demo-2-edge-protections.md` and
+`docs/superpowers/plans/2026-11-04-agent-start-demo-3-claim.md` to be merged,
+enabled and verified. Accept negotiation serves HTML or Markdown based on the
+`Accept` header. The full HTML instructions remain visible. Keep the previous
+static version for rollback. Verify live acceptance separately from the local
+build checks.
 
 ## License
 

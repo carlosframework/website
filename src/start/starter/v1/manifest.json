@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "archiveSHA256": "2c7c1694ec022eb98bacca1e9b7bb17bb8391893ef51fabca2c5e1141b9f1f99",
+  "files": [
+    {
+      "path": "LICENSE.fiesta",
+      "sha256": "3f3d9e0024b1921b067d6f7f88deb4a60cbe7a78e76c64e3f1d7fc3b779b9d04"
+    },
+    {
+      "path": "go.mod",
+      "sha256": "78a1f3d56026dc3efa3a9456dc7a39c63672bafcf0bb04944c075eac6e601180"
+    },
+    {
+      "path": "go.sum",
+      "sha256": "688bf53e93ba1ba280fc924446986ab2cf32fba7c4f16efaf80a8c6e36848b49"
+    },
+    {
+      "path": "main.go",
+      "sha256": "98fa89c1740db2e43438905198cc84a627c41f464b4e11a79a04385b0071f24c"
+    },
+    {
+      "path": "static/fiesta-plain.css",
+      "sha256": "47f6911af8efc962d268cb4f1bedeaf6ac921c2fef6a29cfa57be0ab0ce01b43"
+    },
+    {
+      "path": "static/fiesta-signal.css",
+      "sha256": "b8d5337117166c9156271762e39e0dec1f44bb8459ce98f9632dff31322a999a"
+    },
+    {
+      "path": "static/fiesta.css",
+      "sha256": "141597a63cdc616bc33c7bec0ee6bcda47bd5d279726ed9f44fa6ddf3671b68a"
+    },
+    {
+      "path": "templates/index.html",
+      "sha256": "5854bc3fcd6ef3c0584333f91960993ff0acb1562ebe603c1b1c20ec6725e8b6"
+    }
+  ],
+  "platformCommit": "0eea2abb6e7ae1a396c0377637929bfabde92d12",
+  "lockSHA256": "a858eb184a5255068a4a56470e3549a2a7d4718635a90fe69f40e9faff3948c5",
+  "fiesta": {
+    "version": "1.1.0",
+    "commit": "4ee76b5e651ff4fb5a4bae12d7508f55a2531eff"
+  }
+}

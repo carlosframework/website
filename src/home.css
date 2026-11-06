@@ -1136,3 +1136,11 @@ a.hero-tool:hover h2, .hero-tool :is(h2, h3) a:hover { text-decoration: underlin
 .compact-differences:after{opacity:.045}
 .compact-differences .chapter-heading{margin-bottom:1.75rem;display:block}
 .compact-differences .chapter-heading p{max-width:70ch;color:var(--muted);font-size:1.05rem;line-height:1.6;margin:1rem 0 0}
+
+/* 🤖 Enabled demo invitation; the original hero is retained by default. */
+.hero-copy > .start-authorship { margin-top:1.5rem; color:#b7cfc4; }
+.hero-copy > .start-authorship + .hero-promise { margin-top:.35rem; }
+.hero-copy .hero-demo-intro { max-width:36rem; margin-top:1rem; color:var(--cream); font-size:1.05rem; line-height:1.6; }
+.hero-copy .start-prompt { --page-alt:#172d32; --ink:#eef5ed; --accent:#82c9b5; --page:#101c23; --rule:#82c9b560; --focus:#c8ef8b; }
+.hero-copy .start-prompt .copy-status { color:var(--cream); }
+.hero-copy .start-prompt + .actions { margin-top:1rem; }
