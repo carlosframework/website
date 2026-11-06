@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const dialog = document.createElement("dialog");
   dialog.className = "search-dialog";
   dialog.setAttribute("aria-label", "Search the docs");
-  dialog.innerHTML = '<form method="dialog"><input type="search" placeholder="Search the docs" aria-label="Search the docs" autocomplete="off"><button type="button" class="search-close" aria-label="Close search">&times;</button></form><ul></ul><p class="search-hint">Enter opens the first result. Escape closes.</p>';
+  dialog.innerHTML = '<form method="dialog"><input type="text" role="searchbox" enterkeyhint="search" placeholder="Search the docs" aria-label="Search the docs" autocomplete="off" spellcheck="false"><button type="button" class="search-close" aria-label="Close search">&times;</button></form><ul></ul><p class="search-hint">Enter opens the first result. Escape closes.</p>';
   document.body.append(dialog);
   const input = dialog.querySelector("input");
   const list = dialog.querySelector("ul");
@@ -57,8 +57,8 @@ document.addEventListener("DOMContentLoaded", () => {
     open();
   });
   input.addEventListener("input", render);
-  // In a search field, Chrome's first Escape only clears the text. Close
-  // in one press instead.
+  // Escape closes in one press (the field is a plain text box with the
+  // searchbox role, so there is no native clear button competing for it).
   input.addEventListener("keydown", (e) => { if (e.key === "Escape") { e.preventDefault(); dialog.close(); } });
   dialog.querySelector("form").addEventListener("submit", (e) => {
     const first = list.querySelector("a");

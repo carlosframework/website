@@ -100,7 +100,7 @@ try {
   await sleep(200);
   const y1 = await evalJS(`scrollY`);
   const dlg = await evalJS(`!!document.querySelector('dialog.search-dialog[open]')`);
-  const focusIn = await evalJS(`document.activeElement?.matches('dialog.search-dialog input[type=search]') || false`);
+  const focusIn = await evalJS(`document.activeElement?.matches('dialog.search-dialog input') || false`);
   check("search click does not scroll the page", y0 === y1, [y0, y1]);
   check("search click opens the search box with focus in it", dlg && focusIn, [dlg, focusIn]);
   await send("Input.insertText", { text: "how it" });
@@ -118,8 +118,8 @@ try {
   await sleep(150);
   await send("Input.insertText", { text: "rails" });
   const closers = await evalJS(`document.querySelectorAll('dialog.search-dialog .search-close').length`);
-  const nativeX = await evalJS(`getComputedStyle(document.querySelector('dialog.search-dialog input'), '::-webkit-search-cancel-button').display`);
-  check("search has one close button, and no native clear button", closers === 1 && nativeX === "none", [closers, nativeX]);
+  const field = await evalJS(`(() => { const i = document.querySelector('dialog.search-dialog input'); return i.type + '|' + i.getAttribute('role'); })()`);
+  check("search has one close button, and no native clear button", closers === 1 && field === "text|searchbox", [closers, field]);
   await evalJS(`document.querySelector('dialog.search-dialog .search-close')?.click()`);
   await sleep(150);
   check("the close button dismisses the search", await evalJS(`!document.querySelector('dialog.search-dialog[open]')`), "still open");

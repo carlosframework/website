@@ -167,7 +167,7 @@ dialog.search-dialog {
   background: var(--surface); color: var(--ink); box-shadow: var(--shadow-2);
 }
 dialog.search-dialog::backdrop { background: rgb(0 0 0 / 0.35); }
-.search-dialog input[type="search"] {
+.search-dialog input {
   width: 100%; padding: 0.9rem 1rem; border: 0; border-bottom: 1px solid var(--rule);
   background: transparent; color: var(--ink); font: inherit; font-size: 1.05rem; outline: none;
 }
@@ -178,9 +178,8 @@ dialog.search-dialog::backdrop { background: rgb(0 0 0 / 0.35); }
 .search-dialog li span { padding-right: 0.6rem; color: var(--muted); font-size: 0.82rem; white-space: nowrap; }
 .search-dialog .search-empty { padding: 0.6rem; color: var(--muted); }
 .search-dialog .search-hint { margin: 0; padding: 0.5rem 1rem; border-top: 1px solid var(--rule-soft); color: var(--muted); font-size: 0.8rem; }
-/* One close control: hide the browser's own clear button in the field. */
+/* One close control: the field is a plain text box, so the browser adds no clear button of its own. */
 .search-dialog form { display: flex; align-items: center; border-bottom: 1px solid var(--rule); }
-.search-dialog input[type="search"] { border-bottom: 0; }
-.search-dialog input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; display: none; }
+.search-dialog input { border-bottom: 0; }
 .search-close { flex: none; margin-right: 0.5rem; width: 2rem; height: 2rem; border: 0; border-radius: 6px; background: transparent; color: var(--muted); font-size: 1.35rem; line-height: 1; cursor: pointer; }
 .search-close:hover, .search-close:focus-visible { background: var(--bg-sunk); color: var(--ink); }
