@@ -141,7 +141,8 @@ and assertive — deliberately not the warm paper-and-serif world rastrillo.org
 already owns.
 
 The whole world ships under the constraints of the architecture it describes:
-one hand-written stylesheet, no build step, no JavaScript, no fetched fonts.
+one hand-written stylesheet, no build step, no fetched fonts, and no page that
+needs JavaScript to be read.
 That constraint is the source of the system's most distinctive decision — the
 six CARLOS letter marks and the wordmark are *drawn* as inline SVG paths on a
 shared construction grid, because no installed stack carries a condensed
@@ -274,7 +275,13 @@ enhancement, not a dependency: it appears only on numerals and short figures,
 and its last fallback is `var(--font-sans)`. A surface must read correctly when
 that stack resolves to nothing special.
 
-**The Zero Fetch Rule.** The site binds to no fetched font and no JavaScript.
+**The Zero Fetch Rule and progressive enhancement.** The site binds to no
+fetched font and no analytics. JavaScript is allowed when it
+meaningfully improves the experience, and only as progressive enhancement:
+every page works, reads and loads without it, and the script only adds to
+a page that is already complete. Scripts are local files, small, with no
+dependencies, and never needed to read a page.
+
 Every face is a Modern Font Stacks system stack. A design that needs a webfont
 is a design this site does not ship.
 
@@ -461,7 +468,8 @@ that moves is a 140–160ms hover response.
 ### Don't:
 - **Don't** use the signal ramp (`--sig-s/a/b/c`) for anything but app trust
   class.
-- **Don't** fetch a font or add JavaScript; the site ships under the same rules
+- **Don't** fetch a font, add analytics, or make a page depend on JavaScript to
+  be read; the site ships under the same rules
   as the architecture it describes.
 - **Don't** set a letter mark or the wordmark in a typeface, and don't add a
   display face — the drawn marks are the display voice.

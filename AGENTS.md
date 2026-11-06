@@ -16,10 +16,12 @@ with local scripts for the AI disclaimer, clipboard controls and Attributes
 sidebar, and no third-party runtime resources.
 The disclaimer is an explicit user-requested exception (2026-09-24): keep the
 disclosure available from the footer. As of 2026-10-22, it opens only when
-requested; never show it automatically or store an acknowledgement. Keep the
-rest of the site free of browser JavaScript and bundlers, except for the
-approved clipboard controls and Attributes sidebar enhancement. Both pages
-remain usable without JavaScript; the Get started pathways use native radios.
+requested; never show it automatically or store an acknowledgement. JavaScript
+elsewhere follows PRODUCT.md's rule (2026-11-06): only where it meaningfully
+improves the experience, only as progressive enhancement on a page that works
+and reads without it, as small local files with no dependencies and no
+bundlers. The clipboard controls and the Attributes sidebar enhancement are
+examples; the Get started pathways use native radios.
 Durable product context for design tooling lives in
 `PRODUCT.md`.
 
