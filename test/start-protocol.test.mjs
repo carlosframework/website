@@ -74,7 +74,7 @@ test('API calls and status validation use API origin; browser claims and CLI ret
 });
 test('claim gate requires a merged 40-hex producer SHA', () => {
  assert.equal(contract.producerMerged,true);
- assert.equal(contract.producerCommit,'e12fe9a10d9ee315cbef9c1896b2216eae9cc9b4');
+ assert.equal(contract.producerCommit,'0eea2abb6e7ae1a396c0377637929bfabde92d12');
  assert.throws(() => validateClaimContract({...contract,producerMerged:false},config), /producerMerged/);
  validateClaimContract({...contract,producerMerged:true}, {...config});
  for (const sha of ['', 'main', '1234']) assert.throws(() => validateClaimContract({...contract,producerMerged:true,producerCommit:sha},config));
@@ -153,7 +153,7 @@ function audit(trace) {
    stop=false;flow=undefined;aborted=false;claimRetryUsed=false;codeAllowed=false;
   }
   if(e.kind==='rejected-url') stop=true;
-  if(e.kind==='ask-code') assert.ok(codeAllowed && !stop);
+  if(e.kind==='ask-code' || e.kind==='code-coming') assert.ok(codeAllowed && !stop);
   if(e.kind==='expiry') assert.equal(e.value,expiry);
   if(e.kind==='server-claim-completed') serverClaimed=true;
   if(e.kind==='browser-link') {assert.ok(keep && claimAvailable && e.private && !flow);assert.equal(e.url,claimURL);browser=true;}
@@ -209,7 +209,8 @@ function audit(trace) {
    const operation=['start','verify','chooseAccount','status'].find(name=>contract[name].path===path);
    if(operation) {
     const replies=examples.find(example=>example.operation===operation).contract.responses;
-    assert.ok(replies.some(r=>r.status===e.status && isDeepStrictEqual(r.body,e.body)),`${operation}: response must match the merged fixture`);
+    assert.ok(replies.some(r=>r.status===e.status && isDeepStrictEqual(r.body,e.body)
+     && (!e.headers || isDeepStrictEqual(r.headers,e.headers))),`${operation}: response must match the merged fixture`);
    }
    if(serverClaimed && path==='/api/demo/apps') assert.deepEqual({status:e.status,body:e.body},contract.complete.consumedUpdate.response);
    if(e.body?.claimToken) {token=e.body.claimToken;expiry=e.body.expiresAt;claimAvailable=e.body.claimAvailable===true;secrets.add(token);secrets.add(e.body.claimUrl);secrets.add(e.body.statusUrl);}
@@ -245,7 +246,8 @@ function audit(trace) {
   if(e.kind==='account') assert.equal(e.url,config.accountUrl);
  }
 }
-for(const f of JSON.parse(read('test/fixtures/start-protocol.json'))) test(`transcript: ${f.name}`,()=>{
+const transcripts=JSON.parse(read('test/fixtures/start-protocol.json'));
+for(const f of transcripts) test(`transcript: ${f.name}`,()=>{
  for(const section of f.sections) assert.ok(rendered.includes(section),section);
  if(f.serverMemberships!==undefined) {
   const index=f.events.findIndex(e=>e.kind==='request' && e.url.endsWith('/verify'));
@@ -256,4 +258,61 @@ for(const f of JSON.parse(read('test/fixtures/start-protocol.json'))) test(`tran
  }
  audit(f.events);
  for(const bad of f.reject ?? []) assert.throws(()=>audit(bad));
+});
+
+for(const keymail of [false,true]) test(`claimAvailable with no mailer: ${keymail?'Keymail browser handoff':'email-code refusal'}`,()=>{
+ const fixture=transcripts.find(f=>f.mailReady===false && f.keymailAddress===keymail);
+ assert.ok(fixture);
+ const events=fixture.events;
+ const created=events.find(e=>e.kind==='response' && e.body?.claimToken);
+ assert.equal(created.body.claimAvailable,true);
+ const start=events.findIndex(e=>e.kind==='request' && e.url.endsWith('/api/demo/claims'));
+ assert.ok(start>0);
+ assert.equal(events[start].body.email,keymail?'person@keymail.example.com':'person@example.com');
+ assert.ok(events.slice(0,start).some(e=>e.kind==='email' && e.address===events[start].body.email));
+ const reply=events[start+1];
+ assert.equal(reply.status,keymail?200:503);
+ assert.equal(reply.body.state,keymail?'browser_required':undefined);
+ assert.equal(reply.body.flowToken,undefined);
+ assert.ok(!events.some(e=>['ask-code','code-coming'].includes(e.kind)));
+ assert.ok(!events.slice(start+2).some(e=>e.kind==='request' && e.url.endsWith('/api/demo/apps')));
+ const section=rendered.split('## 9. Claim only when available')[1].split('## 10.')[0];
+ for(const directive of fixture.sections) assert.ok(section.includes(directive),directive);
+ // Mutate the parsed trace at the decision boundary, before the one allowed retry.
+ const before=events.slice(0,start+1), after=events.slice(0,start+2);
+ assert.throws(()=>audit([...before,{kind:'code-coming'}]));
+ assert.throws(()=>audit([...after,{kind:'ask-code'}]));
+ assert.throws(()=>audit([...after,structuredClone(events.find(e=>e.kind==='request' && e.url.endsWith('/api/demo/apps')))]));
+ if(keymail) {
+  const handoff=events[start+2];
+  assert.equal(handoff.kind,'browser-link');
+  assert.equal(handoff.private,true);
+  assert.equal(handoff.url,reply.body.claimUrl);
+  assert.match(section,/Keymail returns 200 `browser_required`.*with no flow token/);
+ } else {
+  assert.deepEqual(reply.body,{error:'unavailable'});
+  assert.deepEqual(reply.headers,{'Cache-Control':'no-store','Content-Type':'application/json'});
+  assert.equal(reply.retryAfter,undefined);
+  assert.equal(events.filter(e=>e.kind==='request' && e.url.endsWith('/api/demo/claims')).length,2);
+  assert.equal(events.find(e=>e.kind==='expiry').value,created.body.expiresAt);
+  assert.ok(events.some(e=>e.kind==='public' && e.text.includes('cannot be claimed now') && e.text.includes('demo keeps running with its original expiry')));
+ }
+});
+
+test('browser email refusal and completion match the rebound contract',()=>{
+ const refusal=contract.browser.forms.prove.responses.find(r=>r.status===503);
+ assert.equal(contract.browser.forms.prove.path,'/demo/claim/prove');
+ assert.equal(refusal.headers['Content-Type'],'text/html; charset=utf-8');
+ assert.equal(refusal.headers['Cache-Control'],'no-store');
+ assert.equal(refusal.headers['Referrer-Policy'],'origin');
+ assert.ok(refusal.headers['Content-Security-Policy']);
+ assert.equal(refusal.headers['Retry-After'],undefined);
+ assert.ok(refusal.body.includes('<p role="alert">unavailable</p>'));
+ assert.doesNotMatch(refusal.body,/name="code"|Check your email/);
+ const complete=contract.browser.responses.find(r=>r.when==='claimed').body.replaceAll('{{consoleOrigin}}',config.consoleOrigin);
+ assert.ok(complete.includes(`carlos auth login --console ${config.consoleOrigin}`));
+ assert.doesNotMatch(complete,/carlos login/);
+ const browser=examples.find(e=>e.operation==='browser').contract;
+ assert.deepEqual(browser.forms.prove.responses[0],publicClaimOperation(refusal));
+ assert.ok(browser.semantics.includes('303 to /auth/signin?next=%2Fdemo%2Fclaim'));
 });

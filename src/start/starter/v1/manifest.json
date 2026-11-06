@@ -35,7 +35,7 @@
       "sha256": "5854bc3fcd6ef3c0584333f91960993ff0acb1562ebe603c1b1c20ec6725e8b6"
     }
   ],
-  "platformCommit": "e12fe9a10d9ee315cbef9c1896b2216eae9cc9b4",
+  "platformCommit": "0eea2abb6e7ae1a396c0377637929bfabde92d12",
   "lockSHA256": "a858eb184a5255068a4a56470e3549a2a7d4718635a90fe69f40e9faff3948c5",
   "fiesta": {
     "version": "1.1.0",

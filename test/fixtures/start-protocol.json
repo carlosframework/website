@@ -2342,7 +2342,9 @@
     "sections": [
       "Keymail returns 200",
       "The browser asks for sign-in",
-      "when claimed, the account ID, app and a link"
+      "when claimed, the account ID, app and a link",
+      "Do not treat `claimAvailable:true` as a promise of an emailed code.",
+      "Do not tell the person a code is coming until a 202 `email_required` response."
     ],
     "events": [
       {
@@ -2385,7 +2387,7 @@
       },
       {
         "kind": "email",
-        "address": "person@example.com"
+        "address": "person@keymail.example.com"
       },
       {
         "kind": "request",
@@ -2396,7 +2398,7 @@
         },
         "body": {
           "claimToken": "synthetic-demo-token",
-          "email": "person@example.com"
+          "email": "person@keymail.example.com"
         },
         "redirect": "error",
         "at": 0
@@ -2473,7 +2475,7 @@
         },
         {
           "kind": "email",
-          "address": "person@example.com"
+          "address": "person@keymail.example.com"
         },
         {
           "kind": "request",
@@ -2484,7 +2486,7 @@
           },
           "body": {
             "claimToken": "synthetic-demo-token",
-            "email": "person@example.com"
+            "email": "person@keymail.example.com"
           },
           "redirect": "error",
           "at": 0
@@ -2549,7 +2551,7 @@
         },
         {
           "kind": "email",
-          "address": "person@example.com"
+          "address": "person@keymail.example.com"
         },
         {
           "kind": "request",
@@ -2560,7 +2562,7 @@
           },
           "body": {
             "claimToken": "synthetic-demo-token",
-            "email": "person@example.com"
+            "email": "person@keymail.example.com"
           },
           "redirect": "error",
           "at": 0
@@ -2620,7 +2622,7 @@
         },
         {
           "kind": "email",
-          "address": "person@example.com"
+          "address": "person@keymail.example.com"
         },
         {
           "kind": "request",
@@ -2631,7 +2633,7 @@
           },
           "body": {
             "claimToken": "synthetic-demo-token",
-            "email": "person@example.com"
+            "email": "person@keymail.example.com"
           },
           "redirect": "error",
           "at": 0
@@ -2649,8 +2651,140 @@
           "url": "https://console.example.com/demo/claim#synthetic-demo-token",
           "private": false
         }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@keymail.example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@keymail.example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 200,
+          "body": {
+            "state": "browser_required",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token"
+          }
+        },
+        {
+          "kind": "ask-code"
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@keymail.example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@keymail.example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "code-coming"
+        }
       ]
-    ]
+    ],
+    "mailReady": false,
+    "keymailAddress": true
   },
   {
     "name": "plan refusal",
@@ -6183,8 +6317,12 @@
   {
     "name": "non-Keymail claim start 503 despite claimAvailable true",
     "sections": [
-      "A 503 on claim start means this address cannot be claimed now. Do not ask for a code. Retry at most once",
-      "The demo keeps running with its original expiry. A Keymail address may instead get `browser_required`."
+      "Do not treat `claimAvailable:true` as a promise of an emailed code.",
+      "Do not tell the person a code is coming until a 202 `email_required` response.",
+      "On a 503 from claim start, explain that claiming is unavailable for this address right now.",
+      "Do not ask for a code or respond with a new create.",
+      "Retry at most once after any retry hint, within the five-minute wait bound, then stop.",
+      "Tell the person the demo keeps running until its original expiry."
     ],
     "events": [
       {
@@ -6248,6 +6386,10 @@
         "status": 503,
         "body": {
           "error": "unavailable"
+        },
+        "headers": {
+          "Cache-Control": "no-store",
+          "Content-Type": "application/json"
         }
       },
       {
@@ -6269,6 +6411,10 @@
         "status": 503,
         "body": {
           "error": "unavailable"
+        },
+        "headers": {
+          "Cache-Control": "no-store",
+          "Content-Type": "application/json"
         }
       },
       {
@@ -6343,6 +6489,10 @@
           "status": 503,
           "body": {
             "error": "unavailable"
+          },
+          "headers": {
+            "Cache-Control": "no-store",
+            "Content-Type": "application/json"
           }
         },
         {
@@ -6411,6 +6561,10 @@
           "status": 503,
           "body": {
             "error": "unavailable"
+          },
+          "headers": {
+            "Cache-Control": "no-store",
+            "Content-Type": "application/json"
           }
         },
         {
@@ -6432,6 +6586,10 @@
           "status": 503,
           "body": {
             "error": "unavailable"
+          },
+          "headers": {
+            "Cache-Control": "no-store",
+            "Content-Type": "application/json"
           }
         },
         {
@@ -6519,6 +6677,10 @@
           "status": 503,
           "body": {
             "error": "unavailable"
+          },
+          "headers": {
+            "Cache-Control": "no-store",
+            "Content-Type": "application/json"
           }
         },
         {
@@ -6535,8 +6697,152 @@
           "redirect": "error",
           "at": 301
         }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 503,
+          "body": {
+            "error": "unavailable"
+          },
+          "headers": {
+            "Cache-Control": "no-store",
+            "Content-Type": "application/json"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "code-coming"
+        }
       ]
-    ]
+    ],
+    "mailReady": false,
+    "keymailAddress": false
   },
   {
     "name": "fresh claim after abort needs consent and unexpired demo",
