@@ -104,3 +104,33 @@ ol.steps > li > h3 { margin-top: 0; padding-top: 0; border-top: 0; }
 .docs-article .stepper.is-enhanced ol.frames > li + li { margin-top: 0; }
 .docs-article ol.steps > li > h3 { font-family: var(--font-sans); }
 .learned { max-width: var(--docs-column); }
+
+/* Hard-left navigation, after Stripe's docs (Paul, 2026-11-06): the nav is
+   pinned to the viewport's left edge with its own scroll, so nothing shifts
+   when you move between pages. The scrollbar's space is always reserved, so
+   a short page and a long page put everything in the same place. */
+html { scrollbar-gutter: stable; }
+@media (min-width: 60rem) {
+  /* The site's body gutter would hold the nav off the edge. */
+  .docs-body { padding-inline: 0; --page-gutter: 0px; }
+  .docs-body .masthead { padding-inline: 1.25rem clamp(2rem, 5vw, 4.5rem); }
+  .docs-shell {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+    grid-template-columns: 17rem minmax(0, 1fr);
+  }
+  .docs-nav {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    max-height: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1.5rem 1.25rem 3rem;
+    border-right: 1px solid var(--rule);
+    background: var(--bg);
+  }
+  .docs-body main { padding: clamp(1.75rem, 4vw, 3rem) clamp(2rem, 5vw, 4.5rem) 4rem; }
+}
