@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const dialog = document.createElement("dialog");
   dialog.className = "search-dialog";
   dialog.setAttribute("aria-label", "Search the docs");
-  dialog.innerHTML = '<form method="dialog"><input type="search" placeholder="Search the docs" aria-label="Search the docs" autocomplete="off"></form><ul></ul><p class="search-hint">Enter opens the first result. Escape closes.</p>';
+  dialog.innerHTML = '<form method="dialog"><input type="search" placeholder="Search the docs" aria-label="Search the docs" autocomplete="off"><button type="button" class="search-close" aria-label="Close search">&times;</button></form><ul></ul><p class="search-hint">Enter opens the first result. Escape closes.</p>';
   document.body.append(dialog);
   const input = dialog.querySelector("input");
   const list = dialog.querySelector("ul");
@@ -64,5 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const first = list.querySelector("a");
     if (first) { e.preventDefault(); location.href = first.href; }
   });
+  dialog.querySelector(".search-close").addEventListener("click", () => dialog.close());
   dialog.addEventListener("click", (e) => { if (e.target === dialog) dialog.close(); });
 });

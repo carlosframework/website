@@ -111,6 +111,18 @@ try {
   await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
   await sleep(150);
   check("Escape closes the search box", await evalJS(`!document.querySelector('dialog.search-dialog[open]')`), "still open");
+  // The visible close control dismisses the search, and there is only one
+  // (the browser's own clear button inside the field is hidden).
+  await open(`${base}/index.html`);
+  await evalJS(`document.querySelector('.docs-search').click()`);
+  await sleep(150);
+  await send("Input.insertText", { text: "rails" });
+  const closers = await evalJS(`document.querySelectorAll('dialog.search-dialog .search-close').length`);
+  const nativeX = await evalJS(`getComputedStyle(document.querySelector('dialog.search-dialog input'), '::-webkit-search-cancel-button').display`);
+  check("search has one close button, and no native clear button", closers === 1 && nativeX === "none", [closers, nativeX]);
+  await evalJS(`document.querySelector('dialog.search-dialog .search-close')?.click()`);
+  await sleep(150);
+  check("the close button dismisses the search", await evalJS(`!document.querySelector('dialog.search-dialog[open]')`), "still open");
   await open(`${base}/index.html`, { js: false });
   const idx = await evalJS(`document.querySelectorAll('#page-index ~ ul.page-index a, ul.page-index a').length`);
   check("without JavaScript the page index lists pages", idx >= 10, idx);
