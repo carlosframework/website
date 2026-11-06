@@ -92,6 +92,28 @@ try {
   await sleep(1200);
   const after = await evalJS(`${scroller} ? ${scroller}.scrollTop : -1`);
   check("nav keeps its scroll position across a click", before > 0 && Math.abs(after - before) <= 2, [before, after]);
+  // Search: with JavaScript, clicking it opens a search box over the page
+  // and the page does not move; typing filters; Escape closes it.
+  await open(`${base}/index.html`);
+  const y0 = await evalJS(`scrollY`);
+  await evalJS(`document.querySelector('.docs-search').click()`);
+  await sleep(200);
+  const y1 = await evalJS(`scrollY`);
+  const dlg = await evalJS(`!!document.querySelector('dialog.search-dialog[open]')`);
+  const focusIn = await evalJS(`document.activeElement?.matches('dialog.search-dialog input[type=search]') || false`);
+  check("search click does not scroll the page", y0 === y1, [y0, y1]);
+  check("search click opens the search box with focus in it", dlg && focusIn, [dlg, focusIn]);
+  await send("Input.insertText", { text: "how it" });
+  await sleep(150);
+  const hits = await evalJS(`[...document.querySelectorAll('dialog.search-dialog li a')].map(a => a.textContent.trim())`);
+  check("typing filters the results", Array.isArray(hits) && hits.length >= 1 && hits.every(h => /how it/i.test(h)), hits);
+  await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
+  await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
+  await sleep(150);
+  check("Escape closes the search box", await evalJS(`!document.querySelector('dialog.search-dialog[open]')`), "still open");
+  await open(`${base}/index.html`, { js: false });
+  const idx = await evalJS(`document.querySelectorAll('#page-index ~ ul.page-index a, ul.page-index a').length`);
+  check("without JavaScript the page index lists pages", idx >= 10, idx);
   for (const p of ["index.html", "how-it-works.html", "quickstart.html"]) {
     await open(`${base}/${p}`, { width: 390 });
     const sw = await evalJS(`document.documentElement.scrollWidth`);

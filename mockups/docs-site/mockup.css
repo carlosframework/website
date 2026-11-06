@@ -155,3 +155,26 @@ html { scrollbar-gutter: stable; }
 }
 
 .docs-nav a.nav-top { padding-left: 0; border-left: 0; }
+
+/* The page index: every page, A to Z (where search goes without JS). */
+.docs-article ul.page-index { columns: 2 14rem; padding-left: 0; list-style: none; }
+.docs-article ul.page-index > li + li { margin-top: 0.3rem; }
+
+/* The search dialog (search.js). */
+dialog.search-dialog {
+  width: min(36rem, calc(100vw - 2rem)); margin: 12vh auto auto; padding: 0;
+  border: 1px solid var(--rule); border-radius: 10px;
+  background: var(--surface); color: var(--ink); box-shadow: var(--shadow-2);
+}
+dialog.search-dialog::backdrop { background: rgb(0 0 0 / 0.35); }
+.search-dialog input[type="search"] {
+  width: 100%; padding: 0.9rem 1rem; border: 0; border-bottom: 1px solid var(--rule);
+  background: transparent; color: var(--ink); font: inherit; font-size: 1.05rem; outline: none;
+}
+.search-dialog ul { margin: 0; padding: 0.4rem; list-style: none; max-height: 50vh; overflow-y: auto; }
+.search-dialog li { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; }
+.search-dialog li a { flex: 1; padding: 0.45rem 0.6rem; border-radius: 6px; color: var(--ink); text-decoration: none; }
+.search-dialog li a:hover, .search-dialog li a:focus-visible { background: var(--accent-soft); color: var(--accent-deep); outline: none; }
+.search-dialog li span { padding-right: 0.6rem; color: var(--muted); font-size: 0.82rem; white-space: nowrap; }
+.search-dialog .search-empty { padding: 0.6rem; color: var(--muted); }
+.search-dialog .search-hint { margin: 0; padding: 0.5rem 1rem; border-top: 1px solid var(--rule-soft); color: var(--muted); font-size: 0.8rem; }
