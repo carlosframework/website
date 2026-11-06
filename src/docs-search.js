@@ -19,6 +19,8 @@ document.addEventListener("DOMContentLoaded", () => {
   document.body.append(dialog);
   const input = dialog.querySelector("input");
   const list = dialog.querySelector("ul");
+  // Results change while focus stays in the field: announce them.
+  list.setAttribute("aria-live", "polite");
 
   let index = null;
   const load = () => index || (index = fetch("/docs/search-index.json").then((r) => (r.ok ? r.json() : [])).catch(() => []));

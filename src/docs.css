@@ -507,10 +507,15 @@ html { scrollbar-gutter: stable; }
 .docs-nav .nav-group:first-child .docs-nav-section { margin-top: 0.9rem; padding-top: 0; border-top: 0; }
 .docs-nav .nav-group ul { margin: 0; padding: 0; }
 
-/* Narrow screens: list only the current section's pages. */
+/* Narrow screens (Paul's mockup review): the nav collapses to one row of
+   section labels that scrolls sideways in its own box, each linking to its
+   part of /docs/, so the article starts near the top of the screen. */
 @media (max-width: 59.99rem) {
-  .docs-nav .nav-group:not(.is-current) ul { display: none; }
-  .docs-nav .nav-group .docs-nav-section { margin: 0.6rem 0 0.2rem; padding-top: 0.5rem; }
+  .docs-nav .nav-groups { display: flex; gap: 1.1rem; overflow-x: auto; margin-top: 0.9rem; padding-bottom: 0.4rem; white-space: nowrap; scrollbar-width: thin; }
+  .docs-nav .nav-group ul { display: none; }
+  .docs-nav .nav-group .docs-nav-section,
+  .docs-nav .nav-group:first-child .docs-nav-section { margin: 0; padding: 0.3rem 0; border-top: 0; }
+  .docs-nav .nav-group.is-current .docs-nav-section { color: var(--accent); }
 }
 
 /* The page index on /docs/: every page, A to Z, with its section. */

@@ -116,6 +116,7 @@ try {
   await sleep(400);
   check("clicking search does not move the page", y0 === (await evalJS(`scrollY`)), "moved");
   check("clicking search opens the dialog with the field focused", await evalJS(`!!document.querySelector('dialog.search-dialog[open]') && document.activeElement?.matches('dialog.search-dialog input[role=searchbox]')`), "not open or not focused");
+  check("results are announced to screen readers", await evalJS(`document.querySelector('dialog.search-dialog ul')?.getAttribute('aria-live') === 'polite'`), "no live region");
   check("the field adds no native clear button", await evalJS(`document.querySelector('dialog.search-dialog input')?.type === 'text'`), "type search");
   const searchFor = async (q) => { await evalJS(`(() => { const i = document.querySelector('dialog.search-dialog input'); i.value = ${JSON.stringify(q)}; i.dispatchEvent(new Event('input')); })()`); await sleep(150); return evalJS(`[...document.querySelectorAll('dialog.search-dialog li a')].map(a => a.getAttribute('href'))`); };
   const body = unique ? await searchFor(unique) : [];
@@ -155,10 +156,11 @@ try {
   for (const p of pages) {
     await open(p, { width: 390 });
     const sw = await evalJS(`document.documentElement.scrollWidth`);
-    const groups = await evalJS(`document.querySelectorAll('.docs-nav .nav-group').length`);
-    const open_ = groups ? await evalJS(`[...document.querySelectorAll('.docs-nav .nav-group ul')].filter(u => u.getClientRects().length).length`) : 99;
+    const row = await evalJS(`JSON.stringify((() => { const labels = [...document.querySelectorAll('.docs-nav .docs-nav-section')]; const lists = [...document.querySelectorAll('.docs-nav .nav-group ul')].filter(u => u.getClientRects().length).length; const tops = new Set(labels.map(l => Math.round(l.getBoundingClientRect().top))); const nav = document.querySelector('.docs-nav'); return [labels.length, tops.size, lists, Math.round(nav.getBoundingClientRect().height)]; })())`);
+    const [labels, rows, lists, navHeight] = JSON.parse(row);
     check(`390px ${p}: no sideways scroll`, sw <= 390, sw);
-    check(`390px ${p}: at most the current section's pages are listed`, open_ <= 1, open_);
+    check(`390px ${p}: the nav collapses to one row of section labels`, labels >= 3 && rows === 1 && lists === 0, row);
+    check(`390px ${p}: the nav stays short above the article`, navHeight <= 320, navHeight);
   }
 } finally {
   console.log(results.join("\n"));
