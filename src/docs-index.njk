@@ -18,3 +18,11 @@ permalink: /docs/index.html
   {% endfor %}
 </ul>
 {% endfor %}
+
+<h2 id="every-page">Every page</h2>
+<p>Browse the docs from A to Z.</p>
+<ul class="docs-page-index">
+  {% for entry in docsnav | docsAllPages %}
+  <li><a href="/docs/{{ entry.slug }}/">{{ entry.label }}</a> <span>{{ entry.section }}</span></li>
+  {% endfor %}
+</ul>

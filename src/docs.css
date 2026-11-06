@@ -119,21 +119,56 @@
   align-items: start;
 }
 
-/* Two columns once there is room for both. Below this the nav keeps its
-   document order — it is written before the article — so it simply
-   stacks above the content, with no toggle and no script. */
+/* Wide screens (Paul, 2026-11-06, after Stripe's docs): the nav is pinned
+   hard-left at full height, a fixed head (title and search) over a list
+   that scrolls on its own, so nothing moves as you go between pages. The
+   page's scrollbar gutter is always reserved for the same reason. Below
+   this the nav keeps its document order and stacks above the content,
+   with only the current section's pages listed. */
+html { scrollbar-gutter: stable; }
 @media (min-width: 60rem) {
+  .docs-body { padding-inline: 0; --page-gutter: 0px; }
+  .docs-body .masthead { padding-inline: 1.25rem clamp(2rem, 5vw, 4.5rem); }
   .docs-shell {
-    grid-template-columns: 15rem minmax(0, 1fr);
-    gap: clamp(2.5rem, 5vw, 4rem);
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+    grid-template-columns: 17rem minmax(0, 1fr);
   }
   .docs-nav {
     position: sticky;
-    top: 2rem;
-    max-height: calc(100vh - 4rem);
-    overflow-y: auto;
-    overscroll-behavior: contain;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-right: 1px solid var(--rule);
+    background: var(--bg);
   }
+  .nav-head { flex: none; padding: 1.5rem 1.25rem 1rem; border-bottom: 1px solid var(--rule-soft); }
+  .docs-nav .nav-groups { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0.4rem 1.25rem 3rem; }
+  .docs-body main { padding: clamp(1.75rem, 4vw, 3rem) clamp(2rem, 5vw, 4.5rem) 4rem; min-width: 0; }
+}
+
+/* On this page: the page's ## headings in a rail, once there is room. */
+.docs-toc { display: none; }
+@media (min-width: 80rem) {
+  .docs-shell.has-toc { grid-template-columns: 17rem minmax(0, 1fr) 15rem; }
+  .docs-toc {
+    display: block;
+    position: sticky;
+    top: 0;
+    max-height: 100vh;
+    overflow-y: auto;
+    padding: clamp(1.75rem, 4vw, 3rem) 1.5rem 3rem 0;
+    font-size: 0.86rem;
+  }
+  .docs-toc-title { margin: 0 0 0.5rem; font-size: 0.715rem; font-weight: 600; letter-spacing: 0.11em; text-transform: uppercase; color: var(--muted); }
+  .docs-toc ul { list-style: none; margin: 0; padding: 0; }
+  .docs-toc li + li { margin-top: 0.3rem; }
+  .docs-toc a { color: var(--ink-2); text-decoration: none; }
+  .docs-toc a:hover { color: var(--accent); }
 }
 
 /* ------------------------------------------------------------------- nav -- */
@@ -442,3 +477,43 @@
   .docs-article .diagram figure, .docs-article figure.diagram { overflow-x: auto; }
   .docs-article .diagram svg { min-width: 36rem; }
 }
+
+/* ------------------------------------------------- nav head and search -- */
+
+.nav-head .docs-nav-title { margin: 0 0 0.35rem; }
+.nav-head .docs-nav-title + .docs-nav-title { margin-bottom: 0; }
+
+/* Search: a button-like box. Without JavaScript it goes to the page index
+   on /docs/; with docs-search.js, a click or "/" opens a dialog. */
+.docs-nav a.docs-search {
+  display: flex; align-items: center; gap: 0.55rem;
+  margin: 0.9rem 0 0; padding: 0.5rem 0.65rem;
+  border: 1px solid var(--rule); border-radius: 6px;
+  background: var(--surface); color: var(--muted);
+  font-size: 0.9rem; line-height: 1.2; text-decoration: none;
+}
+.docs-nav a.docs-search:hover, .docs-nav a.docs-search:focus-visible { border-color: var(--ink-2); color: var(--ink); }
+.docs-search svg { flex: none; }
+.docs-search span { flex: 1; }
+.docs-search kbd {
+  padding: 0.05rem 0.4rem; border: 1px solid var(--rule); border-radius: 4px;
+  font: 0.78rem/1.4 var(--font-mono); color: var(--muted); background: var(--bg-sunk);
+}
+
+/* Section labels are links to their part of /docs/, lined up with the
+   title rather than indented like the pages under them. */
+.docs-nav a.docs-nav-section { display: block; padding-left: 0; border-left: 0; color: var(--muted); }
+.docs-nav a.docs-nav-section:hover { color: var(--ink); border-left: 0; }
+.docs-nav .nav-group:first-child .docs-nav-section { margin-top: 0.9rem; padding-top: 0; border-top: 0; }
+.docs-nav .nav-group ul { margin: 0; padding: 0; }
+
+/* Narrow screens: list only the current section's pages. */
+@media (max-width: 59.99rem) {
+  .docs-nav .nav-group:not(.is-current) ul { display: none; }
+  .docs-nav .nav-group .docs-nav-section { margin: 0.6rem 0 0.2rem; padding-top: 0.5rem; }
+}
+
+/* The page index on /docs/: every page, A to Z, with its section. */
+.docs-article ul.docs-page-index { columns: 2 16rem; padding-left: 0; list-style: none; }
+.docs-article ul.docs-page-index > li + li { margin-top: 0.3rem; }
+.docs-page-index span { color: var(--muted); font-size: 0.82rem; }

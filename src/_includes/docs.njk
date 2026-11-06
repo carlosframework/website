@@ -31,6 +31,8 @@
 <link rel="stylesheet" href="/site.css?v=0">
 <link rel="stylesheet" href="/docs.css?v=0">
 <link rel="stylesheet" href="/header.css?v=0">
+<script src="/docs-nav.js?v=0" defer></script>
+<script src="/docs-stepper.js?v=0" defer></script>
 </head>
 <body class="docs-body">
 <a class="skip-link visually-hidden" href="#main">Skip to content</a>
@@ -44,28 +46,28 @@
   </nav>
 </header>
 
-<div class="docs-shell">
+<div class="docs-shell{% if not isIndex %} has-toc{% endif %}">
   <nav class="docs-nav" aria-label="Documentation">
-    <p class="docs-nav-title"><a href="/platform/">CARLOS Platform</a></p>
-    <p class="docs-nav-title"><a href="/docs/"{% if isIndex %} class="active" aria-current="page"{% endif %}>Documentation</a></p>
-    {% for section in docsnav.sections %}
-    <p class="docs-nav-section">{{ section.title }}</p>
-    <ul>
-      {% for entry in section.pages %}
-      <li>
-        <a href="/docs/{{ entry.slug }}/"{% if entry.slug == docsSlug %} class="active" aria-current="page"{% endif %}>{{ entry.label }}</a>
-        {% if entry.slug == docsSlug %}
-        {% set sections = collections.docs | docsRawFor(docsSlug) | docsSections %}
-        {% if sections.length %}
-        <ul class="docs-subnav">
-          {% for s in sections %}<li><a href="#{{ s.anchor }}">{{ s.title }}</a></li>{% endfor %}
+    <div class="nav-head">
+      <p class="docs-nav-title"><a href="/platform/">CARLOS Platform</a></p>
+      <p class="docs-nav-title"><a href="/docs/"{% if isIndex %} class="active" aria-current="page"{% endif %}>Documentation</a></p>
+      <a class="docs-search" href="/docs/#every-page"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11 L14.5 14.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>Search the docs</span><kbd title="Press / to search">/</kbd></a>
+    </div>
+    <div class="nav-groups">
+      {% for section in docsnav.sections %}
+      <div class="nav-group{% if section | docsSectionHas(docsSlug) %} is-current{% endif %}">
+        <a class="docs-nav-section" href="/docs/#{{ section.title | docsSlugify }}">{{ section.title }}</a>
+        <ul>
+          {% for entry in section.pages %}
+          <li><a href="/docs/{{ entry.slug }}/"{% if entry.slug == docsSlug %} class="active" aria-current="page"{% endif %}>{{ entry.label }}</a></li>
+          {% endfor %}
         </ul>
-        {% endif %}
-        {% endif %}
-      </li>
+      </div>
       {% endfor %}
-    </ul>
-    {% endfor %}
+      <div class="nav-group nav-extra">
+        <a class="docs-nav-section" href="/platform/changelog/">Changelog</a>
+      </div>
+    </div>
   </nav>
 
   <main id="main">
@@ -80,6 +82,18 @@
       {% endif %}
     </article>
   </main>
+
+  {% if not isIndex %}
+  {% set sections = collections.docs | docsRawFor(docsSlug) | docsSections %}
+  {% if sections.length %}
+  <aside class="docs-toc" aria-label="On this page">
+    <p class="docs-toc-title">On this page</p>
+    <ul>
+      {% for s in sections %}<li><a href="#{{ s.anchor }}">{{ s.title }}</a></li>{% endfor %}
+    </ul>
+  </aside>
+  {% endif %}
+  {% endif %}
 </div>
 
 <footer class="site-footer">

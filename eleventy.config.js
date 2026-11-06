@@ -53,6 +53,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/ai-disclaimer.js": "ai-disclaimer.js" });
   eleventyConfig.addPassthroughCopy({ "src/docs.css": "docs.css" });
   eleventyConfig.addPassthroughCopy({ "src/docs-stepper.js": "docs-stepper.js" });
+  eleventyConfig.addPassthroughCopy({ "src/docs-nav.js": "docs-nav.js" });
   eleventyConfig.addPassthroughCopy({ "src/favicon.svg": "favicon.svg" });
 
   // The agent-skills tree (vendored by hack/sync-skills.mjs) ships
@@ -131,6 +132,17 @@ export default function (eleventyConfig) {
   });
 
   eleventyConfig.addFilter("docsSlugify", slugify);
+
+  // Every page in the nav, A to Z by label, for the page index on /docs/
+  // (where search goes without JavaScript).
+  eleventyConfig.addFilter("docsAllPages", (nav) =>
+    (nav.sections || []).flatMap((s) => s.pages.map((p) => ({ ...p, section: s.title })))
+      .sort((a, b) => a.label.localeCompare(b.label, "en", { sensitivity: "base" })));
+
+  // Whether a nav section holds the page being rendered, for the nav's
+  // is-current group (a Nunjucks set inside a loop does not escape it).
+  eleventyConfig.addFilter("docsSectionHas", (section, slug) =>
+    Boolean(section && section.pages && section.pages.some((p) => p.slug === slug)));
 
   // The platform changelog (/platform/changelog/). Its release notes are
   // markdown from the published releases; they render through their own
