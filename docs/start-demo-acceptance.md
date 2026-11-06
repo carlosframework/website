@@ -2,7 +2,7 @@
 
 | Record field | Value |
 |---|---|
-| Website SHA | aba92232 (deployed claim-on); create/update witnesses ran on 961877b, claim-step witness on aba92232 |
+| Website SHA | 54dfd144 (deployed claim-on); claim-step witnesses: Codex on aba92232, Claude Code on 54dfd144; create/update witnesses on 961877b |
 | Platform SHA | 72c4946a (dev, v0.34.13); claim contract bound to 0eea2abb, wire unchanged to 72c4946a |
 | Plan A merged SHA | ffcf01b5 |
 | Plan 2 merged SHA | |
@@ -12,10 +12,10 @@
 | Console origin | https://platform.dev.carlosframework.com |
 | Site origin | https://tmp-pj4lpm.bab.dev.oncarlos.com (dev temporary static app, trashed 2026-11-12) |
 | Account URL | https://platform.dev.carlosframework.com/ |
-| Previous static version for rollback | ba44a65 |
-| Website version / X-Carlos-Version | aba9223 |
+| Previous static version for rollback | aba9223 |
+| Website version / X-Carlos-Version | 54dfd14 |
 | Markdown SHA-256 | 1de546e91086b210f1695fe51bcbb4d226a004911dcccc9e470437a736d18809 |
-| Returned public demo URL | https://kind-lake-34.dev.trycarlos.com/ (Codex local); https://breezy-lark-42.dev.trycarlos.com/ (Claude Code local); https://glad-mint-35.dev.trycarlos.com/ (Codex local, claim step) |
+| Returned public demo URL | https://kind-lake-34.dev.trycarlos.com/ (Codex local); https://breezy-lark-42.dev.trycarlos.com/ (Claude Code local); https://glad-mint-35.dev.trycarlos.com/ (Codex local, claim step); https://fluffy-cactus-11.dev.trycarlos.com/ (Claude Code local, claim step) |
 | Returned permanent URL | none: claiming not available on dev |
 | Agent / harness version | codex-cli 0.165.0 (default model, clean HOME); Claude Code 2.1.312 (claude-opus-5-5, clean config) |
 | Phone browser version | not run |
@@ -23,6 +23,7 @@
 
 | Scenario | Result | URLs | Elapsed time | Request counts | Agent / harness version | Evidence |
 |---|---|---|---|---|---|---|
+| Claim step on the reviewed secret-handling text | pass | https://fluffy-cactus-11.dev.trycarlos.com/ | about 3 min 29 s paste to live (agent time: 66 s + 143 s), keep step 47 s | 2 claim starts (1 retry), 0 creates at keep step | Claude Code 2.1.312, 54dfd14 | create reply saved to an owner-only directory with no token in tool output; claim link and directory path given with the first live URL; non-Keymail address got 503 twice; agent stopped after one retry, asked for no code, made no create, did not repeat the link, stated the original expiry; demo still 200. Its explanation of the 503 was partly a guess, and labelled as one |
 | Token kept and claim link shared | fail on ba44a65, pass on aba9223 | https://fluffy-berry-81.dev.trycarlos.com/; https://glad-mint-35.dev.trycarlos.com/ | | | codex-cli 0.165.0 | on ba44a65 the agent saved no token and gave no claim link, so it could not claim when asked (honest, no second create). Directives tightened in aba9223; retest saved the response to a private directory and gave the link with the first live URL |
 | Feature off: account path, no anonymous instructions | pass (local build) |  |  |  |  | disabled / and /start byte-identical to main c8d55e7; no index.md or starter outputs |
 | Plan A merged and released to the serving edge | pass | https://tmp-pj4lpm.bab.dev.oncarlos.com/start/ |  |  |  | merged ffcf01b5; negotiation observed on dev 2026-11-05 |
