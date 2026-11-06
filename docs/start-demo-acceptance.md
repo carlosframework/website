@@ -2,18 +2,18 @@
 
 | Record field | Value |
 |---|---|
-| Website SHA | 6ee4406c960113ad4ecb358813bbb92090de7102 (deployed; witnesses ran on 961877b) |
-| Platform SHA | ddbc0297 (main at build; read-only) |
+| Website SHA | c61ff61 (deployed claim-off; witnesses ran on 961877b) |
+| Platform SHA | 0eea2abb (main; read-only) |
 | Plan A merged SHA | ffcf01b5 |
 | Plan 2 merged SHA | |
-| Plan 3 merged SHA | e12fe9a10d9ee315cbef9c1896b2216eae9cc9b4 (not yet on dev; dev build still CARLOS_START_CLAIM=off) |
+| Plan 3 merged SHA | e12fe9a1; claim contract bound to 0eea2abb (Keymail readiness). Not yet on dev; dev build still CARLOS_START_CLAIM=off |
 | Serving edge release | dev edge serving v0.34.7 canary (Plan A in v0.34.5+) |
 | Starter archive SHA-256 | 2c7c1694ec022eb98bacca1e9b7bb17bb8391893ef51fabca2c5e1141b9f1f99 |
 | Console origin | https://platform.dev.carlosframework.com |
 | Site origin | https://tmp-pj4lpm.bab.dev.oncarlos.com (dev temporary static app, trashed 2026-11-12) |
 | Account URL | https://platform.dev.carlosframework.com/ |
-| Previous static version for rollback | 961877b |
-| Website version / X-Carlos-Version | 6ee4406 (witnesses on 961877b) |
+| Previous static version for rollback | 6ee4406 |
+| Website version / X-Carlos-Version | c61ff61 (witnesses on 961877b) |
 | Markdown SHA-256 | 1de546e91086b210f1695fe51bcbb4d226a004911dcccc9e470437a736d18809 |
 | Returned public demo URL | https://kind-lake-34.dev.trycarlos.com/ (Codex local); https://breezy-lark-42.dev.trycarlos.com/ (Claude Code local) |
 | Returned permanent URL | none: claiming not available on dev |
@@ -51,7 +51,7 @@
 | Codex cloud: create / live / update | outstanding |  |  |  |  | needs a Codex Cloud environment ID (web UI); none configured |
 | Cursor: create / live / update | outstanding |  |  |  |  | Cursor not available on this machine |
 | Local website, Node and starter checks | pass |  |  |  |  | check:start 87, release 17, verifier 30, starter pack 17, contract and runtime Go tests, npm run check |
-| Whole-branch review; no CI in this repo; author-machine gate: `npm run check` | not run | | | | | |
+| Whole-branch review; no CI in this repo; author-machine gate: `npm run check` | pass | | | | | Opus r1 at e8947b5 READY AFTER FIXES (no P1); P2 fixes c276dcf; rebind 0aaa6ae; `npm run check` passes (132 start tests) |
 | Public activation: three hosts, representations, docs, skills, paste line | not run | | | | | |
 | Rollback | not run | | | | | |
 | Acceptance apps/data, scratch and process cleanup | not run | | | | | |
