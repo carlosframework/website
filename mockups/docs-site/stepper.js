@@ -24,8 +24,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const show = (i) => {
       current = Math.max(0, Math.min(frames.length - 1, i));
       frames.forEach((f, n) => f.classList.toggle("is-current", n === current));
+      const focused = document.activeElement;
       back.disabled = current === 0;
       next.disabled = current === frames.length - 1;
+      // A focused button that becomes disabled drops focus to the page,
+      // and the arrow keys stop reaching the viewer. Hand focus across.
+      if (focused === back && back.disabled) next.focus();
+      if (focused === next && next.disabled) back.focus();
       count.textContent = `Step ${current + 1} of ${frames.length}`;
       const cap = frames[current].querySelector("figcaption");
       caption.textContent = cap ? cap.textContent.trim() : "";

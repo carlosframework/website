@@ -6,7 +6,10 @@ set -eu
 root=$(cd "$(dirname "$0")/../.." && pwd)
 state="${TMPDIR:-$HOME/.cache}/docs-mockup"
 pidfile="$state/server.pid"
-addr="${MOCKUP_ADDR:-100.119.180.57}"
+# Fixed on purpose: this is a shared machine, and the review server must
+# never bind any other interface (no override, see the plan's constraints).
+addr="100.119.180.57"
+case "$addr" in 100.*) ;; *) echo "refusing to bind $addr: not a Tailscale address" >&2; exit 2 ;; esac
 host="${MOCKUP_HOST:-docs-t1.tail5fd3ba.ts.net}"
 case "${1:-}" in
 start)
