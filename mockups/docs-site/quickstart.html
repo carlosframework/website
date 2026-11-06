@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your first app &middot; CARLOS docs (mockup)</title>
+<link rel="stylesheet" href="../../src/site.css">
+<link rel="stylesheet" href="../../src/docs.css">
+<link rel="stylesheet" href="../../src/header.css">
+<link rel="stylesheet" href="mockup.css">
+</head>
+<body class="docs-body">
+<a class="skip-link visually-hidden" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="mark" href="/"><svg class="wordmark" viewBox="11 11 499 118" width="79" height="18" fill="none" stroke="currentColor" stroke-width="18" role="img" aria-label="CARLOS"><path transform="translate(0,0)" d="M77,44 A20,20 0 0 0 57,24 H43 A20,20 0 0 0 23,44 V96 A20,20 0 0 0 43,116 H57 A20,20 0 0 0 77,96"/><path transform="translate(86,0)" d="M25,117 L45,23 H55 L75,117 M33,80 H67"/><path transform="translate(172,0)" d="M23,117 V23 H53 A23,23 0 0 1 53,69 H23 M50,69 L77,117"/><path transform="translate(258,0)" d="M23,23 V117 H77"/><path transform="translate(335,0)" d="M23,44 A20,20 0 0 1 43,24 H57 A20,20 0 0 1 77,44 V96 A20,20 0 0 1 57,116 H43 A20,20 0 0 1 23,96 Z"/><path transform="translate(421,0)" d="M77,39 A16,16 0 0 0 61,23 H39 A16,16 0 0 0 23,39 V54 A16,16 0 0 0 39,70 H61 A16,16 0 0 1 77,86 V101 A16,16 0 0 1 61,117 H39 A16,16 0 0 1 23,101 V98"/></svg></a>
+  <nav aria-label="Site"><a href="#">Apps</a> <a href="#">Trust</a> <a href="#" aria-current="true">Platform</a> <a href="#">Get started</a></nav>
+</header>
+<div class="docs-shell">
+  <nav class="docs-nav" aria-label="Documentation">
+    <p class="docs-nav-title"><a href="index.html">CARLOS Platform docs</a></p>
+    <a class="docs-search" href="#page-index">Search the docs</a>
+    <div class="nav-groups"><div class="nav-group"><a class="nav-top" href="index.html#start-here">Start here</a><ul><li><a href="#">Why CARLOS</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="#">Security, and why</a></li><li><a href="#">What it does for you</a></li></ul></div><div class="nav-group"><a class="nav-top" href="index.html#tutorials">Tutorials</a><ul><li><a href="quickstart.html" class="active" aria-current="page">Your first app</a></li><li><a href="#">A per-customer SaaS app</a></li><li><a href="#">Rails on your own fleet</a></li><li><a href="#">A static site</a></li><li><a href="#">A one-off site for one audience</a></li><li><a href="#">A dashboard for a project manager</a></li><li><a href="#">Install a deployment</a></li><li><a href="#">When things go wrong</a></li></ul></div><div class="nav-group"><a class="nav-top" href="index.html#guides">Guides</a><ul><li><a href="#">Ship and promote</a></li><li><a href="#">Instances, sleep and wake</a></li><li><a href="#">Commands and consoles</a></li><li><a href="#">Databases and backups</a></li><li><a href="#">Domains and certificates</a></li><li><a href="index.html#guides">…every feature area</a></li></ul></div><div class="nav-group"><a class="nav-top" href="#">Operating a deployment</a><ul><li><a href="#">Install</a></li><li><a href="#">Grow: boxes, fleets, regions</a></li><li><a href="#">Alerts and logs</a></li><li><a href="#">Upgrade and roll back</a></li><li><a href="#">Recover</a></li></ul></div><div class="nav-group"><a class="nav-top" href="#">CLI reference</a><ul><li><a href="#">carlos apps</a></li><li><a href="#">carlos instances</a></li><li><a href="#">carlos run and console</a></li><li><a href="#">carlos db</a></li><li><a href="#">…every command group</a></li></ul></div><div class="nav-group"><a class="nav-top" href="#">API reference</a><ul><li><a href="#" class="nav-soon">The public API is being designed</a></li></ul></div><div class="nav-group"><a class="nav-top" href="#">Changelog</a></div></div>
+  </nav>
+  <main id="main">
+    <article class="docs-article">
+      <p class="draft-banner">Mockup for review. The layout is what to react to: the words are drafts and will be rewritten.</p>
+<h1>Your first app</h1>
+<p class="tutorial-meta"><span class="time">About 10 minutes on a running deployment</span><span>You will need: a terminal and Go 1.26</span></p>
+<p>You will ship a small Go app with its own database, open it, watch it go to sleep, and wake it with a request.</p>
+<section id="before-you-start">
+<h2>Before you start</h2>
+<p>You need a CARLOS deployment you can sign in to. Pick one:</p>
+<ul class="choice">
+<li><a href="#install-your-own"><strong>Install your own</strong><span>Follow Install a deployment, about an hour, then come back here.</span></a></li>
+<li><a href="#use-a-running-deployment"><strong>Use one that is already running</strong><span>Your team's, or a hosted deployment such as carloku.com. Sign up there, then carry on.</span></a></li>
+</ul>
+<p id="install-your-own"><em>Install your own: links to the install tutorial, which ends by sending you back to step 1.</em></p>
+<p id="use-a-running-deployment"><em>Use a running deployment: what you need from it (its console address and an account), and nothing more.</em></p>
+</section>
+<section id="steps">
+<h2>Steps</h2>
+<ol class="steps">
+<li><h3>Install the CLI</h3><pre><code>brew install carlosframework/tap/carlos
+carlos version</code></pre></li>
+<li><h3>Sign in to your deployment</h3><pre><code>carlos auth login --console https://console.example.com</code></pre><p>It prints a short code to approve in your browser.</p></li>
+<li><h3>Get the example app</h3><p>A Go program that serves a page and counts visits in SQLite. It is in the platform repository under examples/hello.</p><pre><code>cd examples/hello
+GOOS=linux GOARCH=arm64 go build -o hello .</code></pre></li>
+<li><h3>Ship it</h3><pre><code>carlos deploy --app hello ./hello</code></pre><p>It creates the app and its first instance, ships the binary and waits for it to answer.</p></li>
+<li><h3>Open it, then let it sleep</h3><pre><code>carlos instances list --app hello</code></pre><p>Open the HOST it shows in your browser. After a few minutes without visits, the list shows the instance asleep.</p></li>
+<li><h3>Wake it</h3><p>Reload the page. The first request wakes the instance, and the count carries on where it left off.</p></li>
+</ol>
+</section>
+<div class="learned"><strong>What you just saw</strong><p>An app that costs almost nothing while nobody uses it, and keeps its data while it sleeps. <a href="how-it-works.html#a-request-wakes-a-sleeping-instance">How a request wakes an instance</a> shows what happened on step 6.</p></div>
+    </article>
+  </main>
+</div>
+</body>
+</html>

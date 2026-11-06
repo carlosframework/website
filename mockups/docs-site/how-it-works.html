@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How it works &middot; CARLOS docs (mockup)</title>
+<link rel="stylesheet" href="../../src/site.css">
+<link rel="stylesheet" href="../../src/docs.css">
+<link rel="stylesheet" href="../../src/header.css">
+<link rel="stylesheet" href="mockup.css">
+<script src="stepper.js" defer></script>
+</head>
+<body class="docs-body">
+<a class="skip-link visually-hidden" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="mark" href="/"><svg class="wordmark" viewBox="11 11 499 118" width="79" height="18" fill="none" stroke="currentColor" stroke-width="18" role="img" aria-label="CARLOS"><path transform="translate(0,0)" d="M77,44 A20,20 0 0 0 57,24 H43 A20,20 0 0 0 23,44 V96 A20,20 0 0 0 43,116 H57 A20,20 0 0 0 77,96"/><path transform="translate(86,0)" d="M25,117 L45,23 H55 L75,117 M33,80 H67"/><path transform="translate(172,0)" d="M23,117 V23 H53 A23,23 0 0 1 53,69 H23 M50,69 L77,117"/><path transform="translate(258,0)" d="M23,23 V117 H77"/><path transform="translate(335,0)" d="M23,44 A20,20 0 0 1 43,24 H57 A20,20 0 0 1 77,44 V96 A20,20 0 0 1 57,116 H43 A20,20 0 0 1 23,96 Z"/><path transform="translate(421,0)" d="M77,39 A16,16 0 0 0 61,23 H39 A16,16 0 0 0 23,39 V54 A16,16 0 0 0 39,70 H61 A16,16 0 0 1 77,86 V101 A16,16 0 0 1 61,117 H39 A16,16 0 0 1 23,101 V98"/></svg></a>
+  <nav aria-label="Site"><a href="#">Apps</a> <a href="#">Trust</a> <a href="#" aria-current="true">Platform</a> <a href="#">Get started</a></nav>
+</header>
+<div class="docs-shell">
+  <nav class="docs-nav" aria-label="Documentation">
+    <p class="docs-nav-title"><a href="index.html">CARLOS Platform docs</a></p>
+    <a class="docs-search" href="#page-index">Search the docs</a>
+    <div class="nav-groups"><div class="nav-group"><a class="nav-top" href="index.html#start-here">Start here</a><ul><li><a href="#">Why CARLOS</a></li><li><a href="how-it-works.html" class="active" aria-current="page">How it works</a></li><li><a href="#">Security, and why</a></li><li><a href="#">What it does for you</a></li></ul></div><div class="nav-group"><a class="nav-top" href="index.html#tutorials">Tutorials</a><ul><li><a href="quickstart.html">Your first app</a></li><li><a href="#">A per-customer SaaS app</a></li><li><a href="#">Rails on your own fleet</a></li><li><a href="#">A static site</a></li><li><a href="#">A one-off site for one audience</a></li><li><a href="#">A dashboard for a project manager</a></li><li><a href="#">Install a deployment</a></li><li><a href="#">When things go wrong</a></li></ul></div><div class="nav-group"><a class="nav-top" href="index.html#guides">Guides</a><ul><li><a href="#">Ship and promote</a></li><li><a href="#">Instances, sleep and wake</a></li><li><a href="#">Commands and consoles</a></li><li><a href="#">Databases and backups</a></li><li><a href="#">Domains and certificates</a></li><li><a href="index.html#guides">…every feature area</a></li></ul></div><div class="nav-group"><a class="nav-top" href="#">Operating a deployment</a><ul><li><a href="#">Install</a></li><li><a href="#">Grow: boxes, fleets, regions</a></li><li><a href="#">Alerts and logs</a></li><li><a href="#">Upgrade and roll back</a></li><li><a href="#">Recover</a></li></ul></div><div class="nav-group"><a class="nav-top" href="#">CLI reference</a><ul><li><a href="#">carlos apps</a></li><li><a href="#">carlos instances</a></li><li><a href="#">carlos run and console</a></li><li><a href="#">carlos db</a></li><li><a href="#">…every command group</a></li></ul></div><div class="nav-group"><a class="nav-top" href="#">API reference</a><ul><li><a href="#" class="nav-soon">The public API is being designed</a></li></ul></div><div class="nav-group"><a class="nav-top" href="#">Changelog</a></div></div>
+  </nav>
+  <main id="main">
+    <article class="docs-article">
+      <p class="draft-banner">Mockup for review. The layout is what to react to: the words are drafts and will be rewritten.</p>
+<h1>How it works</h1>
+<p>A CARLOS deployment is a console, a bucket and some boxes. This page shows what each one holds, then walks through what happens when you deploy, when a request arrives, and when a box fails.</p>
+<h2 id="the-parts">The parts</h2>
+<figure class="diagram" id="system-map"><svg viewBox="0 0 760 360" role="img" aria-labelledby="map-t"><title id="map-t">The parts of a CARLOS deployment</title>
+<rect class="shape" x="20" y="20" width="250" height="70" rx="6"/><text x="36" y="46">Console</text><text class="small" x="36" y="68">accounts, apps, releases, the API</text>
+<rect class="shape" x="500" y="20" width="240" height="70" rx="6"/><text x="516" y="46">Deployment bucket</text><text class="small" x="516" y="68">releases, config, database replicas</text>
+<path class="line" d="M270 55 H500"/><text class="small" x="322" y="48">publishes releases</text>
+<rect class="shape group" x="20" y="120" width="470" height="220" rx="8"/><text x="36" y="144">Region A: a fleet of boxes</text>
+<rect class="shape" x="36" y="160" width="200" height="120" rx="6"/><text x="48" y="182">Box 1</text>
+<rect class="shape on" x="48" y="194" width="70" height="30" rx="4"/><text class="small" x="60" y="214">edge</text>
+<rect class="shape" x="132" y="194" width="26" height="26" rx="3"/><rect class="shape" x="164" y="194" width="26" height="26" rx="3"/><rect class="shape" x="196" y="194" width="26" height="26" rx="3"/>
+<text class="small" x="132" y="240">instances, one per</text><text class="small" x="132" y="255">app and host</text><rect class="shape" x="270" y="160" width="200" height="120" rx="6"/><text x="282" y="182">Box 2</text>
+<rect class="shape on" x="282" y="194" width="70" height="30" rx="4"/><text class="small" x="294" y="214">edge</text>
+<rect class="shape" x="366" y="194" width="26" height="26" rx="3"/><rect class="shape" x="398" y="194" width="26" height="26" rx="3"/><rect class="shape" x="430" y="194" width="26" height="26" rx="3"/>
+<text class="small" x="366" y="240">instances, one per</text><text class="small" x="366" y="255">app and host</text>
+<path class="line" d="M370 160 L600 90"/><path class="line" d="M136 160 L560 90"/><text class="small" x="500" y="116">pull releases,</text><text class="small" x="500" y="131">replicate databases</text>
+<rect class="shape dim" x="510" y="160" width="230" height="180" rx="8"/><text class="dim" x="526" y="184">Region B</text><text class="small dim" x="526" y="206">the same shape, closer to</text><text class="small dim" x="526" y="222">other visitors</text>
+</svg><figcaption>One console, one bucket and a fleet of boxes in each region. Every box runs the edge and the instances placed on it.</figcaption></figure>
+<h2 id="a-request-wakes-a-sleeping-instance">A request wakes a sleeping instance</h2>
+<p>Most instances sleep when nobody uses them, so they cost almost nothing. This is what happens when someone visits one.</p>
+<section class="stepper diagram" aria-label="A request wakes a sleeping instance"><ol class="frames"><li class="frame"><figure>
+<svg viewBox="0 0 640 210" role="img" aria-label="Step 1"><rect class="shape on" x="10" y="70" width="110" height="60" rx="6"/><text x="26" y="105" class="on">Visitor</text>
+<rect class="shape group" x="170" y="20" width="460" height="170" rx="8"/><text x="186" y="44">Box</text>
+<path class="line on" d="M120 100 H210"/><path class="line on" d="M200 94 L210 100 L200 106"/>
+<path class="line " d="M210 118 H120"/><path class="line " d="M130 112 L120 118 L130 124"/>
+<rect class="shape " x="210" y="70" width="140" height="60" rx="6"/><text x="226" y="98" class="">Edge</text><text class="small" x="226" y="116">routes by hostname</text>
+<path class="line " d="M350 100 H420"/><path class="line " d="M410 94 L420 100 L410 106"/>
+<rect class="shape " x="420" y="60" width="190" height="80" rx="6"/><text x="436" y="86" class="">shop.example.com</text><text class="small" x="436" y="106">instance: asleep</text><text class="small" x="436" y="124">its own database and files</text>
+</svg>
+<figcaption>A visitor asks for shop.example.com. The request reaches the edge on the box that runs that instance.</figcaption></figure></li><li class="frame"><figure>
+<svg viewBox="0 0 640 210" role="img" aria-label="Step 2"><rect class="shape " x="10" y="70" width="110" height="60" rx="6"/><text x="26" y="105" class="">Visitor</text>
+<rect class="shape group" x="170" y="20" width="460" height="170" rx="8"/><text x="186" y="44">Box</text>
+<path class="line " d="M120 100 H210"/><path class="line " d="M200 94 L210 100 L200 106"/>
+<path class="line " d="M210 118 H120"/><path class="line " d="M130 112 L120 118 L130 124"/>
+<rect class="shape on" x="210" y="70" width="140" height="60" rx="6"/><text x="226" y="98" class="on">Edge</text><text class="small" x="226" y="116">holding the request</text>
+<path class="line " d="M350 100 H420"/><path class="line " d="M410 94 L420 100 L410 106"/>
+<rect class="shape " x="420" y="60" width="190" height="80" rx="6"/><text x="436" y="86" class="">shop.example.com</text><text class="small" x="436" y="106">instance: asleep</text><text class="small" x="436" y="124">its own database and files</text>
+</svg>
+<figcaption>The edge finds the instance asleep. It holds the request and asks the box to start the instance.</figcaption></figure></li><li class="frame"><figure>
+<svg viewBox="0 0 640 210" role="img" aria-label="Step 3"><rect class="shape " x="10" y="70" width="110" height="60" rx="6"/><text x="26" y="105" class="">Visitor</text>
+<rect class="shape group" x="170" y="20" width="460" height="170" rx="8"/><text x="186" y="44">Box</text>
+<path class="line " d="M120 100 H210"/><path class="line " d="M200 94 L210 100 L200 106"/>
+<path class="line " d="M210 118 H120"/><path class="line " d="M130 112 L120 118 L130 124"/>
+<rect class="shape " x="210" y="70" width="140" height="60" rx="6"/><text x="226" y="98" class="">Edge</text><text class="small" x="226" y="116">holding the request</text>
+<path class="line " d="M350 100 H420"/><path class="line " d="M410 94 L420 100 L410 106"/>
+<rect class="shape on" x="420" y="60" width="190" height="80" rx="6"/><text x="436" y="86" class="on">shop.example.com</text><text class="small" x="436" y="106">instance: starting</text><text class="small" x="436" y="124">its own database and files</text>
+</svg>
+<figcaption>The box starts the instance&#x27;s process, with its own database, files and environment.</figcaption></figure></li><li class="frame"><figure>
+<svg viewBox="0 0 640 210" role="img" aria-label="Step 4"><rect class="shape " x="10" y="70" width="110" height="60" rx="6"/><text x="26" y="105" class="">Visitor</text>
+<rect class="shape group" x="170" y="20" width="460" height="170" rx="8"/><text x="186" y="44">Box</text>
+<path class="line " d="M120 100 H210"/><path class="line " d="M200 94 L210 100 L200 106"/>
+<path class="line " d="M210 118 H120"/><path class="line " d="M130 112 L120 118 L130 124"/>
+<rect class="shape " x="210" y="70" width="140" height="60" rx="6"/><text x="226" y="98" class="">Edge</text><text class="small" x="226" y="116">holding the request</text>
+<path class="line " d="M350 100 H420"/><path class="line " d="M410 94 L420 100 L410 106"/>
+<rect class="shape on" x="420" y="60" width="190" height="80" rx="6"/><text x="436" y="86" class="on">shop.example.com</text><text class="small" x="436" y="106">instance: awake, answering its health check</text><text class="small" x="436" y="124">its own database and files</text>
+</svg>
+<figcaption>The instance answers its health check, so the edge knows it is ready.</figcaption></figure></li><li class="frame"><figure>
+<svg viewBox="0 0 640 210" role="img" aria-label="Step 5"><rect class="shape on" x="10" y="70" width="110" height="60" rx="6"/><text x="26" y="105" class="on">Visitor</text>
+<rect class="shape group" x="170" y="20" width="460" height="170" rx="8"/><text x="186" y="44">Box</text>
+<path class="line " d="M120 100 H210"/><path class="line " d="M200 94 L210 100 L200 106"/>
+<path class="line on" d="M210 118 H120"/><path class="line on" d="M130 112 L120 118 L130 124"/>
+<rect class="shape on" x="210" y="70" width="140" height="60" rx="6"/><text x="226" y="98" class="on">Edge</text><text class="small" x="226" y="116">routes by hostname</text>
+<path class="line on" d="M350 100 H420"/><path class="line on" d="M410 94 L420 100 L410 106"/>
+<rect class="shape " x="420" y="60" width="190" height="80" rx="6"/><text x="436" y="86" class="">shop.example.com</text><text class="small" x="436" y="106">instance: awake</text><text class="small" x="436" y="124">its own database and files</text>
+</svg>
+<figcaption>The edge passes the held request on and the response goes back. The visitor waited a moment and saw no error.</figcaption></figure></li></ol></section>
+<h2 id="a-deploy">A deploy, with no downtime</h2><p><em>Step-through: ship, promote, the new version starts beside the old one, traffic moves, the old one stops.</em></p>
+<h2 id="a-box-fails">A box fails</h2><p><em>Step-through: what notices, what moves, what the visitor sees, and what the operator does.</em></p>
+<h2 id="a-one-off-command">A one-off command</h2><p><em>Step-through: carlos run, from your terminal to the instance's image and back.</em></p>
+<h2 id="what-each-part-holds">What each part holds, and what it never holds</h2><p><em>A table. It is the bridge to Security, and why.</em></p>
+    </article>
+  </main>
+</div>
+</body>
+</html>

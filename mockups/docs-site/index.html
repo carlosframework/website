@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentation &middot; CARLOS docs (mockup)</title>
+<link rel="stylesheet" href="../../src/site.css">
+<link rel="stylesheet" href="../../src/docs.css">
+<link rel="stylesheet" href="../../src/header.css">
+<link rel="stylesheet" href="mockup.css">
+</head>
+<body class="docs-body">
+<a class="skip-link visually-hidden" href="#main">Skip to content</a>
+<header class="masthead">
+  <a class="mark" href="/"><svg class="wordmark" viewBox="11 11 499 118" width="79" height="18" fill="none" stroke="currentColor" stroke-width="18" role="img" aria-label="CARLOS"><path transform="translate(0,0)" d="M77,44 A20,20 0 0 0 57,24 H43 A20,20 0 0 0 23,44 V96 A20,20 0 0 0 43,116 H57 A20,20 0 0 0 77,96"/><path transform="translate(86,0)" d="M25,117 L45,23 H55 L75,117 M33,80 H67"/><path transform="translate(172,0)" d="M23,117 V23 H53 A23,23 0 0 1 53,69 H23 M50,69 L77,117"/><path transform="translate(258,0)" d="M23,23 V117 H77"/><path transform="translate(335,0)" d="M23,44 A20,20 0 0 1 43,24 H57 A20,20 0 0 1 77,44 V96 A20,20 0 0 1 57,116 H43 A20,20 0 0 1 23,96 Z"/><path transform="translate(421,0)" d="M77,39 A16,16 0 0 0 61,23 H39 A16,16 0 0 0 23,39 V54 A16,16 0 0 0 39,70 H61 A16,16 0 0 1 77,86 V101 A16,16 0 0 1 61,117 H39 A16,16 0 0 1 23,101 V98"/></svg></a>
+  <nav aria-label="Site"><a href="#">Apps</a> <a href="#">Trust</a> <a href="#" aria-current="true">Platform</a> <a href="#">Get started</a></nav>
+</header>
+<div class="docs-shell">
+  <nav class="docs-nav" aria-label="Documentation">
+    <p class="docs-nav-title"><a href="index.html">CARLOS Platform docs</a></p>
+    <a class="docs-search" href="#page-index">Search the docs</a>
+    <div class="nav-groups"><div class="nav-group"><a class="nav-top" href="index.html#start-here">Start here</a><ul><li><a href="#">Why CARLOS</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="#">Security, and why</a></li><li><a href="#">What it does for you</a></li></ul></div><div class="nav-group"><a class="nav-top" href="index.html#tutorials">Tutorials</a><ul><li><a href="quickstart.html">Your first app</a></li><li><a href="#">A per-customer SaaS app</a></li><li><a href="#">Rails on your own fleet</a></li><li><a href="#">A static site</a></li><li><a href="#">A one-off site for one audience</a></li><li><a href="#">A dashboard for a project manager</a></li><li><a href="#">Install a deployment</a></li><li><a href="#">When things go wrong</a></li></ul></div><div class="nav-group"><a class="nav-top" href="index.html#guides">Guides</a><ul><li><a href="#">Ship and promote</a></li><li><a href="#">Instances, sleep and wake</a></li><li><a href="#">Commands and consoles</a></li><li><a href="#">Databases and backups</a></li><li><a href="#">Domains and certificates</a></li><li><a href="index.html#guides">…every feature area</a></li></ul></div><div class="nav-group"><a class="nav-top" href="#">Operating a deployment</a><ul><li><a href="#">Install</a></li><li><a href="#">Grow: boxes, fleets, regions</a></li><li><a href="#">Alerts and logs</a></li><li><a href="#">Upgrade and roll back</a></li><li><a href="#">Recover</a></li></ul></div><div class="nav-group"><a class="nav-top" href="#">CLI reference</a><ul><li><a href="#">carlos apps</a></li><li><a href="#">carlos instances</a></li><li><a href="#">carlos run and console</a></li><li><a href="#">carlos db</a></li><li><a href="#">…every command group</a></li></ul></div><div class="nav-group"><a class="nav-top" href="#">API reference</a><ul><li><a href="#" class="nav-soon">The public API is being designed</a></li></ul></div><div class="nav-group"><a class="nav-top" href="#">Changelog</a></div></div>
+  </nav>
+  <main id="main">
+    <article class="docs-article">
+      <p class="draft-banner">Mockup for review. The layout is what to react to: the words are drafts and will be rewritten.</p>
+<h1>CARLOS Platform documentation</h1>
+<p>Everything about running CARLOS: what it is, how it works, how to install it, and how to get apps running on it.</p>
+<h2 id="start-here">Start here</h2>
+<p>For anyone deciding whether CARLOS is right for them.</p>
+<ul class="mock-cards"><li><a href="#"><strong>Why CARLOS</strong><span>What it takes to run: one console, a few boxes, one CLI. What it costs.</span><span class="time">5 min read</span></a></li><li><a href="how-it-works.html"><strong>How it works</strong><span>The parts, what each one holds, and what happens on a deploy, a request and a failure.</span><span class="time">15 min read, with diagrams</span></a></li><li><a href="#"><strong>Security, and why</strong><span>How apps are kept apart, where secrets live, and what an operator can and cannot see.</span><span class="time">15 min read</span></a></li><li><a href="#"><strong>What it does for you</strong><span>Every feature, and the chore each one takes off your hands.</span><span class="time">10 min read</span></a></li></ul>
+<h2 id="tutorials">Tutorials</h2>
+<p>Real apps, start to finish. Each one is in the platform repository under examples/.</p>
+<ul class="mock-cards"><li><a href="quickstart.html"><strong>Your first app</strong><span>A small Go app with a database that sleeps when nobody uses it.</span><span class="time">About 10 minutes on a running deployment</span></a></li><li><a href="#"><strong>A per-customer SaaS app</strong><span>One instance and one database per customer, each on its own domain.</span><span class="time">About 45 minutes</span></a></li><li><a href="#"><strong>Rails on your own fleet</strong><span>A Rails 8 app with a worker, migrations on deploy, and a console.</span><span class="time">About 40 minutes</span></a></li><li><a href="#"><strong>Laravel and Django</strong><span>What changes from the Rails tutorial.</span><span class="time">Notes</span></a></li><li><a href="#"><strong>A static site</strong><span>Custom headers, preview sites and the asset cache.</span><span class="time">About 15 minutes</span></a></li><li><a href="#"><strong>A one-off site for one audience</strong><span>A demo or a presentation for one prospect, shared as a link, gone after the meeting.</span><span class="time">About 10 minutes</span></a></li><li><a href="#"><strong>A dashboard for a project manager</strong><span>Pulls status from your tools on a schedule, behind sign-in, and sleeps between visits.</span><span class="time">About 30 minutes</span></a></li><li><a href="#"><strong>Install a deployment</strong><span>Your own console, first fleet and first box.</span><span class="time">About an hour</span></a></li><li><a href="#"><strong>When things go wrong</strong><span>Restore a backup, read a database at a point in time, roll back an upgrade.</span><span class="time">About 30 minutes</span></a></li></ul>
+<h2 id="guides">Guides by feature</h2>
+<ul class="mock-areas"><li><a href='#'>Apps and releases</a></li><li><a href='#'>Instances, sleep and wake</a></li><li><a href='#'>Rootfs apps</a></li><li><a href='#'>Commands and consoles</a></li><li><a href='#'>Databases and backups</a></li><li><a href='#'>Point-in-time reads</a></li><li><a href='#'>Storage and uploads</a></li><li><a href='#'>Config and secrets</a></li><li><a href='#'>Domains and certificates</a></li><li><a href='#'>The edge and request protection</a></li><li><a href='#'>Rate limits and the asset cache</a></li><li><a href='#'>Static and temporary sites</a></li><li><a href='#'>Email</a></li><li><a href='#'>PDFs</a></li><li><a href='#'>Scan callbacks</a></li><li><a href='#'>Schedules</a></li><li><a href='#'>Logs, activity and audit</a></li><li><a href='#'>Analytics</a></li><li><a href='#'>Alerts</a></li><li><a href='#'>Members, roles and sign-in</a></li><li><a href='#'>Service credentials</a></li><li><a href='#'>Plans and caps</a></li><li><a href='#'>Fleets and boxes</a></li><li><a href='#'>Regions</a></li></ul>
+<h2 id="reference">Reference</h2>
+<ul class="mock-cards"><li><a href="#"><strong>CLI reference</strong><span>Every carlos command, one page per group, with every flag.</span></a></li><li><a href="#"><strong>API reference</strong><span>Coming: the public API is being designed. Until then, everything is in the CLI.</span></a></li></ul>
+<h2 id="page-index">Every page</h2>
+<p>Without JavaScript, the search box comes here: a plain list of every page, A to Z. With it, the box searches as you type.</p>
+    </article>
+  </main>
+</div>
+</body>
+</html>

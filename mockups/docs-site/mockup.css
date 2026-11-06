@@ -1,0 +1,106 @@
+/* 🤖 Mockup-only layout on top of the site's stylesheets. Not shipped. */
+
+.draft-banner {
+  margin: 0 0 1.5rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--rule);
+  background: var(--bg-sunk);
+  color: var(--ink-2);
+  font-size: 0.9rem;
+}
+
+/* Nav: top-level entries, with each section's pages under it. */
+.docs-nav .nav-top { font-weight: 600; color: var(--ink); }
+.docs-nav .nav-group + .nav-group { margin-top: 0.9rem; }
+.docs-nav .nav-group ul { margin-top: 0.2rem; }
+.docs-nav .nav-soon { color: var(--muted); font-size: 0.85em; }
+
+/* Search: a link to the page index without JavaScript. */
+.docs-search { display: block; margin: 0 0 1.1rem; padding: 0.45rem 0.6rem; border: 1px solid var(--rule); color: var(--muted); text-decoration: none; font-size: 0.9rem; }
+.docs-search:hover { color: var(--ink); border-color: var(--ink-2); }
+
+/* Cards: hairline border and a tint, never a coloured left stripe. */
+.mock-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 0.9rem; margin: 1.1rem 0 0; padding: 0; list-style: none; }
+.mock-cards li { margin: 0; }
+.mock-cards a { display: block; height: 100%; padding: 0.9rem 1rem; border: 1px solid var(--rule); background: var(--surface); color: var(--ink); text-decoration: none; }
+.mock-cards a:hover { border-color: var(--accent); background: var(--accent-soft); }
+.mock-cards strong { display: block; }
+.mock-cards span { display: block; margin-top: 0.3rem; color: var(--ink-2); font-size: 0.92rem; }
+.mock-cards .time, .mock-cards .who { margin-top: 0.5rem; color: var(--muted); font-size: 0.82rem; }
+.mock-areas { columns: 3 12rem; margin-top: 1rem; padding: 0; list-style: none; }
+.mock-areas li { break-inside: avoid; margin: 0 0 0.35rem; }
+
+/* Diagrams. Shapes take their colours from the site's tokens. */
+.diagram svg { display: block; width: 100%; height: auto; }
+.diagram .shape { fill: var(--surface); stroke: var(--rule); stroke-width: 1.5; }
+.diagram .shape.group { fill: none; stroke-dasharray: 5 4; }
+.diagram .shape.dim { stroke: var(--rule-soft); fill: var(--bg-sunk); }
+.diagram .shape.on { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.diagram .line { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.diagram .line.on { stroke: var(--accent); stroke-width: 2.5; }
+.diagram .line.dim { stroke: var(--rule); }
+.diagram text { fill: var(--ink); font-family: var(--font-sans); font-size: 14px; }
+.diagram text.small { fill: var(--ink-2); font-size: 12px; }
+.diagram text.dim { fill: var(--muted); }
+.diagram text.on { fill: var(--accent-deep); font-weight: 600; }
+.diagram figcaption, .stepper figcaption { margin-top: 0.6rem; color: var(--ink-2); font-size: 0.95rem; }
+
+/* The step-through. Without JavaScript: every frame, numbered, in order. */
+.stepper { margin: 1.5rem 0; }
+.stepper ol.frames { margin: 0; padding: 0; list-style: none; counter-reset: frame; }
+.stepper li.frame { counter-increment: frame; margin: 0 0 1.5rem; padding: 0.9rem 1rem; border: 1px solid var(--rule); }
+.stepper li.frame figcaption::before { content: "Step " counter(frame) ". "; font-weight: 600; color: var(--ink); }
+.stepper-controls { display: none; }
+
+/* With JavaScript: one frame at a time, Back and Next. */
+.stepper.is-enhanced li.frame { display: none; margin: 0; }
+.stepper.is-enhanced li.frame.is-current { display: block; animation: frame-in 180ms ease-out; }
+.stepper.is-enhanced li.frame figcaption { display: none; }
+.stepper.is-enhanced .stepper-controls { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.75rem; }
+.stepper-controls button { padding: 0.4rem 0.9rem; border: 1px solid var(--ink-2); background: var(--surface); color: var(--ink); font: inherit; cursor: pointer; }
+.stepper-controls button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-deep); }
+.stepper-controls button:disabled { opacity: 0.4; cursor: default; }
+.stepper-controls .stepper-count { color: var(--muted); font-size: 0.9rem; }
+.stepper-caption { flex-basis: 100%; margin: 0.25rem 0 0; color: var(--ink-2); }
+.stepper:focus-within { outline: none; }
+@keyframes frame-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .stepper.is-enhanced li.frame.is-current { animation: none; }
+  .stepper * { transition-duration: 0s !important; animation-duration: 0s !important; }
+}
+
+/* Print: every frame with its caption, whatever the script did. */
+@media print {
+  .stepper.is-enhanced li.frame { display: block; margin: 0 0 1rem; }
+  .stepper.is-enhanced li.frame figcaption { display: block; }
+  .stepper-controls, .docs-search, .draft-banner { display: none !important; }
+}
+
+/* Tutorials. */
+.tutorial-meta { display: flex; gap: 1.25rem; flex-wrap: wrap; color: var(--muted); font-size: 0.92rem; }
+.choice { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0.9rem; margin-top: 1rem; padding: 0; list-style: none; }
+.choice a { display: block; padding: 0.9rem 1rem; border: 1px solid var(--rule); background: var(--surface); color: var(--ink); text-decoration: none; }
+.choice a:hover { border-color: var(--accent); background: var(--accent-soft); }
+.choice span { display: block; margin-top: 0.3rem; color: var(--ink-2); font-size: 0.92rem; }
+ol.steps { padding-left: 1.4rem; }
+ol.steps > li { margin-top: 1.5rem; }
+ol.steps > li > h3 { margin-top: 0; padding-top: 0; border-top: 0; }
+.docs-article pre { overflow-x: auto; max-width: 100%; }
+.learned { margin-top: 2rem; padding: 1rem 1.1rem; border: 1px solid var(--rule); background: var(--bg-sunk); }
+
+/* Narrow screens: the nav collapses to one scrolling row of top-level links. */
+@media (max-width: 52rem) {
+  .docs-nav .nav-group ul, .docs-nav .docs-nav-title { display: none; }
+  .docs-nav .nav-groups { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 0.4rem; white-space: nowrap; }
+  .docs-nav .nav-group + .nav-group { margin-top: 0; }
+  .mock-areas { columns: 1; }
+}
+
+/* The site's article list rules indent lists and space li + li; cards and
+   choices are grids, so they opt out. */
+.docs-article ul.mock-cards, .docs-article ul.choice, .docs-article ul.mock-areas, .docs-article ol.frames { padding-left: 0; }
+.docs-article ul.mock-cards > li + li, .docs-article ul.choice > li + li, .docs-article ol.frames > li + li { margin-top: 0; }
+.docs-article ol.frames > li + li { margin-top: 1.5rem; }
+.docs-article .stepper.is-enhanced ol.frames > li + li { margin-top: 0; }
+.docs-article ol.steps > li > h3 { font-family: var(--font-sans); }
+.learned { max-width: var(--docs-column); }
