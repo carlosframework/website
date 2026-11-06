@@ -2,20 +2,20 @@
 
 | Record field | Value |
 |---|---|
-| Website SHA | c61ff61 (deployed claim-off; witnesses ran on 961877b) |
-| Platform SHA | 0eea2abb (main; read-only) |
+| Website SHA | aba92232 (deployed claim-on); create/update witnesses ran on 961877b, claim-step witness on aba92232 |
+| Platform SHA | 72c4946a (dev, v0.34.13); claim contract bound to 0eea2abb, wire unchanged to 72c4946a |
 | Plan A merged SHA | ffcf01b5 |
 | Plan 2 merged SHA | |
-| Plan 3 merged SHA | e12fe9a1; claim contract bound to 0eea2abb (Keymail readiness). Not yet on dev; dev build still CARLOS_START_CLAIM=off |
-| Serving edge release | dev edge serving v0.34.7 canary (Plan A in v0.34.5+) |
+| Plan 3 merged SHA | e12fe9a1; contract bound to 0eea2abb; live on dev since v0.34.13 (claimAvailable true) |
+| Serving edge release | dev v0.34.13 |
 | Starter archive SHA-256 | 2c7c1694ec022eb98bacca1e9b7bb17bb8391893ef51fabca2c5e1141b9f1f99 |
 | Console origin | https://platform.dev.carlosframework.com |
 | Site origin | https://tmp-pj4lpm.bab.dev.oncarlos.com (dev temporary static app, trashed 2026-11-12) |
 | Account URL | https://platform.dev.carlosframework.com/ |
-| Previous static version for rollback | 6ee4406 |
-| Website version / X-Carlos-Version | c61ff61 (witnesses on 961877b) |
+| Previous static version for rollback | ba44a65 |
+| Website version / X-Carlos-Version | aba9223 |
 | Markdown SHA-256 | 1de546e91086b210f1695fe51bcbb4d226a004911dcccc9e470437a736d18809 |
-| Returned public demo URL | https://kind-lake-34.dev.trycarlos.com/ (Codex local); https://breezy-lark-42.dev.trycarlos.com/ (Claude Code local) |
+| Returned public demo URL | https://kind-lake-34.dev.trycarlos.com/ (Codex local); https://breezy-lark-42.dev.trycarlos.com/ (Claude Code local); https://glad-mint-35.dev.trycarlos.com/ (Codex local, claim step) |
 | Returned permanent URL | none: claiming not available on dev |
 | Agent / harness version | codex-cli 0.165.0 (default model, clean HOME); Claude Code 2.1.312 (claude-opus-5-5, clean config) |
 | Phone browser version | not run |
@@ -23,9 +23,10 @@
 
 | Scenario | Result | URLs | Elapsed time | Request counts | Agent / harness version | Evidence |
 |---|---|---|---|---|---|---|
+| Token kept and claim link shared | fail on ba44a65, pass on aba9223 | https://fluffy-berry-81.dev.trycarlos.com/; https://glad-mint-35.dev.trycarlos.com/ | | | codex-cli 0.165.0 | on ba44a65 the agent saved no token and gave no claim link, so it could not claim when asked (honest, no second create). Directives tightened in aba9223; retest saved the response to a private directory and gave the link with the first live URL |
 | Feature off: account path, no anonymous instructions | pass (local build) |  |  |  |  | disabled / and /start byte-identical to main c8d55e7; no index.md or starter outputs |
 | Plan A merged and released to the serving edge | pass | https://tmp-pj4lpm.bab.dev.oncarlos.com/start/ |  |  |  | merged ffcf01b5; negotiation observed on dev 2026-11-05 |
-| Plans 2 and 3 merged, enabled and verified; claim availability | partial |  |  |  |  | Plan 2 live on dev (CSP header seen on demo); Plan 3 merged, not yet on dev; claimAvailable false |
+| Plans 2 and 3 merged, enabled and verified; claim availability | pass (availability only) | | | | Codex local | create reply on dev says claimAvailable true at v0.34.13; no claim completed yet |
 | Before deployment: expected content failure | not run | | | | | |
 | Slash redirect, browser HTML, complete visible agent section | pass | https://tmp-pj4lpm.bab.dev.oncarlos.com/start |  |  |  | verifyStartOrigin 19/19 checks |
 | Markdown negotiation and index.md byte equality | pass |  |  |  |  | text/markdown; charset=utf-8; bytes equal /start/index.md |
@@ -42,7 +43,7 @@
 | Permanent URL: copied row | outstanding |  |  |  |  |  |
 | Demo moved page, old demo token rejected | outstanding |  |  |  |  |  |
 | Claim account choice: fixture / live | fixture only |  |  |  |  | fixture bound to merged e12fe9a1 |
-| Claim unavailable: fixture / live | pass (live) |  |  |  | Codex local; Claude Code local | both agents told the person the demo cannot be kept on this deployment |
+| Claim unavailable: fixture / live | pass (live) | https://glad-mint-35.dev.trycarlos.com/ | about 2 min 20 s paste to live, keep step under 1 min | 1 claim start, 0 creates at keep step | codex-cli 0.165.0, aba9223 | non-Keymail address on mailer-less dev: 503 {"error":"unavailable"}. Agent said keeping is unavailable for that address, asked for no code, made no second create, stated the original expiry; demo still 200. Earlier claim-off runs also told the person the demo cannot be kept |
 | Keymail: fixture / live | fixture only |  |  |  |  |  |
 | Post-claim CLI login, second change, existing row | outstanding |  |  |  |  |  |
 | Claude Code local: create / live / update | pass | https://breezy-lark-42.dev.trycarlos.com/ | about 3 min 3 s paste to live (agent time: 31 s + 152 s) | 2 publishes | Claude Code 2.1.312 | asked first; compiled locally by choice (experienced user); update preserved row |
@@ -66,7 +67,7 @@
 
 ## Paul's live claim on dev (Keymail, browser path)
 
-🤖 Run this once the claim-on build is on the dev site and claiming is enabled on the dev console. This needs v0.34.10 on dev, which drops the mailer requirement for Keymail claims. The emailed-code path is witnessed later on flagship.
+🤖 Run this once the claim-on build is on the dev site and claiming is enabled on the dev console. Claiming is live on dev since v0.34.13. Wait for the program controller's word: data-kind creates in Ireland are currently refused on dev. The emailed-code path is witnessed later on flagship.
 
 1. In a local coding agent (Claude Code or Codex), paste the line shown on [https://tmp-pj4lpm.bab.dev.oncarlos.com/start/](https://tmp-pj4lpm.bab.dev.oncarlos.com/start/). Describe a small app and approve the first version.
 2. Check the agent gives you a live `*.dev.trycarlos.com` link and, privately and once, a claim link on `platform.dev.carlosframework.com/demo/claim#…`. Keep the claim link out of screenshots.
