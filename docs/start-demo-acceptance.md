@@ -37,7 +37,7 @@
 | Phone browser operation | not run | | | | | |
 | Create row, bearer update, preserved row and expiry | pass | https://kind-lake-34.dev.trycarlos.com/; https://breezy-lark-42.dev.trycarlos.com/ |  |  | Codex local; Claude Code local | person-added rows survived bearer updates; versions demo.3 and demo.2; expiry unchanged per responses |
 | Compile error, diagnostics and repair | pass | https://kind-lake-34.dev.trycarlos.com/ | about 70 s for broken + fixed update | 2 publishes | Codex local | diagnostic main.go:212: undefined: missingBuildTestValue returned; fixed update live |
-| Claim: email verification | outstanding |  |  |  |  | dev console has no mailer, which also blocks the Keymail claim because readiness requires a mailer (reported to the program controller); Paul's ruling: emailed-code path witnessed later on flagship; Keymail browser claim by Paul on dev (checklist below) |
+| Claim: email verification | outstanding |  |  |  |  | dev console has no mailer (Paul's ruling), so email-code starts return 503 there; Keymail claim needs v0.34.10 on dev; Paul's ruling: emailed-code path witnessed later on flagship; Keymail browser claim by Paul on dev (checklist below) |
 | Claim: transfer | outstanding |  |  |  |  |  |
 | Permanent URL: copied row | outstanding |  |  |  |  |  |
 | Demo moved page, old demo token rejected | outstanding |  |  |  |  |  |
@@ -66,14 +66,14 @@
 
 ## Paul's live claim on dev (Keymail, browser path)
 
-🤖 Run this once the claim-on build is on the dev site and claiming is enabled on the dev console. That console needs a ready mailer even for this Keymail path: without one, claiming reports as unavailable. The emailed-code path is witnessed later on flagship.
+🤖 Run this once the claim-on build is on the dev site and claiming is enabled on the dev console. This needs v0.34.10 on dev, which drops the mailer requirement for Keymail claims. The emailed-code path is witnessed later on flagship.
 
 1. In a local coding agent (Claude Code or Codex), paste the line shown on [https://tmp-pj4lpm.bab.dev.oncarlos.com/start/](https://tmp-pj4lpm.bab.dev.oncarlos.com/start/). Describe a small app and approve the first version.
 2. Check the agent gives you a live `*.dev.trycarlos.com` link and, privately and once, a claim link on `platform.dev.carlosframework.com/demo/claim#…`. Keep the claim link out of screenshots.
 3. Open the demo and save one invented row.
 4. Tell the agent you want to keep it and give your Keymail address. Expected: the agent says your address finishes in the browser and hands you the claim link. It must not ask for an emailed code.
 5. Open the claim link (the page needs JavaScript). Sign in with Keymail on the dev console. Check that the page shows the identity you signed in with. If you have several eligible accounts, the page must make you choose one; it must not pick one for you. Press the confirmation button. Signing in alone must not claim the app.
-6. Expected result: the page shows progress, then that the claim is complete with an **Open app** link. Follow it to the permanent address and check your row is there. The page's CLI hint currently says `carlos login`; the real command is `carlos auth login` (reported to the platform).
+6. Expected result: the page shows progress, then that the claim is complete with an **Open app** link. Follow it to the permanent address and check your row is there. The page's CLI hint must say `carlos auth login`.
 7. Open the old `*.dev.trycarlos.com` address. Expected: a moved page with a link to the new address, not a redirect.
 8. Ask the agent to send one more update with the demo token. Expected: HTTP 401, because the token is consumed. The agent must not create a new demo to recover.
 9. Note the time from step 4 to step 6 and anything that surprised you. Then tell the controller, or add it on PR #106.
