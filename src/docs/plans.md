@@ -34,6 +34,8 @@ The console reads the file when it starts. If the file is missing or wrong, the 
 
 Every account without a plan of its own is on `default_plan`. Packs may only raise counts and sizes: apps and instances, disk, storage, email and bandwidth. A ceiling is the most any plan with packs can reach.
 
+Set `pdf_renders_month` in a plan's limits to give your account a monthly PDF allowance shared by its apps. A value of 0 means no monthly limit. The PDF service's fair-use limits still apply.
+
 Change `version` whenever you change the file. The console notices an edit that kept the old version and treats it as a new catalog anyway, so every account's limits are written again.
 
 ## Assigning a plan
@@ -43,6 +45,10 @@ carlos accounts plan --account bac --set personal --reason "upgraded"
 ```
 
 The console writes each account's limits to `accounts/<sqid>/limits.json` in the deployment bucket, and the boxes read them from there. A change reaches the bucket straight away, or within a minute if the bucket was unavailable.
+
+## The ops account
+
+The deployment's built-in ops account (`bab`) is exempt from plans. It has no limits, caps or billing, and owning it doesn't count toward anyone's free account. `carlos accounts plan --account bab` says so and changes nothing. If it was under a plan before, the console removes the limits and warnings that plan left.
 
 ## Sponsored accounts
 
@@ -54,34 +60,38 @@ carlos accounts plan --account bac --set free --sponsored limits.json --reason "
 
 `limits.json` holds any of the limit names from the catalog. A sponsored limit can go above a ceiling: that is a decision you made for that account.
 
+Set `sponsor_accounts_before` in the catalog to a time no later than the console's start, like `"2026-11-01T09:00:00Z"`, and every account created before then that has no plan of its own is sponsored with no limits before any limit applies to it. If the console can't do that when it starts, it runs with plans off and logs why.
+
 ## Rate limit ceilings
 
 A plan can cap how far an account may raise an instance's rate limits, with `rate_client_share`, `rate_per_second` and `rate_burst` in its limits or in `ceilings`. Leave one out and that number has no ceiling. Packs cannot raise them. A `rate_per_second` below 300 or a `rate_burst` below 1000 is refused when the catalog loads, because a plan may never make limits stricter than the platform's defaults. See [Rate limits](rate-limits.md).
 
 ## Warnings and grace
 
-Once an hour the console compares each account's usage with its limits, for five caps:
+Once an hour the console compares each account's usage with its limits, for six caps:
 
 - apps and instances running;
 - object storage;
 - emails sent today;
 - bandwidth this month;
-- awake hours this month.
+- awake hours this month;
+- PDFs rendered this month.
 
-The figures come from what the console already records: its own app list, the monthly usage statements, the daily storage sweep and the mail counts. A cap whose limit is 0 is skipped.
+The figures come from what the console already records: its own app list, the monthly usage statements, the daily storage sweep, the mail counts and completed PDF requests. A cap whose limit is 0 is skipped.
 
 At 80% of a limit, the account's owners get an email, and a banner appears on every account page. A `carlos` command run against the account prints a line starting `warning:`, from a CLI new enough to print it.
 
 Going over the limit starts a grace period:
 - 7 days for apps and instances, and for storage;
 - the rest of the UTC day for email;
-- the rest of the UTC month for bandwidth and awake hours.
+- the rest of the UTC month for bandwidth, awake hours and PDFs.
 
 While an account is over, its owners get one reminder a day, saying when grace ends and how to get back under: buy a pack, move to a bigger plan, or clean up.
 
 After grace, only the capped action is refused, and each refusal lifts by itself:
 
 - **Email.** When an account has sent twice its daily limit, every sender of every app is paused until midnight UTC. This does not wait for notice, because sending reputation is shared by every tenant. The catalog's email ceiling caps it.
+- **PDFs.** At twice your account's monthly PDF allowance, new requests are refused with `402` until the 1st of the UTC month or until you move to a larger plan. This does not wait for notice. Your apps share the allowance, and the PDF service's fair-use limits still apply.
 - **Storage.** New uploads to the account's stores are refused once grace has ended and an owner has had notice for 3 days, or straight away at twice the limit. Downloads, listing and deletes keep working, so the account can clean up. Uploads come back once usage is under the limit or the limit is raised.
 
 - **Bandwidth.** At twice the month's limit, the account's apps are served more slowly until the month ends or the plan grows: one shared allowance of 5 requests a second, with bursts up to 30, across all its instances. This does not wait for notice, because twice the limit is bandwidth's hard ceiling.
@@ -91,7 +101,7 @@ The slowdown is a plan stage, not abuse protection, so it applies whatever `CARL
 
 The account banner and the CLI warning line say which stage is in force.
 
-The console also records when an owner actually received notice: an email that was accepted for delivery, an owner viewing an account page with the banner, or an owner's CLI printing the warning. Apart from the ceilings above (email, storage and bandwidth at twice their limits), whatever acts after grace starts only once grace has ended and an owner received notice at least 3 days earlier. So an account nobody has heard from is never cut off for anything short of a ceiling.
+The console also records when an owner actually received notice: an email that was accepted for delivery, an owner viewing an account page with the banner, or an owner's CLI printing the warning. Apart from the ceilings above (email, storage, bandwidth and PDFs at twice their limits), whatever acts after grace starts only once grace has ended and an owner received notice at least 3 days earlier. So an account nobody has heard from is never cut off for anything short of a ceiling.
 
 ## When a plan lapses
 
@@ -207,7 +217,7 @@ Where billing is on, an account's owners buy and change their plan on the accoun
 
 ### Buying a plan
 
-Under **Choose a plan**, pick a currency (`usd`, `eur` or `gbp`), a plan, and any packs, then press **Continue to payment**. You go to Stripe to pay. When you come back, the page shows your new plan as soon as the payment is confirmed. Prices are for a year, and tax is added where it applies.
+Under **Choose a plan**, pick a currency (`usd`, `eur` or `gbp`), a plan, and any packs, then press **Continue to payment**. You go to Stripe to pay. When you come back, the page shows your new plan as soon as the payment is confirmed. Prices are for a year, and tax is added where it applies. Business customers can add a VAT number at checkout. Stripe then applies reverse charge where the sale qualifies.
 
 The currency is fixed by the first purchase. After that the page says which currency the account pays in, and changing it means asking an operator.
 
