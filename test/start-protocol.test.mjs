@@ -94,7 +94,7 @@ test('claim-off requires an enabled demo and refuses unsupported claim modes', (
  assert.throws(()=>loadStartConfig({...off,CARLOS_START_DEMO:''}),/requires CARLOS_START_DEMO=1/);
  for(const value of ['on','0','1','OFF',' off']) assert.throws(()=>loadStartConfig({...off,CARLOS_START_CLAIM:value}),/must be unset or off/);
 });
-test('claim-off renders without a contract and preserves all other instruction bytes', () => {
+test('claim-off renders without a contract and preserves shared sections', () => {
  const off={...config,claimOff:true};
  const markdown=renderAgent(template,off,undefined,manifest);
  assert.doesNotMatch(markdown,/claims|flowToken|Contract producer|claim contract/);
@@ -106,14 +106,47 @@ test('claim-off renders without a contract and preserves all other instruction b
  const normal=rendered.split(/(?=^## \d+\.)/m);
  assert.equal(sections.length,11);
  assert.equal(sections[0],'# 🤖 Agent directions: make a small app\n\n');
- for(const n of [1,2,3,4,6,7,8]) assert.equal(sections[n],normal[n],`section ${n}`);
- assert.equal(sections[5],normal[5].replace(/, including `flowToken`, the emailed code and the person's email address|, `flowToken`, the emailed code, the person's email address/g,'').replace('Give the person the exact secret claim link once, privately, as recovery information; explain that it is unavailable when `claimAvailable` is false. If you have no private channel, ask them to use a private session before exposing it.','Do not share the claim link.'));
+ for(const n of [1,2,3,4,6,7]) assert.equal(sections[n],normal[n],`section ${n}`);
  assert.match(sections[9],/Claiming is not available on this deployment/);
  assert.match(sections[9],/Do not attempt any claim request, even if a response says `claimAvailable` is true/);
  assert.match(sections[9],/demo cannot be kept and ends at the returned `expiresAt`/);
  assert.match(sections[9],/Keep the create response's `claimToken` private and use it only as the update bearer/);
  assert.equal(sections[10],`## 10. For a permanent app\n\nPoint the person to the [account path](${config.accountUrl}) and stop.\n`);
  assert.throws(()=>renderAgent(template,{...off,enabled:false},undefined,manifest),/CARLOS_START_DEMO=1/);
+});
+const section = (markdown, n) => markdown.split(/(?=^## \d+\.)/m)[n];
+for(const claimOff of [false,true]) test(`private response file precedes polling and supplies credentials: claim ${claimOff?'off':'on'}`,()=>{
+ const markdown=renderAgent(template,{...config,claimOff},claimOff?undefined:contract,manifest);
+ const create=section(markdown,5);
+ const save='Immediately after a create returns 202, before polling or doing anything else, write the complete create response to one private file outside the source tree and outside any repository, for example in a directory made with `mktemp -d`.';
+ assert.ok(create.includes(save));
+ assert.ok(markdown.indexOf(save)<markdown.indexOf('GET the returned `statusUrl` without Authorization.'));
+ assert.ok(create.includes('Use owner-only permissions (`umask 077` or file mode `600`).'));
+ assert.ok(create.includes(`Read \`claimToken\` from that file for every update${claimOff?'':' and claim'}; do not rely on remembering it or on earlier tool output, which may not stay available between turns.`));
+ assert.ok(create.includes('Do not print the token again. Never include that file in the source archive.'));
+ assert.ok(create.includes(`Delete it only after ${claimOff?'':'a claim completes or '}the demo expires.`));
+ const flow='When a claim starts and returns a `flowToken`, write it to the same private file and read it from there for subsequent claim requests.';
+ assert.equal(create.includes(flow),!claimOff);
+ assert.doesNotMatch(create,/Use private HTTP tool state|retain all seven returned fields in private agent state/);
+});
+test('claim link is mandatory with the first live URL only when claiming is available',()=>{
+ const create=section(rendered,5), share=section(rendered,8);
+ assert.ok(create.includes('When `claimAvailable` is true, give the person the exact claim link in the same message as the first live URL.'));
+ assert.ok(create.includes('Label it as a private link to keep the app, not to be shared or posted.'));
+ assert.ok(create.includes('Treat the conversation with the person as the private channel unless they have said it is shared or public.'));
+ assert.ok(create.includes('If they have, ask them to move to a private session first and hand over the link there with the first live URL.'));
+ assert.ok(create.includes('Do not skip the link because it is secret.'));
+ assert.ok(share.includes('When `claimAvailable` is true, include the exact claim link in that same first message, labelled as a private link to keep the app, not to be shared or posted.'));
+ assert.ok(share.includes('Use the conversation as the private channel unless the person has said it is shared or public; in that case, ask them to move to a private session first and hand over both links there.'));
+ assert.ok(share.includes('Do not skip the claim link because it is secret.'));
+ for(const text of [create,share]) assert.ok(text.includes('When `claimAvailable` is false, do not share the claim link; say the demo cannot be kept.'));
+ assert.doesNotMatch(share,/Share only the returned live URL/);
+ const off=renderAgent(template,{...config,claimOff:true},undefined,manifest);
+ for(const n of [5,8]) {
+  assert.match(section(off,n),/Do not share the claim link\./);
+  assert.doesNotMatch(section(off,n),/give the person the exact claim link|include the exact claim link|private channel|hand over/);
+ }
+ assert.match(section(off,8),/Tell the person the demo cannot be kept\./);
 });
 test('claim gate rejects missing status fields, completion drift and missing merge evidence',()=>{
  for(const [state,key] of [['claiming','phase'],['claiming','retryAfter'],['claiming','recoveryPending'],['claimed','url'],['claimed','accountId'],['email_required','expiresAt']]) {
@@ -139,7 +172,7 @@ test('render substitutes only known placeholders and fixtures round trip as JSON
 // These are authored protocol transcripts, not evidence of an LLM or live API run.
 function audit(trace) {
  let asked=false, confirmed=false, creates=0, token, flow, live, permanent, selected, accounts=[], claimAvailable=false, claimed=false, lost=false, stop=false, repairs=0, lastPoll=-Infinity, retry=0;
- let keep=false, email, claimURL, browser=false, expiry, lastRequest, serverClaimed=false;
+ let keep=false, email, claimURL, sharedClaimURL, browser=false, expiry, lastRequest, serverClaimed=false;
  let pendingRetry, retried=false, createRetryUsed=false, updateRetryUsed=false, claimRetryUsed=false, codeAllowed=false, aborted=false;
  const secrets=new Set();
  for (const e of trace) {
@@ -197,7 +230,7 @@ function audit(trace) {
    if(u.pathname.endsWith('/select')) {assert.ok(selected);assert.equal(e.body.accountId,selected);assert.equal(e.body.flowToken,flow);}
    if(u.pathname.endsWith('/verify')) {assert.ok(codeAllowed);assert.equal(e.body.flowToken,flow);}
    if(u.pathname.startsWith('/api/demo/claims') && e.method==='POST') {
-    assert.ok(claimAvailable && keep && email && !stop && !claimed);
+    assert.ok(claimAvailable && keep && email && !stop && !claimed && !lost);
     assert.equal(e.headers['Content-Type'],'application/json');
     if(e.body?.code) secrets.add(e.body.code);
    }
@@ -213,7 +246,7 @@ function audit(trace) {
      && (!e.headers || isDeepStrictEqual(r.headers,e.headers))),`${operation}: response must match the merged fixture`);
    }
    if(serverClaimed && path==='/api/demo/apps') assert.deepEqual({status:e.status,body:e.body},contract.complete.consumedUpdate.response);
-   if(e.body?.claimToken) {token=e.body.claimToken;expiry=e.body.expiresAt;claimAvailable=e.body.claimAvailable===true;secrets.add(token);secrets.add(e.body.claimUrl);secrets.add(e.body.statusUrl);}
+   if(e.body?.claimToken) {token=e.body.claimToken;expiry=e.body.expiresAt;claimAvailable=e.body.claimAvailable===true;claimURL=e.body.claimUrl;secrets.add(token);secrets.add(e.body.claimUrl);secrets.add(e.body.statusUrl);}
    if(e.body?.state==='browser_required') {claimURL=e.body.claimUrl;assert.equal(e.body.flowToken,undefined);}
    if(path==='/api/demo/claims') codeAllowed=e.status===202 && e.body?.state==='email_required';
    if(e.body?.flowToken) {flow=e.body.flowToken;secrets.add(flow);}
@@ -240,8 +273,25 @@ function audit(trace) {
    }
   }
   if(e.kind==='lost') lost=true;
+  if(e.kind==='lost-token') {lost=true;token=undefined;flow=undefined;}
+  if(e.kind==='open-saved-claim-link') {
+   assert.ok(lost && claimAvailable && sharedClaimURL);
+   assert.equal(e.url,sharedClaimURL);
+   assert.equal(e.finishesInBrowser,true);
+  }
   if(e.kind==='public') for(const secret of secrets) assert.ok(!e.text.includes(secret));
-  if(e.kind==='share') assert.equal(e.url,e.permanent?permanent:live);
+  if(e.kind==='share') {
+   assert.equal(e.url,e.permanent?permanent:live);
+   if(!e.permanent) {
+    if(claimAvailable && !sharedClaimURL) {
+     assert.equal(e.claimUrl,claimURL);
+     assert.equal(e.private,true);
+     assert.equal(e.claimLabel,'Private link to keep the app, not to be shared or posted');
+     sharedClaimURL=e.claimUrl;
+    }
+    if(!claimAvailable) assert.equal(e.claimUrl,undefined);
+   }
+  }
   if(e.kind==='install') assert.ok(permanent && e.optIn);
   if(e.kind==='account') assert.equal(e.url,config.accountUrl);
  }
@@ -258,6 +308,31 @@ for(const f of transcripts) test(`transcript: ${f.name}`,()=>{
  }
  audit(f.events);
  for(const bad of f.reject ?? []) assert.throws(()=>audit(bad));
+});
+
+test('lost saved token uses browser recovery and rejects creates, updates and API claims',()=>{
+ const fixture=transcripts.find(f=>f.name==='lost saved token uses the first claim link without another create');
+ const events=fixture.events;
+ for(const directive of fixture.sections) assert.ok(section(rendered,9).includes(directive));
+ const lost=events.findIndex(e=>e.kind==='lost-token');
+ assert.ok(lost>0);
+ assert.ok(!events.slice(lost).some(e=>e.kind==='request'));
+ assert.equal(events.filter(e=>e.kind==='request' && e.method==='POST').length,1);
+ assert.equal(events.at(-1).kind,'open-saved-claim-link');
+ const boundary=events.slice(0,lost+1);
+ const create=events.find(e=>e.kind==='request');
+ const update=structuredClone(create);
+ update.headers.Authorization='Bearer synthetic-demo-token';
+ const claim=transcripts.find(f=>f.name==='one account').events.find(e=>e.kind==='request' && e.url.endsWith('/api/demo/claims'));
+ for(const request of [create,update,claim]) assert.throws(()=>audit([...boundary,request]));
+ const omitted=structuredClone(events);
+ delete omitted.find(e=>e.kind==='share').claimUrl;
+ assert.throws(()=>audit(omitted));
+ const unavailable=structuredClone(events.slice(0,events.findIndex(e=>e.kind==='keep')));
+ unavailable.find(e=>e.kind==='response' && e.body?.claimToken).body.claimAvailable=false;
+ assert.throws(()=>audit(unavailable));
+ delete unavailable.find(e=>e.kind==='share').claimUrl;
+ audit(unavailable);
 });
 
 for(const keymail of [false,true]) test(`claimAvailable with no mailer: ${keymail?'Keymail browser handoff':'email-code refusal'}`,()=>{

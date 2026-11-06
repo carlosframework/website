@@ -7493,5 +7493,92 @@
         }
       ]
     ]
+  },
+  {
+    "name": "lost saved token uses the first claim link without another create",
+    "sections": [
+      "If the private file is gone or the token is unavailable, do not make any create.",
+      "Ask the person to open the claim link you gave them; it finishes the claim in the browser.",
+      "If neither the token nor the claim link is available, say plainly that you cannot claim or update this demo.",
+      "Updates also need the token; never make a new create to recover a lost token."
+    ],
+    "events": [
+      {
+        "kind": "ask"
+      },
+      {
+        "kind": "confirm"
+      },
+      {
+        "kind": "build"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "jobId": "j1",
+          "name": "shop",
+          "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+          "expiresAt": 1793966400,
+          "claimToken": "synthetic-demo-token",
+          "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+          "claimAvailable": true
+        }
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/jobs/j1",
+        "method": "GET",
+        "headers": {},
+        "body": null,
+        "redirect": "error",
+        "at": 5
+      },
+      {
+        "kind": "response",
+        "status": 200,
+        "body": {
+          "state": "live",
+          "url": "https://shop.example.com/?a=1"
+        },
+        "retryAfter": 2
+      },
+      {
+        "kind": "share",
+        "url": "https://shop.example.com/?a=1",
+        "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+        "private": true,
+        "claimLabel": "Private link to keep the app, not to be shared or posted"
+      },
+      {
+        "kind": "keep",
+        "wanted": true
+      },
+      {
+        "kind": "email",
+        "address": "person@example.com"
+      },
+      {
+        "kind": "lost-token"
+      },
+      {
+        "kind": "open-saved-claim-link",
+        "url": "https://console.example.com/demo/claim#synthetic-demo-token",
+        "finishesInBrowser": true
+      }
+    ],
+    "reject": []
   }
 ]
