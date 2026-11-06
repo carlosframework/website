@@ -1,31 +1,13 @@
-// 🤖 Build-time rendering; the AI disclaimer is the only browser script.
+// 🤖 Build-time rendering. Browser scripts only enhance pages that already work (PRODUCT.md).
 import markdownIt from "markdown-it";
-import markdownItAnchor from "markdown-it-anchor";
+import { createDocsMarkdown, slugify } from "./hack/docs-markdown.mjs";
 import { addDisclaimer } from "./hack/add-disclaimer.mjs";
 import { addFooter } from "./hack/add-footer.mjs";
 
-// slugify must match internal/docsite's Anchor in the platform repo
-// exactly, or an internal fragment link passes that repo's Go gate and
-// 404s in a browser. Both sides are deliberately plain — lowercase
-// alphanumerics, everything else a separator — because
-// markdown-it-anchor's own default URI-encodes punctuation, which would
-// anchor a heading naming `db.Open` differently on each side.
-// src/_data/docsanchors.json (vendored from docs/site/anchors.json) is
-// the contract both sides are checked against.
-export function slugify(text) {
-  let out = "";
-  let pendingSep = false;
-  for (const ch of String(text).toLowerCase()) {
-    if ((ch >= "a" && ch <= "z") || (ch >= "0" && ch <= "9")) {
-      if (pendingSep && out.length > 0) out += "-";
-      pendingSep = false;
-      out += ch;
-    } else {
-      pendingSep = true;
-    }
-  }
-  return out;
-}
+// slugify lives in hack/docs-markdown.mjs with the rest of the docs
+// renderer; it is re-exported here because hack/check-docs.mjs checks it
+// against src/_data/docsanchors.json through this module.
+export { slugify };
 
 // fenceDelim/sameFence port internal/docsite/docsite.go's fence-matching
 // exactly, for docsSections below: a trimmed line opens or closes a
@@ -70,6 +52,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/ai-disclaimer.css": "ai-disclaimer.css" });
   eleventyConfig.addPassthroughCopy({ "src/ai-disclaimer.js": "ai-disclaimer.js" });
   eleventyConfig.addPassthroughCopy({ "src/docs.css": "docs.css" });
+  eleventyConfig.addPassthroughCopy({ "src/docs-stepper.js": "docs-stepper.js" });
   eleventyConfig.addPassthroughCopy({ "src/favicon.svg": "favicon.svg" });
 
   // The agent-skills tree (vendored by hack/sync-skills.mjs) ships
@@ -80,10 +63,9 @@ export default function (eleventyConfig) {
   eleventyConfig.ignores.add("src/well-known/**");
   eleventyConfig.addPassthroughCopy({ "src/well-known": ".well-known" });
 
-  const md = markdownIt({ html: true, linkify: false, typographer: false }).use(
-    markdownItAnchor,
-    { slugify, level: [2, 3, 4], tabIndex: false },
-  );
+  // Diagram and stepper fences inline their SVGs from the vendored
+  // docs/site/diagrams (see hack/docs-markdown.mjs).
+  const md = createDocsMarkdown({ diagramsDir: "src/docs/diagrams" });
   eleventyConfig.setLibrary("md", md);
 
   // The docs corpus is vendored from the platform repo by

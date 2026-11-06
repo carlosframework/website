@@ -386,3 +386,59 @@
 /* Let the article shrink inside the grid; wide code scrolls within its block. */
 .docs-shell > main { min-width: 0; width: 100%; }
 .docs-article { overflow-wrap: anywhere; }
+
+/* -------------------------------------------------------------- diagrams -- */
+
+/* Figures from ```diagram and ```stepper fences (hack/docs-markdown.mjs).
+   Their SVGs are inlined, so shapes take these colours: an SVG marks its
+   parts with class="shape", "shape group", "shape dim" or "shape on";
+   lines with "line", "line dim" or "line on"; text with "small", "dim"
+   or "on". Nothing else is styled, so a diagram reads in light and dark. */
+.docs-article .diagram { margin: 1.75rem 0; }
+.docs-article .diagram svg { display: block; width: 100%; height: auto; }
+.diagram .shape { fill: var(--surface); stroke: var(--rule); stroke-width: 1.5; }
+.diagram .shape.group { fill: none; stroke-dasharray: 5 4; }
+.diagram .shape.dim { stroke: var(--rule-soft); fill: var(--bg-sunk); }
+.diagram .shape.on { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.diagram .line { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.diagram .line.on { stroke: var(--accent); stroke-width: 2.5; }
+.diagram .line.dim { stroke: var(--rule); }
+.diagram text { fill: var(--ink); font-family: var(--font-sans); font-size: 14px; }
+.diagram text.small { fill: var(--ink-2); font-size: 12px; }
+.diagram text.dim { fill: var(--muted); }
+.diagram text.on { fill: var(--accent-deep); font-weight: 600; }
+.docs-article .diagram figcaption { margin-top: 0.6rem; color: var(--ink-2); font-size: 0.95rem; }
+
+/* A stepper without JavaScript: every frame, numbered, in order. */
+.docs-article ol.frames { margin: 0; padding: 0; list-style: none; counter-reset: frame; }
+.docs-article ol.frames > li.frame { counter-increment: frame; margin: 0 0 1.5rem; padding: 0.9rem 1rem; border: 1px solid var(--rule); }
+.docs-article ol.frames > li + li { margin-top: 0; }
+.docs-article li.frame figcaption::before { content: "Step " counter(frame) ". "; font-weight: 600; color: var(--ink); }
+.stepper-controls { display: none; }
+
+/* With docs-stepper.js: one frame at a time, Back and Next. */
+.stepper.is-enhanced li.frame { display: none; margin: 0; }
+.stepper.is-enhanced li.frame.is-current { display: block; animation: frame-in 180ms ease-out; }
+.stepper.is-enhanced li.frame figcaption { display: none; }
+.stepper.is-enhanced .stepper-controls { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.75rem; }
+.stepper-controls button { padding: 0.4rem 0.9rem; border: 1px solid var(--ink-2); background: var(--surface); color: var(--ink); font: inherit; cursor: pointer; }
+.stepper-controls button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-deep); }
+.stepper-controls button:disabled { opacity: 0.4; cursor: default; }
+.stepper-controls .stepper-count { color: var(--muted); font-size: 0.9rem; }
+.stepper-caption { flex-basis: 100%; margin: 0.25rem 0 0; color: var(--ink-2); }
+@keyframes frame-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .stepper.is-enhanced li.frame.is-current { animation: none; }
+  .stepper * { transition-duration: 0s !important; animation-duration: 0s !important; }
+}
+@media print {
+  .stepper.is-enhanced li.frame { display: block; margin: 0 0 1rem; }
+  .stepper.is-enhanced li.frame figcaption { display: block; }
+  .stepper-controls { display: none !important; }
+}
+/* Narrow screens: a diagram keeps a readable size and scrolls sideways in
+   its own box, never the page. */
+@media (max-width: 30rem) {
+  .docs-article .diagram figure, .docs-article figure.diagram { overflow-x: auto; }
+  .docs-article .diagram svg { min-width: 36rem; }
+}
