@@ -6,7 +6,7 @@
 | Platform SHA | ddbc0297 (main at build; read-only) |
 | Plan A merged SHA | ffcf01b5 |
 | Plan 2 merged SHA | |
-| Plan 3 merged SHA | not merged; dev build uses CARLOS_START_CLAIM=off |
+| Plan 3 merged SHA | e12fe9a10d9ee315cbef9c1896b2216eae9cc9b4 (not yet on dev; dev build still CARLOS_START_CLAIM=off) |
 | Serving edge release | dev edge serving v0.34.7 canary (Plan A in v0.34.5+) |
 | Starter archive SHA-256 | 2c7c1694ec022eb98bacca1e9b7bb17bb8391893ef51fabca2c5e1141b9f1f99 |
 | Console origin | https://platform.dev.carlosframework.com |
@@ -25,7 +25,7 @@
 |---|---|---|---|---|---|---|
 | Feature off: account path, no anonymous instructions | pass (local build) |  |  |  |  | disabled / and /start byte-identical to main c8d55e7; no index.md or starter outputs |
 | Plan A merged and released to the serving edge | pass | https://tmp-pj4lpm.bab.dev.oncarlos.com/start/ |  |  |  | merged ffcf01b5; negotiation observed on dev 2026-11-05 |
-| Plans 2 and 3 merged, enabled and verified; claim availability | partial |  |  |  |  | Plan 2 live on dev (CSP header seen on demo); Plan 3 unmerged; claimAvailable false |
+| Plans 2 and 3 merged, enabled and verified; claim availability | partial |  |  |  |  | Plan 2 live on dev (CSP header seen on demo); Plan 3 merged, not yet on dev; claimAvailable false |
 | Before deployment: expected content failure | not run | | | | | |
 | Slash redirect, browser HTML, complete visible agent section | pass | https://tmp-pj4lpm.bab.dev.oncarlos.com/start |  |  |  | verifyStartOrigin 19/19 checks |
 | Markdown negotiation and index.md byte equality | pass |  |  |  |  | text/markdown; charset=utf-8; bytes equal /start/index.md |
@@ -37,11 +37,11 @@
 | Phone browser operation | not run | | | | | |
 | Create row, bearer update, preserved row and expiry | pass | https://kind-lake-34.dev.trycarlos.com/; https://breezy-lark-42.dev.trycarlos.com/ |  |  | Codex local; Claude Code local | person-added rows survived bearer updates; versions demo.3 and demo.2; expiry unchanged per responses |
 | Compile error, diagnostics and repair | pass | https://kind-lake-34.dev.trycarlos.com/ | about 70 s for broken + fixed update | 2 publishes | Codex local | diagnostic main.go:212: undefined: missingBuildTestValue returned; fixed update live |
-| Claim: email verification | outstanding |  |  |  |  | dev console has no mailer; Paul's ruling: emailed-code path witnessed later on flagship; Keymail browser claim by Paul on dev (checklist below) |
+| Claim: email verification | outstanding |  |  |  |  | dev console has no mailer, which also blocks the Keymail claim because readiness requires a mailer (reported to the program controller); Paul's ruling: emailed-code path witnessed later on flagship; Keymail browser claim by Paul on dev (checklist below) |
 | Claim: transfer | outstanding |  |  |  |  |  |
 | Permanent URL: copied row | outstanding |  |  |  |  |  |
 | Demo moved page, old demo token rejected | outstanding |  |  |  |  |  |
-| Claim account choice: fixture / live | fixture only |  |  |  |  | draft fixture vs Plan 3 tip 8f2b67d5 |
+| Claim account choice: fixture / live | fixture only |  |  |  |  | fixture bound to merged e12fe9a1 |
 | Claim unavailable: fixture / live | pass (live) |  |  |  | Codex local; Claude Code local | both agents told the person the demo cannot be kept on this deployment |
 | Keymail: fixture / live | fixture only |  |  |  |  |  |
 | Post-claim CLI login, second change, existing row | outstanding |  |  |  |  |  |
@@ -66,14 +66,14 @@
 
 ## Paul's live claim on dev (Keymail, browser path)
 
-🤖 Run this once the claim-on build is on the dev site and claiming is enabled on the dev console. The emailed-code path is witnessed later on flagship.
+🤖 Run this once the claim-on build is on the dev site and claiming is enabled on the dev console. That console needs a ready mailer even for this Keymail path: without one, claiming reports as unavailable. The emailed-code path is witnessed later on flagship.
 
 1. In a local coding agent (Claude Code or Codex), paste the line shown on [https://tmp-pj4lpm.bab.dev.oncarlos.com/start/](https://tmp-pj4lpm.bab.dev.oncarlos.com/start/). Describe a small app and approve the first version.
 2. Check the agent gives you a live `*.dev.trycarlos.com` link and, privately and once, a claim link on `platform.dev.carlosframework.com/demo/claim#…`. Keep the claim link out of screenshots.
 3. Open the demo and save one invented row.
 4. Tell the agent you want to keep it and give your Keymail address. Expected: the agent says your address finishes in the browser and hands you the claim link. It must not ask for an emailed code.
-5. Open the claim link. Sign in with Keymail on the dev console. Check that the page shows the identity you signed in with. If you have several accounts, the page must make you choose one; it must not pick one for you. Confirm the claim.
-6. Expected result: the page reports the claim complete with a permanent `*.dev.oncarlos.com` address. Open it and check your row is there.
-7. Open the old `*.dev.trycarlos.com` address. Expected: a moved page pointing to the new address.
-8. Ask the agent to send one more update with the demo token. Expected: refused (the token is consumed). The agent must not create a new demo to recover.
+5. Open the claim link (the page needs JavaScript). Sign in with Keymail on the dev console. Check that the page shows the identity you signed in with. If you have several eligible accounts, the page must make you choose one; it must not pick one for you. Press the confirmation button. Signing in alone must not claim the app.
+6. Expected result: the page shows progress, then that the claim is complete with an **Open app** link. Follow it to the permanent address and check your row is there. The page's CLI hint currently says `carlos login`; the real command is `carlos auth login` (reported to the platform).
+7. Open the old `*.dev.trycarlos.com` address. Expected: a moved page with a link to the new address, not a redirect.
+8. Ask the agent to send one more update with the demo token. Expected: HTTP 401, because the token is consumed. The agent must not create a new demo to recover.
 9. Note the time from step 4 to step 6 and anything that surprised you. Then tell the controller, or add it on PR #106.
