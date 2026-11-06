@@ -54,6 +54,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/docs.css": "docs.css" });
   eleventyConfig.addPassthroughCopy({ "src/docs-stepper.js": "docs-stepper.js" });
   eleventyConfig.addPassthroughCopy({ "src/docs-nav.js": "docs-nav.js" });
+  eleventyConfig.addPassthroughCopy({ "src/docs-search.js": "docs-search.js" });
   eleventyConfig.addPassthroughCopy({ "src/favicon.svg": "favicon.svg" });
 
   // The agent-skills tree (vendored by hack/sync-skills.mjs) ships
@@ -168,6 +169,47 @@ export default function (eleventyConfig) {
       if (m) return m[1].replace(/^🤖\s*/, "");
     }
     return "";
+  });
+
+  // The search index (/docs/search-index.json, read by docs-search.js):
+  // one entry per nav page with its label, section, URL, ## and ###
+  // headings with anchors, and its prose with markdown stripped, capped
+  // at TEXT_CAP characters so the index stays small.
+  const TEXT_CAP = 8000;
+  eleventyConfig.addFilter("docsSearchIndex", (docs, nav) => {
+    const raw = new Map(docs.map((d) => [d.slug, d.page.rawInput]));
+    const out = [];
+    for (const section of nav.sections || []) {
+      for (const entry of section.pages) {
+        const src = String(raw.get(entry.slug) || "");
+        const headings = [];
+        const prose = [];
+        let inFence = false;
+        let fenceMark = "";
+        for (const line of src.split("\n")) {
+          const trimmed = line.trim();
+          const fd = fenceDelim(trimmed);
+          if (fd) {
+            if (!inFence) { inFence = true; fenceMark = fd.mark; continue; }
+            if (sameFence(fd.mark, fenceMark)) { inFence = false; continue; }
+          }
+          if (inFence) continue;
+          const h = /^(#{2,3})\s+(.+?)\s*#*$/.exec(trimmed);
+          if (h) { headings.push({ title: h[2], anchor: slugify(h[2]) }); continue; }
+          if (/^#\s/.test(trimmed)) continue;
+          prose.push(trimmed);
+        }
+        const text = prose.join(" ")
+          .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
+          .replace(/<[^>]+>/g, " ")
+          .replace(/[`*_>|]/g, " ")
+          .replace(/\s+/g, " ")
+          .trim()
+          .slice(0, TEXT_CAP);
+        out.push({ title: entry.label, section: section.title, url: `/docs/${entry.slug}/`, headings, text });
+      }
+    }
+    return out;
   });
 
   // A page's raw markdown, looked up from the collection by slug.

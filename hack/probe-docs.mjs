@@ -27,7 +27,7 @@ children.push(spawn("chromium", ["--headless=new", `--remote-debugging-port=${cd
 let ws, id = 0;
 const pending = new Map();
 const send = (method, params = {}) => new Promise((res) => { const i = ++id; pending.set(i, res); ws.send(JSON.stringify({ id: i, method, params })); });
-const evalJS = async (expr) => (await send("Runtime.evaluate", { expression: expr, returnByValue: true })).result?.value;
+const evalJS = async (expr) => (await send("Runtime.evaluate", { expression: expr, returnByValue: true, awaitPromise: true })).result?.value;
 const key = async (k, code, vk, text) => { await send("Input.dispatchKeyEvent", { type: "keyDown", key: k, code, windowsVirtualKeyCode: vk, ...(text ? { text } : {}) }); await send("Input.dispatchKeyEvent", { type: "keyUp", key: k, code, windowsVirtualKeyCode: vk }); };
 async function open(path, { js = true, media = "", reduced = false, width = 1280, height = 900 } = {}) {
   await send("Emulation.setScriptExecutionDisabled", { value: !js });
@@ -99,6 +99,57 @@ try {
   await open("/docs/", { width: 1440 });
   const indexToc = await evalJS(`JSON.stringify([!!document.querySelector('.docs-toc'), !!document.querySelector('.docs-nav .nav-groups')])`);
   check("a page with no ## headings of its own has no rail", indexToc === "[false,true]", indexToc);
+
+  // Search over the build-time index.
+  await open("/docs/rootfs/");
+  const idx = await evalJS(`fetch('/docs/search-index.json').then(r => r.ok ? r.json() : null).then(j => JSON.stringify(j))`);
+  let index = [];
+  try { index = JSON.parse(await (async () => { await sleep(300); return idx; })()) || []; } catch { index = []; }
+  const navCount = await evalJS(`document.querySelectorAll('.docs-nav .nav-group:not(.nav-extra) ul a').length`);
+  check("the search index lists every page in the nav", Array.isArray(index) && index.length === navCount && index.every((e) => e.title && e.url && Array.isArray(e.headings) && typeof e.text === "string"), [index.length, navCount]);
+  const words = (e) => new Set((e.text.toLowerCase().match(/[a-z]{9,}/g) || []));
+  const labelText = (e) => (e.title + " " + e.headings.map((h) => h.title).join(" ")).toLowerCase();
+  const rootfs = index.find((e) => e.url === "/docs/rootfs/");
+  const unique = rootfs ? [...words(rootfs)].find((w) => !labelText(rootfs).includes(w) && index.every((e) => e === rootfs || !e.text.toLowerCase().includes(w) && !labelText(e).includes(w))) : undefined;
+  const y0 = await evalJS(`scrollY`);
+  await evalJS(`document.querySelector('.docs-search').click()`);
+  await sleep(400);
+  check("clicking search does not move the page", y0 === (await evalJS(`scrollY`)), "moved");
+  check("clicking search opens the dialog with the field focused", await evalJS(`!!document.querySelector('dialog.search-dialog[open]') && document.activeElement?.matches('dialog.search-dialog input[role=searchbox]')`), "not open or not focused");
+  check("the field adds no native clear button", await evalJS(`document.querySelector('dialog.search-dialog input')?.type === 'text'`), "type search");
+  const searchFor = async (q) => { await evalJS(`(() => { const i = document.querySelector('dialog.search-dialog input'); i.value = ${JSON.stringify(q)}; i.dispatchEvent(new Event('input')); })()`); await sleep(150); return evalJS(`[...document.querySelectorAll('dialog.search-dialog li a')].map(a => a.getAttribute('href'))`); };
+  const body = unique ? await searchFor(unique) : [];
+  check("a word only in a page's body finds that page", !!unique && body[0] === "/docs/rootfs/", [unique, body]);
+  const head = await searchFor("Commands and consoles");
+  check("a heading finds the page at that heading", head.includes("/docs/rootfs/#commands-and-consoles"), head);
+  const none = await searchFor("zzqqxxvv");
+  const noneText = await evalJS(`document.querySelector('dialog.search-dialog .search-empty')?.textContent.trim()`);
+  check("no match says so", none.length === 0 && noneText === "No pages match that.", [none, noneText]);
+  const before = await evalJS(`location.href`);
+  await evalJS(`document.querySelector('dialog.search-dialog input').focus()`);
+  await key("Enter", "Enter", 13, "\r");
+  await sleep(400);
+  check("Enter with no match goes nowhere", before === (await evalJS(`location.href`)), "navigated");
+  await evalJS(`document.querySelector('dialog.search-dialog .search-close').click()`);
+  await sleep(150);
+  check("the close button closes search", await evalJS(`!document.querySelector('dialog.search-dialog[open]')`), "still open");
+  await evalJS(`document.body.focus()`);
+  await key("/", "Slash", 191, "/");
+  await sleep(300);
+  check("/ opens search", await evalJS(`!!document.querySelector('dialog.search-dialog[open]')`), "not open");
+  await searchFor("rails");
+  await key("Escape", "Escape", 27);
+  await sleep(150);
+  check("one Escape closes search", await evalJS(`!document.querySelector('dialog.search-dialog[open]')`), "still open");
+  await evalJS(`document.querySelector('.docs-search').click()`);
+  await sleep(300);
+  await send("Input.dispatchMouseEvent", { type: "mousePressed", x: 5, y: 880, button: "left", clickCount: 1 });
+  await send("Input.dispatchMouseEvent", { type: "mouseReleased", x: 5, y: 880, button: "left", clickCount: 1 });
+  await sleep(200);
+  check("a click outside closes search", await evalJS(`!document.querySelector('dialog.search-dialog[open]')`), "still open");
+  await open("/docs/", { js: false });
+  const listed = await evalJS(`document.querySelectorAll('#every-page ~ ul.docs-page-index a').length`);
+  check("without JavaScript the page index lists every page", listed === navCount, [listed, navCount]);
 
   // A phone: nothing scrolls sideways, and only the current section is open.
   for (const p of pages) {
