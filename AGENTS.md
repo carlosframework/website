@@ -64,8 +64,9 @@ person marker.**
 
 ## Conventions
 
-- **Only the disclosure, clipboard and Attributes sidebar scripts run in the browser.** No frameworks, remotely
-  fetched fonts or analytics. The footer button opens the disclosure on request;
+- **JavaScript only as progressive enhancement** (PRODUCT.md, 2026-11-06): where it
+  meaningfully improves the experience, on a page that works and reads without it,
+  as small local files. No frameworks, remotely fetched fonts or analytics. The footer button opens the disclosure on request;
   Continue and Escape dismiss it and return focus. There is no localStorage
   acknowledgement. With
   JavaScript disabled, a collapsed disclosure in the footer provides the same
