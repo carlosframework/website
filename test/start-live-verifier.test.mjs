@@ -14,7 +14,7 @@ before(async () => {
  assert.ok(base && !/^\/tmp(?:\/|$)/.test(base),'set STARTER_SCRATCH or disk TMPDIR');
  await mkdir(base,{recursive:true});
  dir = await mkdtemp(join(base,'start-verifier-'));
- await buildStart(dir,loadStartConfig({CARLOS_START_DEMO:'1',CARLOS_START_CLAIM_DRAFT:'1',CARLOS_START_SITE_ORIGIN:'https://site.example.com',CARLOS_START_CONSOLE_ORIGIN:'https://console.example.com',CARLOS_START_ACCOUNT_URL:'https://console.example.com/'}));
+ await buildStart(dir,loadStartConfig({CARLOS_START_DEMO:'1',CARLOS_START_SITE_ORIGIN:'https://site.example.com',CARLOS_START_CONSOLE_ORIGIN:'https://console.example.com',CARLOS_START_ACCOUNT_URL:'https://console.example.com/'}));
  html = await readFile(join(dir,'start/index.html'),'utf8');
  markdown = await readFile(join(dir,'start/index.md'),'utf8');
  archive = await readFile(join(dir,'start/starter/v1/source.tar.gz'));

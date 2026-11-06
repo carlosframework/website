@@ -7,7 +7,7 @@ import { buildStart, escapeHTML } from '../hack/build-start.mjs';
 import { loadStartConfig } from '../src/_data/start-config.mjs';
 const read=p=>readFile(p,'utf8');
 const copy=JSON.parse(await read('src/_data/start-copy.json'));
-const env={CARLOS_START_DEMO:'1',CARLOS_START_CLAIM_DRAFT:'1',CARLOS_START_SITE_ORIGIN:'https://carlosframework.com',CARLOS_START_CONSOLE_ORIGIN:'https://console.carloku.com',CARLOS_START_ACCOUNT_URL:'https://console.carloku.com/'};
+const env={CARLOS_START_DEMO:'1',CARLOS_START_SITE_ORIGIN:'https://carlosframework.com',CARLOS_START_CONSOLE_ORIGIN:'https://console.carloku.com',CARLOS_START_ACCOUNT_URL:'https://console.carloku.com/'};
 const base=process.env.STARTER_SCRATCH||tmpdir();assert.ok(!/^\/tmp(?:\/|$)/.test(base),'use disk scratch');
 async function pages(fn,overrides={}) {await mkdir(base,{recursive:true});const dir=await mkdtemp(join(base,'start-pages-'));try{await buildStart(dir,loadStartConfig({...env,...overrides}));await fn(await read(join(dir,'index.html')),await read(join(dir,'start/index.html')));}finally{await rm(dir,{recursive:true,force:true});}}
 test('enabled hero uses approved copy, one primary paste action and preserved subtitle',()=>pages(async(home,start)=>{
@@ -62,7 +62,7 @@ test('start order, approved text arrays, complete instructions and unchanged acc
  assert.ok(positions.every((p,i)=>p>=0 && (!i||p>positions[i-1])));
  for(const [id,value] of Object.entries(copy).filter(([id])=>id.startsWith('start.')&&!id.startsWith('start.hosts.')&&!['start.prompt','start.config.error'].includes(id))) for(const text of [value].flat()) assert.ok(start.includes(escapeHTML(text)),id);
  const account=(await read('src/start/index.html')).match(/<div class="start-tabs">[\s\S]*?(?=<\/div><\/section><\/main>)/)[0];assert.ok(start.includes(account));
- const section=start.split('id="for-your-agent"')[1];assert.doesNotMatch(section,/<details|\bhidden\b/);assert.match(section,/GOOS=linux GOARCH=arm64/);
+ const section=start.split('id="for-your-agent"')[1];assert.doesNotMatch(section,/<details|<[^>]*\bhidden\b/);assert.match(section,/GOOS=linux GOARCH=arm64/);
 }));
 test('approved copy archive and starter UI bytes agree exactly',async()=>{
  const rows=JSON.parse(await read('copy-review/start-demo-2026-11-05/strings.json'));

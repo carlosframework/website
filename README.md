@@ -24,9 +24,7 @@ account URL must use the console origin. `CARLOS_START_API_ORIGIN` is optional a
 defaults to `CARLOS_START_CONSOLE_ORIGIN`. 🤖 Set `CARLOS_START_CLAIM=off` for a
 development-only mode with no claim instructions.
 
-🤖 The claim contract is not merged in the platform yet. An enabled build
-refuses it unless you also set `CARLOS_START_CLAIM_DRAFT=1` for a development
-preview. The preview marks claiming unavailable. Normal enablement requires a
+🤖 Normal enablement requires a
 merged producer SHA and `producerMerged: true`. When the demo is unset, builds
 preserve the original pages and remove stale anonymous downloads and Markdown.
 Run `npm run check:start` with `STARTER_SCRATCH` set to an on-disk scratch

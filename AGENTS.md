@@ -203,9 +203,8 @@ built file.
 
 ## Deploying
 
-🤖 The demo journey defaults off. See README for the explicit origin inputs and
-development-only draft claim override. Do not use that override in a public
-release. Before public activation, bind the claim fixture to merged handlers.
+🤖 The demo journey defaults off. See README for the explicit origin inputs.
+Before public activation, bind the claim fixture to merged handlers.
 Verify the platform's demo protection and claim-by-email changes in
 `docs/superpowers/plans/2026-11-04-agent-start-demo-2-edge-protections.md` and
 `docs/superpowers/plans/2026-11-04-agent-start-demo-3-claim.md`. Also verify

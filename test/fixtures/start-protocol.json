@@ -759,7 +759,9 @@
       {
         "kind": "response",
         "status": 401,
-        "body": {}
+        "body": {
+          "error": "This demo token is invalid or no longer available."
+        }
       }
     ],
     "reject": [
@@ -801,7 +803,9 @@
         {
           "kind": "response",
           "status": 401,
-          "body": {}
+          "body": {
+            "error": "This demo token is invalid or no longer available."
+          }
         },
         {
           "kind": "request",
@@ -822,7 +826,7 @@
     "name": "claim unavailable",
     "sections": [
       "claimAvailable",
-      "Do not attempt them here"
+      "if false, do not attempt a claim"
     ],
     "events": [
       {
@@ -1015,6 +1019,14 @@
           "text": "https://shop.example.com/?a=1"
         },
         {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
           "kind": "request",
           "method": "POST",
           "url": "https://console.example.com/api/demo/claims",
@@ -1073,6 +1085,14 @@
         }
       },
       {
+        "kind": "keep",
+        "wanted": true
+      },
+      {
+        "kind": "email",
+        "address": "person@example.com"
+      },
+      {
         "kind": "request",
         "url": "https://console.example.com/api/demo/claims",
         "method": "POST",
@@ -1114,7 +1134,7 @@
         "status": 202,
         "body": {
           "state": "claiming",
-          "phase": "copying",
+          "phase": "reserved",
           "retryAfter": 2,
           "recoveryPending": false
         },
@@ -1132,7 +1152,8 @@
         "at": 5
       }
     ],
-    "reject": []
+    "reject": [],
+    "serverMemberships": 0
   },
   {
     "name": "one account",
@@ -1176,6 +1197,14 @@
         }
       },
       {
+        "kind": "keep",
+        "wanted": true
+      },
+      {
+        "kind": "email",
+        "address": "person@example.com"
+      },
+      {
         "kind": "request",
         "url": "https://console.example.com/api/demo/claims",
         "method": "POST",
@@ -1217,7 +1246,7 @@
         "status": 202,
         "body": {
           "state": "claiming",
-          "phase": "copying",
+          "phase": "reserved",
           "retryAfter": 2,
           "recoveryPending": false
         },
@@ -1235,7 +1264,207 @@
         "at": 5
       }
     ],
-    "reject": []
+    "reject": [
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "email_required",
+            "flowToken": "synthetic-flow-token",
+            "expiresAt": "2026-11-05T12:15:00Z"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/verify",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "flowToken": "synthetic-flow-token",
+            "code": "123456"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "claiming",
+            "phase": "reserved",
+            "retryAfter": 2,
+            "recoveryPending": false
+          },
+          "retryAfter": 2
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/status",
+          "method": "GET",
+          "headers": {
+            "Authorization": "Bearer synthetic-flow-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 5
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "email_required",
+            "flowToken": "synthetic-flow-token",
+            "expiresAt": "2026-11-05T12:15:00Z"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/verify",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "flowToken": "synthetic-flow-token",
+            "code": "123456"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "claiming",
+            "phase": "reserved",
+            "retryAfter": 2,
+            "recoveryPending": false
+          },
+          "retryAfter": 2
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/status",
+          "method": "GET",
+          "headers": {
+            "Authorization": "Bearer synthetic-flow-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 5
+        }
+      ]
+    ],
+    "serverMemberships": 1
   },
   {
     "name": "multiple accounts",
@@ -1277,6 +1506,14 @@
           "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
           "claimAvailable": true
         }
+      },
+      {
+        "kind": "keep",
+        "wanted": true
+      },
+      {
+        "kind": "email",
+        "address": "person@example.com"
       },
       {
         "kind": "request",
@@ -1357,7 +1594,7 @@
         "status": 202,
         "body": {
           "state": "claiming",
-          "phase": "copying",
+          "phase": "reserved",
           "retryAfter": 2,
           "recoveryPending": false
         },
@@ -1399,6 +1636,14 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": true
           }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
         },
         {
           "kind": "request",
@@ -1507,6 +1752,14 @@
           }
         },
         {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
           "kind": "request",
           "url": "https://console.example.com/api/demo/claims",
           "method": "POST",
@@ -1581,7 +1834,8 @@
           "at": 0
         }
       ]
-    ]
+    ],
+    "serverMemberships": 2
   },
   {
     "name": "wrong code",
@@ -1625,6 +1879,14 @@
         }
       },
       {
+        "kind": "keep",
+        "wanted": true
+      },
+      {
+        "kind": "email",
+        "address": "person@example.com"
+      },
+      {
         "kind": "request",
         "url": "https://console.example.com/api/demo/claims",
         "method": "POST",
@@ -1664,16 +1926,19 @@
       {
         "kind": "response",
         "status": 401,
-        "body": {}
+        "body": {
+          "error": "This code cannot be used. Request another email."
+        }
       }
     ],
     "reject": []
   },
   {
-    "name": "Keymail browser stub",
+    "name": "Keymail browser path",
     "sections": [
       "Keymail returns 200",
-      "503 stub"
+      "The browser asks for sign-in",
+      "when claimed, the account ID, app and a link"
     ],
     "events": [
       {
@@ -1711,6 +1976,14 @@
         }
       },
       {
+        "kind": "keep",
+        "wanted": true
+      },
+      {
+        "kind": "email",
+        "address": "person@example.com"
+      },
+      {
         "kind": "request",
         "url": "https://console.example.com/api/demo/claims",
         "method": "POST",
@@ -1731,9 +2004,249 @@
           "state": "browser_required",
           "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token"
         }
+      },
+      {
+        "kind": "browser-link",
+        "url": "https://console.example.com/demo/claim#synthetic-demo-token",
+        "private": true
+      },
+      {
+        "kind": "browser-result",
+        "state": "claiming"
+      },
+      {
+        "kind": "browser-result",
+        "state": "claimed",
+        "accountId": "a2",
+        "app": "shop",
+        "url": "https://shop.example.com"
+      },
+      {
+        "kind": "share",
+        "permanent": true,
+        "url": "https://shop.example.com"
       }
     ],
-    "reject": []
+    "reject": [
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 200,
+          "body": {
+            "state": "browser_required",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token"
+          }
+        },
+        {
+          "kind": "browser-link",
+          "url": "https://console.example.com/demo/claim#synthetic-demo-token",
+          "private": true
+        },
+        {
+          "kind": "share",
+          "permanent": true,
+          "url": "https://shop.example.com"
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 200,
+          "body": {
+            "state": "browser_required",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token"
+          }
+        },
+        {
+          "kind": "browser-link",
+          "url": "https://console.example.com/demo/claim",
+          "private": true
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 200,
+          "body": {
+            "state": "browser_required",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token"
+          }
+        },
+        {
+          "kind": "browser-link",
+          "url": "https://console.example.com/demo/claim#synthetic-demo-token",
+          "private": false
+        }
+      ]
+    ]
   },
   {
     "name": "plan refusal",
@@ -1777,6 +2290,14 @@
         }
       },
       {
+        "kind": "keep",
+        "wanted": true
+      },
+      {
+        "kind": "email",
+        "address": "person@example.com"
+      },
+      {
         "kind": "request",
         "url": "https://console.example.com/api/demo/claims",
         "method": "POST",
@@ -1817,12 +2338,110 @@
         "kind": "response",
         "status": 409,
         "body": {
-          "code": "cap",
-          "error": "synthetic cap"
+          "error": "this account is running 2 apps and instances, the most its plan allows. delete one to make room, or move to a plan that allows more",
+          "code": "cap"
         }
+      },
+      {
+        "kind": "expiry",
+        "value": 1793966400
       }
     ],
-    "reject": []
+    "reject": [
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "email_required",
+            "flowToken": "synthetic-flow-token",
+            "expiresAt": "2026-11-05T12:15:00Z"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/verify",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "flowToken": "synthetic-flow-token",
+            "code": "123456"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 409,
+          "body": {
+            "error": "this account is running 2 apps and instances, the most its plan allows. delete one to make room, or move to a plan that allows more",
+            "code": "cap"
+          }
+        },
+        {
+          "kind": "expiry",
+          "value": 1794052800
+        }
+      ]
+    ]
   },
   {
     "name": "pending copy",
@@ -1866,6 +2485,14 @@
         }
       },
       {
+        "kind": "keep",
+        "wanted": true
+      },
+      {
+        "kind": "email",
+        "address": "person@example.com"
+      },
+      {
         "kind": "request",
         "url": "https://console.example.com/api/demo/claims",
         "method": "POST",
@@ -1907,7 +2534,7 @@
         "status": 202,
         "body": {
           "state": "claiming",
-          "phase": "copying",
+          "phase": "reserved",
           "retryAfter": 2,
           "recoveryPending": false
         },
@@ -1973,6 +2600,14 @@
           }
         },
         {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
           "kind": "request",
           "url": "https://console.example.com/api/demo/claims",
           "method": "POST",
@@ -2014,7 +2649,7 @@
           "status": 202,
           "body": {
             "state": "claiming",
-            "phase": "copying",
+            "phase": "reserved",
             "retryAfter": 2,
             "recoveryPending": false
           },
@@ -2090,6 +2725,14 @@
           }
         },
         {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
           "kind": "request",
           "url": "https://console.example.com/api/demo/claims",
           "method": "POST",
@@ -2131,7 +2774,7 @@
           "status": 202,
           "body": {
             "state": "claiming",
-            "phase": "copying",
+            "phase": "reserved",
             "retryAfter": 2,
             "recoveryPending": false
           },
@@ -2207,6 +2850,14 @@
           }
         },
         {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
           "kind": "request",
           "url": "https://console.example.com/api/demo/claims",
           "method": "POST",
@@ -2248,7 +2899,7 @@
           "status": 202,
           "body": {
             "state": "claiming",
-            "phase": "copying",
+            "phase": "reserved",
             "retryAfter": 2,
             "recoveryPending": false
           },
@@ -2315,6 +2966,14 @@
         }
       },
       {
+        "kind": "keep",
+        "wanted": true
+      },
+      {
+        "kind": "email",
+        "address": "person@example.com"
+      },
+      {
         "kind": "request",
         "url": "https://console.example.com/api/demo/claims",
         "method": "POST",
@@ -2356,7 +3015,7 @@
         "status": 202,
         "body": {
           "state": "claiming",
-          "phase": "copying",
+          "phase": "reserved",
           "retryAfter": 2,
           "recoveryPending": false
         },
@@ -2380,14 +3039,14 @@
           "state": "claimed",
           "accountId": "a2",
           "app": "shop",
-          "url": "https://permanent.example.com",
+          "url": "https://shop.example.com",
           "next": "cli_login"
         }
       },
       {
         "kind": "share",
         "permanent": true,
-        "url": "https://permanent.example.com"
+        "url": "https://shop.example.com"
       },
       {
         "kind": "install",
@@ -2431,6 +3090,14 @@
           }
         },
         {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
           "kind": "request",
           "url": "https://console.example.com/api/demo/claims",
           "method": "POST",
@@ -2472,7 +3139,7 @@
           "status": 202,
           "body": {
             "state": "claiming",
-            "phase": "copying",
+            "phase": "reserved",
             "retryAfter": 2,
             "recoveryPending": false
           },
@@ -2496,7 +3163,7 @@
             "state": "claimed",
             "accountId": "a2",
             "app": "shop",
-            "url": "https://permanent.example.com",
+            "url": "https://shop.example.com",
             "next": "cli_login"
           }
         },
@@ -2550,6 +3217,9 @@
         }
       },
       {
+        "kind": "server-claim-completed"
+      },
+      {
         "kind": "request",
         "url": "https://console.example.com/api/demo/apps",
         "method": "POST",
@@ -2565,7 +3235,9 @@
       {
         "kind": "response",
         "status": 401,
-        "body": {}
+        "body": {
+          "error": "This demo token is invalid or no longer available."
+        }
       }
     ],
     "reject": [
@@ -2620,7 +3292,9 @@
         {
           "kind": "response",
           "status": 401,
-          "body": {}
+          "body": {
+            "error": "This demo token is invalid or no longer available."
+          }
         },
         {
           "kind": "request",
@@ -2738,6 +3412,14 @@
         }
       },
       {
+        "kind": "keep",
+        "wanted": true
+      },
+      {
+        "kind": "email",
+        "address": "person@example.com"
+      },
+      {
         "kind": "request",
         "url": "https://console.example.com/api/demo/claims",
         "method": "POST",
@@ -2779,7 +3461,7 @@
         "status": 202,
         "body": {
           "state": "claiming",
-          "phase": "copying",
+          "phase": "reserved",
           "retryAfter": 2,
           "recoveryPending": false
         },
@@ -2804,6 +3486,608 @@
         }
       }
     ],
-    "reject": []
+    "reject": [
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "email_required",
+            "flowToken": "synthetic-flow-token",
+            "expiresAt": "2026-11-05T12:15:00Z"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/verify",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "flowToken": "synthetic-flow-token",
+            "code": "123456"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "claiming",
+            "phase": "reserved",
+            "retryAfter": 2,
+            "recoveryPending": false
+          },
+          "retryAfter": 2
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/status",
+          "method": "GET",
+          "headers": {
+            "Authorization": "Bearer synthetic-flow-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 5
+        },
+        {
+          "kind": "response",
+          "status": 200,
+          "body": {
+            "state": "aborted"
+          }
+        },
+        {
+          "kind": "share",
+          "permanent": true,
+          "url": "https://shop.example.com"
+        }
+      ]
+    ]
+  },
+  {
+    "name": "recoveryPending committed",
+    "sections": [
+      "recoveryPending:true",
+      "neither is permanent success",
+      "Keep the flow token"
+    ],
+    "events": [
+      {
+        "kind": "ask"
+      },
+      {
+        "kind": "confirm"
+      },
+      {
+        "kind": "build"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "jobId": "j1",
+          "name": "shop",
+          "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+          "expiresAt": 1793966400,
+          "claimToken": "synthetic-demo-token",
+          "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+          "claimAvailable": true
+        }
+      },
+      {
+        "kind": "keep",
+        "wanted": true
+      },
+      {
+        "kind": "email",
+        "address": "person@example.com"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/claims",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "claimToken": "synthetic-demo-token",
+          "email": "person@example.com"
+        },
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "state": "email_required",
+          "flowToken": "synthetic-flow-token",
+          "expiresAt": "2026-11-05T12:15:00Z"
+        }
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/claims/verify",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "flowToken": "synthetic-flow-token",
+          "code": "123456"
+        },
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "state": "claiming",
+          "phase": "reserved",
+          "retryAfter": 2,
+          "recoveryPending": false
+        },
+        "retryAfter": 2
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/claims/status",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer synthetic-flow-token"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 5
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "state": "claiming",
+          "phase": "committed",
+          "retryAfter": 2,
+          "recoveryPending": true
+        },
+        "retryAfter": 2
+      }
+    ],
+    "reject": [
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "email_required",
+            "flowToken": "synthetic-flow-token",
+            "expiresAt": "2026-11-05T12:15:00Z"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/verify",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "flowToken": "synthetic-flow-token",
+            "code": "123456"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "claiming",
+            "phase": "reserved",
+            "retryAfter": 2,
+            "recoveryPending": false
+          },
+          "retryAfter": 2
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/status",
+          "method": "GET",
+          "headers": {
+            "Authorization": "Bearer synthetic-flow-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 5
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "claiming",
+            "phase": "committed",
+            "retryAfter": 2,
+            "recoveryPending": true
+          },
+          "retryAfter": 2
+        },
+        {
+          "kind": "share",
+          "permanent": true,
+          "url": "https://shop.example.com"
+        }
+      ]
+    ]
+  },
+  {
+    "name": "recoveryPending aborting",
+    "sections": [
+      "recoveryPending:true",
+      "neither is permanent success",
+      "Keep the flow token"
+    ],
+    "events": [
+      {
+        "kind": "ask"
+      },
+      {
+        "kind": "confirm"
+      },
+      {
+        "kind": "build"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "jobId": "j1",
+          "name": "shop",
+          "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+          "expiresAt": 1793966400,
+          "claimToken": "synthetic-demo-token",
+          "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+          "claimAvailable": true
+        }
+      },
+      {
+        "kind": "keep",
+        "wanted": true
+      },
+      {
+        "kind": "email",
+        "address": "person@example.com"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/claims",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "claimToken": "synthetic-demo-token",
+          "email": "person@example.com"
+        },
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "state": "email_required",
+          "flowToken": "synthetic-flow-token",
+          "expiresAt": "2026-11-05T12:15:00Z"
+        }
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/claims/verify",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "flowToken": "synthetic-flow-token",
+          "code": "123456"
+        },
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "state": "claiming",
+          "phase": "reserved",
+          "retryAfter": 2,
+          "recoveryPending": false
+        },
+        "retryAfter": 2
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/claims/status",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer synthetic-flow-token"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 5
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "state": "claiming",
+          "phase": "aborting",
+          "retryAfter": 2,
+          "recoveryPending": true
+        },
+        "retryAfter": 2
+      }
+    ],
+    "reject": [
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "email_required",
+            "flowToken": "synthetic-flow-token",
+            "expiresAt": "2026-11-05T12:15:00Z"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/verify",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "flowToken": "synthetic-flow-token",
+            "code": "123456"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "claiming",
+            "phase": "reserved",
+            "retryAfter": 2,
+            "recoveryPending": false
+          },
+          "retryAfter": 2
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/status",
+          "method": "GET",
+          "headers": {
+            "Authorization": "Bearer synthetic-flow-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 5
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "claiming",
+            "phase": "aborting",
+            "retryAfter": 2,
+            "recoveryPending": true
+          },
+          "retryAfter": 2
+        },
+        {
+          "kind": "share",
+          "permanent": true,
+          "url": "https://shop.example.com"
+        }
+      ]
+    ]
   }
 ]

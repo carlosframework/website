@@ -53,6 +53,14 @@ export async function buildStart(outputDir,config) {
  for(const e of await readdir(dir)) if(!['start.css','start-tabs.js'].includes(e)) await rm(join(dir,e),{recursive:true,force:true});
  await writeFile(join(outputDir,'index.html'),home);
  await writeFile(join(dir,'index.html'),html);
+ for(const [source,target,marker] of [
+  ['src/home.css','home.css','\n/* 🤖 Enabled demo invitation;'],
+  ['src/start/start.css','start/start.css','\n/* 🤖 Shared paste line'],
+ ]) {
+  const css=await read(source);
+  await writeFile(join(outputDir,target),config.enabled?css:css.split(marker)[0]);
+ }
+ await copyFile(config.enabled?'src/start/start-tabs.js':'src/_includes/start-account-tabs.js',join(dir,'start-tabs.js'));
  if(!config.enabled) return;
  await writeFile(join(dir,'index.md'),agent);
  const downloads=join(dir,'starter',config.starterVersion);await mkdir(downloads,{recursive:true});

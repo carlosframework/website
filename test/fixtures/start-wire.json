@@ -1,0 +1,70 @@
+[
+  {
+    "operation": "create",
+    "request": {
+      "method": "POST",
+      "url": "{{apiOrigin}}/api/demo/apps",
+      "headers": {
+        "Content-Type": "application/gzip",
+        "X-Carlos-Client": "example-harness"
+      },
+      "body": "<raw gzip archive bytes>"
+    },
+    "response": {
+      "status": 202,
+      "body": {
+        "jobId": "synthetic-job-1",
+        "name": "shop",
+        "statusUrl": "{{apiOrigin}}/api/demo/jobs/synthetic-job-1",
+        "expiresAt": 1793966400,
+        "claimToken": "synthetic-demo-token",
+        "claimUrl": "{{consoleOrigin}}/demo/claim#synthetic-demo-token",
+        "claimAvailable": false
+      }
+    }
+  },
+  {
+    "operation": "job-status",
+    "response": {
+      "status": 200,
+      "headers": {
+        "Retry-After": "2"
+      },
+      "body": {
+        "jobId": "synthetic-job-1",
+        "state": "failed",
+        "diagnostics": [
+          {
+            "file": "main.go",
+            "line": 20,
+            "message": "synthetic compiler diagnostic"
+          }
+        ],
+        "diagnosticsTruncated": false,
+        "message": "synthetic failure message"
+      }
+    }
+  },
+  {
+    "operation": "update",
+    "request": {
+      "method": "POST",
+      "url": "{{apiOrigin}}/api/demo/apps",
+      "headers": {
+        "Content-Type": "application/gzip",
+        "X-Carlos-Client": "example-harness",
+        "Authorization": "Bearer synthetic-demo-token"
+      },
+      "body": "<corrected raw gzip archive bytes>"
+    },
+    "response": {
+      "status": 202,
+      "body": {
+        "jobId": "synthetic-job-2",
+        "name": "shop",
+        "statusUrl": "{{apiOrigin}}/api/demo/jobs/synthetic-job-2",
+        "expiresAt": 1793966400
+      }
+    }
+  }
+]

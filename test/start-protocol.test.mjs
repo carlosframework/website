@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { readFileSync } from 'node:fs';
+import { isDeepStrictEqual } from 'node:util';
 import { loadStartConfig } from '../src/_data/start-config.mjs';
 import { renderAgent, validateClaimContract } from '../hack/start-content.mjs';
 const read = p => readFileSync(p, 'utf8');
 const contract = JSON.parse(read('src/_data/start-claim-contract.json'));
 const manifest = JSON.parse(read('src/start/starter/v1/manifest.json'));
-const env = { CARLOS_START_DEMO:'1', CARLOS_START_CLAIM_DRAFT:'1', CARLOS_START_SITE_ORIGIN:'https://site.example.com', CARLOS_START_CONSOLE_ORIGIN:'https://console.example.com', CARLOS_START_ACCOUNT_URL:'https://console.example.com/' };
+const env = { CARLOS_START_DEMO:'1', CARLOS_START_SITE_ORIGIN:'https://site.example.com', CARLOS_START_CONSOLE_ORIGIN:'https://console.example.com', CARLOS_START_ACCOUNT_URL:'https://console.example.com/' };
 const config = loadStartConfig(env);
 const template = read('src/start/agent.md');
 const rendered = renderAgent(template, config, contract, manifest);
@@ -24,7 +25,6 @@ test('default off, explicit origins, strict HTTPS inputs and safe diagnostics', 
  }
  assert.throws(() => loadStartConfig({...env,CARLOS_START_ACCOUNT_URL:'https://other.example.com/'}));
  assert.throws(() => loadStartConfig({CARLOS_START_DEMO:'0'}));
- assert.throws(() => loadStartConfig({CARLOS_START_CLAIM_DRAFT:'1'}));
 });
 test('API calls and status validation use API origin; browser claims and CLI retain console origin',()=>{
  const split=loadStartConfig({...env,CARLOS_START_API_ORIGIN:'https://api.example.com:8443'});
@@ -52,35 +52,35 @@ test('API calls and status validation use API origin; browser claims and CLI ret
  assert.match(markdown,/Never follow a credential-bearing redirect to another origin/);
  for(const command of ['carlos auth login','carlos auth whoami','carlos deploy']) assert.ok(markdown.includes(`${command} --console ${split.consoleOrigin}`));
  assert.ok(markdown.includes(`[account path](${split.accountUrl})`));
- const off=renderAgent(template,{...split,claimOff:true,claimDraft:false},undefined,manifest);
+ const off=renderAgent(template,{...split,claimOff:true},undefined,manifest);
  assert.ok(off.includes(`POST ${split.apiOrigin}/api/demo/apps`));
  assert.doesNotMatch(off,/\/api\/demo\/claims|flowToken/);
  assert.ok(off.includes(`[account path](${split.accountUrl})`));
 });
-test('claim gate requires merged SHA unless both explicit draft switches are set', () => {
- assert.equal(contract.producerMerged,false);
- assert.throws(() => validateClaimContract(contract,{...config,claimDraft:false}), /producerMerged/);
- validateClaimContract({...contract,producerMerged:true}, {...config,claimDraft:false});
+test('claim gate requires a merged 40-hex producer SHA', () => {
+ assert.equal(contract.producerMerged,true);
+ assert.equal(contract.producerCommit,'e12fe9a10d9ee315cbef9c1896b2216eae9cc9b4');
+ assert.throws(() => validateClaimContract({...contract,producerMerged:false},config), /producerMerged/);
+ validateClaimContract({...contract,producerMerged:true}, {...config});
  for (const sha of ['', 'main', '1234']) assert.throws(() => validateClaimContract({...contract,producerMerged:true,producerCommit:sha},config));
  for (const field of ['start','verify','chooseAccount','status','browser','complete']) {
   const broken=structuredClone(contract); delete broken[field]; assert.throws(() => validateClaimContract(broken,config));
  }
  const broken=structuredClone(contract); broken.status.responses=[]; assert.throws(() => validateClaimContract(broken,config));
- assert.match(rendered,/Claiming is not yet available on this deployment's merged code/);
+ assert.doesNotMatch(rendered,/DRAFT FOR AGENTS|unmerged producer|test-only|stub/);
 });
-test('claim-off requires an enabled demo and refuses draft or unsupported claim modes', () => {
- const off={...env,CARLOS_START_CLAIM_DRAFT:undefined,CARLOS_START_CLAIM:'off'};
+test('claim-off requires an enabled demo and refuses unsupported claim modes', () => {
+ const off={...env,CARLOS_START_CLAIM:'off'};
  assert.equal(loadStartConfig(off).claimOff,true);
  assert.equal(loadStartConfig(off).claimContractRevision,'');
  assert.equal(config.claimOff,false);
  assert.equal(loadStartConfig({...env,CARLOS_START_CLAIM:''}).claimOff,false);
  assert.throws(()=>loadStartConfig({...off,CARLOS_START_DEMO:undefined}),/requires CARLOS_START_DEMO=1/);
  assert.throws(()=>loadStartConfig({...off,CARLOS_START_DEMO:''}),/requires CARLOS_START_DEMO=1/);
- assert.throws(()=>loadStartConfig({...env,CARLOS_START_CLAIM:'off'}),/mutually exclusive/);
  for(const value of ['on','0','1','OFF',' off']) assert.throws(()=>loadStartConfig({...off,CARLOS_START_CLAIM:value}),/must be unset or off/);
 });
 test('claim-off renders without a contract and preserves all other instruction bytes', () => {
- const off={...config,claimOff:true,claimDraft:false};
+ const off={...config,claimOff:true};
  const markdown=renderAgent(template,off,undefined,manifest);
  assert.doesNotMatch(markdown,/claims|flowToken|Contract producer|claim contract/);
  assert.deepEqual([...markdown.matchAll(/```json\n([\s\S]*?)\n```/g)].map(m=>JSON.parse(m[1]).operation),['create','job-status','update']);
@@ -99,7 +99,6 @@ test('claim-off renders without a contract and preserves all other instruction b
  assert.match(sections[9],/Keep the create response's `claimToken` private and use it only as the update bearer/);
  assert.equal(sections[10],`## 10. For a permanent app\n\nPoint the person to the [account path](${config.accountUrl}) and stop.\n`);
  assert.throws(()=>renderAgent(template,{...off,enabled:false},undefined,manifest),/CARLOS_START_DEMO=1/);
- assert.throws(()=>renderAgent(template,{...off,claimDraft:true},contract,manifest),/mutually exclusive/);
 });
 test('claim gate rejects missing status fields, completion drift and missing merge evidence',()=>{
  for(const [state,key] of [['claiming','phase'],['claiming','retryAfter'],['claiming','recoveryPending'],['claimed','url'],['claimed','accountId'],['email_required','expiresAt']]) {
@@ -112,6 +111,10 @@ test('render substitutes only known placeholders and fixtures round trip as JSON
  assert.equal(renderAgent('unchanged\n{{siteOrigin}}\n',config,contract,manifest),'unchanged\nhttps://site.example.com\n');
  assert.throws(() => renderAgent('{{unknown}}',config,contract,manifest));
  for (const op of ['start','verify','chooseAccount','status','browser','complete']) assert.deepEqual(examples.find(e=>e.operation===op).contract,JSON.parse(JSON.stringify(contract[op]).replaceAll('{{consoleOrigin}}',config.consoleOrigin))); 
+ for (const fixture of JSON.parse(read('test/fixtures/start-wire.json'))) {
+  const expected=JSON.parse(JSON.stringify(fixture).replaceAll('{{consoleOrigin}}',config.consoleOrigin).replaceAll('{{apiOrigin}}',config.apiOrigin));
+  assert.deepEqual(examples.find(e=>e.operation===fixture.operation),expected);
+ }
  const publish=examples.find(e=>e.operation==='create');
  assert.deepEqual(Object.keys(publish.response.body).sort(),['claimAvailable','claimToken','claimUrl','expiresAt','jobId','name','statusUrl'].sort());
  assert.equal(typeof publish.response.body.expiresAt,'number');
@@ -121,13 +124,30 @@ test('render substitutes only known placeholders and fixtures round trip as JSON
 // These are authored protocol transcripts, not evidence of an LLM or live API run.
 function audit(trace) {
  let asked=false, confirmed=false, creates=0, token, flow, live, permanent, selected, accounts=[], claimAvailable=false, claimed=false, lost=false, stop=false, repairs=0, lastPoll=-Infinity, retry=0;
+ let keep=false, email, claimURL, browser=false, expiry, lastRequest, serverClaimed=false;
  const secrets=new Set();
  for (const e of trace) {
   if(e.kind==='ask') asked=true;
   if(e.kind==='confirm') { assert.ok(asked); confirmed=true; }
   if(e.kind==='build') assert.ok(confirmed);
+  if(e.kind==='keep') {assert.ok(claimAvailable);keep=e.wanted;}
+  if(e.kind==='email') {assert.ok(keep);email=e.address;}
+  if(e.kind==='expiry') assert.equal(e.value,expiry);
+  if(e.kind==='server-claim-completed') serverClaimed=true;
+  if(e.kind==='browser-link') {assert.ok(keep && claimAvailable && e.private && !flow);assert.equal(e.url,claimURL);browser=true;}
+  if(e.kind==='browser-result') {
+   assert.ok(browser);
+   if(e.state==='claimed') {
+    const reply=contract.complete.response.body;
+    for(const key of ['accountId','app','url']) assert.equal(e[key],reply[key]);
+    const html=contract.browser.responses.find(r=>r.when==='claimed').body;
+    assert.ok(html.includes(`href="${e.url}"`));
+    permanent=e.url;claimed=true;
+   }
+  }
   if(e.kind==='choose') { assert.ok(accounts.some(a=>a.id===e.accountId)); selected=e.accountId; }
   if(e.kind==='request') {
+   lastRequest=e;
    const u=new URL(e.url); assert.equal(u.origin,config.consoleOrigin); assert.equal(e.redirect,'error');
    if(e.method==='POST' && u.pathname==='/api/demo/apps') {
     assert.ok(confirmed && !lost && !stop && !claimed);
@@ -139,24 +159,34 @@ function audit(trace) {
    if(e.method==='GET') {
     assert.ok(e.at-lastPoll>=retry); assert.ok(e.at<=300); lastPoll=e.at;
     if(u.pathname.includes('/jobs/')) assert.equal(e.headers.Authorization,undefined);
-    else assert.equal(e.headers.Authorization,`Bearer ${flow}`);
+    else {assert.ok(flow);assert.equal(e.headers.Authorization,`Bearer ${flow}`);}
    }
    if(u.pathname.endsWith('/select')) {assert.ok(selected);assert.equal(e.body.accountId,selected);assert.equal(e.body.flowToken,flow);}
    if(u.pathname.endsWith('/verify')) assert.equal(e.body.flowToken,flow);
    if(u.pathname.startsWith('/api/demo/claims') && e.method==='POST') {
-    assert.ok(claimAvailable && !stop && !claimed);
+    assert.ok(claimAvailable && keep && email && !stop && !claimed);
     assert.equal(e.headers['Content-Type'],'application/json');
     if(e.body?.code) secrets.add(e.body.code);
    }
+   if(u.pathname==='/api/demo/claims') assert.equal(e.body.email,email);
    if(e.body?.claimToken) assert.equal(e.body.claimToken,token);
   }
   if(e.kind==='response') {
-   if(e.body?.claimToken) {token=e.body.claimToken;claimAvailable=e.body.claimAvailable===true;secrets.add(token);secrets.add(e.body.claimUrl);secrets.add(e.body.statusUrl);}
+   const path=lastRequest && new URL(lastRequest.url).pathname;
+   const operation=['start','verify','chooseAccount','status'].find(name=>contract[name].path===path);
+   if(operation) {
+    const replies=examples.find(example=>example.operation===operation).contract.responses;
+    assert.ok(replies.some(r=>r.status===e.status && isDeepStrictEqual(r.body,e.body)),`${operation}: response must match the merged fixture`);
+   }
+   if(serverClaimed && path==='/api/demo/apps') assert.deepEqual({status:e.status,body:e.body},contract.complete.consumedUpdate.response);
+   if(e.body?.claimToken) {token=e.body.claimToken;expiry=e.body.expiresAt;claimAvailable=e.body.claimAvailable===true;secrets.add(token);secrets.add(e.body.claimUrl);secrets.add(e.body.statusUrl);}
+   if(e.body?.state==='browser_required') {claimURL=e.body.claimUrl;assert.equal(e.body.flowToken,undefined);}
    if(e.body?.flowToken) {flow=e.body.flowToken;secrets.add(flow);}
    if(e.body?.state==='live') live=e.body.url;
-   if(e.body?.state==='claimed') {permanent=e.body.url;claimed=true;}
+   if(e.status===200 && e.body?.state==='claimed') {permanent=e.body.url;claimed=true;}
    if(e.body?.state==='account_required' && e.body.accounts) accounts=e.body.accounts;
-   retry=Math.max(e.retryAfter??5,e.body?.retryAfter??0);
+   retry=Math.max(e.retryAfter??e.body?.retryAfter??5,e.body?.retryAfter??0);
+   if(e.body?.state==='aborted' || e.body?.code==='cap') stop=true;
    if([401,404,410,429,503].includes(e.status)) stop=true;
   }
   if(e.kind==='lost') lost=true;
@@ -168,6 +198,13 @@ function audit(trace) {
 }
 for(const f of JSON.parse(read('test/fixtures/start-protocol.json'))) test(`transcript: ${f.name}`,()=>{
  for(const section of f.sections) assert.ok(rendered.includes(section),section);
+ if(f.serverMemberships!==undefined) {
+  const index=f.events.findIndex(e=>e.kind==='request' && e.url.endsWith('/verify'));
+  const reply=f.events[index+1];
+  assert.equal(reply.body.state,f.serverMemberships>1?'account_required':'claiming');
+  if(f.serverMemberships>1) assert.equal(reply.body.accounts.length,f.serverMemberships);
+  else assert.equal(reply.body.phase,'reserved');
+ }
  audit(f.events);
  for(const bad of f.reject ?? []) assert.throws(()=>audit(bad));
 });

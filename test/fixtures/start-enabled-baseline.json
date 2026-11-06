@@ -7,40 +7,12 @@
         "CARLOS_START_SITE_ORIGIN": "https://carlosframework.com",
         "CARLOS_START_CONSOLE_ORIGIN": "https://console.carloku.com",
         "CARLOS_START_ACCOUNT_URL": "https://console.carloku.com/",
-        "CARLOS_START_CLAIM_DRAFT": "1"
-      },
-      "hashes": {
-        "index.html": "9fb7772c776930a17c369ad96d9a2cf76abd6f9a41be33074586236813dd8c26",
-        "start/index.html": "e4d00dbd081920837b5f168837ef11d2b3bb3984184567e8a5d3240ae1d253f4",
-        "start/index.md": "00807414a776fd1c43ad339e8b1a463c20ce55fa2bfe970b4df3ba1b90776fec"
-      }
-    },
-    {
-      "env": {
-        "CARLOS_START_DEMO": "1",
-        "CARLOS_START_SITE_ORIGIN": "https://carlosframework.com",
-        "CARLOS_START_CONSOLE_ORIGIN": "https://console.carloku.com",
-        "CARLOS_START_ACCOUNT_URL": "https://console.carloku.com/",
         "CARLOS_START_CLAIM": "off"
       },
       "hashes": {
         "index.html": "9fb7772c776930a17c369ad96d9a2cf76abd6f9a41be33074586236813dd8c26",
         "start/index.html": "b2f050eb43c4c604355adf4e4d8747370cec24520abcd48d3d2e50339249fa29",
         "start/index.md": "96094bd8714f589b952b09a74fd5bb29bcebe55110750f9657529a316b33bbfa"
-      }
-    },
-    {
-      "env": {
-        "CARLOS_START_DEMO": "1",
-        "CARLOS_START_SITE_ORIGIN": "https://site.example.com",
-        "CARLOS_START_CONSOLE_ORIGIN": "https://console.example.com",
-        "CARLOS_START_ACCOUNT_URL": "https://console.example.com/",
-        "CARLOS_START_CLAIM_DRAFT": "1"
-      },
-      "hashes": {
-        "index.html": "cd261c9e311df722909e125b35c831b28db28f6c3e3a60a41e983d2789683e19",
-        "start/index.html": "be34197c38be9b70b9c5b0bd33bcab75fc62e104aeb8b609ad80fbf7e01c063a",
-        "start/index.md": "4b79cd2625d2a61c9034b885508baa0773f8ae2474033e0b1525844b1fadaaa3"
       }
     },
     {

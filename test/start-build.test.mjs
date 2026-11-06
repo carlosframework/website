@@ -10,7 +10,7 @@ import { loadStartConfig } from '../src/_data/start-config.mjs';
 import { addFooter } from '../hack/add-footer.mjs';
 import { addDisclaimer } from '../hack/add-disclaimer.mjs';
 const read=p=>readFile(p,'utf8');
-const env={CARLOS_START_DEMO:'1',CARLOS_START_CLAIM_DRAFT:'1',CARLOS_START_SITE_ORIGIN:'https://site.example.com',CARLOS_START_CONSOLE_ORIGIN:'https://console.example.com',CARLOS_START_ACCOUNT_URL:'https://console.example.com/'};
+const env={CARLOS_START_DEMO:'1',CARLOS_START_SITE_ORIGIN:'https://site.example.com',CARLOS_START_CONSOLE_ORIGIN:'https://console.example.com',CARLOS_START_ACCOUNT_URL:'https://console.example.com/'};
 const config=loadStartConfig(env);
 const base=process.env.STARTER_SCRATCH || tmpdir();
 assert.ok(!/^\/tmp(?:\/|$)/.test(base),'use disk scratch');
@@ -26,7 +26,7 @@ test('one rendered Markdown source, complete visible HTML twin and explicit star
  assert.equal(html.split('<!-- agent-content -->')[1].split('<!-- /agent-content -->')[0],renderMarkdown(markdown));
  assert.match(html,/<section[^>]*id="for-your-agent"/);
  assert.ok(html.indexOf('Paste this line')<html.indexOf('id="for-your-agent"'));
- assert.doesNotMatch(html.split('id="for-your-agent"')[1],/<details|\bhidden\b|display:\s*none/);
+ assert.doesNotMatch(html.split('id="for-your-agent"')[1],/<details|<[^>]*\bhidden\b|<[^>]*display:\s*none/);
  assert.doesNotMatch(markdown,/\{\{/);
  assert.deepEqual(await files(join(dir,'start/starter')),['v1/manifest.json','v1/source.json','v1/source.tar.gz']);
  for(const file of ['manifest.json','source.json','source.tar.gz']) assert.deepEqual(await readFile(join(dir,'start/starter/v1',file)),await readFile('src/start/starter/v1/'+file));
@@ -39,7 +39,7 @@ test('disabled pages match original build bytes; reused output loses all anonymo
  await mkdir(join(dir,'start/agent'),{recursive:true});
  await writeFile(join(dir,'start/agent/index.html'),'stale accidental Eleventy output');
  await buildStart(dir,loadStartConfig({}));
- assert.deepEqual(await files(join(dir,'start')),['index.html']);
+ assert.deepEqual(await files(join(dir,'start')),['index.html','start-tabs.js','start.css']);
  await addFooter(dir);await addDisclaimer(dir);
  const baseline=JSON.parse(await read('test/fixtures/start-baseline.json'));
  for(const name of ['index.html','start/index.html']) {
@@ -48,7 +48,7 @@ test('disabled pages match original build bytes; reused output loses all anonymo
   assert.equal(createHash('sha256').update(bytes).digest('hex'),baseline[name],name);
  }
 }));
-test('unset API origin preserves prior enabled bytes except the approved host note',()=>scratch(async dir=>{
+test('claim-off preserves prior enabled bytes except the approved host note',()=>scratch(async dir=>{
  const baseline=JSON.parse(await read('test/fixtures/start-enabled-baseline.json'));
  for(const {env,hashes} of baseline.cases) {
   await buildStart(dir,loadStartConfig(env));
@@ -67,7 +67,7 @@ test('claim-off builds identical Markdown and visible HTML without claim instruc
  await buildStart(dir,config);
  const normalHTML=await read(join(dir,'start/index.html'));
  const normalHome=await read(join(dir,'index.html'));
- const off=loadStartConfig({...env,CARLOS_START_CLAIM_DRAFT:undefined,CARLOS_START_CLAIM:'off'});
+ const off=loadStartConfig({...env,CARLOS_START_CLAIM:'off'});
  await buildStart(dir,off);
  const markdown=await read(join(dir,'start/index.md'));
  const html=await read(join(dir,'start/index.html'));
@@ -85,16 +85,15 @@ test('claim-off builds identical Markdown and visible HTML without claim instruc
  assert.equal(withoutAgent(html),withoutAgent(normalHTML).replace(`<h2>${copy['start.claim'][0]}</h2>\n<p>${copy['start.claim'][1]}</p>\n`,''));
  assert.equal(await read(join(dir,'index.html')),normalHome);
 }));
-test('enabled build refuses unmerged or incomplete claims and invalid origins',()=>scratch(async dir=>{
- await assert.rejects(buildStart(dir,loadStartConfig({...env,CARLOS_START_CLAIM_DRAFT:undefined})),/producerMerged/);
+test('enabled build accepts the merged contract and refuses invalid origins',()=>scratch(async dir=>{
+ await buildStart(dir,config);
  for(const key of ['CARLOS_START_SITE_ORIGIN','CARLOS_START_CONSOLE_ORIGIN','CARLOS_START_ACCOUNT_URL']) assert.throws(()=>loadStartConfig({...env,[key]:undefined}));
 }));
-test('Eleventy refuses claim-off without the demo or together with claim-draft',()=>scratch(async dir=>{
+test('Eleventy refuses claim-off without the demo',()=>scratch(async dir=>{
  const {spawnSync}=await import('node:child_process');
  const clean={...process.env};for(const key of Object.keys(clean)) if(key.startsWith('CARLOS_START_')) delete clean[key];
  for(const [inputs,message] of [
   [{CARLOS_START_CLAIM:'off'},/requires CARLOS_START_DEMO=1/],
-  [{...env,CARLOS_START_CLAIM:'off'},/mutually exclusive/],
  ]) {
   const result=spawnSync(process.execPath,['node_modules/@11ty/eleventy/cmd.cjs',`--output=${dir}`],{env:{...clean,...inputs},encoding:'utf8'});
   assert.notEqual(result.status,0);
@@ -116,7 +115,7 @@ test('Eleventy integration: enabled then disabled rebuild keeps main pages byte-
  assert.ok(inventory.includes('docs/cli.md'));
  assert.ok(inventory.includes('.well-known/agent-skills/index.json'));
  assert.doesNotMatch(inventory.join('\n'),/start\/agent|start\/starter\/v1\/main.go|start-config|start-copy|start-claim-contract/);
- build(true,{CARLOS_START_CLAIM:'off',CARLOS_START_CLAIM_DRAFT:''});
+ build(true,{CARLOS_START_CLAIM:'off',});
  const markdown=await read(join(dir,'start/index.md'));
  const html=await read(join(dir,'start/index.html'));
  assert.match(markdown,/Claiming is not available on this deployment/);

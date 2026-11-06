@@ -1,15 +1,17 @@
 {
-  "producerCommit": "8f2b67d5abacf18beaa30d19f21fc75cfbab8aa6",
-  "producerMerged": false,
+  "producerCommit": "e12fe9a10d9ee315cbef9c1896b2216eae9cc9b4",
+  "producerMerged": true,
   "producerPlan": "2026-11-04-agent-start-demo-3-claim",
-  "routesEvidence": "internal/console/apidemo.go:272-275",
-  "availabilityEvidence": "internal/console/demo_claim_auth.go:18-20; internal/console/apidemo.go:279-282",
+  "routesEvidence": "internal/console/apidemo.go:269-291",
+  "availabilityEvidence": "internal/console/apidemo.go:471-475; internal/console/demo_claim_auth.go:19-27; internal/console/demo_claim_ready.go:15-73",
   "limits": {
     "jsonBytes": 4096,
     "proofSeconds": 900,
     "transferSeconds": 300,
     "statusAfterOriginalExpirySeconds": 86400,
-    "evidence": "internal/console/demo_claim_auth.go:56-59; internal/console/demo_claim_store.go:120-127,181-184,227-246"
+    "evidence": "internal/console/demo_claim_auth.go:69-116; internal/console/demo_claim_store.go:126-132,194-197,248-264",
+    "requestShape": "One JSON object; exact case-sensitive allowed keys only, string values only, no duplicate keys or trailing JSON. At most 4096 bytes.",
+    "expiry": "Proof and selection expire at min(start + 15 minutes, original demo expiry); resend retains the same deadline. Transfer deadline is min(reservation + 5 minutes, original expiry). Committed recovery can continue. Reserved result reads expire at original expiry + 24 hours."
   },
   "start": {
     "method": "POST",
@@ -34,14 +36,58 @@
           "state": "browser_required",
           "claimUrl": "{{consoleOrigin}}/demo/claim#synthetic-demo-token"
         }
+      },
+      {
+        "status": 400,
+        "body": {
+          "error": "Invalid claim request."
+        }
+      },
+      {
+        "status": 401,
+        "body": {
+          "error": "This demo token is invalid or no longer available."
+        }
+      },
+      {
+        "status": 403,
+        "body": {
+          "error": "Cross-site request blocked."
+        }
+      },
+      {
+        "status": 503,
+        "body": {
+          "error": "unavailable"
+        }
+      },
+      {
+        "status": 503,
+        "headers": {
+          "Cache-Control": "no-store",
+          "Retry-After": "2",
+          "Connection": "close"
+        },
+        "body": "",
+        "when": "Configured API alias traffic from a trusted proxy lacks valid edge proof."
+      },
+      {
+        "status": 503,
+        "body": {
+          "error": "Demo builds are unavailable right now. Try again shortly."
+        },
+        "headers": {
+          "Retry-After": "15"
+        }
       }
     ],
-    "evidence": "internal/console/demo_claim_auth.go:110-198",
+    "evidence": "internal/console/demo_claim_auth.go:122-213; internal/console/demo_claim_ready.go:34-42; internal/console/apidemo.go:293-310",
     "resend": {
       "claimToken": "synthetic-demo-token",
       "email": "person@example.com",
       "flowToken": "synthetic-flow-token"
-    }
+    },
+    "semantics": "Initial call omits flowToken. Resend must retain the same demo token, email and unproved flow token; it does not extend expiry. Throttled or unsent email challenges still return 202, so delivery is not guaranteed. Keymail discovery returns 200 browser_required without flowToken only after the readiness gate passes; no configured mailer means 503 unavailable even for Keymail. Readiness verdicts are cached for 45 seconds."
   },
   "verify": {
     "method": "POST",
@@ -74,7 +120,7 @@
         "status": 202,
         "body": {
           "state": "claiming",
-          "phase": "copying",
+          "phase": "reserved",
           "retryAfter": 2,
           "recoveryPending": false
         }
@@ -84,9 +130,87 @@
         "body": {
           "error": "This code cannot be used. Request another email."
         }
+      },
+      {
+        "status": 400,
+        "body": {
+          "error": "Invalid claim request."
+        }
+      },
+      {
+        "status": 401,
+        "body": {
+          "error": "This demo token is invalid or no longer available."
+        }
+      },
+      {
+        "status": 403,
+        "body": {
+          "error": "Cross-site request blocked."
+        }
+      },
+      {
+        "status": 503,
+        "body": {
+          "error": "unavailable"
+        }
+      },
+      {
+        "status": 503,
+        "headers": {
+          "Cache-Control": "no-store",
+          "Retry-After": "2",
+          "Connection": "close"
+        },
+        "body": "",
+        "when": "Configured API alias traffic from a trusted proxy lacks valid edge proof."
+      },
+      {
+        "status": 429,
+        "body": {
+          "error": "Too many new accounts have been made from here in the last hour. Try again later."
+        }
+      },
+      {
+        "status": 409,
+        "body": {
+          "error": "this account is running 2 apps and instances, the most its plan allows. delete one to make room, or move to a plan that allows more",
+          "code": "cap"
+        }
+      },
+      {
+        "status": 409,
+        "body": {
+          "error": "you already own a free account, and each person can own one. upgrade that account to create another, or ask an operator",
+          "code": "cap"
+        }
+      },
+      {
+        "status": 404,
+        "body": "404 page not found\n"
+      },
+      {
+        "status": 409,
+        "body": {
+          "error": "This demo cannot be kept in the selected region yet. The demo is still running."
+        }
+      },
+      {
+        "status": 409,
+        "body": {
+          "error": "This app is being claimed. Try again when the claim finishes."
+        }
+      },
+      {
+        "status": 503,
+        "body": {
+          "error": "The destination could not be prepared. Try again."
+        }
       }
     ],
-    "evidence": "internal/console/demo_claim_auth.go:200-237,317-345"
+    "evidence": "internal/console/demo_claim_auth.go:215-257,327-364,476-485; internal/console/demo_claim_target.go:40-81,199,239-251,283-297; internal/console/plancaps_copy.go:13,16",
+    "accountResolution": "Zero memberships: create a personal account subject to normal caps. One: select it. Several: return every membership as id/name/role and require an explicit exact id. Reservation rechecks membership and owner/member permission; a role refusal is 404. Fresh successful reservations return reserved.",
+    "proof": "Wrong, expired, consumed or throttled code returns the same 401 error. Proof creates no console session or CLI credential."
   },
   "chooseAccount": {
     "method": "POST",
@@ -101,7 +225,7 @@
         "status": 202,
         "body": {
           "state": "claiming",
-          "phase": "copying",
+          "phase": "reserved",
           "retryAfter": 2,
           "recoveryPending": false
         }
@@ -109,16 +233,76 @@
       {
         "status": 409,
         "body": {
-          "error": "synthetic plan refusal",
+          "error": "this account is running 2 apps and instances, the most its plan allows. delete one to make room, or move to a plan that allows more",
+          "code": "cap"
+        }
+      },
+      {
+        "status": 409,
+        "body": {
+          "error": "you already own a free account, and each person can own one. upgrade that account to create another, or ask an operator",
           "code": "cap"
         }
       },
       {
         "status": 404,
         "body": "404 page not found\n"
+      },
+      {
+        "status": 409,
+        "body": {
+          "error": "This demo cannot be kept in the selected region yet. The demo is still running."
+        }
+      },
+      {
+        "status": 409,
+        "body": {
+          "error": "This app is being claimed. Try again when the claim finishes."
+        }
+      },
+      {
+        "status": 503,
+        "body": {
+          "error": "The destination could not be prepared. Try again."
+        }
+      },
+      {
+        "status": 400,
+        "body": {
+          "error": "Invalid claim request."
+        }
+      },
+      {
+        "status": 401,
+        "body": {
+          "error": "This demo token is invalid or no longer available."
+        }
+      },
+      {
+        "status": 403,
+        "body": {
+          "error": "Cross-site request blocked."
+        }
+      },
+      {
+        "status": 503,
+        "body": {
+          "error": "unavailable"
+        }
+      },
+      {
+        "status": 503,
+        "headers": {
+          "Cache-Control": "no-store",
+          "Retry-After": "2",
+          "Connection": "close"
+        },
+        "body": "",
+        "when": "Configured API alias traffic from a trusted proxy lacks valid edge proof."
       }
     ],
-    "evidence": "internal/console/demo_claim_auth.go:348-361; internal/console/demo_claim_target.go:263-278"
+    "evidence": "internal/console/demo_claim_auth.go:335-383,476-485; internal/console/demo_claim_target.go:40-81,199,239-251,283-297; internal/console/demo_claim_store.go:159-166; internal/console/plancaps_copy.go:13,16",
+    "semantics": "Exact account sqid only, never its name or MRU. Missing/empty, unknown, foreign or non-creating membership yields 404 text. Pre-reservation refusals preserve original expiry. Selection is not permanent success."
   },
   "status": {
     "method": "GET",
@@ -130,6 +314,24 @@
         "status": 202,
         "body": {
           "state": "claiming",
+          "phase": "reserved",
+          "retryAfter": 2,
+          "recoveryPending": false
+        }
+      },
+      {
+        "status": 202,
+        "body": {
+          "state": "claiming",
+          "phase": "freezing",
+          "retryAfter": 2,
+          "recoveryPending": false
+        }
+      },
+      {
+        "status": 202,
+        "body": {
+          "state": "claiming",
           "phase": "copying",
           "retryAfter": 2,
           "recoveryPending": false
@@ -139,7 +341,25 @@
         "status": 202,
         "body": {
           "state": "claiming",
+          "phase": "verifying",
+          "retryAfter": 2,
+          "recoveryPending": false
+        }
+      },
+      {
+        "status": 202,
+        "body": {
+          "state": "claiming",
           "phase": "committed",
+          "retryAfter": 2,
+          "recoveryPending": true
+        }
+      },
+      {
+        "status": 202,
+        "body": {
+          "state": "claiming",
+          "phase": "aborting",
           "retryAfter": 2,
           "recoveryPending": true
         }
@@ -173,25 +393,107 @@
           "state": "account_required",
           "expiresAt": "2026-11-05T12:15:00Z"
         }
+      },
+      {
+        "status": 401,
+        "body": {
+          "error": "This demo token is invalid or no longer available."
+        }
+      },
+      {
+        "status": 403,
+        "body": {
+          "error": "Cross-site request blocked."
+        }
+      },
+      {
+        "status": 503,
+        "body": {
+          "error": "unavailable"
+        }
+      },
+      {
+        "status": 503,
+        "headers": {
+          "Cache-Control": "no-store",
+          "Retry-After": "2",
+          "Connection": "close"
+        },
+        "body": "",
+        "when": "Configured API alias traffic from a trusted proxy lacks valid edge proof."
       }
     ],
-    "evidence": "internal/console/demo_claim_auth.go:364-395,445-452"
+    "evidence": "internal/console/demo_claim_auth.go:385-420,476-485; internal/console/demo_claim_store.go:248-264; internal/console/demo_claim_transfer.go:68-208,683-760",
+    "semantics": "Result reads do not require Demo.Enabled, ClaimEnabled or readiness, but HostClaim/store gates still return 503. Bearer scheme is case-sensitive. Before reservation, email_required/account_required includes expiresAt but no account list. Only done becomes claimed; aborted is terminal failure. recoveryPending is true for committed or aborting. No HTTP Retry-After is set by the normal status reply; respect JSON retryAfter=2 and any longer HTTP hint. Stop automatic polling after five minutes and retain flowToken for later result reads."
   },
   "browser": {
     "method": "GET",
     "path": "/demo/claim#<claimToken>",
-    "auth": "fragment retained in private link",
+    "auth": "No bearer on GET; fragment is retained in the private console link, never sent in the HTTP request. The page exchanges it for a Secure HttpOnly SameSite=Lax browser cookie using same-origin forms, nonce and session CSRF.",
     "request": null,
     "responses": [
       {
+        "status": 200,
+        "headers": {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": "no-store",
+          "Referrer-Policy": "origin"
+        },
+        "body": "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<meta name=\"referrer\" content=\"origin\">\n<title>Keep your demo</title>\n</head>\n<body>\n<main id=\"claim\" data-failed=\"The claim link could not be opened. Try again.\">\n<h1>Keep your demo</h1>\n\n\n<input type=\"hidden\" name=\"nonce\" value=\"synthetic-nonce\">\n<input type=\"hidden\" name=\"csrf\" value=\"\">\n<p id=\"claim-error\" role=\"alert\" tabindex=\"-1\" hidden></p>\n<p>Open the claim link from your demo to start again.</p>\n\n\n\n\n\n<noscript><p>JavaScript is needed to open the private claim link.</p></noscript>\n</main>\n<script src=\"/static/919c5cbcb4e2/demo_claim.js\"></script>\n</body>\n</html>\n",
+        "when": "missing"
+      },
+      {
+        "status": 200,
+        "headers": {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": "no-store",
+          "Referrer-Policy": "origin"
+        },
+        "body": "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<meta name=\"referrer\" content=\"origin\">\n<title>Keep your demo</title>\n</head>\n<body>\n<main id=\"claim\" data-failed=\"The claim link could not be opened. Try again.\">\n<h1>Keep your demo</h1>\n\n\n<input type=\"hidden\" name=\"nonce\" value=\"synthetic-nonce\">\n<input type=\"hidden\" name=\"csrf\" value=\"\">\n<p id=\"claim-error\" role=\"alert\" tabindex=\"-1\" hidden></p>\n\n\n\n\n\n<p role=\"status\">Your demo is now a permanent app.</p>\n<dl><dt>Account</dt><dd>a2</dd><dt>App</dt><dd>shop</dd></dl>\n<p><a href=\"https://shop.example.com\" rel=\"noreferrer\">Open app</a></p><p>To deploy changes, sign in with the CLI: carlos login</p>\n\n\n<noscript><p>JavaScript is needed to open the private claim link.</p></noscript>\n</main>\n<script src=\"/static/919c5cbcb4e2/demo_claim.js\"></script>\n</body>\n</html>\n",
+        "when": "claimed"
+      },
+      {
         "status": 503,
-        "body": {
-          "error": "Claiming is not available in this release."
-        }
+        "headers": {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": "no-store"
+        },
+        "body": "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<meta name=\"referrer\" content=\"origin\">\n<title>Keep your demo</title>\n</head>\n<body>\n<main id=\"claim\" data-failed=\"The claim link could not be opened. Try again.\">\n<h1>Keep your demo</h1>\n<p role=\"alert\">unavailable</p><p><a href=\"/demo/claim\">Back to your claim</a></p>\n\n<input type=\"hidden\" name=\"nonce\" value=\"\">\n<input type=\"hidden\" name=\"csrf\" value=\"\">\n<p id=\"claim-error\" role=\"alert\" tabindex=\"-1\" hidden></p>\n\n\n\n\n\n\n<noscript><p>JavaScript is needed to open the private claim link.</p></noscript>\n</main>\n<script src=\"/static/919c5cbcb4e2/demo_claim.js\"></script>\n</body>\n</html>\n",
+        "when": "HostClaim/store gate, random-token failure or backing-store error."
       }
     ],
-    "evidence": "internal/console/apidemo.go:279-282",
-    "implemented": false
+    "evidence": "internal/console/apidemo.go:288-291; internal/console/demo_claim_page.go:26-44,79-196,210-434; internal/console/templates/demo_claim.html:1-61; internal/console/static/demo_claim.js:3-27; internal/console/assets.go:36-45,67-73",
+    "semantics": "GET renders HTML without proving identity or reserving an app, including when admission is off. JavaScript clears the fragment before POST /demo/claim/intent, which creates the browser flow and redirects 303 to /demo/claim. Signed-out people enter email/code or use normal sign-in; Keymail continues OAuth. Signed-in identity is shown. Eligible owner/member accounts are shown with exact IDs; several require a choice, one is preselected, zero memberships require explicit personal-account confirmation. POST /demo/claim/select requires a valid session, nonce, CSRF and fresh auth before reservation; success redirects 303 to the page. Progress requires reload. Claimed HTML contains account ID, app and a permanent-URL link labelled Open app. Browser cookie is not an API flow token.",
+    "forms": {
+      "intent": {
+        "method": "POST",
+        "path": "/demo/claim/intent",
+        "fields": [
+          "claimToken",
+          "nonce",
+          "csrf"
+        ]
+      },
+      "prove": {
+        "method": "POST",
+        "path": "/demo/claim/prove",
+        "fields": [
+          "email or code",
+          "nonce",
+          "csrf"
+        ]
+      },
+      "select": {
+        "method": "POST",
+        "path": "/demo/claim/select",
+        "fields": [
+          "accountId or create=1 (zero memberships)",
+          "nonce",
+          "csrf"
+        ]
+      },
+      "errors": "Form errors render HTML (400 malformed, 401 expired/proof, 403 origin/nonce/CSRF, 409 cap/placement/busy, 429 budget, 503 unavailable/reservation); invalid demo token at intent returns the shared JSON 401; unknown/foreign account selection is plain-text 404. Unauthenticated select redirects 303 to sign-in. Browser GET does not itself redeem the fragment."
+    }
   },
   "complete": {
     "response": {
@@ -205,8 +507,32 @@
       }
     },
     "credentialIssued": false,
-    "evidence": "internal/console/demo_claim_auth.go:445-452; internal/console/demo_claim_transfer.go:648-667",
-    "movedNoticeImplemented": false,
-    "movedEvidence": "internal/console/demo_claim_transfer.go:676-678"
+    "evidence": "internal/console/demo_claim_auth.go:476-485; internal/console/demo_claim_transfer.go:669-674,683-760",
+    "movedEvidence": "internal/console/demo_claim_transfer.go:673-674,722-732; internal/console/demo_claim_moved.go:79-152; internal/edge/demo.go:107-110; internal/edge/demo_moved.go:47-76",
+    "method": "GET",
+    "path": "/api/demo/claims/status",
+    "auth": "Bearer <flowToken>",
+    "request": null,
+    "moved": "Old host serves a no-store 200 HTML moved notice for GET/HEAD until original demo expiry, linking to the permanent app without an HTTP redirect. Other methods get 410 text. Expired notice no longer serves; retired/missing demo route gets 404.",
+    "consumedUpdate": {
+      "method": "POST",
+      "path": "/api/demo/apps",
+      "auth": "Bearer <claimToken>",
+      "response": {
+        "status": 401,
+        "body": {
+          "error": "This demo token is invalid or no longer available."
+        }
+      },
+      "evidence": "internal/console/demo_claim_transfer.go:671; internal/console/apidemo.go:342-359,301-302; internal/console/demo_store.go:314-341"
+    },
+    "cliEvidence": "auth.go:84-95,700-707,809-816; cli.go:2312-2333; deploy.go:135-172; docs/site/cli.md:11-20,52-64",
+    "cli": "carlos auth login --console <consoleOrigin>; carlos auth whoami --console <consoleOrigin>; carlos deploy --console <consoleOrigin> --account-id <claimedAccountId> --app <claimedApp> ./shop-linux-arm64. The browser producer still prints carlos login; use the documented auth login subcommand."
+  },
+  "availability": {
+    "runtimeField": "claimAvailable",
+    "required": "CARLOS_DEMO_APPS=1 and CARLOS_DEMO_CLAIM=1, no host-claim/store gate, and deployment readiness (including a ready mailer and Keymail OAuth). A merged producer alone does not enable claims.",
+    "apiOrigin": "Configured API origin, default console origin; all four JSON claim endpoints are allowed by the edge alias. Browser links use the console origin.",
+    "evidence": "internal/demo/config.go:36-43; internal/console/demo_claim_ready.go:15-73; internal/edge/demo_api.go:37-52; internal/console/demo_api_origin.go:25-60"
   }
 }

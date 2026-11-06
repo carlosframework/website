@@ -9,13 +9,10 @@ export function loadStartConfig(env = process.env) {
   return true;
  };
  const enabled = flag('CARLOS_START_DEMO');
- const claimDraft = flag('CARLOS_START_CLAIM_DRAFT');
  if (env.CARLOS_START_CLAIM !== undefined && env.CARLOS_START_CLAIM !== '' && env.CARLOS_START_CLAIM !== 'off') throw configError('CARLOS_START_CLAIM must be unset or off');
  const claimOff = env.CARLOS_START_CLAIM === 'off';
  if (claimOff && !enabled) throw configError('CARLOS_START_CLAIM=off requires CARLOS_START_DEMO=1');
- if (claimOff && claimDraft) throw configError('CARLOS_START_CLAIM=off and CARLOS_START_CLAIM_DRAFT=1 are mutually exclusive');
- if (claimDraft && !enabled) throw configError('CARLOS_START_CLAIM_DRAFT requires CARLOS_START_DEMO=1');
- const config = {enabled,claimDraft,claimOff,...productionDefaults,apiOrigin:productionDefaults.consoleOrigin,starterVersion:'v1',claimContractRevision:''};
+ const config = {enabled,claimOff,...productionDefaults,apiOrigin:productionDefaults.consoleOrigin,starterVersion:'v1',claimContractRevision:''};
  if (!enabled) return config;
  for(const [field,key] of Object.entries({siteOrigin:'CARLOS_START_SITE_ORIGIN',consoleOrigin:'CARLOS_START_CONSOLE_ORIGIN',apiOrigin:'CARLOS_START_API_ORIGIN',accountUrl:'CARLOS_START_ACCOUNT_URL'})) {
   const raw=field==='apiOrigin' && (env[key]===undefined || env[key]==='') ? config.consoleOrigin : env[key]; let u;

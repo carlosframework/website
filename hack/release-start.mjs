@@ -7,9 +7,9 @@ import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { loadStartConfig } from '../src/_data/start-config.mjs';
 
-const usage = 'usage: node hack/release-start.mjs --console <origin> --account <account> --app <app> --channel <channel> --site-origin <origin> --console-origin <origin> --account-url <url> [--api-origin <origin>] [--allow-unmerged-dev] [--claim-draft | --claim-off] [--execute] [--temporary --ttl <duration>]';
+const usage = 'usage: node hack/release-start.mjs --console <origin> --account <account> --app <app> --channel <channel> --site-origin <origin> --console-origin <origin> --account-url <url> [--api-origin <origin>] [--allow-unmerged-dev] [--claim-off] [--execute] [--temporary --ttl <duration>]';
 const values = new Set(['console','account','app','channel','site-origin','console-origin','api-origin','account-url','ttl']);
-const switches = new Set(['allow-unmerged-dev','claim-draft','claim-off','execute','temporary']);
+const switches = new Set(['allow-unmerged-dev','claim-off','execute','temporary']);
 
 export function parseReleaseArgs(argv) {
  const options = {};
@@ -53,7 +53,6 @@ export function releaseEnvironment(options, inherited = process.env) {
  for (const key of ['CARLOS_DESTINATION','CARLOS_DEPLOYMENT_BUCKET','CARLOS_DEPLOYMENT_DIR']) delete env[key];
  Object.assign(env,{CARLOS_START_DEMO:'1',CARLOS_START_SITE_ORIGIN:options['site-origin'],CARLOS_START_CONSOLE_ORIGIN:options['console-origin'],CARLOS_START_ACCOUNT_URL:options['account-url']});
  if (options['api-origin']) env.CARLOS_START_API_ORIGIN = options['api-origin'];
- if (options['claim-draft']) env.CARLOS_START_CLAIM_DRAFT = '1';
  if (options['claim-off']) env.CARLOS_START_CLAIM = 'off';
  return env;
 }
@@ -102,7 +101,6 @@ export function releaseStart(argv,root = resolve(import.meta.dirname,'..')) {
  if (ancestor.error || ![0,1].includes(ancestor.status)) throw new Error('cannot check origin/main ancestry; refresh the local origin/main ref before releasing');
  const warning = validateReleaseTree(status,ancestor.status === 0,options['allow-unmerged-dev']);
  if (warning) console.warn(warning);
- if (options['claim-draft']) console.warn('WARNING: --claim-draft builds a development preview with claiming unavailable; do not publish it as a public release.');
  const version = git(['rev-parse','--short',commit]);
  const cache = join(homedir(),'.cache');
  mkdirSync(cache,{recursive:true});
