@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { isDeepStrictEqual } from 'node:util';
 import { loadStartConfig } from '../src/_data/start-config.mjs';
-import { renderAgent, validateClaimContract } from '../hack/start-content.mjs';
+import { renderAgent, validateClaimContract, publicClaimOperation } from '../hack/start-content.mjs';
 const read = p => readFileSync(p, 'utf8');
 const contract = JSON.parse(read('src/_data/start-claim-contract.json'));
 const manifest = JSON.parse(read('src/start/starter/v1/manifest.json'));
@@ -12,6 +12,21 @@ const config = loadStartConfig(env);
 const template = read('src/start/agent.md');
 const rendered = renderAgent(template, config, contract, manifest);
 const examples = [...rendered.matchAll(/```json\n([\s\S]*?)\n```/g)].map(m => JSON.parse(m[1]));
+test('claim appendix omits private provenance and HTML bodies after the development directions',()=>{
+ assert.deepEqual(publicClaimOperation({
+  evidence:'private', cliEvidence:'private', movedEvidence:'private',
+  nested:{source:'internal/console/example.go:123',keep:'public'},
+  responses:[{status:200,body:'<!doctype html><html><body>Private page</body></html>'},
+   {status:200,body:{state:'claimed'}}],
+ }),{nested:{keep:'public'},responses:[{status:200},{status:200,body:{state:'claimed'}}]});
+ assert.doesNotMatch(rendered,/"\w*[Ee]vidence"|[\w./-]+\.(?:go|html|js|md):\d+|<!doctype html|<html/i);
+ assert.ok(rendered.indexOf('## Appendix: claim wire examples')>rendered.indexOf('for the normal account workflow.'));
+ assert.ok(rendered.indexOf('"operation": "start"')>rendered.indexOf('## Appendix: claim wire examples'));
+ assert.ok(contract.browser.responses.some(r=>r.body.includes('<!doctype html>')));
+ assert.ok(contract.complete.consumedUpdate.evidence);
+ const off={...config,claimOff:true};
+ assert.equal(renderAgent(template,off,contract,manifest),renderAgent(template,off,undefined,manifest));
+});
 test('default off, explicit origins, strict HTTPS inputs and safe diagnostics', () => {
  assert.equal(loadStartConfig({}).enabled, false);
  assert.equal(config.apiOrigin,config.consoleOrigin);
@@ -92,7 +107,7 @@ test('claim-off renders without a contract and preserves all other instruction b
  assert.equal(sections.length,11);
  assert.equal(sections[0],'# 🤖 Agent directions: make a small app\n\n');
  for(const n of [1,2,3,4,6,7,8]) assert.equal(sections[n],normal[n],`section ${n}`);
- assert.equal(sections[5],normal[5].replace('Give the person the exact secret claim link once, privately, as recovery information; explain that it is unavailable when `claimAvailable` is false. If you have no private channel, ask them to use a private session before exposing it.','Do not share the claim link.'));
+ assert.equal(sections[5],normal[5].replace(/, including `flowToken`, the emailed code and the person's email address|, `flowToken`, the emailed code, the person's email address/g,'').replace('Give the person the exact secret claim link once, privately, as recovery information; explain that it is unavailable when `claimAvailable` is false. If you have no private channel, ask them to use a private session before exposing it.','Do not share the claim link.'));
  assert.match(sections[9],/Claiming is not available on this deployment/);
  assert.match(sections[9],/Do not attempt any claim request, even if a response says `claimAvailable` is true/);
  assert.match(sections[9],/demo cannot be kept and ends at the returned `expiresAt`/);
@@ -110,7 +125,7 @@ test('claim gate rejects missing status fields, completion drift and missing mer
 test('render substitutes only known placeholders and fixtures round trip as JSON', () => {
  assert.equal(renderAgent('unchanged\n{{siteOrigin}}\n',config,contract,manifest),'unchanged\nhttps://site.example.com\n');
  assert.throws(() => renderAgent('{{unknown}}',config,contract,manifest));
- for (const op of ['start','verify','chooseAccount','status','browser','complete']) assert.deepEqual(examples.find(e=>e.operation===op).contract,JSON.parse(JSON.stringify(contract[op]).replaceAll('{{consoleOrigin}}',config.consoleOrigin))); 
+ for (const op of ['start','verify','chooseAccount','status','browser','complete']) assert.deepEqual(examples.find(e=>e.operation===op).contract,JSON.parse(JSON.stringify(publicClaimOperation(contract[op])).replaceAll('{{consoleOrigin}}',config.consoleOrigin)));
  for (const fixture of JSON.parse(read('test/fixtures/start-wire.json'))) {
   const expected=JSON.parse(JSON.stringify(fixture).replaceAll('{{consoleOrigin}}',config.consoleOrigin).replaceAll('{{apiOrigin}}',config.apiOrigin));
   assert.deepEqual(examples.find(e=>e.operation===fixture.operation),expected);
@@ -125,13 +140,20 @@ test('render substitutes only known placeholders and fixtures round trip as JSON
 function audit(trace) {
  let asked=false, confirmed=false, creates=0, token, flow, live, permanent, selected, accounts=[], claimAvailable=false, claimed=false, lost=false, stop=false, repairs=0, lastPoll=-Infinity, retry=0;
  let keep=false, email, claimURL, browser=false, expiry, lastRequest, serverClaimed=false;
+ let pendingRetry, retried=false, createRetryUsed=false, updateRetryUsed=false, claimRetryUsed=false, codeAllowed=false, aborted=false;
  const secrets=new Set();
  for (const e of trace) {
   if(e.kind==='ask') asked=true;
   if(e.kind==='confirm') { assert.ok(asked); confirmed=true; }
   if(e.kind==='build') assert.ok(confirmed);
   if(e.kind==='keep') {assert.ok(claimAvailable);keep=e.wanted;}
-  if(e.kind==='email') {assert.ok(keep);email=e.address;}
+  if(e.kind==='email') {assert.ok(keep);email=e.address;secrets.add(email);}
+  if(e.kind==='restart-claim') {
+   assert.ok(aborted && e.consent && e.now<expiry);
+   stop=false;flow=undefined;aborted=false;claimRetryUsed=false;codeAllowed=false;
+  }
+  if(e.kind==='rejected-url') stop=true;
+  if(e.kind==='ask-code') assert.ok(codeAllowed && !stop);
   if(e.kind==='expiry') assert.equal(e.value,expiry);
   if(e.kind==='server-claim-completed') serverClaimed=true;
   if(e.kind==='browser-link') {assert.ok(keep && claimAvailable && e.private && !flow);assert.equal(e.url,claimURL);browser=true;}
@@ -147,6 +169,17 @@ function audit(trace) {
   }
   if(e.kind==='choose') { assert.ok(accounts.some(a=>a.id===e.accountId)); selected=e.accountId; }
   if(e.kind==='request') {
+   retried=false;
+   if(pendingRetry) {
+    assert.ok(!stop);
+    assert.equal(e.url,pendingRetry.request.url);
+    assert.equal(e.method,pendingRetry.request.method);
+    assert.deepEqual(e.headers,pendingRetry.request.headers);
+    assert.deepEqual(e.body,pendingRetry.request.body);
+    assert.ok(e.at>=pendingRetry.at && e.at<=300);
+    retried=true;
+    pendingRetry=undefined;
+   }
    lastRequest=e;
    const u=new URL(e.url); assert.equal(u.origin,config.consoleOrigin); assert.equal(e.redirect,'error');
    if(e.method==='POST' && u.pathname==='/api/demo/apps') {
@@ -154,7 +187,7 @@ function audit(trace) {
     assert.equal(e.headers['Content-Type'],'application/gzip');
     assert.ok(e.headers['X-Carlos-Client']);
     if(e.headers.Authorization) { assert.equal(e.headers.Authorization,`Bearer ${token}`); assert.ok(++repairs<=2); }
-    else assert.equal(++creates,1);
+    else if(!retried) assert.equal(++creates,1);
    }
    if(e.method==='GET') {
     assert.ok(e.at-lastPoll>=retry); assert.ok(e.at<=300); lastPoll=e.at;
@@ -162,13 +195,13 @@ function audit(trace) {
     else {assert.ok(flow);assert.equal(e.headers.Authorization,`Bearer ${flow}`);}
    }
    if(u.pathname.endsWith('/select')) {assert.ok(selected);assert.equal(e.body.accountId,selected);assert.equal(e.body.flowToken,flow);}
-   if(u.pathname.endsWith('/verify')) assert.equal(e.body.flowToken,flow);
+   if(u.pathname.endsWith('/verify')) {assert.ok(codeAllowed);assert.equal(e.body.flowToken,flow);}
    if(u.pathname.startsWith('/api/demo/claims') && e.method==='POST') {
     assert.ok(claimAvailable && keep && email && !stop && !claimed);
     assert.equal(e.headers['Content-Type'],'application/json');
     if(e.body?.code) secrets.add(e.body.code);
    }
-   if(u.pathname==='/api/demo/claims') assert.equal(e.body.email,email);
+   if(u.pathname==='/api/demo/claims') {assert.equal(e.body.email,email);if(!flow) assert.equal(e.body.flowToken,undefined);}
    if(e.body?.claimToken) assert.equal(e.body.claimToken,token);
   }
   if(e.kind==='response') {
@@ -181,13 +214,29 @@ function audit(trace) {
    if(serverClaimed && path==='/api/demo/apps') assert.deepEqual({status:e.status,body:e.body},contract.complete.consumedUpdate.response);
    if(e.body?.claimToken) {token=e.body.claimToken;expiry=e.body.expiresAt;claimAvailable=e.body.claimAvailable===true;secrets.add(token);secrets.add(e.body.claimUrl);secrets.add(e.body.statusUrl);}
    if(e.body?.state==='browser_required') {claimURL=e.body.claimUrl;assert.equal(e.body.flowToken,undefined);}
+   if(path==='/api/demo/claims') codeAllowed=e.status===202 && e.body?.state==='email_required';
    if(e.body?.flowToken) {flow=e.body.flowToken;secrets.add(flow);}
    if(e.body?.state==='live') live=e.body.url;
    if(e.status===200 && e.body?.state==='claimed') {permanent=e.body.url;claimed=true;}
    if(e.body?.state==='account_required' && e.body.accounts) accounts=e.body.accounts;
    retry=Math.max(e.retryAfter??e.body?.retryAfter??5,e.body?.retryAfter??0);
-   if(e.body?.state==='aborted' || e.body?.code==='cap') stop=true;
-   if([401,404,410,429,503].includes(e.status)) stop=true;
+   if(e.body?.state==='aborted') {stop=true;aborted=true;}
+   if(e.body?.code==='cap') stop=true;
+   if([401,404,410,429].includes(e.status)) stop=true;
+   if(e.status>=500 && e.status<=599) {
+    const publish=path==='/api/demo/apps';
+    const update=publish && Boolean(lastRequest.headers.Authorization);
+    const create=publish && !update;
+    const claimStart=path==='/api/demo/claims';
+    const json503=e.status===503 && e.body!==null && typeof e.body==='object' && !Array.isArray(e.body);
+    const allowed=create ? json503 && !createRetryUsed : update ? !updateRetryUsed : claimStart && e.status===503 && !claimRetryUsed;
+    if(allowed) {
+     if(create) createRetryUsed=true;
+     if(update) updateRetryUsed=true;
+     if(claimStart) claimRetryUsed=true;
+     pendingRetry={request:lastRequest,at:lastRequest.at+(e.retryAfter??(publish?15:5))};
+    } else {stop=true;if(create) lost=true;}
+   }
   }
   if(e.kind==='lost') lost=true;
   if(e.kind==='public') for(const secret of secrets) assert.ok(!e.text.includes(secret));

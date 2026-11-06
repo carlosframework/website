@@ -18,7 +18,15 @@ test('enabled hero uses approved copy, one primary paste action and preserved su
  assert.match(hero,/<span class="start-authorship">🤖<\/span><p class="hero-promise"><strong>/);
  const source=await read('src/index.html');
  assert.ok(hero.includes(source.match(/<p class="hero-subtitle">[\s\S]*?<\/p>/)[0]));
- assert.match(hero,/<!-- 👨 Constellation selected and copy supplied in chat --><p class="hero-subtitle">/);
+ const human='<!-- 👨 Constellation selected and copy supplied in chat -->';
+ assert.ok(home.includes(human+'<section class="hero">'));
+ const before=source.split('<!-- start-demo:hero -->')[0].split(human)[1];
+ assert.ok(home.includes(human+before+'<!-- /👨 --><span class="start-authorship">🤖</span>'));
+ assert.ok(hero.includes(human+'</div><div class="hero-tools"'));
+ assert.equal(home.split(human).length-1,2);
+ const ai=hero.split('<!-- /👨 -->')[1].split(human)[0];
+ assert.ok(ai.startsWith('<span class="start-authorship">🤖</span>'));
+ assert.ok(ai.includes('home-prompt'));
  assert.ok(home.includes(`<meta name="description" content="${copy['home.meta.description']}">`));
  assert.ok(home.includes(`<meta property="og:description" content="${copy['home.og.description']}">`));
  assert.match(hero,/<a href="\/start\/">See how it works<\/a>/);

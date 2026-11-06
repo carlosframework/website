@@ -87,7 +87,7 @@
       "email": "person@example.com",
       "flowToken": "synthetic-flow-token"
     },
-    "semantics": "Initial call omits flowToken. Resend must retain the same demo token, email and unproved flow token; it does not extend expiry. Throttled or unsent email challenges still return 202, so delivery is not guaranteed. Keymail discovery returns 200 browser_required without flowToken only after the readiness gate passes; no configured mailer means 503 unavailable even for Keymail. Readiness verdicts are cached for 45 seconds."
+    "semantics": "Initial call omits flowToken. Resend must retain the same demo token, email and unproved flow token; it does not extend expiry. Throttled or unsent email challenges still return 202, so delivery is not guaranteed. A 503 on claim start means this address cannot be claimed now. Do not ask for a code. Retry at most once after any retry hint, within the five-minute wait bound, then explain. The demo keeps running with its original expiry. A Keymail address may instead get 200 browser_required without flowToken. Readiness verdicts are cached for 45 seconds."
   },
   "verify": {
     "method": "POST",

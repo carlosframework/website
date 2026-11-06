@@ -4,7 +4,11 @@
     "sections": [
       "## 1. Ask before building",
       "For newcomers",
-      "## 3. Fetch the pinned starter without installing tools"
+      "## 3. Fetch the pinned starter without installing tools",
+      "Never put the token, claim link, status URL, `flowToken`, the emailed code, the person's email address or full create response into app files, a repository, public transcript or screenshot.",
+      "If you cannot reach the live host to verify the row, ask the person to check; do not request another allowlist entry.",
+      "If a returned URL fails validation, stop, retain private state and never make another anonymous create.",
+      "exact configured console origin `https://console.example.com`"
     ],
     "events": [
       {
@@ -138,6 +142,72 @@
         {
           "kind": "install",
           "optIn": true
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": false
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/jobs/j1",
+          "method": "GET",
+          "headers": {},
+          "body": null,
+          "redirect": "error",
+          "at": 5
+        },
+        {
+          "kind": "response",
+          "status": 200,
+          "body": {
+            "state": "live",
+            "url": "https://shop.example.com/?a=1"
+          },
+          "retryAfter": 2
+        },
+        {
+          "kind": "share",
+          "url": "https://shop.example.com/?a=1"
+        },
+        {
+          "kind": "public",
+          "text": "https://shop.example.com/?a=1"
+        },
+        {
+          "kind": "public",
+          "text": "synthetic-demo-token"
         }
       ]
     ]
@@ -289,7 +359,8 @@
     "sections": [
       "Transport-level host block",
       "console.example.com",
-      "retry once only"
+      "retry once only",
+      "Never suggest disabling a sandbox or wildcard allowlists."
     ],
     "events": [
       {
@@ -306,7 +377,8 @@
     "name": "failed build then bearer update",
     "sections": [
       "## 6. Wait, then repair with the same bearer",
-      "At most two automatic repair submissions"
+      "At most two automatic repair submissions",
+      "Stop automatic waiting after five minutes"
     ],
     "events": [
       {
@@ -633,7 +705,8 @@
     "name": "lost create response",
     "sections": [
       "Lost create response",
-      "Stop automatic submission"
+      "Stop automatic submission",
+      "never make another anonymous create to recover it"
     ],
     "events": [
       {
@@ -1470,7 +1543,10 @@
     "name": "multiple accounts",
     "sections": [
       "Ask the person to choose explicitly",
-      "never a display name"
+      "never a display name",
+      "hand over the claim link privately, or with the person's permission start again omitting `flowToken`, which sends a new email.",
+      "Do not resend with the proved flow token: start rejects it with 401.",
+      "if you cannot reach the permanent host, ask the person to check; do not request another allowlist entry"
     ],
     "events": [
       {
@@ -1832,6 +1908,334 @@
           },
           "redirect": "error",
           "at": 0
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "public",
+          "text": "person@example.com"
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "email_required",
+            "flowToken": "synthetic-flow-token",
+            "expiresAt": "2026-11-05T12:15:00Z"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/verify",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "flowToken": "synthetic-flow-token",
+            "code": "123456"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 200,
+          "body": {
+            "state": "account_required",
+            "accounts": [
+              {
+                "id": "a1",
+                "name": "Shop",
+                "role": "owner"
+              },
+              {
+                "id": "a2",
+                "name": "Team",
+                "role": "member"
+              }
+            ]
+          }
+        },
+        {
+          "kind": "choose",
+          "accountId": "a2"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/select",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "flowToken": "synthetic-flow-token",
+            "accountId": "a2"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "claiming",
+            "phase": "reserved",
+            "retryAfter": 2,
+            "recoveryPending": false
+          },
+          "retryAfter": 2
+        },
+        {
+          "kind": "public",
+          "text": "synthetic-flow-token"
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "email_required",
+            "flowToken": "synthetic-flow-token",
+            "expiresAt": "2026-11-05T12:15:00Z"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/verify",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "flowToken": "synthetic-flow-token",
+            "code": "123456"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 200,
+          "body": {
+            "state": "account_required",
+            "accounts": [
+              {
+                "id": "a1",
+                "name": "Shop",
+                "role": "owner"
+              },
+              {
+                "id": "a2",
+                "name": "Team",
+                "role": "member"
+              }
+            ]
+          }
+        },
+        {
+          "kind": "choose",
+          "accountId": "a2"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/select",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "flowToken": "synthetic-flow-token",
+            "accountId": "a2"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "claiming",
+            "phase": "reserved",
+            "retryAfter": 2,
+            "recoveryPending": false
+          },
+          "retryAfter": 2
+        },
+        {
+          "kind": "public",
+          "text": "123456"
         }
       ]
     ],
@@ -3374,7 +3778,8 @@
   {
     "name": "aborted claim",
     "sections": [
-      "200 `aborted` is terminal failure"
+      "200 `aborted` ends that claim attempt",
+      "With the person's consent, a fresh claim start omitting `flowToken` is allowed if the demo is unexpired."
     ],
     "events": [
       {
@@ -4086,6 +4491,2699 @@
           "kind": "share",
           "permanent": true,
           "url": "https://shop.example.com"
+        }
+      ]
+    ]
+  },
+  {
+    "name": "create empty proxy 503 is unknown",
+    "sections": [
+      "an empty-body 503, a non-JSON 503 or any other 5xx is an unknown outcome",
+      "Stop automatic submission and explain that an app may have been created without a usable token."
+    ],
+    "events": [
+      {
+        "kind": "ask"
+      },
+      {
+        "kind": "confirm"
+      },
+      {
+        "kind": "build"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 503,
+        "body": "",
+        "retryAfter": 2
+      },
+      {
+        "kind": "public",
+        "text": "The create outcome is unknown; an app may exist without a usable token. I have stopped."
+      }
+    ],
+    "reject": [
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 503,
+          "body": "",
+          "retryAfter": 2
+        },
+        {
+          "kind": "public",
+          "text": "The create outcome is unknown; an app may exist without a usable token. I have stopped."
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 2
+        }
+      ]
+    ]
+  },
+  {
+    "name": "create 500 is unknown",
+    "sections": [
+      "an empty-body 503, a non-JSON 503 or any other 5xx is an unknown outcome",
+      "Stop automatic submission and explain that an app may have been created without a usable token."
+    ],
+    "events": [
+      {
+        "kind": "ask"
+      },
+      {
+        "kind": "confirm"
+      },
+      {
+        "kind": "build"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 500,
+        "body": {
+          "error": "internal"
+        },
+        "retryAfter": 2
+      },
+      {
+        "kind": "public",
+        "text": "The create outcome is unknown; an app may exist without a usable token. I have stopped."
+      }
+    ],
+    "reject": [
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 500,
+          "body": {
+            "error": "internal"
+          },
+          "retryAfter": 2
+        },
+        {
+          "kind": "public",
+          "text": "The create outcome is unknown; an app may exist without a usable token. I have stopped."
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 2
+        }
+      ]
+    ]
+  },
+  {
+    "name": "create 502 is unknown",
+    "sections": [
+      "an empty-body 503, a non-JSON 503 or any other 5xx is an unknown outcome",
+      "Stop automatic submission and explain that an app may have been created without a usable token."
+    ],
+    "events": [
+      {
+        "kind": "ask"
+      },
+      {
+        "kind": "confirm"
+      },
+      {
+        "kind": "build"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 502,
+        "body": "bad gateway",
+        "retryAfter": 2
+      },
+      {
+        "kind": "public",
+        "text": "The create outcome is unknown; an app may exist without a usable token. I have stopped."
+      }
+    ],
+    "reject": [
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 502,
+          "body": "bad gateway",
+          "retryAfter": 2
+        },
+        {
+          "kind": "public",
+          "text": "The create outcome is unknown; an app may exist without a usable token. I have stopped."
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 2
+        }
+      ]
+    ]
+  },
+  {
+    "name": "create 504 is unknown",
+    "sections": [
+      "an empty-body 503, a non-JSON 503 or any other 5xx is an unknown outcome",
+      "Stop automatic submission and explain that an app may have been created without a usable token."
+    ],
+    "events": [
+      {
+        "kind": "ask"
+      },
+      {
+        "kind": "confirm"
+      },
+      {
+        "kind": "build"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 504,
+        "body": "",
+        "retryAfter": 2
+      },
+      {
+        "kind": "public",
+        "text": "The create outcome is unknown; an app may exist without a usable token. I have stopped."
+      }
+    ],
+    "reject": [
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 504,
+          "body": "",
+          "retryAfter": 2
+        },
+        {
+          "kind": "public",
+          "text": "The create outcome is unknown; an app may exist without a usable token. I have stopped."
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 2
+        }
+      ]
+    ]
+  },
+  {
+    "name": "create non-JSON 503 is unknown",
+    "sections": [
+      "an empty-body 503, a non-JSON 503 or any other 5xx is an unknown outcome",
+      "Stop automatic submission and explain that an app may have been created without a usable token."
+    ],
+    "events": [
+      {
+        "kind": "ask"
+      },
+      {
+        "kind": "confirm"
+      },
+      {
+        "kind": "build"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 503,
+        "body": "unavailable",
+        "retryAfter": 2
+      },
+      {
+        "kind": "public",
+        "text": "The create outcome is unknown; an app may exist without a usable token. I have stopped."
+      }
+    ],
+    "reject": [
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 503,
+          "body": "unavailable",
+          "retryAfter": 2
+        },
+        {
+          "kind": "public",
+          "text": "The create outcome is unknown; an app may exist without a usable token. I have stopped."
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 2
+        }
+      ]
+    ]
+  },
+  {
+    "name": "JSON create 503 retries once then stops",
+    "sections": [
+      "A JSON 503 allows at most one retry after its Retry-After hint",
+      "a reservation cannot be fully ruled out"
+    ],
+    "events": [
+      {
+        "kind": "ask"
+      },
+      {
+        "kind": "confirm"
+      },
+      {
+        "kind": "build"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 503,
+        "body": {
+          "error": "Demo builds are unavailable right now. Try again shortly."
+        },
+        "retryAfter": 15
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 15
+      },
+      {
+        "kind": "response",
+        "status": 503,
+        "body": {
+          "error": "Demo builds are unavailable right now. Try again shortly."
+        },
+        "retryAfter": 15
+      },
+      {
+        "kind": "public",
+        "text": "The retry failed. I have stopped; a reservation cannot be fully ruled out."
+      }
+    ],
+    "reject": [
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 503,
+          "body": {
+            "error": "Demo builds are unavailable right now. Try again shortly."
+          },
+          "retryAfter": 15
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 14
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 503,
+          "body": {
+            "error": "Demo builds are unavailable right now. Try again shortly."
+          },
+          "retryAfter": 15
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 15
+        },
+        {
+          "kind": "response",
+          "status": 503,
+          "body": {
+            "error": "Demo builds are unavailable right now. Try again shortly."
+          },
+          "retryAfter": 15
+        },
+        {
+          "kind": "public",
+          "text": "The retry failed. I have stopped; a reservation cannot be fully ruled out."
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 30
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 503,
+          "body": {
+            "error": "Demo builds are unavailable right now. Try again shortly."
+          },
+          "retryAfter": 15
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 301
+        }
+      ]
+    ]
+  },
+  {
+    "name": "JSON create 503 retry succeeds",
+    "sections": [
+      "A JSON 503 allows at most one retry"
+    ],
+    "events": [
+      {
+        "kind": "ask"
+      },
+      {
+        "kind": "confirm"
+      },
+      {
+        "kind": "build"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 503,
+        "body": {
+          "error": "Demo builds are unavailable right now. Try again shortly."
+        },
+        "retryAfter": 15
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 15
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "jobId": "j1",
+          "name": "shop",
+          "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+          "expiresAt": 1793966400,
+          "claimToken": "synthetic-demo-token",
+          "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+          "claimAvailable": false
+        }
+      }
+    ],
+    "reject": []
+  },
+  {
+    "name": "bearer update 503 retries once",
+    "sections": [
+      "Update 5xx with a bearer: retain Authorization and retry at most once",
+      "within the five-minute wait bound and repair limit"
+    ],
+    "events": [
+      {
+        "kind": "ask"
+      },
+      {
+        "kind": "confirm"
+      },
+      {
+        "kind": "build"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "jobId": "j1",
+          "name": "shop",
+          "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+          "expiresAt": 1793966400,
+          "claimToken": "synthetic-demo-token",
+          "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+          "claimAvailable": false
+        }
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/jobs/j1",
+        "method": "GET",
+        "headers": {},
+        "body": null,
+        "redirect": "error",
+        "at": 5
+      },
+      {
+        "kind": "response",
+        "status": 200,
+        "body": {
+          "state": "failed",
+          "diagnostics": [],
+          "diagnosticsTruncated": false,
+          "message": "compile failure"
+        }
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness",
+          "Authorization": "Bearer synthetic-demo-token"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 10
+      },
+      {
+        "kind": "response",
+        "status": 503,
+        "body": "",
+        "retryAfter": 2
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness",
+          "Authorization": "Bearer synthetic-demo-token"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 12
+      },
+      {
+        "kind": "response",
+        "status": 503,
+        "body": "",
+        "retryAfter": 2
+      },
+      {
+        "kind": "public",
+        "text": "The update retry failed. I have stopped and kept the original credentials private."
+      }
+    ],
+    "reject": [
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": false
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/jobs/j1",
+          "method": "GET",
+          "headers": {},
+          "body": null,
+          "redirect": "error",
+          "at": 5
+        },
+        {
+          "kind": "response",
+          "status": 200,
+          "body": {
+            "state": "failed",
+            "diagnostics": [],
+            "diagnosticsTruncated": false,
+            "message": "compile failure"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness",
+            "Authorization": "Bearer synthetic-demo-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 10
+        },
+        {
+          "kind": "response",
+          "status": 503,
+          "body": "",
+          "retryAfter": 2
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness",
+            "Authorization": "Bearer synthetic-demo-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 12
+        },
+        {
+          "kind": "response",
+          "status": 503,
+          "body": "",
+          "retryAfter": 2
+        },
+        {
+          "kind": "public",
+          "text": "The update retry failed. I have stopped and kept the original credentials private."
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness",
+            "Authorization": "Bearer synthetic-demo-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 14
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": false
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/jobs/j1",
+          "method": "GET",
+          "headers": {},
+          "body": null,
+          "redirect": "error",
+          "at": 5
+        },
+        {
+          "kind": "response",
+          "status": 200,
+          "body": {
+            "state": "failed",
+            "diagnostics": [],
+            "diagnosticsTruncated": false,
+            "message": "compile failure"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness",
+            "Authorization": "Bearer synthetic-demo-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 10
+        },
+        {
+          "kind": "response",
+          "status": 503,
+          "body": "",
+          "retryAfter": 2
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness",
+            "Authorization": "Bearer synthetic-demo-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 11
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": false
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/jobs/j1",
+          "method": "GET",
+          "headers": {},
+          "body": null,
+          "redirect": "error",
+          "at": 5
+        },
+        {
+          "kind": "response",
+          "status": 200,
+          "body": {
+            "state": "failed",
+            "diagnostics": [],
+            "diagnosticsTruncated": false,
+            "message": "compile failure"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness",
+            "Authorization": "Bearer synthetic-demo-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 10
+        },
+        {
+          "kind": "response",
+          "status": 503,
+          "body": "",
+          "retryAfter": 2
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness",
+            "Authorization": "Bearer synthetic-demo-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 301
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": false
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/jobs/j1",
+          "method": "GET",
+          "headers": {},
+          "body": null,
+          "redirect": "error",
+          "at": 5
+        },
+        {
+          "kind": "response",
+          "status": 200,
+          "body": {
+            "state": "failed",
+            "diagnostics": [],
+            "diagnosticsTruncated": false,
+            "message": "compile failure"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness",
+            "Authorization": "Bearer synthetic-demo-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 10
+        },
+        {
+          "kind": "response",
+          "status": 503,
+          "body": "",
+          "retryAfter": 2
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 12
+        }
+      ]
+    ]
+  },
+  {
+    "name": "bearer update 500 retries once",
+    "sections": [
+      "Update 5xx with a bearer: retain Authorization and retry at most once",
+      "within the five-minute wait bound and repair limit"
+    ],
+    "events": [
+      {
+        "kind": "ask"
+      },
+      {
+        "kind": "confirm"
+      },
+      {
+        "kind": "build"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "jobId": "j1",
+          "name": "shop",
+          "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+          "expiresAt": 1793966400,
+          "claimToken": "synthetic-demo-token",
+          "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+          "claimAvailable": false
+        }
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/jobs/j1",
+        "method": "GET",
+        "headers": {},
+        "body": null,
+        "redirect": "error",
+        "at": 5
+      },
+      {
+        "kind": "response",
+        "status": 200,
+        "body": {
+          "state": "failed",
+          "diagnostics": [],
+          "diagnosticsTruncated": false,
+          "message": "compile failure"
+        }
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness",
+          "Authorization": "Bearer synthetic-demo-token"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 10
+      },
+      {
+        "kind": "response",
+        "status": 500,
+        "body": {
+          "error": "internal"
+        },
+        "retryAfter": 2
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness",
+          "Authorization": "Bearer synthetic-demo-token"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 12
+      },
+      {
+        "kind": "response",
+        "status": 500,
+        "body": {
+          "error": "internal"
+        },
+        "retryAfter": 2
+      },
+      {
+        "kind": "public",
+        "text": "The update retry failed. I have stopped and kept the original credentials private."
+      }
+    ],
+    "reject": [
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": false
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/jobs/j1",
+          "method": "GET",
+          "headers": {},
+          "body": null,
+          "redirect": "error",
+          "at": 5
+        },
+        {
+          "kind": "response",
+          "status": 200,
+          "body": {
+            "state": "failed",
+            "diagnostics": [],
+            "diagnosticsTruncated": false,
+            "message": "compile failure"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness",
+            "Authorization": "Bearer synthetic-demo-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 10
+        },
+        {
+          "kind": "response",
+          "status": 500,
+          "body": {
+            "error": "internal"
+          },
+          "retryAfter": 2
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness",
+            "Authorization": "Bearer synthetic-demo-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 12
+        },
+        {
+          "kind": "response",
+          "status": 500,
+          "body": {
+            "error": "internal"
+          },
+          "retryAfter": 2
+        },
+        {
+          "kind": "public",
+          "text": "The update retry failed. I have stopped and kept the original credentials private."
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness",
+            "Authorization": "Bearer synthetic-demo-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 14
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": false
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/jobs/j1",
+          "method": "GET",
+          "headers": {},
+          "body": null,
+          "redirect": "error",
+          "at": 5
+        },
+        {
+          "kind": "response",
+          "status": 200,
+          "body": {
+            "state": "failed",
+            "diagnostics": [],
+            "diagnosticsTruncated": false,
+            "message": "compile failure"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness",
+            "Authorization": "Bearer synthetic-demo-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 10
+        },
+        {
+          "kind": "response",
+          "status": 500,
+          "body": {
+            "error": "internal"
+          },
+          "retryAfter": 2
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness",
+            "Authorization": "Bearer synthetic-demo-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 11
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": false
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/jobs/j1",
+          "method": "GET",
+          "headers": {},
+          "body": null,
+          "redirect": "error",
+          "at": 5
+        },
+        {
+          "kind": "response",
+          "status": 200,
+          "body": {
+            "state": "failed",
+            "diagnostics": [],
+            "diagnosticsTruncated": false,
+            "message": "compile failure"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness",
+            "Authorization": "Bearer synthetic-demo-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 10
+        },
+        {
+          "kind": "response",
+          "status": 500,
+          "body": {
+            "error": "internal"
+          },
+          "retryAfter": 2
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness",
+            "Authorization": "Bearer synthetic-demo-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 301
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": false
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/jobs/j1",
+          "method": "GET",
+          "headers": {},
+          "body": null,
+          "redirect": "error",
+          "at": 5
+        },
+        {
+          "kind": "response",
+          "status": 200,
+          "body": {
+            "state": "failed",
+            "diagnostics": [],
+            "diagnosticsTruncated": false,
+            "message": "compile failure"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness",
+            "Authorization": "Bearer synthetic-demo-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 10
+        },
+        {
+          "kind": "response",
+          "status": 500,
+          "body": {
+            "error": "internal"
+          },
+          "retryAfter": 2
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 12
+        }
+      ]
+    ]
+  },
+  {
+    "name": "non-Keymail claim start 503 despite claimAvailable true",
+    "sections": [
+      "A 503 on claim start means this address cannot be claimed now. Do not ask for a code. Retry at most once",
+      "The demo keeps running with its original expiry. A Keymail address may instead get `browser_required`."
+    ],
+    "events": [
+      {
+        "kind": "ask"
+      },
+      {
+        "kind": "confirm"
+      },
+      {
+        "kind": "build"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "jobId": "j1",
+          "name": "shop",
+          "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+          "expiresAt": 1793966400,
+          "claimToken": "synthetic-demo-token",
+          "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+          "claimAvailable": true
+        }
+      },
+      {
+        "kind": "keep",
+        "wanted": true
+      },
+      {
+        "kind": "email",
+        "address": "person@example.com"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/claims",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "claimToken": "synthetic-demo-token",
+          "email": "person@example.com"
+        },
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 503,
+        "body": {
+          "error": "unavailable"
+        }
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/claims",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "claimToken": "synthetic-demo-token",
+          "email": "person@example.com"
+        },
+        "redirect": "error",
+        "at": 5
+      },
+      {
+        "kind": "response",
+        "status": 503,
+        "body": {
+          "error": "unavailable"
+        }
+      },
+      {
+        "kind": "expiry",
+        "value": 1793966400
+      },
+      {
+        "kind": "public",
+        "text": "This address cannot be claimed now. The demo keeps running with its original expiry."
+      }
+    ],
+    "reject": [
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 503,
+          "body": {
+            "error": "unavailable"
+          }
+        },
+        {
+          "kind": "ask-code"
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 503,
+          "body": {
+            "error": "unavailable"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 5
+        },
+        {
+          "kind": "response",
+          "status": 503,
+          "body": {
+            "error": "unavailable"
+          }
+        },
+        {
+          "kind": "expiry",
+          "value": 1793966400
+        },
+        {
+          "kind": "public",
+          "text": "This address cannot be claimed now. The demo keeps running with its original expiry."
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 10
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 503,
+          "body": {
+            "error": "unavailable"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 301
+        }
+      ]
+    ]
+  },
+  {
+    "name": "fresh claim after abort needs consent and unexpired demo",
+    "sections": [
+      "With the person's consent, a fresh claim start omitting `flowToken` is allowed if the demo is unexpired."
+    ],
+    "events": [
+      {
+        "kind": "ask"
+      },
+      {
+        "kind": "confirm"
+      },
+      {
+        "kind": "build"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "jobId": "j1",
+          "name": "shop",
+          "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+          "expiresAt": 1793966400,
+          "claimToken": "synthetic-demo-token",
+          "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+          "claimAvailable": true
+        }
+      },
+      {
+        "kind": "keep",
+        "wanted": true
+      },
+      {
+        "kind": "email",
+        "address": "person@example.com"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/claims",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "claimToken": "synthetic-demo-token",
+          "email": "person@example.com"
+        },
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "state": "email_required",
+          "flowToken": "synthetic-flow-token",
+          "expiresAt": "2026-11-05T12:15:00Z"
+        }
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/claims/verify",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "flowToken": "synthetic-flow-token",
+          "code": "123456"
+        },
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "state": "claiming",
+          "phase": "reserved",
+          "retryAfter": 2,
+          "recoveryPending": false
+        },
+        "retryAfter": 2
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/claims/status",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer synthetic-flow-token"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 5
+      },
+      {
+        "kind": "response",
+        "status": 200,
+        "body": {
+          "state": "aborted"
+        }
+      },
+      {
+        "kind": "restart-claim",
+        "consent": true,
+        "now": 1793966300
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/claims",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "claimToken": "synthetic-demo-token",
+          "email": "person@example.com"
+        },
+        "redirect": "error",
+        "at": 10
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "state": "email_required",
+          "flowToken": "synthetic-flow-token",
+          "expiresAt": "2026-11-05T12:15:00Z"
+        }
+      }
+    ],
+    "reject": [
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "email_required",
+            "flowToken": "synthetic-flow-token",
+            "expiresAt": "2026-11-05T12:15:00Z"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/verify",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "flowToken": "synthetic-flow-token",
+            "code": "123456"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "claiming",
+            "phase": "reserved",
+            "retryAfter": 2,
+            "recoveryPending": false
+          },
+          "retryAfter": 2
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/status",
+          "method": "GET",
+          "headers": {
+            "Authorization": "Bearer synthetic-flow-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 5
+        },
+        {
+          "kind": "response",
+          "status": 200,
+          "body": {
+            "state": "aborted"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 10
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "email_required",
+            "flowToken": "synthetic-flow-token",
+            "expiresAt": "2026-11-05T12:15:00Z"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/verify",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "flowToken": "synthetic-flow-token",
+            "code": "123456"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "claiming",
+            "phase": "reserved",
+            "retryAfter": 2,
+            "recoveryPending": false
+          },
+          "retryAfter": 2
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/status",
+          "method": "GET",
+          "headers": {
+            "Authorization": "Bearer synthetic-flow-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 5
+        },
+        {
+          "kind": "response",
+          "status": 200,
+          "body": {
+            "state": "aborted"
+          }
+        },
+        {
+          "kind": "restart-claim",
+          "consent": false,
+          "now": 1793966300
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": true
+          }
+        },
+        {
+          "kind": "keep",
+          "wanted": true
+        },
+        {
+          "kind": "email",
+          "address": "person@example.com"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "claimToken": "synthetic-demo-token",
+            "email": "person@example.com"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "email_required",
+            "flowToken": "synthetic-flow-token",
+            "expiresAt": "2026-11-05T12:15:00Z"
+          }
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/verify",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "flowToken": "synthetic-flow-token",
+            "code": "123456"
+          },
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "state": "claiming",
+            "phase": "reserved",
+            "retryAfter": 2,
+            "recoveryPending": false
+          },
+          "retryAfter": 2
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/claims/status",
+          "method": "GET",
+          "headers": {
+            "Authorization": "Bearer synthetic-flow-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 5
+        },
+        {
+          "kind": "response",
+          "status": 200,
+          "body": {
+            "state": "aborted"
+          }
+        },
+        {
+          "kind": "restart-claim",
+          "consent": true,
+          "now": 1793966400
+        }
+      ]
+    ]
+  },
+  {
+    "name": "rejected returned URL stops submissions",
+    "sections": [
+      "If a returned URL fails validation, stop, retain private state and never make another anonymous create."
+    ],
+    "events": [
+      {
+        "kind": "ask"
+      },
+      {
+        "kind": "confirm"
+      },
+      {
+        "kind": "build"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "jobId": "j1",
+          "name": "shop",
+          "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+          "expiresAt": 1793966400,
+          "claimToken": "synthetic-demo-token",
+          "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+          "claimAvailable": false
+        }
+      },
+      {
+        "kind": "rejected-url"
+      }
+    ],
+    "reject": [
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": false
+          }
+        },
+        {
+          "kind": "rejected-url"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        }
+      ],
+      [
+        {
+          "kind": "ask"
+        },
+        {
+          "kind": "confirm"
+        },
+        {
+          "kind": "build"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
+        },
+        {
+          "kind": "response",
+          "status": 202,
+          "body": {
+            "jobId": "j1",
+            "name": "shop",
+            "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+            "expiresAt": 1793966400,
+            "claimToken": "synthetic-demo-token",
+            "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+            "claimAvailable": false
+          }
+        },
+        {
+          "kind": "rejected-url"
+        },
+        {
+          "kind": "request",
+          "url": "https://console.example.com/api/demo/apps",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/gzip",
+            "X-Carlos-Client": "fixture-harness",
+            "Authorization": "Bearer synthetic-demo-token"
+          },
+          "body": null,
+          "redirect": "error",
+          "at": 0
         }
       ]
     ]

@@ -1,5 +1,4 @@
 {
-  "commit": "214a40e23e35a8f59bb9a0cede2a350355b426d8",
   "cases": [
     {
       "env": {
@@ -10,9 +9,9 @@
         "CARLOS_START_CLAIM": "off"
       },
       "hashes": {
-        "index.html": "9fb7772c776930a17c369ad96d9a2cf76abd6f9a41be33074586236813dd8c26",
-        "start/index.html": "b2f050eb43c4c604355adf4e4d8747370cec24520abcd48d3d2e50339249fa29",
-        "start/index.md": "96094bd8714f589b952b09a74fd5bb29bcebe55110750f9657529a316b33bbfa"
+        "index.html": "f9637eae7258e54314989a6626cd91157e90090c25f2d5167242b7ab2f4c9506",
+        "start/index.html": "54fba28744d7fd51a2a992cecb4d5fe4d2dd9d5a0a65541eaa6df8dd27b4e678",
+        "start/index.md": "5fc48e02f8b7b4991b48687e20d143fb47a38839fdceaa4583ec969b139e910e"
       }
     },
     {
@@ -24,10 +23,11 @@
         "CARLOS_START_CLAIM": "off"
       },
       "hashes": {
-        "index.html": "cd261c9e311df722909e125b35c831b28db28f6c3e3a60a41e983d2789683e19",
-        "start/index.html": "b45dda142f55a2b1b9e5174af02ae198fc1ae874fb0d987efff25937e117a52a",
-        "start/index.md": "ffdf969596160c169878587fb5be0a718253c8d77b2e1d30f94726bf16f60e1c"
+        "index.html": "03be71739077a8b41edec5f4ee7599f6e2c4cafabb8ab9e8eb0896bb5b99ca81",
+        "start/index.html": "8839d1bb6c76de736ec554ca88089ed427d1eb2e626201b9bc0aeb105d7c48f3",
+        "start/index.md": "6e56d0b204a543340cfd0dc483ce7006e747211adb3a6cc3ecda1fa752d8e5ca"
       }
     }
-  ]
+  ],
+  "generatedBy": "npm run update:start-baselines"
 }

@@ -51,7 +51,7 @@
 | Codex cloud: create / live / update | outstanding |  |  |  |  | needs a Codex Cloud environment ID (web UI); none configured |
 | Cursor: create / live / update | outstanding |  |  |  |  | Cursor not available on this machine |
 | Local website, Node and starter checks | pass |  |  |  |  | check:start 87, release 17, verifier 30, starter pack 17, contract and runtime Go tests, npm run check |
-| Whole-branch review, green tip CI | not run | | | | | |
+| Whole-branch review; no CI in this repo; author-machine gate: `npm run check` | not run | | | | | |
 | Public activation: three hosts, representations, docs, skills, paste line | not run | | | | | |
 | Rollback | not run | | | | | |
 | Acceptance apps/data, scratch and process cleanup | not run | | | | | |

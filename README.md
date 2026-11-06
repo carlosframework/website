@@ -21,14 +21,15 @@ explicitly set `CARLOS_START_SITE_ORIGIN`, `CARLOS_START_CONSOLE_ORIGIN` and
 [https://console.carloku.com/](https://console.carloku.com/), respectively;
 enabled builds still require all three. Origins must use HTTPS, and the
 account URL must use the console origin. `CARLOS_START_API_ORIGIN` is optional and
-defaults to `CARLOS_START_CONSOLE_ORIGIN`. 🤖 Set `CARLOS_START_CLAIM=off` for a
+defaults to `CARLOS_START_CONSOLE_ORIGIN`.
+🤖 When set, `CARLOS_START_API_ORIGIN` must equal the console's `CARLOS_DEMO_API_ORIGIN`.
+🤖 Set `CARLOS_START_CLAIM=off` for a
 development-only mode with no claim instructions.
 
 🤖 Normal enablement requires a
 merged producer SHA and `producerMerged: true`. When the demo is unset, builds
 preserve the original pages and remove stale anonymous downloads and Markdown.
-Run `npm run check:start` with `STARTER_SCRATCH` set to an on-disk scratch
-directory, then run `npm run check`.
+Run `npm run check` with `STARTER_SCRATCH` set to an on-disk scratch directory.
 
 **The rule for adding a page:** if a URL on carlosframework.com should return
 it, the file goes under `src/` — either as Eleventy build input, or as a raw

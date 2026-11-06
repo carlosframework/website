@@ -114,7 +114,6 @@ export function releaseStart(argv,root = resolve(import.meta.dirname,'..')) {
   run('tar',['-xf',archive,'-C',exported],root,env);
   const buildEnv = {...env,STARTER_SCRATCH:work,TMPDIR:work};
   run('npm',['ci'],exported,buildEnv);
-  run('npm',['run','check:start'],exported,buildEnv);
   run('npm',['run','check'],exported,buildEnv);
   run(process.execPath,['hack/cache-bust.mjs',version],exported,buildEnv);
   verifyCacheBust(join(exported,'_site'));

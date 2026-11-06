@@ -31,7 +31,7 @@ export async function buildStart(outputDir,config) {
   if(!region.test(home)) throw configError('homepage hero marker is missing');
   const human='<!-- 👨 Constellation selected and copy supplied in chat -->';
   const hero=`<span class="start-authorship">🤖</span><p class="hero-promise"><strong>${escapeHTML(copy['home.hero.promise'])}</strong></p><p class="hero-demo-intro">${escapeHTML(copy['home.hero.intro'])}</p>${promptHTML(config,copy,'home-prompt')}<div class="actions"><a href="/start/">${escapeHTML(copy['home.hero.action'])}</a><a href="#architecture"><span>Learn more</span>&nbsp;↓</a></div>`;
-  home=home.replace(human,'').replace(/<p class="hero-subtitle">[\s\S]*?<\/p>/,p=>human+p+'<!-- /👨 -->').replace(region,()=>hero)
+  home=home.replace(region,()=>'<!-- /👨 -->'+hero+human)
    .replace(/<meta name="description" content="[^"]*">/,()=>`<meta name="description" content="${escapeHTML(copy['home.meta.description'])}">`)
    .replace(/<meta property="og:description" content="[^"]*">/,()=>`<meta property="og:description" content="${escapeHTML(copy['home.og.description'])}">`)
    .replace('</head>','<link rel="stylesheet" href="/start/start.css?v=0">\n<script src="/start/start-tabs.js?v=0" defer></script>\n</head>');

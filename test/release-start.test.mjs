@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { readFileSync } from 'node:fs';
 import { parseReleaseArgs, releaseEnvironment, validateReleaseTree, deployArgs, channelVersion } from '../hack/release-start.mjs';
 import { loadStartConfig } from '../src/_data/start-config.mjs';
 
@@ -8,6 +9,14 @@ const input = {
  'site-origin':'https://site.example.com','console-origin':'https://console.example.com','account-url':'https://console.example.com/account',
 };
 const argv = (values = input) => Object.entries(values).flatMap(([key,value]) => [`--${key}`,value]);
+test('release runs the complete local gate once, including starter packing',()=>{
+ const scripts=JSON.parse(readFileSync('package.json','utf8')).scripts;
+ assert.equal(scripts.check.split('npm run check:start').length-1,1);
+ assert.ok(scripts['check:start'].includes('test/starter-pack.test.mjs'));
+ const release=readFileSync('hack/release-start.mjs','utf8');
+ assert.equal(release.split("run('npm',['run','check'],exported,buildEnv)").length-1,1);
+ assert.ok(!release.includes("['run','check:start']"));
+});
 test('all release and build destinations are explicit, with preview as the default',() => {
  const options = parseReleaseArgs(argv());
  assert.deepEqual(options,input);

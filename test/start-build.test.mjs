@@ -48,14 +48,14 @@ test('disabled pages match original build bytes; reused output loses all anonymo
   assert.equal(createHash('sha256').update(bytes).digest('hex'),baseline[name],name);
  }
 }));
-test('claim-off preserves prior enabled bytes except the approved host note',()=>scratch(async dir=>{
+test('claim-off matches regenerated enabled baselines',()=>scratch(async dir=>{
  const baseline=JSON.parse(await read('test/fixtures/start-enabled-baseline.json'));
  for(const {env,hashes} of baseline.cases) {
   await buildStart(dir,loadStartConfig(env));
   const original=new Map();
   for(const name of await files(dir)) original.set(name,await readFile(join(dir,name)));
   for(const [name,hash] of Object.entries(hashes)) {
-   const text=original.get(name).toString().replace(/<p class="start-hosts">[^\n]*?<\/p>/g,'');
+   const text=original.get(name);
    assert.equal(createHash('sha256').update(text).digest('hex'),hash,`${name}, ${JSON.stringify(env)}`);
   }
   await buildStart(dir,loadStartConfig({...env,CARLOS_START_API_ORIGIN:env.CARLOS_START_CONSOLE_ORIGIN}));

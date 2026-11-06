@@ -203,6 +203,8 @@ built file.
 
 ## Deploying
 
+🤖 `npm run check` includes the start checks; regenerate test baselines with `npm run update:start-baselines` when the homepage or agent source changes.
+
 🤖 The demo journey defaults off. See README for the explicit origin inputs.
 Before public activation, bind the claim fixture to merged handlers.
 Verify the platform's demo protection and claim-by-email changes in

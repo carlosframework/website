@@ -30,18 +30,27 @@ export function validateClaimContract(c, config) {
  if(!['claiming','claimed','aborted','email_required','account_required'].every(s=>states.includes(s)) || c.complete?.response?.body?.next!=='cli_login' || !c.complete?.evidence || c.complete.credentialIssued!==false || !c.start.resend?.flowToken || !c.producerPlan || c.limits?.jsonBytes!==4096) throw configError('claim completion or limits fixture is incomplete');
  if(c.start.responses[0]?.body?.state!=='email_required' || typeof c.start.responses[0]?.body?.expiresAt!=='string' || !c.start.responses[0]?.body?.flowToken || !c.verify.responses.some(r=>r.body.state==='account_required' && r.body.accounts?.every(a=>a.id&&a.name&&a.role))) throw configError('claim proof fixture is incomplete');
 }
+// Keep private source provenance and full browser pages in the build fixture only.
+export function publicClaimOperation(value) {
+ if(Array.isArray(value)) return value.map(publicClaimOperation);
+ if(value===null || typeof value!=='object') return value;
+ return Object.fromEntries(Object.entries(value)
+  .filter(([key,item])=>!/evidence$/i.test(key)
+   && !(typeof item==='string' && !/^https?:\/\//i.test(item) && /(?:[\w.-]+\/)*[\w.-]+\.[a-z]+:\d+/i.test(item))
+   && !(key==='body' && typeof item==='string' && /<!doctype html|<html[\s>]/i.test(item)))
+  .map(([key,item])=>[key,publicClaimOperation(item)]));
+}
 export function renderAgent(template, config, claimContract, starter) {
  if(!config.enabled) throw configError('agent instructions require CARLOS_START_DEMO=1');
  if(!config.claimOff) validateClaimContract(claimContract,config);
  if(config.starterVersion!=='v1' || !/^[a-f0-9]{64}$/.test(starter?.archiveSHA256 ?? '') || starter?.schema!==1 || !starter.files?.length) throw configError('starter manifest is incomplete');
  const values={siteOrigin:config.siteOrigin,consoleOrigin:config.consoleOrigin,apiOrigin:config.apiOrigin,apiHost:new URL(config.apiOrigin).host,accountUrl:config.accountUrl,starterVersion:config.starterVersion,starterSHA256:starter.archiveSHA256};
- // Preserve the existing instructions when both services share an origin.
  values.urlValidation=config.apiOrigin===config.consoleOrigin
-  ? 'Validate returned status and claim URLs as HTTPS with the exact configured console origin, no userinfo; reject unexpected origins.'
+  ? `Validate returned status and claim URLs as HTTPS with the exact configured console origin \`${config.consoleOrigin}\`, no userinfo; reject unexpected origins.`
   : `Validate returned status URLs as HTTPS with the exact configured API origin \`${config.apiOrigin}\`, and returned claim URLs as HTTPS with the exact configured console origin \`${config.consoleOrigin}\`, no userinfo; reject unexpected origins.`;
  if(!config.claimOff) {
   values.producerCommit=claimContract.producerCommit;
-  values.claimExamples=['start','verify','chooseAccount','status','browser','complete'].map(operation=>'```json\n'+JSON.stringify({operation,contract:claimContract[operation]},null,2)+'\n```').join('\n\n');
+  values.claimExamples=['start','verify','chooseAccount','status','browser','complete'].map(operation=>'```json\n'+JSON.stringify({operation,contract:publicClaimOperation(claimContract[operation])},null,2)+'\n```').join('\n\n');
   values.claimNote='The claim contract is pinned to the merged producer below. Check claimAvailable before offering to claim.';
   values.claimExamples=values.claimExamples.replaceAll('{{consoleOrigin}}',config.consoleOrigin);
  }
