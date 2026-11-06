@@ -44,7 +44,57 @@ export function slugify(text) {
 }
 
 const diagramFile = /^[a-z0-9][a-z0-9-]*\.svg$/;
-const activeSVG = /<script|\son[a-z]+\s*=|javascript:|<foreignobject/i;
+
+// An inlined SVG is checked against an allowlist, the same one as
+// internal/docsite's svgProblem in the platform repo: drawing elements and
+// attributes only, quoted values, links and url() only to local #ids, no
+// DOCTYPE or entities beyond the basic five.
+const svgElements = new Set(["svg", "g", "defs", "title", "desc", "rect", "circle", "ellipse", "line", "polyline", "polygon", "path", "text", "tspan", "marker", "use", "linearGradient", "radialGradient", "stop", "clipPath", "symbol"]);
+const svgAttributes = new Set(["id", "class", "viewBox", "width", "height", "x", "y", "x1", "y1", "x2", "y2", "cx", "cy", "r", "rx", "ry", "dx", "dy", "d", "points", "transform",
+  "fill", "fill-opacity", "stroke", "stroke-width", "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "opacity",
+  "font-size", "font-weight", "font-family", "letter-spacing", "text-anchor", "dominant-baseline",
+  "role", "aria-label", "aria-labelledby", "aria-hidden", "focusable", "xmlns", "xmlns:xlink", "version", "preserveAspectRatio",
+  "marker-start", "marker-mid", "marker-end", "markerWidth", "markerHeight", "markerUnits", "refX", "refY", "orient",
+  "offset", "stop-color", "stop-opacity", "gradientUnits", "clip-path", "clipPathUnits", "href", "xlink:href"]);
+
+export function svgProblem(svg) {
+  const body = svg.replace(/^\s*<\?xml[^>]*\?>/, "").replace(/<!--[\s\S]*?-->/g, "");
+  if (body.includes("<!")) return "carries a DOCTYPE, CDATA or entity declaration";
+  const amps = (body.match(/&/g) || []).length;
+  if (amps !== (body.match(/&(?:amp|lt|gt|quot|apos);/g) || []).length) return "carries a character reference other than &amp; &lt; &gt; &quot; &apos;";
+  const tags = [...body.matchAll(/<(\/?)([^\s/>]+)([^>]*)>/g)];
+  if ((body.match(/</g) || []).length !== tags.length) return "carries a < that does not open a tag";
+  for (const [, close, name, attrs] of tags) {
+    if (!svgElements.has(name)) return `carries a <${name}> element, which is not on the allowed list`;
+    if (close) {
+      if (attrs.trim()) return `carries a malformed </${name}>`;
+      continue;
+    }
+    if (!/^(\s+[A-Za-z_:][\w:.-]*\s*=\s*("[^"]*"|'[^']*'))*\s*\/?\s*$/.test(attrs)) return `carries an unquoted or malformed attribute on <${name}>`;
+    for (const [, key, quoted] of attrs.matchAll(/([A-Za-z_:][\w:.-]*)\s*=\s*("[^"]*"|'[^']*')/g)) {
+      const val = quoted.slice(1, -1);
+      if (!svgAttributes.has(key)) return `carries a ${key} attribute, which is not on the allowed list`;
+      if ((key === "href" || key === "xlink:href") && !/^#[A-Za-z_][\w-]*$/.test(val)) return `carries ${key}="${val}"; only links to #ids in the same SVG are allowed`;
+      if (/url\(/.test(val) && !/^(?:[^u]|u[^r]|ur[^l]|url[^(]|url\(#[A-Za-z_][\w-]*\))*$/.test(val)) return `carries ${key}="${val}"; url() may only point to #ids in the same SVG`;
+    }
+  }
+  return "";
+}
+
+// unclosedFence mirrors internal/docsite.UnclosedFence: the 1-based line
+// of a fence that is opened and never closed, or 0.
+export function unclosedFence(src) {
+  let open = 0;
+  let mark = "";
+  String(src).split("\n").forEach((line, i) => {
+    const t = line.trim();
+    const m = /^(`{3,}|~{3,})/.exec(t);
+    if (!m) return;
+    if (!open) { open = i + 1; mark = m[1]; }
+    else if (m[1][0] === mark[0] && m[1].length >= mark.length) { open = 0; mark = ""; }
+  });
+  return open;
+}
 
 function escapeHTML(s) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -103,7 +153,8 @@ function readSVG(diagramsDir, file) {
   } catch {
     throw new Error(`diagram ${file} does not exist in ${diagramsDir}`);
   }
-  if (activeSVG.test(svg)) throw new Error(`diagram ${file} holds script, an event handler, a javascript: link or foreign HTML, and is inlined into the page`);
+  const why = svgProblem(svg);
+  if (why) throw new Error(`diagram ${file} ${why} (an inlined SVG may hold only drawing elements and attributes)`);
   return svg.replace(/<\?xml[^>]*\?>\s*/, "").trim();
 }
 
@@ -133,6 +184,17 @@ export function createDocsMarkdown({ diagramsDir }) {
     }
     const items = d.frames.map((f) => `<li class="frame">${figure(diagramsDir, f)}</li>`).join("");
     return `<section class="stepper diagram" aria-label="${escapeHTML(d.title)}"><ol class="frames">${items}</ol></section>\n`;
+  };
+  // A fence that is never closed swallows the rest of the page; fail the
+  // build instead, as the platform gate does.
+  const render = md.render.bind(md);
+  md.render = (src, env) => {
+    const line = unclosedFence(src);
+    if (line) {
+      const where = env && env.page && env.page.inputPath ? `${env.page.inputPath}:${line}` : `line ${line}`;
+      throw new Error(`${where}: a fence is never closed, so the rest of the page would render as code`);
+    }
+    return render(src, env);
   };
   return md;
 }

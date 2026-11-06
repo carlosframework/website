@@ -43,6 +43,36 @@ try {
   expect("other fences still render as code", html.includes('<pre><code class="language-sh">carlos run'), html);
   expect("captions are escaped", !renderDocsMarkdown("```diagram\nfile: map.svg\nA <b>bold</b> claim.\n```", { diagramsDir: dir }).includes("<b>"));
 
+  // The same allowlist as internal/docsite (Astra's final review).
+  const bad = {
+    "slash onload": `<svg/onload=alert(1)></svg>`,
+    "encoded js href": `<svg><a href="java&#x73;cript:alert(1)"><text>x</text></a></svg>`,
+    "xlink js": `<svg xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="java&#x73;cript:x"/></svg>`,
+    "iframe": `<svg></svg><iframe srcdoc="&lt;script&gt;alert(1)&lt;/script&gt;"></iframe>`,
+    "style element": `<svg><style>body { display: none }</style></svg>`,
+    "style attribute": `<svg><rect style="display:none"/></svg>`,
+    "external use": `<svg><use href="https://example.com/x.svg#a"/></svg>`,
+    "data uri": `<svg><image href="data:image/svg+xml;base64,PHN2Zz4="/></svg>`,
+    "doctype entity": `<!DOCTYPE svg [<!ENTITY x "y">]><svg>&x;</svg>`,
+    "unquoted attr": `<svg><rect width=10 /></svg>`,
+    "onclick": `<svg><rect OnClick="x()"/></svg>`,
+    "foreign": `<svg><foreignObject><div>x</div></foreignObject></svg>`,
+  };
+  for (const [name, svg] of Object.entries(bad)) {
+    writeFileSync(join(dir, "evil.svg"), svg);
+    throws(`an SVG with ${name} fails the build`, () => renderDocsMarkdown("```diagram\nfile: evil.svg\nCaption.\n```", { diagramsDir: dir }), "evil.svg");
+  }
+  writeFileSync(join(dir, "plain.svg"), `<?xml version="1.0" encoding="UTF-8"?>
+<!-- a comment is fine -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 40" role="img" aria-labelledby="t">
+  <title id="t">Console &amp; boxes</title>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z"/></marker></defs>
+  <g class="parts"><rect class="shape on" x="1" y="1" width="40" height="20" rx="4"/><line class="line" x1="41" y1="11" x2="65" y2="11" marker-end="url(#arrow)"/><text x="5" y="15" class="small">edge <tspan class="on">on</tspan></text><use href="#arrow"/></g>
+</svg>`);
+  let plainOk = true;
+  try { renderDocsMarkdown("```diagram\nfile: plain.svg\nCaption.\n```", { diagramsDir: dir }); } catch (e) { plainOk = false; failures.push(`a plain SVG was refused: ${e.message}`); }
+  throws("an unclosed fence fails the build", () => renderDocsMarkdown("# Guide\n\n```stepper\ntitle: T\nframe: wake-1.svg\nOne.\nframe: wake-2.svg\nTwo.\n", { diagramsDir: dir }), "never closed");
+
   throws("a missing SVG fails the build", () => renderDocsMarkdown("```diagram\nfile: gone.svg\nCaption.\n```", { diagramsDir: dir }), "gone.svg");
   throws("an SVG with script fails the build", () => renderDocsMarkdown("```diagram\nfile: bad.svg\nCaption.\n```", { diagramsDir: dir }), "bad.svg");
   throws("a one-frame stepper fails the build", () => renderDocsMarkdown("```stepper\ntitle: T\nframe: map.svg\nOne.\n```", { diagramsDir: dir }), "2 frames");
