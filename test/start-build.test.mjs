@@ -80,8 +80,8 @@ test('claim-off builds identical Markdown and visible HTML without claim instruc
   assert.doesNotMatch(text,/claims|flowToken|Contract producer/);
   assert.ok(!text.includes(contract.producerCommit));
  }
- for(const text of copy['start.claim']) assert.ok(!html.includes(text));
  const withoutAgent=text=>text.replace(/<!-- agent-content -->[\s\S]*?<!-- \/agent-content -->/,'');
+ for(const text of copy['start.claim']) assert.ok(!withoutAgent(html).includes(text));
  assert.equal(withoutAgent(html),withoutAgent(normalHTML).replace(`<h2>${copy['start.claim'][0]}</h2>\n<p>${copy['start.claim'][1]}</p>\n`,''));
  assert.equal(await read(join(dir,'index.html')),normalHome);
 }));
@@ -120,7 +120,7 @@ test('Eleventy integration: enabled then disabled rebuild keeps main pages byte-
  const html=await read(join(dir,'start/index.html'));
  assert.match(markdown,/Claiming is not available on this deployment/);
  assert.doesNotMatch(markdown,/claims|flowToken/);
- assert.doesNotMatch(html,/claims|flowToken|Keep it/);
+ assert.doesNotMatch(html,/claims|flowToken|<h2>Keep it<\/h2>/);
  assert.equal(html.split('<!-- agent-content -->')[1].split('<!-- /agent-content -->')[0],renderMarkdown(markdown));
  build(false);
  const baseline=JSON.parse(await read('test/fixtures/start-baseline.json'));

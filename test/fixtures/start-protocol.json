@@ -5,7 +5,7 @@
       "## 1. Ask before building",
       "For newcomers",
       "## 3. Fetch the pinned starter without installing tools",
-      "Never put the token, claim link, status URL, `flowToken`, the emailed code, the person's email address or full create response into app files, a repository, public transcript or screenshot.",
+      "Never put the token, claim link, `flowToken`, the emailed code, the person's email address or full create response into app files, a repository, public transcript or screenshot.",
       "If you cannot reach the live host to verify the row, ask the person to check; do not request another allowlist entry.",
       "If a returned URL fails validation, stop, retain private state and never make another anonymous create.",
       "exact configured console origin `https://console.example.com`"
@@ -44,6 +44,10 @@
           "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
           "claimAvailable": false
         }
+      },
+      {
+        "kind": "save-response",
+        "file": "create.json"
       },
       {
         "kind": "request",
@@ -114,6 +118,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "request",
           "url": "https://console.example.com/api/demo/jobs/j1",
           "method": "GET",
@@ -178,6 +186,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": false
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "request",
@@ -252,6 +264,10 @@
           "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
           "claimAvailable": false
         }
+      },
+      {
+        "kind": "save-response",
+        "file": "create.json"
       },
       {
         "kind": "request",
@@ -416,6 +432,10 @@
         }
       },
       {
+        "kind": "save-response",
+        "file": "create.json"
+      },
+      {
         "kind": "request",
         "url": "https://console.example.com/api/demo/jobs/j1",
         "method": "GET",
@@ -495,6 +515,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "request",
           "url": "https://console.example.com/api/demo/apps",
           "method": "POST",
@@ -541,6 +565,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": false
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "request",
@@ -626,6 +654,10 @@
         }
       },
       {
+        "kind": "save-response",
+        "file": "create.json"
+      },
+      {
         "kind": "request",
         "url": "https://console.example.com/api/demo/apps",
         "method": "POST",
@@ -679,6 +711,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": false
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "response",
@@ -817,6 +853,10 @@
         }
       },
       {
+        "kind": "save-response",
+        "file": "create.json"
+      },
+      {
         "kind": "request",
         "url": "https://console.example.com/api/demo/apps",
         "method": "POST",
@@ -872,6 +912,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": false
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "response",
@@ -937,6 +981,10 @@
         }
       },
       {
+        "kind": "save-response",
+        "file": "create.json"
+      },
+      {
         "kind": "request",
         "url": "https://console.example.com/api/demo/jobs/j1",
         "method": "GET",
@@ -998,6 +1046,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": false
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "request",
@@ -1064,6 +1116,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": false
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "request",
@@ -1156,6 +1212,10 @@
           "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
           "claimAvailable": true
         }
+      },
+      {
+        "kind": "save-response",
+        "file": "create.json"
       },
       {
         "kind": "keep",
@@ -1270,6 +1330,10 @@
         }
       },
       {
+        "kind": "save-response",
+        "file": "create.json"
+      },
+      {
         "kind": "keep",
         "wanted": true
       },
@@ -1374,6 +1438,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "email",
           "address": "person@example.com"
         },
@@ -1471,6 +1539,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": true
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "keep",
@@ -1582,6 +1654,10 @@
           "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
           "claimAvailable": true
         }
+      },
+      {
+        "kind": "save-response",
+        "file": "create.json"
       },
       {
         "kind": "keep",
@@ -1714,6 +1790,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "keep",
           "wanted": true
         },
@@ -1826,6 +1906,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": true
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "keep",
@@ -1946,6 +2030,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "keep",
           "wanted": true
         },
@@ -2006,6 +2094,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": true
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "keep",
@@ -2139,6 +2231,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": true
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "keep",
@@ -2283,6 +2379,10 @@
         }
       },
       {
+        "kind": "save-response",
+        "file": "create.json"
+      },
+      {
         "kind": "keep",
         "wanted": true
       },
@@ -2382,6 +2482,10 @@
         }
       },
       {
+        "kind": "save-response",
+        "file": "create.json"
+      },
+      {
         "kind": "keep",
         "wanted": true
       },
@@ -2470,6 +2574,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "keep",
           "wanted": true
         },
@@ -2546,6 +2654,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "keep",
           "wanted": true
         },
@@ -2615,6 +2727,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": true
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "keep",
@@ -2688,6 +2804,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "keep",
           "wanted": true
         },
@@ -2755,6 +2875,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": true
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "keep",
@@ -2826,6 +2950,10 @@
           "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
           "claimAvailable": true
         }
+      },
+      {
+        "kind": "save-response",
+        "file": "create.json"
       },
       {
         "kind": "keep",
@@ -2920,6 +3048,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": true
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "keep",
@@ -3021,6 +3153,10 @@
           "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
           "claimAvailable": true
         }
+      },
+      {
+        "kind": "save-response",
+        "file": "create.json"
       },
       {
         "kind": "keep",
@@ -3136,6 +3272,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": true
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "keep",
@@ -3263,6 +3403,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "keep",
           "wanted": true
         },
@@ -3388,6 +3532,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "keep",
           "wanted": true
         },
@@ -3502,6 +3650,10 @@
           "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
           "claimAvailable": true
         }
+      },
+      {
+        "kind": "save-response",
+        "file": "create.json"
       },
       {
         "kind": "keep",
@@ -3626,6 +3778,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": true
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "keep",
@@ -3755,6 +3911,10 @@
         }
       },
       {
+        "kind": "save-response",
+        "file": "create.json"
+      },
+      {
         "kind": "server-claim-completed"
       },
       {
@@ -3813,6 +3973,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": false
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "request",
@@ -3891,6 +4055,10 @@
         }
       },
       {
+        "kind": "save-response",
+        "file": "create.json"
+      },
+      {
         "kind": "request",
         "url": "https://console.example.com/api/demo/jobs/j1",
         "method": "GET",
@@ -3949,6 +4117,10 @@
           "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
           "claimAvailable": true
         }
+      },
+      {
+        "kind": "save-response",
+        "file": "create.json"
       },
       {
         "kind": "keep",
@@ -4060,6 +4232,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": true
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "keep",
@@ -4186,6 +4362,10 @@
         }
       },
       {
+        "kind": "save-response",
+        "file": "create.json"
+      },
+      {
         "kind": "keep",
         "wanted": true
       },
@@ -4299,6 +4479,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": true
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "keep",
@@ -4429,6 +4613,10 @@
         }
       },
       {
+        "kind": "save-response",
+        "file": "create.json"
+      },
+      {
         "kind": "keep",
         "wanted": true
       },
@@ -4542,6 +4730,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": true
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "keep",
@@ -5344,6 +5536,10 @@
           "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
           "claimAvailable": false
         }
+      },
+      {
+        "kind": "save-response",
+        "file": "create.json"
       }
     ],
     "reject": []
@@ -5388,6 +5584,10 @@
           "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
           "claimAvailable": false
         }
+      },
+      {
+        "kind": "save-response",
+        "file": "create.json"
       },
       {
         "kind": "request",
@@ -5486,6 +5686,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": false
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "request",
@@ -5598,6 +5802,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "request",
           "url": "https://console.example.com/api/demo/jobs/j1",
           "method": "GET",
@@ -5685,6 +5893,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "request",
           "url": "https://console.example.com/api/demo/jobs/j1",
           "method": "GET",
@@ -5770,6 +5982,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": false
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "request",
@@ -5866,6 +6082,10 @@
         }
       },
       {
+        "kind": "save-response",
+        "file": "create.json"
+      },
+      {
         "kind": "request",
         "url": "https://console.example.com/api/demo/jobs/j1",
         "method": "GET",
@@ -5966,6 +6186,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": false
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "request",
@@ -6082,6 +6306,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "request",
           "url": "https://console.example.com/api/demo/jobs/j1",
           "method": "GET",
@@ -6171,6 +6399,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "request",
           "url": "https://console.example.com/api/demo/jobs/j1",
           "method": "GET",
@@ -6258,6 +6490,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": false
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "request",
@@ -6358,6 +6594,10 @@
           "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
           "claimAvailable": true
         }
+      },
+      {
+        "kind": "save-response",
+        "file": "create.json"
       },
       {
         "kind": "keep",
@@ -6463,6 +6703,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "keep",
           "wanted": true
         },
@@ -6533,6 +6777,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": true
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "keep",
@@ -6651,6 +6899,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "keep",
           "wanted": true
         },
@@ -6734,6 +6986,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "keep",
           "wanted": true
         },
@@ -6815,6 +7071,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "keep",
           "wanted": true
         },
@@ -6883,6 +7143,10 @@
           "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
           "claimAvailable": true
         }
+      },
+      {
+        "kind": "save-response",
+        "file": "create.json"
       },
       {
         "kind": "keep",
@@ -7024,6 +7288,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "keep",
           "wanted": true
         },
@@ -7148,6 +7416,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "keep",
           "wanted": true
         },
@@ -7261,6 +7533,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": true
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "keep",
@@ -7385,6 +7661,10 @@
         }
       },
       {
+        "kind": "save-response",
+        "file": "create.json"
+      },
+      {
         "kind": "rejected-url"
       }
     ],
@@ -7423,6 +7703,10 @@
             "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
             "claimAvailable": false
           }
+        },
+        {
+          "kind": "save-response",
+          "file": "create.json"
         },
         {
           "kind": "rejected-url"
@@ -7476,6 +7760,10 @@
           }
         },
         {
+          "kind": "save-response",
+          "file": "create.json"
+        },
+        {
           "kind": "rejected-url"
         },
         {
@@ -7498,7 +7786,7 @@
     "name": "lost saved token uses the first claim link without another create",
     "sections": [
       "If the private file is gone or the token is unavailable, do not make any create.",
-      "Ask the person to open the claim link you gave them; it finishes the claim in the browser.",
+      "Ask the person to open the claim link you gave them; they can finish the claim in the browser if claiming is still available.",
       "If neither the token nor the claim link is available, say plainly that you cannot claim or update this demo.",
       "Updates also need the token; never make a new create to recover a lost token."
     ],
@@ -7536,6 +7824,10 @@
           "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
           "claimAvailable": true
         }
+      },
+      {
+        "kind": "save-response",
+        "file": "create.json"
       },
       {
         "kind": "request",
@@ -7576,7 +7868,315 @@
       {
         "kind": "open-saved-claim-link",
         "url": "https://console.example.com/demo/claim#synthetic-demo-token",
-        "finishesInBrowser": true
+        "ifClaimingAvailable": true
+      }
+    ],
+    "reject": []
+  },
+  {
+    "name": "team channel shares live URL without claim link, claim on",
+    "claimOff": false,
+    "sections": [
+      "Share the returned live URL unchanged"
+    ],
+    "events": [
+      {
+        "kind": "ask"
+      },
+      {
+        "kind": "confirm"
+      },
+      {
+        "kind": "build"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "jobId": "j1",
+          "name": "shop",
+          "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+          "expiresAt": 1793966400,
+          "claimToken": "synthetic-demo-token",
+          "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+          "claimAvailable": true
+        }
+      },
+      {
+        "kind": "save-response",
+        "file": "create.json"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/jobs/j1",
+        "method": "GET",
+        "headers": {},
+        "body": null,
+        "redirect": "error",
+        "at": 5
+      },
+      {
+        "kind": "response",
+        "status": 200,
+        "body": {
+          "state": "live",
+          "url": "https://shop.example.com/?a=1"
+        },
+        "retryAfter": 2
+      },
+      {
+        "kind": "share",
+        "url": "https://shop.example.com/?a=1",
+        "private": false,
+        "channel": "team channel",
+        "askedPrivateRoute": true
+      },
+      {
+        "kind": "public",
+        "text": "The live URL is public. How can I give you the private link privately?"
+      }
+    ],
+    "reject": []
+  },
+  {
+    "name": "copied logs shares live URL without claim link, claim on",
+    "claimOff": false,
+    "sections": [
+      "Share the returned live URL unchanged"
+    ],
+    "events": [
+      {
+        "kind": "ask"
+      },
+      {
+        "kind": "confirm"
+      },
+      {
+        "kind": "build"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "jobId": "j1",
+          "name": "shop",
+          "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+          "expiresAt": 1793966400,
+          "claimToken": "synthetic-demo-token",
+          "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+          "claimAvailable": true
+        }
+      },
+      {
+        "kind": "save-response",
+        "file": "create.json"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/jobs/j1",
+        "method": "GET",
+        "headers": {},
+        "body": null,
+        "redirect": "error",
+        "at": 5
+      },
+      {
+        "kind": "response",
+        "status": 200,
+        "body": {
+          "state": "live",
+          "url": "https://shop.example.com/?a=1"
+        },
+        "retryAfter": 2
+      },
+      {
+        "kind": "share",
+        "url": "https://shop.example.com/?a=1",
+        "private": false,
+        "channel": "copied logs",
+        "askedPrivateRoute": true
+      },
+      {
+        "kind": "public",
+        "text": "The live URL is public. How can I give you the private link privately?"
+      }
+    ],
+    "reject": []
+  },
+  {
+    "name": "team channel shares live URL without claim link, claim off",
+    "claimOff": true,
+    "sections": [
+      "Share the returned live URL unchanged"
+    ],
+    "events": [
+      {
+        "kind": "ask"
+      },
+      {
+        "kind": "confirm"
+      },
+      {
+        "kind": "build"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "jobId": "j1",
+          "name": "shop",
+          "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+          "expiresAt": 1793966400,
+          "claimToken": "synthetic-demo-token",
+          "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+          "claimAvailable": true
+        }
+      },
+      {
+        "kind": "save-response",
+        "file": "create.json"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/jobs/j1",
+        "method": "GET",
+        "headers": {},
+        "body": null,
+        "redirect": "error",
+        "at": 5
+      },
+      {
+        "kind": "response",
+        "status": 200,
+        "body": {
+          "state": "live",
+          "url": "https://shop.example.com/?a=1"
+        },
+        "retryAfter": 2
+      },
+      {
+        "kind": "share",
+        "url": "https://shop.example.com/?a=1",
+        "private": false,
+        "channel": "team channel",
+        "askedPrivateRoute": true
+      },
+      {
+        "kind": "public",
+        "text": "The demo cannot be kept."
+      }
+    ],
+    "reject": []
+  },
+  {
+    "name": "copied logs shares live URL without claim link, claim off",
+    "claimOff": true,
+    "sections": [
+      "Share the returned live URL unchanged"
+    ],
+    "events": [
+      {
+        "kind": "ask"
+      },
+      {
+        "kind": "confirm"
+      },
+      {
+        "kind": "build"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/apps",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/gzip",
+          "X-Carlos-Client": "fixture-harness"
+        },
+        "body": null,
+        "redirect": "error",
+        "at": 0
+      },
+      {
+        "kind": "response",
+        "status": 202,
+        "body": {
+          "jobId": "j1",
+          "name": "shop",
+          "statusUrl": "https://console.example.com/api/demo/jobs/j1",
+          "expiresAt": 1793966400,
+          "claimToken": "synthetic-demo-token",
+          "claimUrl": "https://console.example.com/demo/claim#synthetic-demo-token",
+          "claimAvailable": true
+        }
+      },
+      {
+        "kind": "save-response",
+        "file": "create.json"
+      },
+      {
+        "kind": "request",
+        "url": "https://console.example.com/api/demo/jobs/j1",
+        "method": "GET",
+        "headers": {},
+        "body": null,
+        "redirect": "error",
+        "at": 5
+      },
+      {
+        "kind": "response",
+        "status": 200,
+        "body": {
+          "state": "live",
+          "url": "https://shop.example.com/?a=1"
+        },
+        "retryAfter": 2
+      },
+      {
+        "kind": "share",
+        "url": "https://shop.example.com/?a=1",
+        "private": false,
+        "channel": "copied logs",
+        "askedPrivateRoute": true
+      },
+      {
+        "kind": "public",
+        "text": "The demo cannot be kept."
       }
     ],
     "reject": []
