@@ -1,31 +1,13 @@
-// 🤖 Build-time rendering; the AI disclaimer is the only browser script.
+// 🤖 Build-time rendering. Browser scripts only enhance pages that already work (PRODUCT.md).
 import markdownIt from "markdown-it";
-import markdownItAnchor from "markdown-it-anchor";
+import { createDocsMarkdown, slugify } from "./hack/docs-markdown.mjs";
 import { addDisclaimer } from "./hack/add-disclaimer.mjs";
 import { addFooter } from "./hack/add-footer.mjs";
 
-// slugify must match internal/docsite's Anchor in the platform repo
-// exactly, or an internal fragment link passes that repo's Go gate and
-// 404s in a browser. Both sides are deliberately plain — lowercase
-// alphanumerics, everything else a separator — because
-// markdown-it-anchor's own default URI-encodes punctuation, which would
-// anchor a heading naming `db.Open` differently on each side.
-// src/_data/docsanchors.json (vendored from docs/site/anchors.json) is
-// the contract both sides are checked against.
-export function slugify(text) {
-  let out = "";
-  let pendingSep = false;
-  for (const ch of String(text).toLowerCase()) {
-    if ((ch >= "a" && ch <= "z") || (ch >= "0" && ch <= "9")) {
-      if (pendingSep && out.length > 0) out += "-";
-      pendingSep = false;
-      out += ch;
-    } else {
-      pendingSep = true;
-    }
-  }
-  return out;
-}
+// slugify lives in hack/docs-markdown.mjs with the rest of the docs
+// renderer; it is re-exported here because hack/check-docs.mjs checks it
+// against src/_data/docsanchors.json through this module.
+export { slugify };
 
 // fenceDelim/sameFence port internal/docsite/docsite.go's fence-matching
 // exactly, for docsSections below: a trimmed line opens or closes a
@@ -70,6 +52,9 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/ai-disclaimer.css": "ai-disclaimer.css" });
   eleventyConfig.addPassthroughCopy({ "src/ai-disclaimer.js": "ai-disclaimer.js" });
   eleventyConfig.addPassthroughCopy({ "src/docs.css": "docs.css" });
+  eleventyConfig.addPassthroughCopy({ "src/docs-stepper.js": "docs-stepper.js" });
+  eleventyConfig.addPassthroughCopy({ "src/docs-nav.js": "docs-nav.js" });
+  eleventyConfig.addPassthroughCopy({ "src/docs-search.js": "docs-search.js" });
   eleventyConfig.addPassthroughCopy({ "src/favicon.svg": "favicon.svg" });
 
   // The agent-skills tree (vendored by hack/sync-skills.mjs) ships
@@ -80,10 +65,9 @@ export default function (eleventyConfig) {
   eleventyConfig.ignores.add("src/well-known/**");
   eleventyConfig.addPassthroughCopy({ "src/well-known": ".well-known" });
 
-  const md = markdownIt({ html: true, linkify: false, typographer: false }).use(
-    markdownItAnchor,
-    { slugify, level: [2, 3, 4], tabIndex: false },
-  );
+  // Diagram and stepper fences inline their SVGs from the vendored
+  // docs/site/diagrams (see hack/docs-markdown.mjs).
+  const md = createDocsMarkdown({ diagramsDir: "src/docs/diagrams" });
   eleventyConfig.setLibrary("md", md);
 
   // The docs corpus is vendored from the platform repo by
@@ -150,6 +134,17 @@ export default function (eleventyConfig) {
 
   eleventyConfig.addFilter("docsSlugify", slugify);
 
+  // Every page in the nav, A to Z by label, for the page index on /docs/
+  // (where search goes without JavaScript).
+  eleventyConfig.addFilter("docsAllPages", (nav) =>
+    (nav.sections || []).flatMap((s) => s.pages.map((p) => ({ ...p, section: s.title })))
+      .sort((a, b) => a.label.localeCompare(b.label, "en", { sensitivity: "base" })));
+
+  // Whether a nav section holds the page being rendered, for the nav's
+  // is-current group (a Nunjucks set inside a loop does not escape it).
+  eleventyConfig.addFilter("docsSectionHas", (section, slug) =>
+    Boolean(section && section.pages && section.pages.some((p) => p.slug === slug)));
+
   // The platform changelog (/platform/changelog/). Its release notes are
   // markdown from the published releases; they render through their own
   // instance with raw HTML off, since nothing in a release body should
@@ -174,6 +169,47 @@ export default function (eleventyConfig) {
       if (m) return m[1].replace(/^🤖\s*/, "");
     }
     return "";
+  });
+
+  // The search index (/docs/search-index.json, read by docs-search.js):
+  // one entry per nav page with its label, section, URL, ## and ###
+  // headings with anchors, and its prose with markdown stripped, capped
+  // at TEXT_CAP characters so the index stays small.
+  const TEXT_CAP = 8000;
+  eleventyConfig.addFilter("docsSearchIndex", (docs, nav) => {
+    const raw = new Map(docs.map((d) => [d.slug, d.page.rawInput]));
+    const out = [];
+    for (const section of nav.sections || []) {
+      for (const entry of section.pages) {
+        const src = String(raw.get(entry.slug) || "");
+        const headings = [];
+        const prose = [];
+        let inFence = false;
+        let fenceMark = "";
+        for (const line of src.split("\n")) {
+          const trimmed = line.trim();
+          const fd = fenceDelim(trimmed);
+          if (fd) {
+            if (!inFence) { inFence = true; fenceMark = fd.mark; continue; }
+            if (sameFence(fd.mark, fenceMark)) { inFence = false; continue; }
+          }
+          if (inFence) continue;
+          const h = /^(#{2,3})\s+(.+?)\s*#*$/.exec(trimmed);
+          if (h) { headings.push({ title: h[2], anchor: slugify(h[2]) }); continue; }
+          if (/^#\s/.test(trimmed)) continue;
+          prose.push(trimmed);
+        }
+        const text = prose.join(" ")
+          .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
+          .replace(/<[^>]+>/g, " ")
+          .replace(/[`*_>|]/g, " ")
+          .replace(/\s+/g, " ")
+          .trim()
+          .slice(0, TEXT_CAP);
+        out.push({ title: entry.label, section: section.title, url: `/docs/${entry.slug}/`, headings, text });
+      }
+    }
+    return out;
   });
 
   // A page's raw markdown, looked up from the collection by slug.
