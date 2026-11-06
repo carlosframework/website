@@ -8,8 +8,9 @@ it, and yours to run. Extracted — not designed — from five systems that kept
 rebuilding the same shape.
 
 The hand-written pages — [`src/index.html`](src/index.html), `src/platform/`,
-`src/rastrillo/` — ship as plain HTML and CSS: no build step, no dependencies,
-no JavaScript. The framework's own rules apply to its website. `/docs` is the
+`src/rastrillo/` — ship as plain HTML and CSS: no build step, no dependencies, and JavaScript
+only as progressive enhancement on a page that works without it. The
+framework's own rules apply to its website. `/docs` is the
 one exception: a dozen reference pages sharing a sidebar go through Eleventy
 (see `AGENTS.md`), so that part of the repo does have a devDependency and a
 build step, run before you ship rather than in anyone's browser.

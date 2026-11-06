@@ -60,8 +60,14 @@ migrate.carlosframework.com and are linked from the hub and every footer.
 
 ## Capabilities and Constraints
 
-- Static pages sharing one plain local stylesheet (`site.css`); no build step,
-  no dependencies, no JavaScript, no fetched fonts, no analytics. Binding.
+- Static pages sharing one plain local stylesheet (`site.css`); no build step
+  and no dependencies. Binding.
+- No fetched fonts and no analytics. JavaScript is allowed when it
+  meaningfully improves the experience, and only as progressive enhancement:
+  every page works, reads and loads without it, and the script only adds to
+  a page that is already complete. Scripts are local files, small, with no
+  dependencies, and never needed to read a page. Binding (Paul, 2026-11-06,
+  replacing the earlier no-JavaScript rule).
 - Accuracy rules (see AGENTS.md, they outrank prose): the five source repos are
   private and never linked; never overclaim the framework's maturity; CARLOS is
   an application architecture, not an operating system; "Cost-efficient" and
