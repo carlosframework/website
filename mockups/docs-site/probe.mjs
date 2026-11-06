@@ -73,11 +73,24 @@ try {
   await open(`${base}/index.html`, { width: 1280 });
   await send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 500, deviceScaleFactor: 1, mobile: false });
   await sleep(200);
-  await evalJS(`document.querySelector('.docs-nav').scrollTop = 200`);
-  const before = await evalJS(`document.querySelector('.docs-nav').scrollTop`);
+  const scroller = `document.querySelector('.docs-nav .nav-groups')`;
+  const inScroller = await evalJS(`!!${scroller} && ${scroller}.contains(document.querySelector('.docs-search'))`);
+  check("search sits outside the nav's scrolling list", inScroller === false, inScroller);
+  const searchTop0 = await evalJS(`Math.round(document.querySelector('.docs-search').getBoundingClientRect().top)`);
+  await evalJS(`${scroller} && (${scroller}.scrollTop = 200)`);
+  const before = await evalJS(`${scroller} ? ${scroller}.scrollTop : -1`);
+  const searchTop1 = await evalJS(`Math.round(document.querySelector('.docs-search').getBoundingClientRect().top)`);
+  check("search stays put when the nav scrolls", before > 0 && searchTop0 === searchTop1, [before, searchTop0, searchTop1]);
+  const align = await evalJS(`JSON.stringify([Math.round(document.querySelector('.docs-search').getBoundingClientRect().left), Math.round(document.querySelector('.docs-nav-title').getBoundingClientRect().left), Math.round(document.querySelector('.docs-search').getBoundingClientRect().right), Math.round(document.querySelector('.nav-head').getBoundingClientRect().right - parseFloat(getComputedStyle(document.querySelector('.nav-head')).paddingRight))])`);
+  const [sl, tl, sr, hr] = JSON.parse(align || "[0,1,0,1]");
+  check("search lines up with the nav title and fills the column", sl === tl && Math.abs(sr - hr) <= 1, align);
+  const topAlign = await evalJS(`JSON.stringify([Math.round(document.querySelector('.docs-nav-title').getBoundingClientRect().left), Math.round(document.querySelector('.docs-nav a.nav-top').getBoundingClientRect().left + parseFloat(getComputedStyle(document.querySelector('.docs-nav a.nav-top')).paddingLeft))])`);
+  check("section headings line up with the nav title", JSON.parse(topAlign)[0] === JSON.parse(topAlign)[1], topAlign);
+  const bl = await evalJS(`getComputedStyle(document.querySelector('.docs-search')).borderLeftWidth === getComputedStyle(document.querySelector('.docs-search')).borderRightWidth`);
+  check("search has an even border", bl === true, bl);
   await evalJS(`[...document.querySelectorAll('.docs-nav a')].find(a => a.textContent === 'Your first app').click()`);
   await sleep(1200);
-  const after = await evalJS(`document.querySelector('.docs-nav').scrollTop`);
+  const after = await evalJS(`${scroller} ? ${scroller}.scrollTop : -1`);
   check("nav keeps its scroll position across a click", before > 0 && Math.abs(after - before) <= 2, [before, after]);
   for (const p of ["index.html", "how-it-works.html", "quickstart.html"]) {
     await open(`${base}/${p}`, { width: 390 });

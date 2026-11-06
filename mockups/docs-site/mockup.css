@@ -15,9 +15,23 @@
 .docs-nav .nav-group ul { margin-top: 0.2rem; }
 .docs-nav .nav-soon { color: var(--muted); font-size: 0.85em; }
 
-/* Search: a link to the page index without JavaScript. */
-.docs-search { display: block; margin: 0 0 1.1rem; padding: 0.45rem 0.6rem; border: 1px solid var(--rule); color: var(--muted); text-decoration: none; font-size: 0.9rem; }
-.docs-search:hover { color: var(--ink); border-color: var(--ink-2); }
+/* Search: a button-like link, after Stripe's. Without JavaScript it goes
+   to the page index; with it, "/" focuses it. */
+.docs-nav a.docs-search {
+  display: flex; align-items: center; gap: 0.55rem;
+  margin: 0.9rem 0 0; padding: 0.5rem 0.65rem;
+  border: 1px solid var(--rule); border-radius: 6px;
+  background: var(--surface); color: var(--muted);
+  font-size: 0.9rem; line-height: 1.2; text-decoration: none;
+}
+.docs-nav a.docs-search:hover, .docs-nav a.docs-search:focus-visible { border-color: var(--ink-2); color: var(--ink); }
+.docs-search svg { flex: none; }
+.docs-search span { flex: 1; }
+.docs-search kbd {
+  padding: 0.05rem 0.4rem; border: 1px solid var(--rule); border-radius: 4px;
+  font: 0.78rem/1.4 var(--font-mono); color: var(--muted); background: var(--bg-sunk);
+}
+.nav-head .docs-nav-title { margin: 0; }
 
 /* Cards: hairline border and a tint, never a coloured left stripe. */
 .mock-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 0.9rem; margin: 1.1rem 0 0; padding: 0; list-style: none; }
@@ -121,16 +135,23 @@ html { scrollbar-gutter: stable; }
     gap: 0;
     grid-template-columns: 17rem minmax(0, 1fr);
   }
+  /* The nav is a column: a fixed head (title and search) over a list
+     that scrolls on its own. */
   .docs-nav {
     position: sticky;
     top: 0;
     height: 100vh;
     max-height: none;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    padding: 1.5rem 1.25rem 3rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
     border-right: 1px solid var(--rule);
     background: var(--bg);
   }
+  .nav-head { flex: none; padding: 1.5rem 1.25rem 1rem; border-bottom: 1px solid var(--rule-soft); }
+  .docs-nav .nav-groups { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 1rem 1.25rem 3rem; }
   .docs-body main { padding: clamp(1.75rem, 4vw, 3rem) clamp(2rem, 5vw, 4.5rem) 4rem; }
 }
+
+.docs-nav a.nav-top { padding-left: 0; border-left: 0; }
