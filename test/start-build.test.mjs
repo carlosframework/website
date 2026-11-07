@@ -8,7 +8,6 @@ import { buildStart, renderMarkdown } from '../hack/build-start.mjs';
 import { renderAgent } from '../hack/start-content.mjs';
 import { loadStartConfig } from '../src/_data/start-config.mjs';
 import { addFooter } from '../hack/add-footer.mjs';
-import { addDisclaimer } from '../hack/add-disclaimer.mjs';
 const read=p=>readFile(p,'utf8');
 const env={CARLOS_START_DEMO:'1',CARLOS_START_SITE_ORIGIN:'https://site.example.com',CARLOS_START_CONSOLE_ORIGIN:'https://console.example.com',CARLOS_START_ACCOUNT_URL:'https://console.example.com/'};
 const config=loadStartConfig(env);
@@ -40,7 +39,7 @@ test('disabled pages match original build bytes; reused output loses all anonymo
  await writeFile(join(dir,'start/agent/index.html'),'stale accidental Eleventy output');
  await buildStart(dir,loadStartConfig({}));
  assert.deepEqual(await files(join(dir,'start')),['index.html','start-tabs.js','start.css']);
- await addFooter(dir);await addDisclaimer(dir);
+ await addFooter(dir);
  const baseline=JSON.parse(await read('test/fixtures/start-baseline.json'));
  for(const name of ['index.html','start/index.html']) {
   const bytes=await readFile(join(dir,name));
@@ -139,7 +138,11 @@ test('Eleventy integration: enabled then disabled rebuild keeps main pages byte-
  let inventory=await files(dir);
  assert.ok(inventory.includes('docs/cli.md'));
  assert.ok(inventory.includes('.well-known/agent-skills/index.json'));
- assert.doesNotMatch(inventory.join('\n'),/start\/agent|start\/starter\/v1\/main.go|start-config|start-copy|start-claim-contract/);
+ assert.doesNotMatch(inventory.join('\n'),/start\/agent|start\/starter\/v1\/main.go|start-config|start-copy|start-claim-contract|ai-disclaimer/);
+ for(const name of inventory.filter(name=>name.endsWith('.html'))) {
+  const page=await read(join(dir,name));
+  assert.doesNotMatch(page,/ai-disclaimer|site-footer:disclosure|Before you continue\.\.\.|CARLOS is an AI-enabled project|full disclosure of AI use/);
+ }
  build(true,{CARLOS_START_CLAIM:'off',});
  const markdown=await read(join(dir,'start/index.md'));
  const html=await read(join(dir,'start/index.html'));

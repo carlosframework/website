@@ -12,13 +12,9 @@ Keymail, Woodstar, Slopbox and Kass. Tito (always "Tito", never "Tito Go")
 is adopting CARLOS deliberately and is listed on the site as an adopter,
 not an extraction source — it doesn't count toward the "5 systems" stat. The pages are static and the
 stylesheet (`site.css`) is plain: what a visitor downloads is HTML and CSS,
-with local scripts for the AI disclaimer, clipboard controls and Attributes
-sidebar, and no third-party runtime resources.
-The disclaimer is an explicit user-requested exception (2026-09-24): keep the
-disclosure available from the footer. As of 2026-10-22, it opens only when
-requested; never show it automatically or store an acknowledgement. Keep the
-rest of the site free of browser JavaScript and bundlers, except for the
-approved clipboard controls and Attributes sidebar enhancement. Both pages
+with local scripts for clipboard controls and the Attributes sidebar, and no
+third-party runtime resources. Keep the rest of the site free of browser
+JavaScript and bundlers. Both pages
 remain usable without JavaScript; the Get started pathways use native radios.
 Durable product context for design tooling lives in
 `PRODUCT.md`.
@@ -30,15 +26,11 @@ each is an `addPassthroughCopy` entry in `eleventy.config.js`.
 🤖 `hack/build-start.mjs` preserves the homepage and `src/start/index.html` when
 the demo is disabled. When enabled, it replaces the marked homepage hero and
 generates `/start/index.html` and `/start/index.md` from `src/start/agent.md`.
-It does this before footer and disclosure injection. The build publishes only
+It does this before shared footer injection. The build publishes only
 the starter archive, manifest and source listing. Raw starter files, config and
 claim fixtures remain private build inputs.
 
-The build adds
-the shared AI disclaimer to every HTML page, including docs, through
-`hack/add-disclaimer.mjs`. Its human-authored copy lives in
-`src/_data/ai-disclaimer.json`. Every
-user-facing string on those pages passed a copy review (the indexes and
+Every user-facing string on those pages passed a copy review (the indexes and
 results are archived under `copy-review/done/`); rewrite copy only through
 another review. `/docs` does: its pages come from markdown through Eleventy, the
 same pipeline rastrillo.org uses, run here before you ship rather than on
@@ -46,18 +38,21 @@ anyone's browser. A dozen docs pages sharing a sidebar are not something you
 hand-maintain as HTML, and the served site keeps every promise in the paragraph
 above. See "Building the docs" below.
 
-## The one rule: AI authorship is always marked (🤖 / 👨)
+## Authorship in repository prose (🤖 / 👨)
 
-This repo practices factor X on itself. Every piece of prose carries an
-authorship marker so a reader — human or agent — can tell who wrote what, and
-so a human can fence text off from AI rewriting.
+🤖 Paul’s 2026-11-07 ruling: the website has no robot markers, in-page AI
+authorship lines or footer AI disclaimer. Do not re-add the disclaimer, its
+button, fallback, script, styles or build injection. This supersedes the
+2026-09-24 exception and 2026-10-22 footer disclosure rule.
+
+The following markers apply to repository prose. Human-certified blocks
+remain protected wherever they appear.
 
 - **🤖 — written by an LLM.** Always **visible**, immediately before the
   heading, paragraph, or section it applies to. A 🤖 on a heading **cascades**:
   it marks that heading and everything beneath it, down to the next marker of
   the same-or-higher level or a human-certified block. One 🤖 on a document's
-  top heading marks the whole document. On the website, the marker must render
-  visibly on the page — never hide it in a comment.
+  top heading marks the whole document. Do not add these markers to the website.
 - **No marker — ambiguous.** Could be either. Never *assume* AI authorship;
   when you genuinely don't know, leave it unmarked.
 - **A person emoji (👨 / 👤 / 🧑 …) — certified human, off-limits.** The text
@@ -71,12 +66,9 @@ person marker.**
 
 ## Conventions
 
-- **Only the disclosure, clipboard and Attributes sidebar scripts run in the browser.** No frameworks, remotely
-  fetched fonts or analytics. The footer button opens the disclosure on request;
-  Continue and Escape dismiss it and return focus. There is no localStorage
-  acknowledgement. With
-  JavaScript disabled, a collapsed disclosure in the footer provides the same
-  copy. The footer links are shared through `src/_includes/footer.html` and
+- **Only the clipboard and Attributes sidebar scripts run in the browser.**
+  No frameworks, remotely fetched fonts or analytics. The footer links are
+  shared through `src/_includes/footer.html` and
   `hack/add-footer.mjs`; page placeholders retain docs source provenance.
   The `/docs` build is a devDependency
   that runs at authoring time; `_site/` is gitignored and never committed.

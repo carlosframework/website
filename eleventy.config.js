@@ -1,7 +1,6 @@
-// 🤖 Build-time rendering; the AI disclaimer is the only browser script.
+// 🤖 Build-time rendering; browser scripts enhance clipboard controls and the Attributes sidebar.
 import markdownIt from "markdown-it";
 import markdownItAnchor from "markdown-it-anchor";
-import { addDisclaimer } from "./hack/add-disclaimer.mjs";
 import { addFooter } from "./hack/add-footer.mjs";
 import { buildStart } from "./hack/build-start.mjs";
 import { loadStartConfig } from "./src/_data/start-config.mjs";
@@ -53,7 +52,6 @@ export default function (eleventyConfig) {
   eleventyConfig.on("eleventy.after", async ({ directories }) => {
     await buildStart(directories.output, loadStartConfig());
     await addFooter(directories.output);
-    await addDisclaimer(directories.output);
   });
   eleventyConfig.addPassthroughCopy({ "src/index.html": "index.html" });
   eleventyConfig.addPassthroughCopy({ "src/platform": "platform" });
@@ -74,8 +72,6 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/home-textures": "home-textures" });
   eleventyConfig.addPassthroughCopy({ "src/header.css": "header.css" });
   eleventyConfig.addPassthroughCopy({ "src/footer.css": "footer.css" });
-  eleventyConfig.addPassthroughCopy({ "src/ai-disclaimer.css": "ai-disclaimer.css" });
-  eleventyConfig.addPassthroughCopy({ "src/ai-disclaimer.js": "ai-disclaimer.js" });
   eleventyConfig.addPassthroughCopy({ "src/docs.css": "docs.css" });
   eleventyConfig.addPassthroughCopy({ "src/favicon.svg": "favicon.svg" });
 
@@ -212,7 +208,7 @@ export default function (eleventyConfig) {
 
   return {
     // "html" is deliberately excluded: index.html and platform/index.html
-    // are hand-written, with the disclaimer added after build. If html stayed a
+    // are hand-written, with the shared footer added after build. If html stayed a
     // template format, Eleventy's default html engine (liquid) would
     // render them as templates in addition to the passthrough copies
     // above, and any literal "{{" in their inline SVG/script would break.

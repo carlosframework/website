@@ -858,7 +858,7 @@ body.landing .attribute-map a{min-height:4rem}
 @media(max-width:800px){.attribute-map{grid-template-columns:1fr;gap:1.5rem}.attribute-map .attribute-group ul{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.benefit-group{padding-top:1.5rem;margin-top:2.5rem}.benefit-group .outcome-grid{grid-template-columns:1fr;gap:1.75rem}.benefit-group .outcome-card{padding:0}.benefit-group .outcome-card+.outcome-card{border-left:0;border-top:1px solid var(--rule);padding-top:1.75rem}.benefit-group .benefit-group-title{margin-bottom:1.5rem}}
 
-/* ---------- Production footer and AI disclaimer ---------- */
+/* ---------- Production footer ---------- */
 
 .home-footer {
   padding: clamp(1.75rem, 4vw, 2.5rem) 0;
@@ -874,21 +874,10 @@ body.landing .attribute-map a{min-height:4rem}
 .home-footer p { margin-bottom: 0.75rem; }
 .home-footer p:last-child { margin-bottom: 0; }
 
-.ai-disclaimer, .ai-disclaimer-fallback {
-  --ink: #182721; --ink-2: #46574d; --surface: #fff; --rule: #ccd5ce; --prose: 40rem; --shadow-2: 0 12px 40px #0003;
-}
-@media (prefers-color-scheme: dark) {
-  .ai-disclaimer, .ai-disclaimer-fallback { --ink: #e4eee8; --ink-2: #bdcfc4; --surface: #15272d; --rule: #34473f; --shadow-2: 0 12px 40px #0009; }
-}
-.ai-disclaimer .btn.primary { background: #c8ef8b; color: #14251b; padding: 13px 22px; border: 0; border-radius: 5px; }
-.ai-disclaimer .btn.primary:focus-visible { outline: 3px solid #286e62; outline-offset: 4px; }
-
 @media (prefers-color-scheme: light) {
   body.hosting-page { --page: #f4f7f1; --ink: #14232b; --muted: #45575a; --link: #1a5f4f; background: var(--page); }
   .hosting-page .hosting-guide { --cream: var(--ink); --cream-dim: var(--muted); --mint: var(--link); }
 }
-
-.ai-disclaimer-fallback { background: var(--surface); color: var(--ink); }
 
 /* Architecture-first homepage. Letter cells share a baseline; L has a narrower
    advance so its blank right side does not widen the gap before O. */

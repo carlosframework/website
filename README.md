@@ -7,10 +7,10 @@ small enough to understand, sealed so tightly the operator is not a party to
 it, and yours to run. Extracted — not designed — from five systems that kept
 rebuilding the same shape.
 
-🤖 Eleventy builds the site into `_site/` and injects the shared footer and
-disclosure. Enabled demo builds generate `/start/index.html` and
+🤖 Eleventy builds the site into `_site/` and injects the shared footer.
+Enabled demo builds generate `/start/index.html` and
 `/start/index.md` from one agent source and publish the pinned starter. The
-browser runs local scripts for disclosure, clipboard controls and the
+browser runs local scripts for clipboard controls and the
 Attributes sidebar.
 
 🤖 The demo journey defaults off. To build it, set `CARLOS_START_DEMO=1` and
@@ -64,11 +64,10 @@ The site says so.
 
 ## Authorship: the 🤖 rule
 
-Everything in this repo written by an AI carries a **visible 🤖 marker** — on
-the page, in this README, at the top of every prose file. That is factor X
-applied to the project itself: AI-written words are always disclosed, never
-passed off as human. The full rule (including the human-certification markers
-that AI must not touch) is in [`AGENTS.md`](AGENTS.md).
+Paul’s 2026-11-07 ruling removes robot markers, in-page AI authorship lines
+and the footer AI disclaimer from the website. Do not restore them. Repository
+prose still uses authorship markers; human-certified blocks remain protected.
+See [`AGENTS.md`](AGENTS.md) for the rule.
 
 ## Provenance
 
