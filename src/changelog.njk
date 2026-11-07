@@ -143,8 +143,6 @@ eleventyExcludeFromCollections: true
 
   <p class="note">With the obvious assistance from the robots.</p>
 
-  <p class="robot">This page was written by an LLM, on the ideas, instruction, and editing of humans. That's <a href="https://11factor.org/#x">factor X</a>.</p>
-
   <nav class="releases-toc" aria-label="Releases">
     {%- for r in cl.releases %}<a href="#{{ r.tag | releaseId }}">{{ r.tag }}</a>{% endfor -%}
   </nav>

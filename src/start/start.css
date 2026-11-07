@@ -35,7 +35,6 @@
 .start-prompt .copy-button:focus-visible { outline:3px solid var(--focus); outline-offset:4px; }
 .start-prompt .copy-status { flex-basis:100%; min-height:1.5em; margin:0; font-size:.9rem; line-height:1.5; }
 .inner-hero .start-prompt { --page-alt:#172d32; --ink:#eef5ed; --accent:#82c9b5; --page:#101c23; --rule:#82c9b560; --focus:#c8ef8b; }
-.start-authorship { display:block; font-size:.85rem; color:var(--muted); }
 .start-prose, .agent-prose { max-width:72rem; }
 .start-prose p, .start-prose ol, .agent-prose p, .agent-prose ul, .agent-prose ol { max-width:40rem; line-height:1.7; }
 .start-prose ol, .agent-prose ul, .agent-prose ol { padding-left:1.5rem; }
