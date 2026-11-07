@@ -2,9 +2,9 @@
   "home.meta.description": "Tell your coding agent what you want to make. Try the app it builds at a public link for 24 hours. No account needed.",
   "home.og.description": "Tell your coding agent what you want to make. Try the app it builds at a public link for 24 hours.",
   "start.prompt": "Follow the directions on https://carlosframework.com/start",
-  "start.title": "Make an app with your coding agent",
+  "start.title": "Start making better apps",
   "start.meta.description": "Tell your coding agent what you want to make and try the app it builds at a public link for 24 hours. No account or install needed.",
-  "start.intro": "Paste this line into the AI tool you use to write code. It will ask what you want to make and how it should feel, then build a small app with its own database and give you a link to try it.",
+  "start.intro": "One line for your agent which will get you up and running with the CARLOS tools to build and deploy a small app with its own database.",
   "start.steps": [
     "Paste the line and say what you want to make.",
     "Answer a few questions about how it should look and feel. If asked, allow it to connect to one website.",

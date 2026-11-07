@@ -80,6 +80,10 @@ test('start order, approved text arrays, complete instructions and unchanged acc
 }));
 test('approved copy archive and starter UI bytes agree exactly',async()=>{
  const rows=JSON.parse(await read('copy-review/start-demo-2026-11-05/strings.json'));
+ // Paul's later reviews supersede the 2026-11-05 archive, string by string.
+ const later=JSON.parse(await read('copy-review/start-2026-11-07/result.json'));
+ const approved=new Map(later.strings.map(s=>[s.id,s.text]));
+ for(const row of rows) if(approved.has(row.id)) row.text=approved.get(row.id);
  for(const {id,text} of rows) {
   if(id.startsWith('home.hero.') || id.startsWith('start.hosts.')) continue;
   assert.deepEqual(copy[id],text,id);
