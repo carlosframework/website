@@ -39,7 +39,6 @@ export function promptHTML(config,copy,id) {
  return `<div class="start-prompt"><pre><code id="${id}">${escapeHTML(pasteLine(config))}</code></pre><button type="button" class="copy-button primary" hidden data-copy-target="${id}" data-original="${escapeHTML(copy['copy.label'])}" data-copied="${escapeHTML(copy['copy.done'])}" data-copy-success="${escapeHTML(copy['home.paste.done'])}" data-copy-fallback="${escapeHTML(copy['copy.fallback'])}" data-copy-status="${id}-status" aria-label="${escapeHTML(copy['copy.aria'])}"><span>${escapeHTML(copy['copy.label'])}</span></button>${hostsHTML(config,copy)}<p id="${id}-status" class="copy-status" role="status" aria-live="polite"></p></div>`;
 }
 const human = "<!-- 👨 Paul's words, verbatim -->";
-const robot = '<span class="robot">🤖</span>';
 const external = 'target="_blank" rel="noopener noreferrer"';
 function homePromptHTML(config,copy) {
  const id='home-prompt';
@@ -50,7 +49,7 @@ function homePromptHTML(config,copy) {
  // The caret rides inside the last unbreakable piece, so it never wraps onto a line alone.
  const parts=url.split(/(?<=[./])/);
  const urlHTML=production?escapeHTML(url)+caret:parts.map((part,i)=>`<span>${escapeHTML(part)}${i===parts.length-1?caret:''}</span>`).join('<wbr>');
- return `${robot}<div class="paste v-soft">
+ return `<div class="paste v-soft">
 <p class="pb-to">${escapeHTML(copy['home.paste.label'])}</p>
 <p class="pb-line"><svg class="pb-sign" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5 10 8l-5 4.5"/></svg><span class="pb-text"><span id="${id}">${escapeHTML(line.slice(0,-url.length))}<span class="pb-url${production?'':' pb-url-wrap'}">${urlHTML}</span></span></span></p>
 <div class="pb-foot"><p class="pb-works">${escapeHTML(copy['home.paste.works'])}</p><button type="button" class="copy-button pb-copy" hidden data-copy-target="${id}" data-original="${escapeHTML(copy['copy.label'])}" data-copied="${escapeHTML(copy['copy.done'])}" data-copy-success="${escapeHTML(copy['home.paste.done'])}" data-copy-fallback="${escapeHTML(copy['copy.fallback'])}" data-copy-status="${id}-status" aria-label="${escapeHTML(copy['copy.aria'])}"><svg class="ic-copy" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><svg class="ic-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>${escapeHTML(copy['copy.label'])}</span></button></div>
@@ -81,7 +80,7 @@ function homePartsHTML(original,copy) {
   return `<li class="px px-${kind}"><svg class="px-ic" viewBox="0 0 32 32" aria-hidden="true">${icons[kind]}</svg><div class="px-content">${human}<h3>${text('title')}</h3><!-- /👨 -->${kind==='rastrillo'?human:''}<p class="px-is">${text('is')}</p>${kind==='rastrillo'?'<!-- /👨 -->':''}<p class="px-why">${text('why')}</p>${human}<p class="px-links">${links[kind].map(([key,url])=>`<a href="${url}" ${external}>${text(key)}<span class="px-go" aria-hidden="true">↗</span></a>`).join(' ')}</p><!-- /👨 --></div></li>`;
  };
  const join=key=>`<li class="px-join" role="presentation"><span>${escapeHTML(copy[`home.parts.join.${key}`])}</span></li>`;
- return `<section class="parts" id="architecture" aria-labelledby="promise-title">${human}${heading}<p class="px-intro">${sentence}<!-- /👨 -->${robot}${escapeHTML(copy['home.parts.intro'])}</p>${robot}<ol class="px-flow" role="list">${card('skill')}${join('builds')}${card('rastrillo')}${join('runs')}${card('platform')}</ol>${human}${foot}</section>`;
+ return `<section class="parts" id="architecture" aria-labelledby="promise-title">${human}${heading}<p class="px-intro">${sentence}<!-- /👨 --> ${escapeHTML(copy['home.parts.intro'])}</p><ol class="px-flow" role="list">${card('skill')}${join('builds')}${card('rastrillo')}${join('runs')}${card('platform')}</ol>${human}${foot}</section>`;
 }
 export async function buildStart(outputDir,config) {
  const original=await read('src/start/index.html');

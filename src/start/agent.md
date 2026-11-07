@@ -1,4 +1,4 @@
-# 🤖 Agent directions: make a small app
+# Agent directions: make a small app
 
 Before following the first-run steps, check the person's prompt. If they say they kept an app, or the prompt names an existing app, account and console, go directly to [After you keep it](#after-you-keep-it). Do not create a new demo or a new app. The kept-app instructions take precedence over the first-run and claim-availability instructions below.
 

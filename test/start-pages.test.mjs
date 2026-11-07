@@ -19,10 +19,12 @@ test('enabled homepage has the approved centred hero and three parts',()=>pages(
  assert.ok(plain(hero).includes('CARLOS does all that and more. Read on, or try it now with your agent'));
  assert.match(hero,/<a href="#architecture">Read on<\/a>/);
  assert.doesNotMatch(home,/class="hero-tools"|class="hero-wordmark"|class="hero-subtitle"/);
- assert.match(hero,/<span class="robot">🤖<\/span><div class="paste v-soft">/);
+ assert.match(hero,/<div class="paste v-soft">/);
+ assert.doesNotMatch(hero,/🤖|class="robot"/);
  for(const key of ['home.paste.label','home.paste.works']) assert.ok(hero.includes(escapeHTML(copy[key])));
  const parts=home.match(/<section class="parts"[\s\S]*?<\/section>/)[0];
  assert.match(parts,/id="architecture"/);
+ assert.doesNotMatch(parts,/🤖|class="robot"/);
  assert.match(parts,/<ol class="px-flow" role="list">/);
  assert.equal((parts.match(/<li class="px px-/g)||[]).length,3);
  assert.equal((parts.match(/class="px-join"/g)||[]).length,2);
