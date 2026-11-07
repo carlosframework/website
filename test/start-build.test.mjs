@@ -128,3 +128,16 @@ test('Eleventy integration: enabled then disabled rebuild keeps main pages byte-
  assert.deepEqual(await files(join(dir,'start')),['index.html','start-tabs.js','start.css']);
  assert.doesNotMatch(await read(join(dir,'llms.txt')),/New small apps/);
 }));
+
+test('enabled homepage preserves everything outside the two sections and metadata',()=>scratch(async dir=>{
+ await buildStart(dir,config);
+ const source=await read('src/index.html'), home=await read(join(dir,'index.html'));
+ const regions=[...source.matchAll(/<!-- start-demo:(hero|parts) -->([\s\S]*?)<!-- \/start-demo:\1 -->/g)];
+ assert.equal(regions.length,2);
+ const rest=source.slice(source.indexOf('<!-- /start-demo:parts -->')+'<!-- /start-demo:parts -->'.length);
+ assert.ok(home.endsWith(rest));
+ assert.equal(home.match(/<header[\s\S]*?<\/header>/)[0],source.match(/<header[\s\S]*?<\/header>/)[0]);
+ assert.doesNotMatch(home,/start-demo:(hero|parts)/);
+ await buildStart(dir,loadStartConfig({}));
+ assert.equal(await read(join(dir,'index.html')),source.replace(/<!-- \/?start-demo:(?:hero|parts) -->/g,''));
+}));

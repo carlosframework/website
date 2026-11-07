@@ -16,10 +16,52 @@ export function hostsHTML(config,copy) {
  const hosts={siteHost,apiHost,host:siteHost};
  const text=escapeHTML(copy[siteHost===apiHost?'start.hosts.one':'start.hosts.two'])
   .replace(/\{(siteHost|apiHost|host)\}/g,(_,key)=>`<code>${escapeHTML(hosts[key])}</code>`);
- return `<p class="start-hosts">${text}</p>`;
+ return `<!-- 👨 Paul's words, verbatim --><p class="start-hosts">${text}</p><!-- /👨 -->`;
 }
 export function promptHTML(config,copy,id) {
- return `<div class="start-prompt"><pre><code id="${id}">${escapeHTML(pasteLine(config))}</code></pre><button type="button" class="copy-button primary" hidden data-copy-target="${id}" data-original="${escapeHTML(copy['copy.label'])}" data-copied="${escapeHTML(copy['copy.done'])}" data-copy-fallback="${escapeHTML(copy['copy.fallback'])}" data-copy-status="${id}-status" aria-label="${escapeHTML(copy['copy.aria'])}"><span>${escapeHTML(copy['copy.label'])}</span></button>${hostsHTML(config,copy)}<p id="${id}-status" class="copy-status" role="status" aria-live="polite"></p></div>`;
+ return `<div class="start-prompt"><pre><code id="${id}">${escapeHTML(pasteLine(config))}</code></pre><button type="button" class="copy-button primary" hidden data-copy-target="${id}" data-original="${escapeHTML(copy['copy.label'])}" data-copied="${escapeHTML(copy['copy.done'])}" data-copy-success="${escapeHTML(copy['home.paste.done'])}" data-copy-fallback="${escapeHTML(copy['copy.fallback'])}" data-copy-status="${id}-status" aria-label="${escapeHTML(copy['copy.aria'])}"><span>${escapeHTML(copy['copy.label'])}</span></button>${hostsHTML(config,copy)}<p id="${id}-status" class="copy-status" role="status" aria-live="polite"></p></div>`;
+}
+const human = "<!-- 👨 Paul's words, verbatim -->";
+const robot = '<span class="robot">🤖</span>';
+const external = 'target="_blank" rel="noopener noreferrer"';
+function homePromptHTML(config,copy) {
+ const id='home-prompt';
+ const line=pasteLine(config), url=`${config.siteOrigin}/start`;
+ // Keep the production URL together; other origins may wrap only at URL separators.
+ const production=config.siteOrigin==='https://carlosframework.com';
+ const urlHTML=production?escapeHTML(url):url.split(/(?<=[./])/).map(part=>`<span>${escapeHTML(part)}</span>`).join('<wbr>');
+ return `${robot}<div class="paste v-soft">
+<p class="pb-to">${escapeHTML(copy['home.paste.label'])}</p>
+<p class="pb-line"><svg class="pb-sign" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5 10 8l-5 4.5"/></svg><span class="pb-text"><span id="${id}">${escapeHTML(line.slice(0,-url.length))}<span class="pb-url${production?'':' pb-url-wrap'}">${urlHTML}</span></span><span class="pb-caret" aria-hidden="true"></span></span></p>
+<div class="pb-foot"><p class="pb-works">${escapeHTML(copy['home.paste.works'])}</p><button type="button" class="copy-button pb-copy" hidden data-copy-target="${id}" data-original="${escapeHTML(copy['copy.label'])}" data-copied="${escapeHTML(copy['copy.done'])}" data-copy-success="${escapeHTML(copy['home.paste.done'])}" data-copy-fallback="${escapeHTML(copy['copy.fallback'])}" data-copy-status="${id}-status" aria-label="${escapeHTML(copy['copy.aria'])}"><svg class="ic-copy" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><svg class="ic-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>${escapeHTML(copy['copy.label'])}</span></button></div>
+<p class="pb-done" id="${id}-status" role="status" aria-live="polite"></p></div>${hostsHTML(config,copy)}`;
+}
+function homeHeroHTML(config,copy) {
+ const heading=escapeHTML(copy['home.hero.heading']).replace(/build better apps|with AI,|running costs\?/g,text=>`<span class="nw">${text}</span>`);
+ const ask=escapeHTML(copy['home.hero.ask']).replace(/^Read on/,text=>`<a href="#architecture">${text}</a>`);
+ return `<!-- /👨 --><section class="c-hero"><div class="c-hero-inner">${human}<h1>${heading}</h1><p class="ask"><span>${escapeHTML(copy['home.hero.answer'])}</span> <span>${ask}</span></p><!-- /👨 -->${homePromptHTML(config,copy)}</div></section>`;
+}
+function homePartsHTML(original,copy) {
+ // Preserve the existing human-authored heading, architecture sentence and credit.
+ const heading=original.match(/<h2 id="promise-title">[\s\S]*?<\/h2>/)[0];
+ const sentence=original.match(/class="arch-text">([^<]*)/)[1].replace('The CARLOS architecture',`<a href="/attributes/" ${external}>The CARLOS architecture</a>`);
+ const foot=original.match(/<p class="architecture-inspiration">[\s\S]*?<\/p>/)[0].replace('architecture-inspiration','px-foot');
+ const icons={
+  skill:'<path d="M6 7h20a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H14l-6 5v-5H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/><path d="M11 13h10M11 17h6"/>',
+  rastrillo:'<path d="M16 4 4 10l12 6 12-6z"/><path d="m4 16 12 6 12-6M4 22l12 6 12-6"/>',
+  platform:'<rect x="5" y="6" width="22" height="8" rx="2"/><rect x="5" y="18" width="22" height="8" rx="2"/><path d="M10 10h.01M10 22h.01M15 10h7M15 22h7"/>',
+ };
+ const links={
+  skill:[['start','https://github.com/carlosframework/skills/blob/main/skills/getting-started/SKILL.md'],['build','https://github.com/carlosframework/skills/blob/main/skills/building-carlos-apps/SKILL.md']],
+  rastrillo:[['site','https://rastrillo.org'],['design','https://rastrillo.org/design-system/']],
+  platform:[['start','https://carloku.com'],['self','/platform/self-host/']],
+ };
+ const card=kind=>{
+  const text=key=>escapeHTML(copy[`home.parts.${kind}.${key}`]);
+  return `<li class="px px-${kind}"><svg class="px-ic" viewBox="0 0 32 32" aria-hidden="true">${icons[kind]}</svg><div class="px-content">${human}<h3>${text('title')}</h3><!-- /👨 -->${kind==='rastrillo'?human:''}<p class="px-is">${text('is')}</p>${kind==='rastrillo'?'<!-- /👨 -->':''}<p class="px-why">${text('why')}</p>${human}<p class="px-links">${links[kind].map(([key,url])=>`<a href="${url}" ${external}>${text(key)}<span class="px-go" aria-hidden="true">↗</span></a>`).join(' ')}</p><!-- /👨 --></div></li>`;
+ };
+ const join=key=>`<li class="px-join" role="presentation"><span>${escapeHTML(copy[`home.parts.join.${key}`])}</span></li>`;
+ return `<section class="parts" id="architecture" aria-labelledby="promise-title">${human}${heading}<p class="px-intro">${sentence}<!-- /👨 -->${robot}${escapeHTML(copy['home.parts.intro'])}</p>${robot}<ol class="px-flow" role="list">${card('skill')}${join('builds')}${card('rastrillo')}${join('runs')}${card('platform')}</ol>${human}${foot}</section>`;
 }
 export async function buildStart(outputDir,config) {
  const original=await read('src/start/index.html');
@@ -27,11 +69,11 @@ export async function buildStart(outputDir,config) {
  let html=original, agent;
  if(config.enabled) {
   const copy=JSON.parse(await read('src/_data/start-copy.json'));
-  const region=/<!-- start-demo:hero -->[\s\S]*?<!-- \/start-demo:hero -->/;
-  if(!region.test(home)) throw configError('homepage hero marker is missing');
-  const human='<!-- 👨 Constellation selected and copy supplied in chat -->';
-  const hero=`<span class="start-authorship">🤖</span><p class="hero-promise"><strong>${escapeHTML(copy['home.hero.promise'])}</strong></p><p class="hero-demo-intro">${escapeHTML(copy['home.hero.intro'])}</p>${promptHTML(config,copy,'home-prompt')}<div class="actions"><a href="/start/">${escapeHTML(copy['home.hero.action'])}</a><a href="#architecture"><span>Learn more</span>&nbsp;↓</a></div>`;
-  home=home.replace(region,()=>'<!-- /👨 -->'+hero+human)
+  const heroRegion=/<!-- start-demo:hero -->[\s\S]*?<!-- \/start-demo:hero -->/;
+  const partsRegion=/<!-- start-demo:parts -->[\s\S]*?<!-- \/start-demo:parts -->/;
+  if(!heroRegion.test(home) || !partsRegion.test(home)) throw configError('homepage demo marker is missing');
+  home=home.replace(heroRegion,()=>homeHeroHTML(config,copy))
+   .replace(partsRegion,original=>homePartsHTML(original,copy))
    .replace(/<meta name="description" content="[^"]*">/,()=>`<meta name="description" content="${escapeHTML(copy['home.meta.description'])}">`)
    .replace(/<meta property="og:description" content="[^"]*">/,()=>`<meta property="og:description" content="${escapeHTML(copy['home.og.description'])}">`)
    .replace('</head>','<link rel="stylesheet" href="/start/start.css?v=0">\n<script src="/start/start-tabs.js?v=0" defer></script>\n</head>');
@@ -47,7 +89,7 @@ export async function buildStart(outputDir,config) {
    .replace(/<link rel="canonical" href="[^"]*">/,()=>`<link rel="canonical" href="${escapeHTML(config.siteOrigin)}/start/">`)
    .replace('</head>','<link rel="stylesheet" href="/start/start.css?v=0">\n</head>');
  }
- home=home.replaceAll('<!-- start-demo:hero -->','').replaceAll('<!-- /start-demo:hero -->','');
+ home=home.replace(/<!-- \/?start-demo:(?:hero|parts) -->/g,'');
  // Remove previously generated or accidentally passthrough-copied source, also on watch rebuilds.
  const dir=join(outputDir,'start');await mkdir(dir,{recursive:true});
  for(const e of await readdir(dir)) if(!['start.css','start-tabs.js'].includes(e)) await rm(join(dir,e),{recursive:true,force:true});
