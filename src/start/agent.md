@@ -171,7 +171,7 @@ Claiming is not available on this deployment. Do not attempt any claim request, 
 
 Point the person to the [account path]({{accountUrl}}) and stop.{{/claimOff}}
 
-## 🤖 After you keep it {#after-you-keep-it}
+## After you keep it {#after-you-keep-it}
 
 Your app now lives in your CARLOS Platform account. Give your agent the app name, account ID and console address so it can help you make changes.
 

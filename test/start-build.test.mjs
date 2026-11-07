@@ -54,7 +54,7 @@ test('kept-app deep link and copy commands survive either claim mode',()=>scratc
   const markdown=await read(join(dir,'start/index.md'));
   const html=await read(join(dir,'start/index.html'));
   assert.ok(markdown.indexOf('](#after-you-keep-it)')<markdown.indexOf('## 1. Ask before building'));
-  assert.match(markdown,/^## 🤖 After you keep it \{#after-you-keep-it\}$/m);
+  assert.match(markdown,/^## After you keep it \{#after-you-keep-it\}$/m);
   assert.equal((html.match(/id="after-you-keep-it"/g)||[]).length,1);
   const section=html.match(/<section class="start-keep"[\s\S]*?<\/section>/)[0];
   assert.doesNotMatch(section,/<details|\bhidden\b/);
