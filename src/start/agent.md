@@ -173,7 +173,7 @@ Point the person to the [account path]({{accountUrl}}) and stop.{{/claimOff}}
 
 ## 🤖 After you keep it {#after-you-keep-it}
 
-Your app now lives in your account on CARLOS Platform. Give your agent the app name, account ID and console address so it can help you make changes.
+Your app now lives in your CARLOS Platform account. Give your agent the app name, account ID and console address so it can help you make changes.
 
 ### 1. Sign in
 
@@ -181,14 +181,14 @@ Your app now lives in your account on CARLOS Platform. Give your agent the app n
 carlos auth login --console '<console>'
 ```
 
-### 2. Get your source
+### 2. Fetch the source
 
 ```sh
 carlos apps source pull --console '<console>' --account-id '<sqid>' --app '<app>'
 mkdir '<app>' && tar --no-same-owner --no-same-permissions -xzf '<app>-source.tar.gz' -C '<app>' && cd '<app>'
 ```
 
-### 3. Build and deploy your changes
+### 3. Deploy changes
 
 ```sh
 CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -trimpath -buildvcs=false -o app .
