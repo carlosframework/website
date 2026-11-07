@@ -8,7 +8,24 @@ import { configError } from '../src/_data/start-config.mjs';
 const read=p=>readFile(p,'utf8');
 const md=markdownIt({html:false,linkify:false,typographer:false});
 const templates=new nunjucks.Environment(null,{autoescape:true,throwOnUndefined:true});
-export const renderMarkdown = text => md.render(text);
+export function renderMarkdown(text) {
+ // The explicit Markdown anchor survives copy edits and needs no browser script.
+ const boundary=/^## (.+) \{#after-you-keep-it\}$/m.exec(text);
+ if(!boundary) return md.render(text);
+ const before=text.slice(0,boundary.index);
+ const section=text.slice(boundary.index).replace(boundary[0],`## ${boundary[1]}`);
+ const tokens=md.parse(section,{});
+ tokens[0].attrSet('id','start-keep-title');
+ let step=0;
+ for(const token of tokens) {
+  if(token.type!=='fence' || token.info!=='sh') continue;
+  const id=`start-keep-step-${++step}`;
+  // Reuse the account pathway's code and Copy controls, including no-JS fallback.
+  token.type='html_block';
+  token.content=`<div class="code-wrap"><pre><code id="${id}">${escapeHTML(token.content.trimEnd())}</code></pre><button type="button" class="copy-button" data-copy-target="${id}" data-original="Copy" data-copied="Copied"><span>Copy</span></button></div>\n`;
+ }
+ return md.render(before)+`<section class="start-keep" id="after-you-keep-it" aria-labelledby="start-keep-title">\n${md.renderer.render(tokens,md.options,{})}</section>\n`;
+}
 export const escapeHTML = text => String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const pasteLine = config => `Follow the directions on ${config.siteOrigin}/start`;
 export function hostsHTML(config,copy) {

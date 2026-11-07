@@ -48,6 +48,31 @@ test('disabled pages match original build bytes; reused output loses all anonymo
   assert.equal(createHash('sha256').update(bytes).digest('hex'),baseline[name],name);
  }
 }));
+test('kept-app deep link and copy commands survive either claim mode',()=>scratch(async dir=>{
+ for(const claimOff of [false,true]) {
+  await buildStart(dir,{...config,claimOff});
+  const markdown=await read(join(dir,'start/index.md'));
+  const html=await read(join(dir,'start/index.html'));
+  assert.ok(markdown.indexOf('](#after-you-keep-it)')<markdown.indexOf('## 1. Ask before building'));
+  assert.match(markdown,/^## 🤖 After you keep it \{#after-you-keep-it\}$/m);
+  assert.equal((html.match(/id="after-you-keep-it"/g)||[]).length,1);
+  const section=html.match(/<section class="start-keep"[\s\S]*?<\/section>/)[0];
+  assert.doesNotMatch(section,/<details|\bhidden\b/);
+  const commands=[...markdown.split('{#after-you-keep-it}')[1].matchAll(/```sh\n([\s\S]*?)\n```/g)].map(m=>m[1]);
+  assert.equal(commands.length,3);
+  assert.match(commands[0],/^carlos auth login --console '<console>'$/);
+  assert.match(commands[1],/carlos apps source pull --console '<console>' --account-id '<sqid>' --app '<app>'/);
+  assert.match(commands[1],/tar --no-same-owner --no-same-permissions/);
+  assert.match(commands[2],/CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -trimpath -buildvcs=false -o app \./);
+  assert.match(commands[2],/--channel edge --kind binary --target linux-arm64 --version v1 --swap hold --no-assets \.\/app$/);
+  assert.doesNotMatch(commands.join('\n'),/apps create|\/api\/demo/);
+  for(const [i,command] of commands.entries()) {
+   const escaped=command.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll("'",'&#39;');
+   assert.ok(section.includes(`<code id="start-keep-step-${i+1}">${escaped}</code>`));
+   assert.ok(section.includes(`data-copy-target="start-keep-step-${i+1}"`));
+  }
+ }
+}));
 test('claim-off matches regenerated enabled baselines',()=>scratch(async dir=>{
  const baseline=JSON.parse(await read('test/fixtures/start-enabled-baseline.json'));
  for(const {env,hashes} of baseline.cases) {

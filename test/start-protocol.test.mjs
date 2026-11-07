@@ -65,7 +65,10 @@ test('API calls and status validation use API origin; browser claims and CLI ret
  assert.ok(markdown.includes(`Validate returned status URLs as HTTPS with the exact configured API origin \`${split.apiOrigin}\`, and returned claim URLs as HTTPS with the exact configured console origin \`${split.consoleOrigin}\`, no userinfo; reject unexpected origins.`));
  assert.match(markdown,/Preserve accepted URLs byte-for-byte, including the claim fragment/);
  assert.match(markdown,/Never follow a credential-bearing redirect to another origin/);
- for(const command of ['carlos auth login','carlos auth whoami','carlos deploy']) assert.ok(markdown.includes(`${command} --console ${split.consoleOrigin}`));
+ // Kept apps use the console supplied by the person, not the demo API origin.
+ const kept=markdown.split('## 🤖 After you keep it')[1];
+ for(const command of ['carlos auth login','carlos apps source pull','carlos deploy']) assert.ok(kept.includes(`${command} --console '<console>'`));
+ assert.ok(!kept.includes(split.apiOrigin));
  assert.ok(markdown.includes(`[account path](${split.accountUrl})`));
  const off=renderAgent(template,{...split,claimOff:true},undefined,manifest);
  assert.ok(off.includes(`POST ${split.apiOrigin}/api/demo/apps`));
@@ -100,18 +103,20 @@ test('claim-off renders without a contract and preserves shared sections', () =>
  assert.doesNotMatch(markdown,/claims|flowToken|Contract producer|claim contract/);
  assert.deepEqual([...markdown.matchAll(/```json\n([\s\S]*?)\n```/g)].map(m=>JSON.parse(m[1]).operation),['create','job-status','update']);
  assert.ok(!markdown.includes(contract.producerCommit));
- assert.doesNotMatch(markdown,/Give the person the exact secret claim link|carlos auth|carlos deploy/);
+ assert.doesNotMatch(markdown.split('## 🤖 After you keep it')[0],/Give the person the exact secret claim link|carlos auth|carlos deploy/);
  assert.match(markdown,/Do not share the claim link\./);
  const sections=markdown.split(/(?=^## \d+\.)/m);
  const normal=rendered.split(/(?=^## \d+\.)/m);
  assert.equal(sections.length,11);
- assert.equal(sections[0],'# 🤖 Agent directions: make a small app\n\n');
+ assert.match(sections[0],/go directly to \[After you keep it\]\(#after-you-keep-it\)/);
+ assert.match(sections[0],/Do not create a new demo or a new app/);
  for(const n of [1,2,3,4,6,7]) assert.equal(sections[n],normal[n],`section ${n}`);
  assert.match(sections[9],/Claiming is not available on this deployment/);
  assert.match(sections[9],/Do not attempt any claim request, even if a response says `claimAvailable` is true/);
  assert.match(sections[9],/demo cannot be kept and ends at the returned `expiresAt`/);
  assert.match(sections[9],/Keep the create response's `claimToken` private and use it only as the update bearer/);
- assert.equal(sections[10],`## 10. For a permanent app\n\nPoint the person to the [account path](${config.accountUrl}) and stop.\n`);
+ assert.equal(sections[10].split('\n## 🤖 After you keep it')[0],`## 10. For a permanent app\n\nPoint the person to the [account path](${config.accountUrl}) and stop.\n`);
+ assert.equal(markdown.split('## 🤖 After you keep it')[1],rendered.split('## 🤖 After you keep it')[1]);
  assert.throws(()=>renderAgent(template,{...off,enabled:false},undefined,manifest),/CARLOS_START_DEMO=1/);
 });
 const section = (markdown, n) => markdown.split(/(?=^## \d+\.)/m)[n];
