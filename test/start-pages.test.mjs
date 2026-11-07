@@ -86,9 +86,11 @@ test('approved copy archive and starter UI bytes agree exactly',async()=>{
  const later=JSON.parse(await read('copy-review/start-2026-11-07/result.json'));
  const approved=new Map(later.strings.map(s=>[s.id,s.text]));
  for(const row of rows) if(approved.has(row.id)) row.text=approved.get(row.id);
+ // Paul, 2026-11-07: no robot marker anywhere on this site. The approved
+ // words stand; only a leading marker from the archive is dropped.
  for(const {id,text} of rows) {
   if(id.startsWith('home.hero.') || id.startsWith('start.hosts.')) continue;
-  assert.deepEqual(copy[id],text,id);
+  assert.deepEqual(copy[id],typeof text==='string'?text.replace(/^🤖 /,''):text,id);
  }
  const go=await read('src/start/starter/v1/main.go');assert.doesNotMatch(go,/DRAFT copy/);
  for(const row of rows.filter(r=>r.id.startsWith('starter.'))) assert.ok(go.includes(JSON.stringify(row.text)),row.id);
