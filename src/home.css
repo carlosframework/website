@@ -1206,22 +1206,22 @@ a.hero-tool:hover h2, .hero-tool :is(h2, h3) a:hover { text-decoration: underlin
 }
 .parts {
   scroll-margin-top: 0;
-  container-type: inline-size;
   --px-ink: light-dark(#1b3431, #e3ece8); --px-ink-2: light-dark(#40524f, #b4c6c0);
   --px-acc: light-dark(#1a5f4f, #6fd3b8); --px-line: light-dark(rgba(31, 111, 92, 0.35), rgba(111, 211, 184, 0.3));
   --px-card: light-dark(#f3f7f5, #172a2c);
   background: light-dark(#edf3ef, #102022); color: var(--px-ink);
-  padding: clamp(2.75rem, 9cqi, 5.5rem) clamp(1.15rem, 5cqi, 4rem);
-  font: 400 1.02rem/1.6 var(--site-sans); text-align: center;
+  padding: clamp(2.75rem, 9vw, 5.5rem) var(--gutter);
+  font: 400 1.02rem/1.6 var(--site-sans); text-align: left;
 }
-.parts h2 { font: 650 clamp(1.6rem, 6.4cqi, 2.4rem)/1.25 var(--site-sans); letter-spacing: -0.02em; margin: 0 auto 1.25rem; max-width: 30ch; text-wrap: balance; }
+.parts-layout { max-width: var(--wrap); margin-inline: auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+.parts h2 { font: 650 clamp(1.6rem, 3vw, 2.4rem)/1.25 var(--site-sans); letter-spacing: -0.02em; margin: 0 0 1.25rem; max-width: 30ch; text-wrap: balance; }
 .parts h2 em { color: var(--px-acc); }
-.parts .px-intro { max-width: 40rem; margin: 0 auto 2.25rem; color: var(--px-ink-2); text-wrap: pretty; }
+.parts .px-intro { max-width: 40rem; margin: 0; color: var(--px-ink-2); text-wrap: pretty; }
 .landing .parts a { color: var(--px-acc); text-underline-offset: 0.2em; }
-.parts .px-flow { list-style: none; margin: 0 auto; padding: 0; max-width: 68rem; display: grid; gap: 0; text-align: left; }
+.parts .px-flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
 .parts .px {
   background: var(--px-card); border: 1px solid var(--px-line); border-radius: 12px;
-  padding: 1.25rem 1.3rem 1.15rem; display: grid; grid-template-columns: auto 1fr; column-gap: 0.85rem; align-content: start;
+  padding: 1.25rem 1.3rem 1.15rem; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 0.85rem; align-content: start;
 }
 .parts .px-ic { grid-row: auto; width: 2.25rem; height: 2.25rem; fill: none; stroke: var(--px-acc); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; margin-top: 0.1rem; }
 .parts .px h3 { margin: 0 0 0.3rem; font: 680 1.15rem/1.3 var(--site-sans); letter-spacing: -0.012em; }
@@ -1230,18 +1230,13 @@ a.hero-tool:hover h2, .hero-tool :is(h2, h3) a:hover { text-decoration: underlin
 .parts .px-links { margin: 0; display: flex; flex-wrap: wrap; gap: 0.35rem 1.1rem; font-weight: 650; font-size: 0.95rem; }
 .parts .px-links a { text-decoration: none; }
 .parts .px-links a:hover { text-decoration: underline; }
-.parts .px-go { font-size: 0.85em; margin-left: 0.2em; }
 .parts .px-skill { --px-acc: light-dark(#1a5f4f, #6fd3b8); }
 .parts .px-rastrillo { --px-acc: light-dark(#6a3f74, #d4a6e0); border-color: light-dark(rgba(106, 63, 116, 0.35), rgba(212, 166, 224, 0.3)); }
 .parts .px-platform { --px-acc: light-dark(#2d5a78, #8cc4e8); border-color: light-dark(rgba(45, 90, 120, 0.35), rgba(140, 196, 232, 0.3)); }
-.parts .px-join { display: grid; justify-items: center; padding: 0.35rem 0; color: var(--px-ink-2); font: 600 0.85rem/1.3 var(--site-sans); }
-.parts .px-join span { padding: 0.15rem 0; }
-@container (min-width: 900px) {
-  .parts .px-flow { grid-template-columns: 1fr auto 1fr auto 1fr; align-items: stretch; }
-  .parts .px { grid-template-columns: 1fr; }
-  .parts .px-ic { grid-row: auto; margin: 0 0 0.6rem; }
-  .parts .px-join { align-content: center; padding: 0 0.5rem; width: 6.5rem; text-align: center; }
+@media (min-width: 64rem) {
+  .parts-layout { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+  .parts .px-foot { grid-column: 2; }
 }
-.parts .px-foot { max-width: 40rem; margin: 2.25rem auto 0; color: var(--px-ink-2); font-size: 0.95rem; }
+.parts .px-foot { max-width: 40rem; margin: 0; color: var(--px-ink-2); font-size: 0.95rem; }
 
 .parts .px-content { min-width: 0; }

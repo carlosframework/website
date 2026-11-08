@@ -43,8 +43,6 @@
   "home.paste.works": "Try it in with your preferred agent setup",
   "home.paste.done": "Copied. Paste it into your agent.",
   "home.parts.intro": "Three parts make it work:",
-  "home.parts.join.builds": "builds your app with",
-  "home.parts.join.runs": "runs on",
   "home.parts.skill.title": "The skill",
   "home.parts.skill.is": "Instructions your coding agent reads before it starts.",
   "home.parts.skill.why": "It teaches your agent to build and ship apps the CARLOS way, so you don’t have to learn how first.",

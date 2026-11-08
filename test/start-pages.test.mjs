@@ -27,7 +27,10 @@ test('enabled homepage has the approved centred hero and three parts',()=>pages(
  assert.doesNotMatch(parts,/🤖|class="robot"/);
  assert.match(parts,/<ol class="px-flow" role="list">/);
  assert.equal((parts.match(/<li class="px px-/g)||[]).length,3);
- assert.equal((parts.match(/class="px-join"/g)||[]).length,2);
+ assert.doesNotMatch(parts,/px-join|px-go|builds your app with|runs on|[↗→↓]/);
+ assert.equal((parts.match(/<li\b/g)||[]).length,3);
+ assert.match(parts,/<div class="parts-heading">[\s\S]*?<h2[^>]*>[\s\S]*?<p class="px-intro">[\s\S]*?<\/p><\/div><ol class="px-flow"/);
+ assert.deepEqual([...parts.matchAll(/<li class="px px-([^" ]+)"/g)].map(m=>m[1]),['skill','rastrillo','platform']);
  for(const [key,value] of Object.entries(copy).filter(([key])=>key.startsWith('home.parts.'))) assert.ok(parts.includes(escapeHTML(value)),key);
  assert.match(parts,/<a href="\/attributes\/" target="_blank" rel="noopener noreferrer">The CARLOS architecture<\/a>/);
  const source=await read('src/index.html');
@@ -105,6 +108,7 @@ test('clipboard enhancement has no API client and exposes reviewed fallback',asy
 });
 
 test('homepage and host copy matches Paul’s approved copy review verbatim',()=>{
+ assert.ok(!Object.keys(copy).some(key=>key.startsWith('home.parts.join.')));
  const approved={
   "start.hosts.two": "Make sure your agent has access to {siteHost} and {apiHost}",
   "start.hosts.one": "Make sure your agent has access to {host}",
@@ -115,8 +119,6 @@ test('homepage and host copy matches Paul’s approved copy review verbatim',()=
   "home.paste.works": "Try it in with your preferred agent setup",
   "home.paste.done": "Copied. Paste it into your agent.",
   "home.parts.intro": "Three parts make it work:",
-  "home.parts.join.builds": "builds your app with",
-  "home.parts.join.runs": "runs on",
   "home.parts.skill.title": "The skill",
   "home.parts.skill.is": "Instructions your coding agent reads before it starts.",
   "home.parts.skill.why": "It teaches your agent to build and ship apps the CARLOS way, so you don’t have to learn how first.",

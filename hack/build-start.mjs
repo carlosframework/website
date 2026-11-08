@@ -77,10 +77,9 @@ function homePartsHTML(original,copy) {
  };
  const card=kind=>{
   const text=key=>escapeHTML(copy[`home.parts.${kind}.${key}`]);
-  return `<li class="px px-${kind}"><svg class="px-ic" viewBox="0 0 32 32" aria-hidden="true">${icons[kind]}</svg><div class="px-content">${human}<h3>${text('title')}</h3><!-- /👨 -->${kind==='rastrillo'?human:''}<p class="px-is">${text('is')}</p>${kind==='rastrillo'?'<!-- /👨 -->':''}<p class="px-why">${text('why')}</p>${human}<p class="px-links">${links[kind].map(([key,url])=>`<a href="${url}" ${external}>${text(key)}<span class="px-go" aria-hidden="true">↗</span></a>`).join(' ')}</p><!-- /👨 --></div></li>`;
+  return `<li class="px px-${kind}"><svg class="px-ic" viewBox="0 0 32 32" aria-hidden="true">${icons[kind]}</svg><div class="px-content">${human}<h3>${text('title')}</h3><!-- /👨 -->${kind==='rastrillo'?human:''}<p class="px-is">${text('is')}</p>${kind==='rastrillo'?'<!-- /👨 -->':''}<p class="px-why">${text('why')}</p>${human}<p class="px-links">${links[kind].map(([key,url])=>`<a href="${url}" ${external}>${text(key)}</a>`).join(' ')}</p><!-- /👨 --></div></li>`;
  };
- const join=key=>`<li class="px-join" role="presentation"><span>${escapeHTML(copy[`home.parts.join.${key}`])}</span></li>`;
- return `<section class="parts" id="architecture" aria-labelledby="promise-title">${human}${heading}<p class="px-intro">${sentence}<!-- /👨 --> ${escapeHTML(copy['home.parts.intro'])}</p><ol class="px-flow" role="list">${card('skill')}${join('builds')}${card('rastrillo')}${join('runs')}${card('platform')}</ol>${human}${foot}</section>`;
+ return `<section class="parts" id="architecture" aria-labelledby="promise-title"><div class="parts-layout"><div class="parts-heading">${human}${heading}<p class="px-intro">${sentence}<!-- /👨 --> ${escapeHTML(copy['home.parts.intro'])}</p></div><ol class="px-flow" role="list">${card('skill')}${card('rastrillo')}${card('platform')}</ol>${human}${foot}</div></section>`;
 }
 export async function buildStart(outputDir,config) {
  const original=await read('src/start/index.html');
