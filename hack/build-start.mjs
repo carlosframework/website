@@ -56,7 +56,7 @@ function homePromptHTML(config,copy) {
 <p class="pb-done" id="${id}-status" role="status" aria-live="polite"></p></div>${hostsHTML(config,copy)}`;
 }
 function homeHeroHTML(config,copy) {
- const heading=escapeHTML(copy['home.hero.heading']).replace(/build better apps|with AI,|running costs\?/g,text=>`<span class="nw">${text}</span>`);
+ const heading=escapeHTML(copy['home.hero.heading']).replace(/use agents\.|ship faster,|save money\./g,text=>`<span class="nw">${text}</span>`);
  const ask=escapeHTML(copy['home.hero.ask']).replace(/^Read on/,text=>`<a href="#architecture">${text}</a>`);
  return `<!-- /👨 --><section class="c-hero"><div class="c-hero-inner">${human}<h1>${heading}</h1><p class="ask"><span>${escapeHTML(copy['home.hero.answer'])}</span> <span>${ask}</span></p><!-- /👨 -->${homePromptHTML(config,copy)}</div></section>`;
 }

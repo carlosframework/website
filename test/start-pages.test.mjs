@@ -13,10 +13,10 @@ async function pages(fn,overrides={}) {await mkdir(base,{recursive:true});const 
 const plain=html=>html.replace(/<!--[\s\S]*?-->/g,'').replace(/<[^>]*>/g,'').replace(/&#39;/g,"'").replace(/&amp;/g,'&').replace(/&quot;/g,'"');
 test('enabled homepage has the approved centred hero and three parts',()=>pages(async(home,start)=>{
  const hero=home.match(/<section class="c-hero">[\s\S]*?<\/section>/)[0];
- assert.equal(plain(hero.match(/<h1>([\s\S]*?)<\/h1>/)[1]),'Want to ship faster, build better apps with AI, and save on running costs?');
- for(const phrase of ['build better apps','with AI,','running costs?']) assert.ok(hero.includes(`<span class="nw">${phrase}</span>`));
+ assert.equal(plain(hero.match(/<h1>([\s\S]*?)<\/h1>/)[1]),'You already use agents. Now you want to ship faster, build better and save money.');
+ for(const phrase of ['use agents.','ship faster,','save money.']) assert.ok(hero.includes(`<span class="nw">${phrase}</span>`));
  assert.match(hero,/<!-- 👨 Paul's words, verbatim --><h1>/);
- assert.ok(plain(hero).includes('CARLOS does all that and more. Read on, or try it now with your agent'));
+ assert.ok(plain(hero).includes('You want CARLOS. Read on, or try it now:'));
  assert.match(hero,/<a href="#architecture">Read on<\/a>/);
  assert.doesNotMatch(home,/class="hero-tools"|class="hero-wordmark"|class="hero-subtitle"/);
  assert.match(hero,/<div class="paste v-soft">/);
@@ -104,15 +104,15 @@ test('clipboard enhancement has no API client and exposes reviewed fallback',asy
  assert.match(js,/button\.hidden = false/);assert.match(js,/dataset\.copyFallback/);assert.match(js,/selectNodeContents\(code\)/);assert.match(js,/dataset\.copyStatus/);
 });
 
-test('homepage and host copy matches Paul’s approved November 7 brief verbatim',()=>{
+test('homepage and host copy matches Paul’s approved copy review verbatim',()=>{
  const approved={
   "start.hosts.two": "Make sure your agent has access to {siteHost} and {apiHost}",
   "start.hosts.one": "Make sure your agent has access to {host}",
-  "home.hero.heading": "Want to ship faster, build better apps with AI, and save on running costs?",
-  "home.hero.answer": "CARLOS does all that and more.",
-  "home.hero.ask": "Read on, or try it now with your agent",
-  "home.paste.label": "For your agent",
-  "home.paste.works": "Works with Claude Code, Codex and Cursor",
+  "home.hero.heading": "You already use agents. Now you want to ship faster, build better and save money.",
+  "home.hero.answer": "You want CARLOS.",
+  "home.hero.ask": "Read on, or try it now:",
+  "home.paste.label": "Paste this into your agent and it can take things from there",
+  "home.paste.works": "Try it in with your preferred agent setup",
   "home.paste.done": "Copied. Paste it into your agent.",
   "home.parts.intro": "Three parts make it work:",
   "home.parts.join.builds": "builds your app with",

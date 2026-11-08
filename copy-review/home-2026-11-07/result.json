@@ -1,0 +1,296 @@
+{
+  "action": "approve",
+  "guidance": null,
+  "strings": [
+    {
+      "id": "home.meta.description",
+      "text": "Tell your coding agent what you want to make. Try the app it builds at a public link for 24 hours. No account needed.",
+      "original": "Tell your coding agent what you want to make. Try the app it builds at a public link for 24 hours. No account needed.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.og.description",
+      "text": "Tell your coding agent what you want to make. Try the app it builds at a public link for 24 hours.",
+      "original": "Tell your coding agent what you want to make. Try the app it builds at a public link for 24 hours.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.hero.heading",
+      "text": "You already use agents. Now you want to ship faster, build better and save money.",
+      "original": "Want to ship faster, build better apps with AI, and save on running costs?",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.hero.answer",
+      "text": "You want CARLOS.",
+      "original": "CARLOS does all that and more.",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.hero.ask",
+      "text": "Read on, or try it now:",
+      "original": "Read on, or try it now with your agent",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.paste.label",
+      "text": "Paste this into your agent and it can take things from there",
+      "original": "For your agent",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "start.prompt",
+      "text": "Follow the directions on https://carlosframework.com/start",
+      "original": "Follow the directions on https://carlosframework.com/start",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.paste.works",
+      "text": "Try it in with your preferred agent setup",
+      "original": "Works with Claude Code, Codex and Cursor",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "copy.label",
+      "text": "Copy",
+      "original": "Copy",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "copy.aria",
+      "text": "Copy the line for your agent",
+      "original": "Copy the line for your agent",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "copy.done",
+      "text": "Copied",
+      "original": "Copied",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.paste.done",
+      "text": "Copied. Paste it into your agent.",
+      "original": "Copied. Paste it into your agent.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "copy.fallback",
+      "text": "Your browser could not copy the line. It is selected. Copy it yourself.",
+      "original": "Your browser could not copy the line. It is selected. Copy it yourself.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "start.hosts.two",
+      "text": "Make sure your agent has access to carlosframework.com and console.carloku.com",
+      "original": "Make sure your agent has access to carlosframework.com and console.carloku.com",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.parts.intro",
+      "text": "Three parts make it work:",
+      "original": "Three parts make it work:",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.parts.skill.title",
+      "text": "The skill",
+      "original": "The skill",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.parts.skill.is",
+      "text": "Instructions your coding agent reads before it starts.",
+      "original": "Instructions your coding agent reads before it starts.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.parts.skill.why",
+      "text": "It teaches your agent to build and ship apps the CARLOS way, so you don’t have to learn how first.",
+      "original": "It teaches your agent to build and ship apps the CARLOS way, so you don’t have to learn how first.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.parts.skill.start",
+      "text": "Get started",
+      "original": "Get started",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.parts.skill.build",
+      "text": "Build apps",
+      "original": "Build apps",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.parts.join.builds",
+      "text": "builds your app with",
+      "original": "builds your app with",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.parts.rastrillo.title",
+      "text": "Rastrillo",
+      "original": "Rastrillo",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.parts.rastrillo.is",
+      "text": "The Go web framework your app is built on.",
+      "original": "The Go web framework your app is built on.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.parts.rastrillo.why",
+      "text": "It gives your agent ready-made parts for many kinds of apps, so it writes less from scratch.",
+      "original": "It gives your agent ready-made parts for many kinds of apps, so it writes less from scratch.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.parts.rastrillo.site",
+      "text": "rastrillo.org",
+      "original": "rastrillo.org",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.parts.rastrillo.design",
+      "text": "Fiesta design system",
+      "original": "Fiesta design system",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.parts.join.runs",
+      "text": "runs on",
+      "original": "runs on",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.parts.platform.title",
+      "text": "CARLOS Platform",
+      "original": "CARLOS Platform",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.parts.platform.is",
+      "text": "Where your app runs: hosted on Carloku or on your own hardware.",
+      "original": "Where your app runs: hosted on Carloku or on your own hardware.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.parts.platform.why",
+      "text": "It puts your app online with HTTPS, backs up its data as it changes, and puts it to sleep when nobody is using it.",
+      "original": "It puts your app online with HTTPS, backs up its data as it changes, and puts it to sleep when nobody is using it.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.parts.platform.start",
+      "text": "Start with Carloku",
+      "original": "Start with Carloku",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.parts.platform.self",
+      "text": "or self-host",
+      "original": "or self-host",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    }
+  ],
+  "review": "udlnnk4gfui43bvbh6bcwamxrq",
+  "generation": 1
+}
