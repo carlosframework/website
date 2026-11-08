@@ -43,7 +43,7 @@
 .agent-content { max-width:48rem; overflow-wrap:anywhere; }
 .agent-content h1 { font-size:1.5rem; margin-top:2rem; }
 .agent-content h2 { font-size:1.3rem; margin-top:2.5rem; }
-.agent-content pre { max-width:100%; overflow:auto; background:var(--page-alt); color:var(--ink); border-left:2px solid var(--accent); padding:1rem; margin-block:1.25rem; }
+.agent-content pre { max-width:100%; overflow:auto; background:color-mix(in srgb,var(--accent) 5%,var(--page-alt)); color:var(--ink); border:1px solid color-mix(in srgb,var(--accent) 30%,var(--rule)); border-radius:8px; padding:1rem; margin-block:1.25rem; }
 .agent-content pre code { font: .85rem/1.65 var(--mono); }
 .agent-content a { text-decoration:underline; text-underline-offset:.2em; }
 /* 🤖 Kept-app copy is draft pending Luna and Paul's review. */
