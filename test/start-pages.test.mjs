@@ -80,7 +80,7 @@ for(const [name,overrides,hosts] of [
 test('start order, approved text arrays, complete instructions and unchanged account block',()=>pages(async(_,start)=>{
  const positions=['<h1>','class="intro"','id="start-prompt"','<ol>','Keep it','href="#account"','id="account"','id="for-your-agent"','<!-- agent-content -->'].map(s=>start.indexOf(s));
  assert.ok(positions.every((p,i)=>p>=0 && (!i||p>positions[i-1])));
- for(const [id,value] of Object.entries(copy).filter(([id])=>id.startsWith('start.')&&!id.startsWith('start.hosts.')&&!['start.prompt','start.config.error'].includes(id))) for(const text of [value].flat()) assert.ok(start.includes(escapeHTML(text)),id);
+ for(const [id,value] of Object.entries(copy).filter(([id])=>id.startsWith('start.')&&!id.startsWith('start.hosts.')&&!['start.prompt','start.config.error'].includes(id))) for(const text of [value].flat()) assert.ok(start.includes(id==='start.terms_line'?text:escapeHTML(text)),id);
  const account=(await read('src/start/index.html')).match(/<div class="start-tabs">[\s\S]*?(?=<\/div><\/section><\/main>)/)[0];assert.ok(start.includes(account));
  const section=start.split('id="for-your-agent"')[1];assert.doesNotMatch(section,/<details|<[^>]*\bhidden\b/);assert.match(section,/GOOS=linux GOARCH=arm64/);
 }));

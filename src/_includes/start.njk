@@ -8,6 +8,7 @@
 <ol>{% for step in copy['start.steps'] %}<li>{{ step }}</li>{% endfor %}</ol>
 <p>{{ copy['start.lifetime'] }}</p>
 <p>{{ copy['start.data'] }}</p>
+<p>{{ copy['start.terms_line'] | safe }}</p>
 {% if not config.claimOff %}<h2>{{ copy['start.claim'][0] }}</h2>
 <p>{{ copy['start.claim'][1] }}</p>
 {% endif %}<p>{{ copy['start.account'][0] }} <a href="#account">{{ copy['start.account'][1] }}</a></p>
