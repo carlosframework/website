@@ -14,7 +14,7 @@ const plain=html=>html.replace(/<!--[\s\S]*?-->/g,'').replace(/<[^>]*>/g,'').rep
 test('enabled homepage has the approved centred hero and three parts',()=>pages(async(home,start)=>{
  const hero=home.match(/<section class="c-hero">[\s\S]*?<\/section>/)[0];
  assert.equal(plain(hero.match(/<h1>([\s\S]*?)<\/h1>/)[1]),"You're already using agents.");
- assert.ok(hero.includes('<span class="nw">already using agents.</span>'));
+ assert.ok(hero.includes('<span class="nw">using agents.</span>'));
  const sub=hero.match(/<p class="sub">([\s\S]*?)<\/p>/)[1];
  assert.equal(plain(sub),'Now you want to ship faster, build better and save money.');
  for(const word of ['faster','better','save money']) assert.ok(sub.includes(`<em>${word}</em>`));
