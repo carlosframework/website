@@ -1224,15 +1224,18 @@ a.hero-tool:hover h2, .hero-tool :is(h2, h3) a:hover { text-decoration: underlin
 .parts .px-flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
 .parts .px {
   background: var(--px-card); border: 1px solid var(--px-line); border-radius: 12px;
-  padding: 1.25rem 1.3rem 1.15rem; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 0.85rem; align-content: start;
+  padding: 1.25rem 1.3rem 0; overflow: hidden; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 0.85rem; align-content: start;
 }
 .parts .px-ic { grid-row: auto; width: 2.25rem; height: 2.25rem; fill: none; stroke: var(--px-acc); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; margin-top: 0.1rem; }
 .parts .px h3 { margin: 0 0 0.3rem; font: 680 1.15rem/1.3 var(--site-sans); letter-spacing: -0.012em; }
 .parts .px-is { margin: 0 0 0.45rem; font-weight: 600; color: var(--px-ink); }
 .parts .px-why { margin: 0 0 0.75rem; color: var(--px-ink-2); }
-.parts .px-links { margin: 0; display: flex; flex-wrap: wrap; gap: 0.35rem 1.1rem; font-weight: 650; font-size: 0.95rem; }
-.parts .px-links a { text-decoration: none; }
-.parts .px-links a:hover { text-decoration: underline; }
+.parts .px-links { grid-column: 1 / -1; margin: 0.35rem -1.3rem 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--px-line); font-weight: 650; font-size: 0.92rem; }
+.parts .px-links a { display: flex; align-items: center; justify-content: center; gap: 0.45rem; min-height: 3rem; padding: 0.6rem 0.8rem; text-decoration: none; background: color-mix(in srgb, var(--px-acc) 5%, transparent); }
+.parts .px-links a + a { border-left: 1px solid var(--px-line); }
+.parts .px-links a:hover { background: color-mix(in srgb, var(--px-acc) 14%, transparent); text-decoration: underline; text-underline-offset: 0.2em; }
+.parts .px-links a:focus-visible { outline: 2px solid var(--px-acc); outline-offset: -4px; }
+.parts .px-ext { width: 14px; height: 14px; flex: none; }
 .parts .px-skill { --px-acc: light-dark(#1a5f4f, #6fd3b8); }
 .parts .px-rastrillo { --px-acc: light-dark(#6a3f74, #d4a6e0); border-color: light-dark(rgba(106, 63, 116, 0.35), rgba(212, 166, 224, 0.3)); }
 .parts .px-platform { --px-acc: light-dark(#2d5a78, #8cc4e8); border-color: light-dark(rgba(45, 90, 120, 0.35), rgba(140, 196, 232, 0.3)); }

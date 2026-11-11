@@ -34,6 +34,8 @@ test('enabled homepage has the approved centred hero and three parts',()=>pages(
  assert.doesNotMatch(parts,/px-join|px-go|builds your app with|runs on|[↗→↓]/);
  assert.equal((parts.match(/<li\b/g)||[]).length,3);
  assert.match(parts,/<div class="parts-heading">[\s\S]*?<h2[^>]*>[\s\S]*?<p class="px-intro">[\s\S]*?<\/p><\/div><ol class="px-flow"/);
+ assert.equal((parts.match(/<p class="px-links">/g)||[]).length,3);
+ assert.equal((parts.match(/<svg class="px-ext"/g)||[]).length,6);
  assert.deepEqual([...parts.matchAll(/<li class="px px-([^" ]+)"/g)].map(m=>m[1]),['skill','rastrillo','platform']);
  for(const [key,value] of Object.entries(copy).filter(([key])=>key.startsWith('home.parts.'))) assert.ok(parts.includes(escapeHTML(value)),key);
  assert.match(parts,/<a href="\/attributes\/" target="_blank" rel="noopener noreferrer">The CARLOS architecture<\/a>/);

@@ -76,9 +76,10 @@ function homePartsHTML(original,copy) {
   rastrillo:[['site','https://rastrillo.org'],['design','https://rastrillo.org/design-system/']],
   platform:[['start','https://carloku.com'],['self','/platform/self-host/']],
  };
+ const arrow='<svg class="px-ext" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 3h6v6M10 14 21 3"></path><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"></path></svg>';
  const card=kind=>{
   const text=key=>escapeHTML(copy[`home.parts.${kind}.${key}`]);
-  return `<li class="px px-${kind}"><svg class="px-ic" viewBox="0 0 32 32" aria-hidden="true">${icons[kind]}</svg><div class="px-content">${human}<h3>${text('title')}</h3><!-- /👨 -->${kind==='rastrillo'?human:''}<p class="px-is">${text('is')}</p>${kind==='rastrillo'?'<!-- /👨 -->':''}<p class="px-why">${text('why')}</p>${human}<p class="px-links">${links[kind].map(([key,url])=>`<a href="${url}" ${external}>${text(key)}</a>`).join(' ')}</p><!-- /👨 --></div></li>`;
+  return `<li class="px px-${kind}"><svg class="px-ic" viewBox="0 0 32 32" aria-hidden="true">${icons[kind]}</svg><div class="px-content">${human}<h3>${text('title')}</h3><!-- /👨 -->${kind==='rastrillo'?human:''}<p class="px-is">${text('is')}</p>${kind==='rastrillo'?'<!-- /👨 -->':''}<p class="px-why">${text('why')}</p></div>${human}<p class="px-links">${links[kind].map(([key,url])=>`<a href="${url}" ${external}>${text(key)}${arrow}</a>`).join(' ')}</p><!-- /👨 --></li>`;
  };
  return `<section class="parts" id="architecture" aria-labelledby="promise-title"><div class="parts-layout"><div class="parts-heading">${human}${heading}<p class="px-intro">${sentence}<!-- /👨 --> ${escapeHTML(copy['home.parts.intro'])}</p></div><ol class="px-flow" role="list">${card('skill')}${card('rastrillo')}${card('platform')}</ol>${human}${foot}</div></section>`;
 }
