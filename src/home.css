@@ -1142,6 +1142,9 @@ a.hero-tool:hover h2, .hero-tool :is(h2, h3) a:hover { text-decoration: underlin
   font: 700 clamp(1.75rem, 8.4vw, 4rem)/1.06 var(--site-sans); letter-spacing: -0.034em;
   color: #f1f5ef; margin: 0 auto 1.4rem; max-width: 21ch; text-wrap: balance;
 }
+.c-hero h1 { margin-bottom: 0.7rem; max-width: 18ch; }
+.c-hero .sub { font: 600 clamp(1.3rem, 5.6vw, 2.35rem)/1.2 var(--site-sans); letter-spacing: -0.02em; color: #dfe6ee; margin: 0 auto 1.6rem; max-width: 24ch; text-wrap: balance; }
+.c-hero .sub em { font-style: italic; color: #f1f5ef; }
 .c-hero .ask { font-size: clamp(1.08rem, 4vw, 1.3rem); color: #c9d2de; margin: 0 auto 1rem; max-width: 34rem; text-wrap: balance; }
 .c-hero .ask > span { display: inline-block; }
 .c-hero .ask a { color: #2fd4ac; font-weight: 650; text-underline-offset: 0.2em; }

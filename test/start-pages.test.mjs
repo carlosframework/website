@@ -13,8 +13,12 @@ async function pages(fn,overrides={}) {await mkdir(base,{recursive:true});const 
 const plain=html=>html.replace(/<!--[\s\S]*?-->/g,'').replace(/<[^>]*>/g,'').replace(/&#39;/g,"'").replace(/&amp;/g,'&').replace(/&quot;/g,'"');
 test('enabled homepage has the approved centred hero and three parts',()=>pages(async(home,start)=>{
  const hero=home.match(/<section class="c-hero">[\s\S]*?<\/section>/)[0];
- assert.equal(plain(hero.match(/<h1>([\s\S]*?)<\/h1>/)[1]),'You already use agents. Now you want to ship faster, build better and save money.');
- for(const phrase of ['use agents.','ship faster,','save money.']) assert.ok(hero.includes(`<span class="nw">${phrase}</span>`));
+ assert.equal(plain(hero.match(/<h1>([\s\S]*?)<\/h1>/)[1]),"You're already using agents.");
+ assert.ok(hero.includes('<span class="nw">already using agents.</span>'));
+ const sub=hero.match(/<p class="sub">([\s\S]*?)<\/p>/)[1];
+ assert.equal(plain(sub),'Now you want to ship faster, build better and save money.');
+ for(const word of ['faster','better','save money']) assert.ok(sub.includes(`<em>${word}</em>`));
+ assert.ok(sub.includes('<span class="nw">save money.</span>'.replace('save money.','<em>save money</em>.')) || sub.includes('<em>save money</em>.'));
  assert.match(hero,/<!-- 👨 Paul's words, verbatim --><h1>/);
  assert.ok(plain(hero).includes('You want CARLOS. Read on, or try it now:'));
  assert.match(hero,/<a href="#architecture">Read on<\/a>/);
@@ -112,7 +116,8 @@ test('homepage and host copy matches Paul’s approved copy review verbatim',()=
  const approved={
   "start.hosts.two": "Make sure your agent has access to {siteHost} and {apiHost}",
   "start.hosts.one": "Make sure your agent has access to {host}",
-  "home.hero.heading": "You already use agents. Now you want to ship faster, build better and save money.",
+  "home.hero.heading": "You're already using agents.",
+  "home.hero.subheading": "Now you want to ship faster, build better and save money.",
   "home.hero.answer": "You want CARLOS.",
   "home.hero.ask": "Read on, or try it now:",
   "home.paste.label": "Paste this into your agent and it can take things from there",
@@ -136,7 +141,7 @@ test('homepage and host copy matches Paul’s approved copy review verbatim',()=
   "home.parts.platform.self": "or self-host"
 };
  for(const [key,value] of Object.entries(approved)) assert.equal(copy[key],value,key);
- assert.deepEqual(Object.keys(copy).filter(key=>key.startsWith("home.hero.")).sort(),["home.hero.answer","home.hero.ask","home.hero.heading"]);
+ assert.deepEqual(Object.keys(copy).filter(key=>key.startsWith("home.hero.")).sort(),["home.hero.answer","home.hero.ask","home.hero.heading","home.hero.subheading"]);
 });
 
 test('clipboard success, reset, failure and retry keep both paste boxes usable',async()=>{
