@@ -188,51 +188,58 @@ test('theme: Auto follows the system, Light and Dark are remembered, the switch 
   buttons[2].fire('click'); assert.equal(r2.getAttribute('data-theme'), 'dark');
 });
 
-// The hero's drawn background, with a fake WebGL context that counts draws and remembers the theme uniform.
+// The hero's drawn background (the Q1 meadow), with a fake WebGL2 context that remembers the uniforms each draw used.
 const heroBgJS = await read('src/home/hero-bg.js');
-function heroBgWorld({ reduce = false, webgl = true, search = '' } = {}) {
+function heroBgWorld({ reduce = false, webgl = true, frameMs = 2 } = {}) {
   const mq = media(reduce), darkQ = media(false), root = new El(''), hero = new El('c-hero hv hv-b', { left: 0, top: 0, width: 1280, height: 700 }), canvas = new El('hero-bg'), pause = new El('');
   pause.checked = false; hero.qs['.hero-bg'] = [canvas];
   Object.defineProperty(hero, 'clientWidth', { get: () => 1280 }); Object.defineProperty(hero, 'clientHeight', { get: () => 700 });
-  const draws = [], uniforms = {};
-  const gl = new Proxy({}, { get: (_, k) => k === 'drawArrays' ? () => draws.push({ ...uniforms }) : k === 'getUniformLocation' ? (_, name) => name
-    : k.startsWith('uniform') ? (loc, ...v) => { uniforms[loc] = v.length > 1 ? v : v[0]; } : k.startsWith('get') && k.endsWith('Parameter') ? () => true : typeof k === 'string' && /^[A-Z_]+$/.test(k) ? 1 : () => ({}) });
-  canvas.getContext = () => (webgl ? gl : null);
+  const uniforms = {}, blades = [];
+  let clock = 0;
+  const gl = new Proxy({}, { get: (_, k) => k === 'getUniformLocation' ? (_, name) => name
+    : k.startsWith('uniform') ? (loc, ...v) => { uniforms[loc] = v.length > 1 ? v : v[0]; }
+    : k === 'drawArraysInstanced' ? (mode, first, count, n) => blades.push(n)
+    : k === 'readPixels' ? () => { clock += frameMs; }   // how long the device takes to finish a frame
+    : k.startsWith('get') && k.endsWith('Parameter') ? () => true : typeof k === 'string' && /^[A-Z_0-9]+$/.test(k) ? 1 : () => ({}) });
+  canvas.getContext = type => (webgl && type === 'webgl2' ? gl : null);
   const frames = new Map(), observers = [], mutations = []; let n = 0, now = 0;
   const g = {
     document: { querySelector: s => (s === '.c-hero' ? hero : s === '.rp-pause input' ? pause : null), documentElement: root, hidden: false, addEventListener() {} },
-    matchMedia: q => (q.includes('reduced-motion') ? mq : darkQ), addEventListener() {}, devicePixelRatio: 3, innerHeight: 900, Float32Array, Error, location: { search }, URLSearchParams,
+    matchMedia: q => (q.includes('reduced-motion') ? mq : darkQ), addEventListener() {}, devicePixelRatio: 3, innerHeight: 900, performance: { now: () => clock },
     requestAnimationFrame: f => { frames.set(++n, f); return n; }, cancelAnimationFrame: id => frames.delete(id),
     IntersectionObserver: class { constructor(cb) { this.cb = cb; observers.push(this); } observe() {} },
     MutationObserver: class { constructor(cb) { mutations.push(cb); } observe() {} },
   };
   g.window = g;
   runInContext(heroBgJS, createContext(g));
+  const state = () => g.__heroBg.state;
+  const look = () => ({ T: uniforms.Q?.[0], Night: uniforms.Night });
   // run queued frames, each 40 ms after the last (above the 30 fps step); returns how many ran
   const run = (max = 20) => { let k = 0; while (frames.size && k < max) { const [id, f] = frames.entries().next().value; frames.delete(id); now += 40; f(now); k++; } return k; };
-  return { g, hero, canvas, pause, mq, darkQ, root, draws, frames, observers, mutations, run };
+  return { g, hero, canvas, pause, mq, darkQ, root, frames, observers, mutations, run, state, look, blades };
 }
+const drawn = w => w.state().frames;
 
-test('hero background: draws at 30 fps, half resolution, DPR capped at 1.5', () => {
+test('hero background: draws at 30 fps at 0.4 of the screen, DPR capped at 1.5, day in light', () => {
   const w = heroBgWorld();
   assert.equal(w.run(10), 10);
-  assert.ok(w.draws.length >= 9);
-  assert.deepEqual([w.canvas.width, w.canvas.height], [Math.round(1280 * 0.75), Math.round(700 * 0.75)]);
-  assert.equal(w.draws.at(-1).D, 0);
+  assert.ok(drawn(w) >= 9);
+  assert.deepEqual([w.canvas.width, w.canvas.height], [Math.round(1280 * 1.5 * 0.4), Math.round(700 * 1.5 * 0.4)]);
+  assert.equal(w.look().Night, 0); assert.equal(w.blades.at(-1), 9000);
   assert.ok(w.frames.size > 0, 'still running');
 });
 
 test('hero background: reduced motion draws one still frame and stops; switching it on later stops the loop', () => {
   let w = heroBgWorld({ reduce: true });
   w.run();
-  assert.equal(w.draws.length, 1); assert.equal(w.frames.size, 0);
-  assert.equal(w.draws[0].T, 37, 'the same still moment every time');
+  assert.equal(drawn(w), 1); assert.equal(w.frames.size, 0);
+  assert.equal(w.look().T, 37, 'the same still moment every time');
   w = heroBgWorld();
-  w.run(5); const before = w.draws.length;
+  w.run(5); const before = drawn(w);
   w.mq.set(true); w.run();
   assert.equal(w.frames.size, 0, 'no frames left queued');
-  assert.equal(w.draws.length, before + 1, 'one still frame, then nothing');
-  assert.equal(w.draws.at(-1).T, 37);
+  assert.equal(drawn(w), before + 1, 'one still frame, then nothing');
+  assert.equal(w.look().T, 37);
   w.mq.set(false); w.run(5); assert.ok(w.frames.size > 0, 'moves again');
 });
 
@@ -241,12 +248,12 @@ test('hero background: the replay Pause stops it, and Play resumes it', () => {
   w.run(5);
   w.pause.checked = true; w.pause.fire('change'); w.run();
   assert.equal(w.frames.size, 0);
-  const n = w.draws.length; w.run(); assert.equal(w.draws.length, n);
+  const n = drawn(w); w.run(); assert.equal(drawn(w), n);
   w.pause.checked = false; w.pause.fire('change'); w.run(5);
-  assert.ok(w.draws.length > n && w.frames.size > 0);
+  assert.ok(drawn(w) > n && w.frames.size > 0);
 });
 
-test('hero background: off screen or a hidden tab stops it; a theme change redraws while still', () => {
+test('hero background: off screen or a hidden tab stops it; a theme change redraws day or night while still', () => {
   const w = heroBgWorld();
   w.run(3);
   w.observers[0].cb([{ isIntersecting: false }]); w.run();
@@ -254,31 +261,28 @@ test('hero background: off screen or a hidden tab stops it; a theme change redra
   w.observers[0].cb([{ isIntersecting: true }]); w.run(3); assert.ok(w.frames.size > 0);
   w.g.document.hidden = true; w.run(); assert.equal(w.frames.size, 0);
   w.g.document.hidden = false;
-  // paused, then the header switch picks Dark: one redraw with the dark uniform, no loop
   w.pause.checked = true; w.pause.fire('change'); w.run();
-  const n = w.draws.length;
+  const n = drawn(w);
   w.root.setAttribute('data-theme', 'dark'); w.mutations[0](); w.run();
-  assert.equal(w.draws.length, n + 1); assert.equal(w.draws.at(-1).D, 1); assert.equal(w.frames.size, 0);
-  // and Auto again, following a light system
+  assert.equal(drawn(w), n + 1); assert.equal(w.look().Night, 1, 'night for dark'); assert.equal(w.frames.size, 0);
   w.root.removeAttribute('data-theme'); w.mutations[0](); w.run();
-  assert.equal(w.draws.at(-1).D, 0);
-  w.darkQ.set(true); w.run(); assert.equal(w.draws.at(-1).D, 1, 'Auto follows the system live');
+  assert.equal(w.look().Night, 0);
+  w.darkQ.set(true); w.run(); assert.equal(w.look().Night, 1, 'Auto follows the system live');
 });
 
-test('hero background: without WebGL the hero keeps its CSS gradient', () => {
+test('hero background: a slow device gets half the blades, then a smaller picture', () => {
+  const w = heroBgWorld({ frameMs: 60 });
+  w.run(70);   // the guard looks at every fifteenth frame, and acts after four
+  assert.equal(w.state().blades, 4500);
+  w.run(70);
+  assert.ok(w.state().scale < 0.4);
+  const fast = heroBgWorld(); fast.run(140);
+  assert.equal(fast.state().blades, 9000); assert.equal(fast.state().scale, 0.4);
+});
+
+test('hero background: without WebGL2 the hero keeps its CSS gradient', () => {
   const w = heroBgWorld({ webgl: false });
-  assert.ok(w.hero.classList.contains('nogl')); assert.equal(w.frames.size, 0); assert.equal(w.draws.length, 0);
-});
-
-test('hero background: dark drifts at half speed and is the calm version; ?bg=calmer picks the calmer one', () => {
-  const w = heroBgWorld();
-  w.run(6); const t0 = w.draws.at(-1).T; w.run(6); const light = w.draws.at(-1).T - t0;
-  w.root.setAttribute('data-theme', 'dark'); w.mutations[0](); w.run(1);
-  const t1 = w.draws.at(-1).T; w.run(6); const dark = w.draws.at(-1).T - t1;
-  assert.ok(Math.abs(dark - light / 2) < 1e-6, `dark ${dark} against light ${light}`);
-  assert.equal(w.draws.at(-1).Q, 1);
-  const c = heroBgWorld({ search: '?bg=calmer' }); c.run(2);
-  assert.equal(c.draws.at(-1).Q, 2); assert.equal(c.g.__heroBg.state.calm, 2);
+  assert.ok(w.hero.classList.contains('nogl')); assert.equal(w.frames.size, 0);
 });
 
 // "What you get": the figures count up once, in view, as a visual-only overlay.
