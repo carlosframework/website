@@ -6,6 +6,9 @@
 {%- set arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' -%}
 {%- set blank = 'target="_blank" rel="noopener noreferrer"' -%}
 {%- set spec = 'https://spec.carlosframework.com' -%}
+{#- Where each headline figure starts counting from when "What you get" scrolls into view (home/figures.js):
+    the response time drops from the old 750 ms to today's figure. The final text is what is in the HTML. -#}
+{%- set countFrom = { ship: 1, build: 750, save: 0 } -%}
 <div class="rw">
 
 <section class="rw-what" id="architecture" aria-labelledby="rw-what-title"><div class="rw-wrap">
@@ -94,7 +97,7 @@
     <article class="rw-out">
       <h3>{{ t('get.' + k + '.title') }}</h3>
 {%- if figures %}
-      <p class="rw-fig">{{ t('get.' + k + '.figure') }}</p>
+      <p class="rw-fig" data-count-from="{{ countFrom[k] }}"><span class="rw-fig-final">{{ t('get.' + k + '.figure') }}</span><span class="rw-fig-run" aria-hidden="true"></span></p>
       <p class="rw-fig-note">{{ t('get.' + k + '.figure.note') }}</p>
 {%- else %}
       <p class="rw-alt">{{ t('get.' + k + '.alt') }}</p>

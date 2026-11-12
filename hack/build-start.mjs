@@ -110,7 +110,7 @@ async function homeHTML(config,copy,original) {
 }
 // theme.js runs first and without defer, so a remembered Light or Dark is set before the first paint.
 const homeHead=['<script src="/home/theme.js?v=0"></script>'].concat(['/start/start.css','/home/hero.css','/home/sections.css','/home/stacks.css','/home/theme.css'].map(href=>`<link rel="stylesheet" href="${href}?v=0">`))
- .concat(['/start/start-tabs.js','/home/hero.js','/home/hero-bg.js','/home/stacks.js'].map(src=>`<script src="${src}?v=0" defer></script>`)).join('\n');
+ .concat(['/start/start-tabs.js','/home/hero.js','/home/hero-bg.js','/home/figures.js','/home/stacks.js'].map(src=>`<script src="${src}?v=0" defer></script>`)).join('\n');
 // Auto, Light or Dark, in the header beside the site navigation. Hidden until theme.js wires it.
 function themeSwitchHTML(copy) {
  const t=key=>escapeHTML(copy[`home.theme.${key}`]);

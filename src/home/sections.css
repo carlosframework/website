@@ -126,6 +126,12 @@ body.landing .rw .rw-links a { color: var(--t); }
 .rw .rw-out:nth-child(3) { --o: var(--rw-blue); }
 .rw .rw-out h3 { font-size: 1.25rem; }
 .rw .rw-fig { margin: 0.9rem 0 0.2rem; font: 700 clamp(2.4rem, 5vw, 3.4rem)/1 Bahnschrift, "DIN Alternate", "Franklin Gothic Medium", "Nimbus Sans Narrow", sans-serif-condensed, var(--site-sans); letter-spacing: -0.035em; font-variant-numeric: tabular-nums; color: var(--o, var(--rw-acc)); }
+/* The count-up (home/figures.js): the final figure keeps its place and stays readable to screen readers; while
+   counting it is transparent and a visual-only copy on top shows the running number. */
+.rw .rw-fig { position: relative; }
+.rw .rw-fig-run { position: absolute; left: 0; top: 0; white-space: nowrap; pointer-events: none; }
+.rw .rw-fig:not(.is-counting) .rw-fig-run { display: none; }
+.rw .rw-fig.is-counting .rw-fig-final { color: transparent; }
 .rw .rw-fig-note { color: var(--rw-ink-2); font-size: 0.97rem; min-height: 3.1em; }
 /* The number-free alternatives (home.get.*.alt in start-copy.json), used when the template's figures switch is off */
 .rw .rw-alt { margin: 0.9rem 0 0.2rem; font: 680 clamp(1.3rem, 2.3vw, 1.6rem)/1.2 var(--site-sans); letter-spacing: -0.02em; color: var(--o, var(--rw-acc)); min-height: 2.4em; text-wrap: balance; }

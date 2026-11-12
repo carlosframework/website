@@ -54,7 +54,8 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  for(const href of ['/platform/self-host/','/attributes/','/case-studies/tito/','/case-studies/jelly/','/case-studies/eleven/','/start/#account']) assert.ok(body.includes(`href="${href}"`),href);
  // "What you get" shows the headline figures; the number-free alternatives stay in the copy data.
  for(const k of ['ship','build','save']) {
-  assert.ok(body.includes(`<p class="rw-fig">${escapeHTML(copy[`home.get.${k}.figure`])}</p>`),k);
+  // the final figure is real text; the count-up is a visual-only overlay beside it
+  assert.ok(body.includes(`<p class="rw-fig" data-count-from="${{ship:1,build:750,save:0}[k]}"><span class="rw-fig-final">${escapeHTML(copy[`home.get.${k}.figure`])}</span><span class="rw-fig-run" aria-hidden="true"></span></p>`),k);
   assert.ok(!body.includes(copy[`home.get.${k}.alt`]),k);
  }
  // The closing paste box repeats the hero's, with the line under it and no second host note.
@@ -71,7 +72,7 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.doesNotMatch(hero+body,/—/);
  // Spec links keep their visible text as the name (WCAG 2.5.3) and carry the approved longer label as a description.
  for(const [ref,aria] of [['1.ref','1.aria'],['2.ref','2.aria'],['2.ref2','2.aria2'],['3.ref','3.aria'],['4.ref','4.aria']]) assert.ok(body.includes(`aria-describedby="practice-${aria.replace('.','-')}">${escapeHTML(copy['home.practice.'+ref])}</a><span id="practice-${aria.replace('.','-')}" hidden>${escapeHTML(copy['home.practice.'+aria])}</span>`),aria);
- for(const asset of ['/home/hero.css','/home/sections.css','/home/stacks.css','/home/theme.css','/home/hero.js','/home/hero-bg.js','/home/stacks.js']) assert.ok(home.includes(`="${asset}?v=0"`),asset);
+ for(const asset of ['/home/hero.css','/home/sections.css','/home/stacks.css','/home/theme.css','/home/hero.js','/home/hero-bg.js','/home/figures.js','/home/stacks.js']) assert.ok(home.includes(`="${asset}?v=0"`),asset);
  // The theme is set before anything is drawn: theme.js first in <head>, blocking, ahead of every stylesheet.
  const head=home.match(/<head>[\s\S]*?<\/head>/)[0];
  assert.ok(head.includes('<script src="/home/theme.js?v=0"></script>'));
@@ -194,7 +195,7 @@ test('homepage carries Paul’s 2026-11-12 approved copy byte for byte, with cur
  assert.equal(result.action,'approve');
  assert.deepEqual(result.strings.map(s=>s.id),strings.map(s=>s.id));
  // Paul's later verbatim rewrites (2026-11-12, after the review) replace the reviewed text.
- const later={'tools.heading':'To make it easy, we built an agent-first modern web framework to build apps and a platform to deploy them on','tools.platform.body':'Get your CARLOS apps online with HTTPS, backups, provisioning, observability and analytics. Static sites work great too.','tools.skill.lead':'Try CARLOS with zero effort.','tools.skill.body':'The CARLOS skill has everything it needs to build and deploy a sample app and get it live right now.','what.heading':'CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily.'};
+ const later={'get.ship.figure.note':'faster to ship at Tito, using agents building with CARLOS.','get.build.figure':'20 ms','get.build.figure.note':'Average response time, down from 750ms','get.save.figure':'80%','tools.heading':'To make it easy, we built an agent-first modern web framework to build apps and a platform to deploy them on','tools.platform.body':'Get your CARLOS apps online with HTTPS, backups, provisioning, observability and analytics. Static sites work great too.','tools.skill.lead':'Try CARLOS with zero effort.','tools.skill.body':'The CARLOS skill has everything it needs to build and deploy a sample app and get it live right now.','what.heading':'CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily.'};
  for(const s of result.strings) if(later[s.id]) s.text=later[s.id];
  // Paul, 2026-11-12: the replay no longer needs its "A real run, sped up" badge. Removed, not reworded.
  // The re-recorded run 4 (2026-11-12) replaces the replay's quotations, alt text and caption: verbatim from

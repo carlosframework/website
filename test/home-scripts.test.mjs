@@ -281,3 +281,36 @@ test('hero background: dark drifts at half speed and is the calm version; ?bg=ca
   assert.equal(c.draws.at(-1).Q, 2); assert.equal(c.g.__heroBg.state.calm, 2);
 });
 
+// "What you get": the figures count up once, in view, as a visual-only overlay.
+const figuresJS = await read('src/home/figures.js');
+function figuresWorld({ reduce = false, figures = [['12×', 1], ['20 ms', 750], ['80%', 0]] } = {}) {
+  const three = new El('rw-three'), observers = [], frames = []; let now = 0;
+  const els = figures.map(([text, from]) => { const el = new El('rw-fig'), final = new El('rw-fig-final'), run = new El('rw-fig-run');
+    el.dataset.countFrom = String(from); final.textContent = text; el.qs['.rw-fig-final'] = [final]; el.qs['.rw-fig-run'] = [run]; el.closest = () => three; return { el, final, run }; });
+  const g = { document: { querySelectorAll: s => (s === '.rw-fig[data-count-from]' ? els.map(e => e.el) : []) }, matchMedia: () => ({ matches: reduce }), Number, Math,
+    requestAnimationFrame: f => frames.push(f), IntersectionObserver: class { constructor(cb) { this.cb = cb; observers.push(this); } observe() {} disconnect() { this.off = true; } } };
+  g.window = g;
+  runInContext(figuresJS, createContext(g));
+  const step = ms => { now += ms; const fs = frames.splice(0); fs.forEach(f => f(now)); };
+  return { els, observers, frames, step, see: () => observers[0].cb([{ isIntersecting: true }]) };
+}
+test('figures: hold their start until seen, count once to the final text, then hand back the real figure', () => {
+  const w = figuresWorld();
+  assert.deepEqual(w.els.map(e => e.run.textContent), ['1×', '750 ms', '0%']);
+  assert.ok(w.els.every(e => e.el.classList.contains('is-counting')));
+  w.see(); assert.ok(w.observers[0].off, 'counts once');
+  const seen = [];
+  w.step(16); for (let i = 0; i < 80 && w.frames.length; i++) { w.step(16); if (w.frames.length) seen.push(w.els.map(e => e.run.textContent)); }
+  assert.equal(w.frames.length, 0, 'done after 1.2 s');
+  const nums = seen.map(r => r.map(t => parseInt(t, 10)));
+  assert.ok(nums.every((r, i) => !i || (r[0] >= nums[i - 1][0] && r[1] <= nums[i - 1][1] && r[2] >= nums[i - 1][2])), 'up, down from 750, up');
+  assert.ok(nums.some(r => r[1] > 100 && r[1] < 700), 'the response time drops through the middle');
+  assert.ok(w.els.every(e => !e.el.classList.contains('is-counting') && e.run.textContent === ''));
+  assert.deepEqual(w.els.map(e => e.final.textContent), ['12×', '20 ms', '80%'], 'the real figures never change');
+});
+test('figures: reduced motion and figures that are not "number + unit" show the final text only', () => {
+  const r = figuresWorld({ reduce: true });
+  assert.ok(r.els.every(e => !e.el.classList.contains('is-counting') && e.run.textContent === '')); assert.equal(r.observers.length, 0);
+  const o = figuresWorld({ figures: [['70%–80%', 0]] });
+  assert.ok(!o.els[0].el.classList.contains('is-counting')); assert.equal(o.observers.length, 0);
+});
