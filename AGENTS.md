@@ -25,6 +25,9 @@ each is an `addPassthroughCopy` entry in `eleventy.config.js`.
 
 🤖 `hack/build-start.mjs` preserves the homepage and `src/start/index.html` when
 the demo is disabled. When enabled, it replaces the marked homepage hero and
+body (`start-demo:hero`, `start-demo:body`) with the approved 2026-11-12 rework,
+rendered from `src/_includes/home-hero.njk` and `home-body.njk` with copy from
+`src/_data/start-copy.json` (key `home.<review id>`), and it
 generates `/start/index.html` and `/start/index.md` from `src/start/agent.md`.
 It does this before shared footer injection. The build publishes only
 the starter archive, manifest and source listing. Raw starter files, config and
@@ -66,7 +69,13 @@ person marker.**
 
 ## Conventions
 
-- **Only the clipboard and Attributes sidebar scripts run in the browser.**
+- **Only the clipboard and Attributes sidebar scripts run in the browser,**
+  plus, on the enabled-demo homepage, `src/home/hero.js` (the rotating word)
+  and `src/home/stacks.js` (the interactive stacks). The stacks load Matter.js
+  0.20 (MIT, served from `/home/` with its license header and
+  `matter-0.20.0.LICENSE.txt`) in idle time once the section nears the
+  viewport, never under reduced motion. Both are decorative: without them the
+  page reads the same. Visible text uses curly quotes in the source strings.
   No frameworks, remotely fetched fonts or analytics. The footer links are
   shared through `src/_includes/footer.html` and
   `hack/add-footer.mjs`; page placeholders retain docs source provenance.
