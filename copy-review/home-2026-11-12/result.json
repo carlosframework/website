@@ -1,0 +1,1358 @@
+{
+  "action": "approve",
+  "guidance": null,
+  "strings": [
+    {
+      "id": "hero.gloss",
+      "text": "A system for better web apps.",
+      "original": "A system for better web apps.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "hero.gloss.word.better",
+      "text": "better",
+      "original": "better",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "hero.gloss.word.remarkable",
+      "text": "remarkable",
+      "original": "remarkable",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "hero.gloss.word.faster",
+      "text": "faster",
+      "original": "faster",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "hero.gloss.word.accessible",
+      "text": "accessible",
+      "original": "accessible",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "hero.gloss.word.secure",
+      "text": "secure",
+      "original": "secure",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "hero.gloss.word.private",
+      "text": "private",
+      "original": "private",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "hero.gloss.word.simple",
+      "text": "simple",
+      "original": "simple",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "hero.gloss.word.resilient",
+      "text": "resilient",
+      "original": "resilient",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "hero.gloss.word.cheaper",
+      "text": "cheaper",
+      "original": "cheaper",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "hero.gloss.word.portable",
+      "text": "portable",
+      "original": "portable",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "hero.gloss.word.distributable",
+      "text": "distributable",
+      "original": "distributable",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "hero.gloss.word.decentralisable",
+      "text": "decentralisable",
+      "original": "decentralisable",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "hero.gloss.word.agent-ready",
+      "text": "agent-ready",
+      "original": "agent-ready",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "hero.cloud.summary",
+      "text": "Using a cloud agent?",
+      "original": "Using a cloud agent?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.figure.aria",
+      "text": "A real run of this journey, sped up",
+      "original": "A real run of this journey, sped up",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.title",
+      "text": "Your agent",
+      "original": "Your agent",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.badge",
+      "text": "A real run, sped up",
+      "original": "A real run, sped up",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.pause",
+      "text": "Pause",
+      "original": "Pause",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.play",
+      "text": "Play",
+      "original": "Play",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.who.you",
+      "text": "You",
+      "original": "You",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.who.agent",
+      "text": "Agent",
+      "original": "Agent",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.you.1",
+      "text": "Follow the directions on https://carlosframework.com/start",
+      "original": "Follow the directions on https://carlosframework.com/start",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.agent.1",
+      "text": "I’ve read the directions. They say to ask what you want before I build anything, so here are a few quick questions.",
+      "original": "I’ve read the directions. They say to ask what you want before I build anything, so here are a few quick questions.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.agent.q1",
+      "text": "What do you want to make?",
+      "original": "What do you want to make?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.agent.q2",
+      "text": "How should it feel?",
+      "original": "How should it feel?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.agent.q3",
+      "text": "What’s the main screen, and what’s the one kind of thing it saves?",
+      "original": "What’s the main screen, and what’s the one kind of thing it saves?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.agent.q4",
+      "text": "Have you built web apps before?",
+      "original": "Have you built web apps before?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.you.2",
+      "text": "I run a little bakery called Panadería Carlos. I’d like a page where customers can pre-order bread and cakes. … I want it to feel warm and friendly. I’m not technical, so keep it simple for me.",
+      "original": "I run a little bakery called Panadería Carlos. I’d like a page where customers can pre-order bread and cakes. … I want it to feel warm and friendly. I’m not technical, so keep it simple for me.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.agent.p1",
+      "text": "Got it. I’m now writing your bakery page from the starter: the menu, a pick-up day, and a saved list of orders.",
+      "original": "Got it. I’m now writing your bakery page from the starter: the menu, a pick-up day, and a saved list of orders.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.agent.p2",
+      "text": "It builds. Let me run it locally on a private socket and place a test order.",
+      "original": "It builds. Let me run it locally on a private socket and place a test order.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.agent.p3",
+      "text": "Archive is ready (81 KB). Sending it to the service to create the demo; the private reply goes in an owner-only folder.",
+      "original": "Archive is ready (81 KB). Sending it to the service to create the demo; the private reply goes in an owner-only folder.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.agent.p4",
+      "text": "Your pre-order page for Panadería Carlos is live:",
+      "original": "Your pre-order page for Panadería Carlos is live:",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.url",
+      "text": "floral-garden-22.dev.trycarlos.com",
+      "original": "floral-garden-22.dev.trycarlos.com",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.shot.alt",
+      "text": "The live page: Panadería Carlos, “Order today, collect mañana.”, and a menu of Pan de pueblo, Magdalenas and Ensaimada.",
+      "original": "The live page: Panadería Carlos, “Order today, collect mañana.”, and a menu of Pan de pueblo, Magdalenas and Ensaimada.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.caption",
+      "text": "Excerpts from one recorded run, 11 November 2026.",
+      "original": "Excerpts from one recorded run, 11 November 2026.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.heading",
+      "text": "CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily, by going back to basics.",
+      "original": "CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily, by going back to basics.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.follow",
+      "text": "It’s defined by an open specification.",
+      "original": "It’s defined by an open specification.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.button",
+      "text": "Read the spec",
+      "original": "Read the spec",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.version",
+      "text": "v0.1, draft for comment",
+      "original": "v0.1, draft for comment",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.props.title",
+      "text": "A typical CARLOS app is",
+      "original": "A typical CARLOS app is",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.prop1.title",
+      "text": "One file",
+      "original": "One file",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.prop1.body",
+      "text": "Web server, database, background jobs and interface, compiled into a single binary.",
+      "original": "Web server, database, background jobs and interface, compiled into a single binary.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.prop1.ref",
+      "text": "spec §6",
+      "original": "spec §6",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.prop2.title",
+      "text": "A database per customer",
+      "original": "A database per customer",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.prop2.body",
+      "text": "Every customer gets their own instance and their own data. Nothing shared, nothing to leak across.",
+      "original": "Every customer gets their own instance and their own data. Nothing shared, nothing to leak across.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.prop2.ref",
+      "text": "spec §1",
+      "original": "spec §1",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.prop3.title",
+      "text": "Asleep until needed",
+      "original": "Asleep until needed",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.prop3.body",
+      "text": "It stops when nobody is using it and wakes on the next request, with nothing lost.",
+      "original": "It stops when nobody is using it and wakes on the next request, with nothing lost.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.prop3.ref",
+      "text": "spec §8",
+      "original": "spec §8",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.prop4.title",
+      "text": "At home anywhere",
+      "original": "At home anywhere",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.prop4.body",
+      "text": "The same binary runs on a hosted platform, your own servers or a laptop.",
+      "original": "The same binary runs on a hosted platform, your own servers or a laptop.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.prop4.ref",
+      "text": "spec §7",
+      "original": "spec §7",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.prop5.title",
+      "text": "For people and agents",
+      "original": "For people and agents",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.prop5.body",
+      "text": "What a person can do in the interface, an agent can do through the API or the command line.",
+      "original": "What a person can do in the interface, an agent can do through the API or the command line.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "what.prop5.ref",
+      "text": "spec §11",
+      "original": "spec §11",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "practice.lead",
+      "text": "Best practices built in, by default",
+      "original": "Best practices built in, by default",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "practice.1.name",
+      "text": "Performance",
+      "original": "Performance",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "practice.1.ref",
+      "text": "spec §13",
+      "original": "spec §13",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "practice.1.aria",
+      "text": "Performance, spec section 13",
+      "original": "Performance, spec section 13",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "practice.2.name",
+      "text": "Security",
+      "original": "Security",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "practice.2.ref",
+      "text": "spec §5",
+      "original": "spec §5",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "practice.2.aria",
+      "text": "Security, spec section 5",
+      "original": "Security, spec section 5",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "practice.3.name",
+      "text": "Accessibility",
+      "original": "Accessibility",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "practice.3.ref",
+      "text": "spec §17",
+      "original": "spec §17",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "practice.3.aria",
+      "text": "Accessibility, spec section 17",
+      "original": "Accessibility, spec section 17",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "practice.4.name",
+      "text": "Privacy",
+      "original": "Privacy",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "practice.4.ref",
+      "text": "spec §3",
+      "original": "spec §3",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "practice.4.aria",
+      "text": "Privacy: data minimisation, logging, tracking and consent, spec section 3",
+      "original": "Privacy: data minimisation, logging, tracking and consent, spec section 3",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "practice.2.ref2",
+      "text": "§2",
+      "original": "§2",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "practice.2.aria2",
+      "text": "Trust classes and data security, spec section 2",
+      "original": "Trust classes and data security, spec section 2",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "tools.heading",
+      "text": "To make it easy, we built an agent-first modern framework and a platform",
+      "original": "To make it easy, we built an agent-first modern framework and a platform",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "tools.rastrillo.kind",
+      "text": "The framework",
+      "original": "The framework",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "tools.rastrillo.body",
+      "text": "A full-stack Go web framework. Ready-made parts, so your agent writes less from scratch.",
+      "original": "A full-stack Go web framework. Ready-made parts, so your agent writes less from scratch.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "tools.platform.kind",
+      "text": "The platform",
+      "original": "The platform",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "tools.platform.body",
+      "text": "Puts your app online with HTTPS, backs up its data as it changes, and puts it to sleep when it is idle.",
+      "original": "Puts your app online with HTTPS, backs up its data as it changes, and puts it to sleep when it is idle.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "tools.skill.lead",
+      "text": "And a skill, so your agent already knows how.",
+      "original": "And a skill, so your agent already knows how.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "tools.skill.body",
+      "text": "The team behind CARLOS has made a way to try it. Paste one line into your agent and it deploys a temporary app for you, live at a public link for 24 hours, with no account.",
+      "original": "The team behind CARLOS has made a way to try it. Paste one line into your agent and it deploys a temporary app for you, live at a public link for 24 hours, with no account.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.heading",
+      "text": "What you get",
+      "original": "What you get",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.ship.title",
+      "text": "Ship faster",
+      "original": "Ship faster",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.ship.figure",
+      "text": "12×",
+      "original": "12×",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.ship.figure.note",
+      "text": "faster to ship at Tito, building with agents on CARLOS principles.",
+      "original": "faster to ship at Tito, building with agents on CARLOS principles.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.ship.alt",
+      "text": "New features live in seconds.",
+      "original": "New features live in seconds.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.ship.alt.note",
+      "text": "Tito rebuilt a ten-year-old Rails app this way.",
+      "original": "Tito rebuilt a ten-year-old Rails app this way.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.ship.item1",
+      "text": "Zero-downtime deploys",
+      "original": "Deploys with zero downtime",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.ship.item2",
+      "text": "Roll releases a few customers first",
+      "original": "Roll a release out to a few customers first",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.ship.item3",
+      "text": "Web app, API and CLI from one codebase",
+      "original": "Web app, API and CLI from one codebase",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.build.title",
+      "text": "Build better",
+      "original": "Build better",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.build.figure",
+      "text": "168 ms",
+      "original": "168 ms",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.build.figure.note",
+      "text": "to first content on Tito’s CARLOS page. The Rails version took 758 ms.",
+      "original": "to first content on Tito’s CARLOS page. The Rails version took 758 ms.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.build.alt",
+      "text": "Fast because there is less of it.",
+      "original": "Fast because there is less of it.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.build.alt.note",
+      "text": "Pages are rendered on the server and ship far less JavaScript.",
+      "original": "Pages are rendered on the server and ship far less JavaScript.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.build.item1",
+      "text": "Each customer’s data kept separate",
+      "original": "Each customer’s data kept separate",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.build.item2",
+      "text": "Continuous backups rather than nightly",
+      "original": "Backed up as it changes, not nightly",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.build.item3",
+      "text": "Accessible from day one: WCAG 2.2 AA",
+      "original": "Accessible from day one: WCAG 2.2 AA",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.save.title",
+      "text": "Save money",
+      "original": "Save money",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.save.figure",
+      "text": "70%–80%",
+      "original": "70%–80%",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.save.figure.note",
+      "text": "less to run than a traditional web app.",
+      "original": "less to run than a traditional web app.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.save.alt",
+      "text": "Stop paying for idle servers.",
+      "original": "Stop paying for idle servers.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.save.alt.note",
+      "text": "Apps sleep when nobody is using them, and there is far less to rent.",
+      "original": "Apps sleep when nobody is using them, and there is far less to rent.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.save.item1",
+      "text": "Stop paying for complexity",
+      "original": "No database server, cache or cluster to pay for",
+      "edited": true,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.save.item2",
+      "text": "Your cloud, your own hardware, or ours",
+      "original": "Your cloud, your own hardware, or ours",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.save.item3",
+      "text": "Less compute, less carbon",
+      "original": "Less compute, less carbon",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.link.attributes",
+      "text": "All the attributes",
+      "original": "All the attributes",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "get.link.measured",
+      "text": "How we measured",
+      "original": "How we measured",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.heading",
+      "text": "Less to run",
+      "original": "Less to run",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.sub",
+      "text": "What a typical multi-tenant app needs, before and after.",
+      "original": "What a typical multi-tenant app needs, before and after.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.toggle.aria",
+      "text": "Compare CARLOS with",
+      "original": "Compare CARLOS with",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.toggle.tower",
+      "text": "One server stack",
+      "original": "One server stack",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.toggle.services",
+      "text": "Many services",
+      "original": "Many services",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.reset",
+      "text": "Reset",
+      "original": "Reset",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.tower.aria",
+      "text": "Before CARLOS, one server stack, top first",
+      "original": "Before CARLOS, one server stack, top first",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.tower.app-backend",
+      "text": "App backend",
+      "original": "App backend",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.tower.app-frontend",
+      "text": "App frontend",
+      "original": "App frontend",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.tower.background-workers",
+      "text": "Background workers",
+      "original": "Background workers",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.tower.web-server",
+      "text": "Web server",
+      "original": "Web server",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.tower.observability-layer",
+      "text": "Observability layer",
+      "original": "Observability layer",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.tower.containers",
+      "text": "Containers",
+      "original": "Containers",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.tower.microservices",
+      "text": "Microservices",
+      "original": "Microservices",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.tower.cluster-orchestrator",
+      "text": "Cluster orchestrator",
+      "original": "Cluster orchestrator",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.tower.app-server",
+      "text": "App server",
+      "original": "App server",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.tower.database-server",
+      "text": "Database server",
+      "original": "Database server",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.tower.memory-cache",
+      "text": "Memory cache",
+      "original": "Memory cache",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.tower.load-balancer",
+      "text": "Load balancer",
+      "original": "Load balancer",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.tower.base",
+      "text": "Cloud provider",
+      "original": "Cloud provider",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.services.aria",
+      "text": "Before CARLOS, many services holding up one app",
+      "original": "Before CARLOS, many services holding up one app",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.balloon.hosting",
+      "text": "Hosting",
+      "original": "Hosting",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.balloon.database",
+      "text": "Database",
+      "original": "Database",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.balloon.auth",
+      "text": "Auth",
+      "original": "Auth",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.balloon.email",
+      "text": "Email",
+      "original": "Email",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.balloon.payments",
+      "text": "Payments",
+      "original": "Payments",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.balloon.file-storage",
+      "text": "File storage",
+      "original": "File storage",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.balloon.workers",
+      "text": "Workers",
+      "original": "Workers",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.balloon.search",
+      "text": "Search",
+      "original": "Search",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.balloon.webhooks",
+      "text": "Webhooks",
+      "original": "Webhooks",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.services.app",
+      "text": "Your app",
+      "original": "Your app",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.after.aria",
+      "text": "With CARLOS, top of the stack first",
+      "original": "With CARLOS, top of the stack first",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.after.app",
+      "text": "Your app",
+      "original": "Your app",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.after.platform",
+      "text": "CARLOS Platform",
+      "original": "CARLOS Platform",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "stacks.after.base",
+      "text": "Any host, any provider",
+      "original": "Any host, any provider",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "who.tito.body",
+      "text": "Rebuilt a ten-year-old Rails app, and now lets customers choose where their data lives.",
+      "original": "Rebuilt a ten-year-old Rails app, and now lets customers choose where their data lives.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "who.jelly.body",
+      "text": "Rewritten on Rastrillo. Now sells on-prem installs that were impossible before.",
+      "original": "Rewritten on Rastrillo. Now sells on-prem installs that were impossible before.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "who.jelly.link",
+      "text": "How Jelly did it",
+      "original": "How Jelly did it",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "who.eleven.body",
+      "text": "The end-to-end encrypted messenger that led to CARLOS.",
+      "original": "The end-to-end encrypted messenger that led to CARLOS.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "who.eleven.link",
+      "text": "About Eleven",
+      "original": "About Eleven",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "who.by",
+      "text": "CARLOS is built by the people behind Tito and Jelly, and extracted from what they learned serving real customers.",
+      "original": "CARLOS is built by the people behind Tito and Jelly, and extracted from what they learned serving real customers.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "end.heading",
+      "text": "Try it now",
+      "original": "Try it now",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "end.paste.works",
+      "text": "Try it in with your preferred agent setup",
+      "original": "Try it in with your preferred agent setup",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "end.hand.text",
+      "text": "Rather set it up yourself?",
+      "original": "Rather set it up yourself?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "end.hand.link",
+      "text": "Get started by hand",
+      "original": "Get started by hand",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    }
+  ],
+  "review": "tlpnqov6hvpjhdptk37bhwdroe",
+  "generation": 1
+}

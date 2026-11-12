@@ -1,0 +1,1202 @@
+[
+ {
+  "id": "hero.gloss",
+  "section": "Hero",
+  "label": "What CARLOS is, in a line",
+  "text": "A system for better web apps.",
+  "context": "Sits between “You want CARLOS.” and “Read on, or try it now:”. This is the fixed sentence screen readers get, and what shows without JavaScript or with reduced motion. On screen, the word “better” rotates through the words below.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "hero.gloss.word.better",
+  "section": "Hero",
+  "label": "Rotating adjective",
+  "text": "better",
+  "context": "One of the words that takes the place of “better” in “A system for ___ web apps.”, about two seconds each.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s list, verbatim. Not yet through copy review. Repo: already in src/index.html."
+ },
+ {
+  "id": "hero.gloss.word.remarkable",
+  "section": "Hero",
+  "label": "Rotating adjective",
+  "text": "remarkable",
+  "context": "One of the words that takes the place of “better” in “A system for ___ web apps.”, about two seconds each.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s list, verbatim. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "hero.gloss.word.faster",
+  "section": "Hero",
+  "label": "Rotating adjective",
+  "text": "faster",
+  "context": "One of the words that takes the place of “better” in “A system for ___ web apps.”, about two seconds each.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s list, verbatim. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "hero.gloss.word.accessible",
+  "section": "Hero",
+  "label": "Rotating adjective",
+  "text": "accessible",
+  "context": "One of the words that takes the place of “better” in “A system for ___ web apps.”, about two seconds each.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s list, verbatim. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "hero.gloss.word.secure",
+  "section": "Hero",
+  "label": "Rotating adjective",
+  "text": "secure",
+  "context": "One of the words that takes the place of “better” in “A system for ___ web apps.”, about two seconds each.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s list, verbatim. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "hero.gloss.word.private",
+  "section": "Hero",
+  "label": "Rotating adjective",
+  "text": "private",
+  "context": "One of the words that takes the place of “better” in “A system for ___ web apps.”, about two seconds each.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s list, verbatim. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "hero.gloss.word.simple",
+  "section": "Hero",
+  "label": "Rotating adjective",
+  "text": "simple",
+  "context": "One of the words that takes the place of “better” in “A system for ___ web apps.”, about two seconds each.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s list, verbatim. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "hero.gloss.word.resilient",
+  "section": "Hero",
+  "label": "Rotating adjective",
+  "text": "resilient",
+  "context": "One of the words that takes the place of “better” in “A system for ___ web apps.”, about two seconds each.",
+  "notes": "Added during the rework because the page backs it up; Paul has not yet said keep or cut. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "hero.gloss.word.cheaper",
+  "section": "Hero",
+  "label": "Rotating adjective",
+  "text": "cheaper",
+  "context": "One of the words that takes the place of “better” in “A system for ___ web apps.”, about two seconds each.",
+  "notes": "Added during the rework because the page backs it up; Paul has not yet said keep or cut. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "hero.gloss.word.portable",
+  "section": "Hero",
+  "label": "Rotating adjective",
+  "text": "portable",
+  "context": "One of the words that takes the place of “better” in “A system for ___ web apps.”, about two seconds each.",
+  "notes": "Added during the rework because the page backs it up; Paul has not yet said keep or cut. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "hero.gloss.word.distributable",
+  "section": "Hero",
+  "label": "Rotating adjective",
+  "text": "distributable",
+  "context": "One of the words that takes the place of “better” in “A system for ___ web apps.”, about two seconds each.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s list, verbatim. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "hero.gloss.word.decentralisable",
+  "section": "Hero",
+  "label": "Rotating adjective",
+  "text": "decentralisable",
+  "context": "One of the words that takes the place of “better” in “A system for ___ web apps.”, about two seconds each.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s list, verbatim. Shown as “decentralizable” to browsers set to US or Canadian English. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "hero.gloss.word.agent-ready",
+  "section": "Hero",
+  "label": "Rotating adjective",
+  "text": "agent-ready",
+  "context": "One of the words that takes the place of “better” in “A system for ___ web apps.”, about two seconds each.",
+  "notes": "Added during the rework because the page backs it up; Paul has not yet said keep or cut. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "hero.cloud.summary",
+  "section": "Hero",
+  "label": "Disclosure label",
+  "text": "Using a cloud agent?",
+  "context": "A small line under the paste box. Opening it reveals the hosts line.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.figure.aria",
+  "section": "Hero replay panel",
+  "label": "Panel label for screen readers",
+  "text": "A real run of this journey, sped up",
+  "context": "Read out for the whole replay panel beside the paste box.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.title",
+  "section": "Hero replay panel",
+  "label": "Panel title",
+  "text": "Your agent",
+  "context": "The title in the replay panel’s top bar.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.badge",
+  "section": "Hero replay panel",
+  "label": "Panel badge",
+  "text": "A real run, sped up",
+  "context": "A small badge beside the panel title.",
+  "notes": "The coordinator’s wording, relayed during the rework. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.pause",
+  "section": "Hero replay panel",
+  "label": "Pause control",
+  "text": "Pause",
+  "context": "Stops the replay.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.play",
+  "section": "Hero replay panel",
+  "label": "Play control",
+  "text": "Play",
+  "context": "Shown in place of “Pause” while the replay is stopped.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.who.you",
+  "section": "Hero replay panel",
+  "label": "Speaker label",
+  "text": "You",
+  "context": "Marks the person’s lines in the replay.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.who.agent",
+  "section": "Hero replay panel",
+  "label": "Speaker label",
+  "text": "Agent",
+  "context": "Marks the agent’s lines in the replay.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.you.1",
+  "section": "Hero replay panel",
+  "label": "Person’s first line",
+  "text": "Follow the directions on https://carlosframework.com/start",
+  "context": "The pasted line, as the first message in the replay.",
+  "notes": "The run itself used a dev preview address; the homepage address is substituted here. Repo: already in src/_data/start-copy.json key start.prompt."
+ },
+ {
+  "id": "replay.agent.1",
+  "section": "Hero replay panel",
+  "label": "Agent’s opening",
+  "text": "I’ve read the directions. They say to ask what you want before I build anything, so here are a few quick questions.",
+  "context": "The agent’s first reply.",
+  "notes": "Verbatim from the recorded run of 11 November 2026. A quotation: the choice is whether to show it, not how to word it. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.agent.q1",
+  "section": "Hero replay panel",
+  "label": "Agent’s question",
+  "text": "What do you want to make?",
+  "context": "One of the four numbered questions under the agent’s opening.",
+  "notes": "Verbatim from the recorded run of 11 November 2026. A quotation: the choice is whether to show it, not how to word it. The examples the agent gave after each question are left out. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.agent.q2",
+  "section": "Hero replay panel",
+  "label": "Agent’s question",
+  "text": "How should it feel?",
+  "context": "One of the four numbered questions under the agent’s opening.",
+  "notes": "Verbatim from the recorded run of 11 November 2026. A quotation: the choice is whether to show it, not how to word it. The examples the agent gave after each question are left out. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.agent.q3",
+  "section": "Hero replay panel",
+  "label": "Agent’s question",
+  "text": "What’s the main screen, and what’s the one kind of thing it saves?",
+  "context": "One of the four numbered questions under the agent’s opening.",
+  "notes": "Verbatim from the recorded run of 11 November 2026. A quotation: the choice is whether to show it, not how to word it. The examples the agent gave after each question are left out. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.agent.q4",
+  "section": "Hero replay panel",
+  "label": "Agent’s question",
+  "text": "Have you built web apps before?",
+  "context": "One of the four numbered questions under the agent’s opening.",
+  "notes": "Verbatim from the recorded run of 11 November 2026. A quotation: the choice is whether to show it, not how to word it. The examples the agent gave after each question are left out. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.you.2",
+  "section": "Hero replay panel",
+  "label": "Person’s brief",
+  "text": "I run a little bakery called Panadería Carlos. I’d like a page where customers can pre-order bread and cakes. … I want it to feel warm and friendly. I’m not technical, so keep it simple for me.",
+  "context": "The person’s answer, shortened with an ellipsis.",
+  "notes": "Verbatim from the recorded run of 11 November 2026. A quotation: the choice is whether to show it, not how to word it. Shortened: the menu items and the tagline request are cut. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.agent.p1",
+  "section": "Hero replay panel",
+  "label": "Agent’s progress line",
+  "text": "Got it. I’m now writing your bakery page from the starter: the menu, a pick-up day, and a saved list of orders.",
+  "context": "One of the agent’s lines while it builds and publishes.",
+  "notes": "Verbatim from the recorded run of 11 November 2026. A quotation: the choice is whether to show it, not how to word it. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.agent.p2",
+  "section": "Hero replay panel",
+  "label": "Agent’s progress line",
+  "text": "It builds. Let me run it locally on a private socket and place a test order.",
+  "context": "One of the agent’s lines while it builds and publishes.",
+  "notes": "Verbatim from the recorded run of 11 November 2026. A quotation: the choice is whether to show it, not how to word it. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.agent.p3",
+  "section": "Hero replay panel",
+  "label": "Agent’s progress line",
+  "text": "Archive is ready (81 KB). Sending it to the service to create the demo; the private reply goes in an owner-only folder.",
+  "context": "One of the agent’s lines while it builds and publishes.",
+  "notes": "Verbatim from the recorded run of 11 November 2026. A quotation: the choice is whether to show it, not how to word it. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.agent.p4",
+  "section": "Hero replay panel",
+  "label": "Agent’s progress line",
+  "text": "Your pre-order page for Panadería Carlos is live:",
+  "context": "One of the agent’s lines while it builds and publishes.",
+  "notes": "Verbatim from the recorded run of 11 November 2026. A quotation: the choice is whether to show it, not how to word it. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.url",
+  "section": "Hero replay panel",
+  "label": "Live address",
+  "text": "floral-garden-22.dev.trycarlos.com",
+  "context": "The address the agent hands over, shown after its last line and in the little browser bar above the screenshot.",
+  "notes": "The real address from the run, on the dev platform. A production recording would have a production address. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.shot.alt",
+  "section": "Hero replay panel",
+  "label": "Screenshot description for screen readers",
+  "text": "The live page: Panadería Carlos, “Order today, collect mañana.”, and a menu of Pan de pueblo, Magdalenas and Ensaimada.",
+  "context": "Read out in place of the screenshot of the finished app.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "replay.caption",
+  "section": "Hero replay panel",
+  "label": "Panel caption",
+  "text": "Excerpts from one recorded run, 11 November 2026.",
+  "context": "Small text along the bottom of the replay panel.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.heading",
+  "section": "What CARLOS is",
+  "label": "Section heading",
+  "text": "CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily, by going back to basics.",
+  "context": "The first thing after the hero. “by going back to basics” is in the accent colour.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s own words, verbatim, given during the rework. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.follow",
+  "section": "What CARLOS is",
+  "label": "Follow-on line",
+  "text": "It’s defined by an open specification.",
+  "context": "Under the heading. “open specification” links to spec.carlosframework.com.",
+  "notes": "The coordinator’s draft, relayed with Paul’s change. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.button",
+  "section": "What CARLOS is",
+  "label": "Button",
+  "text": "Read the spec",
+  "context": "Links to spec.carlosframework.com.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.version",
+  "section": "What CARLOS is",
+  "label": "Version note",
+  "text": "v0.1, draft for comment",
+  "context": "Small text beside the button.",
+  "notes": "Draft, written during the rework. Needs review. Taken from the spec’s own first line. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.props.title",
+  "section": "What CARLOS is",
+  "label": "List heading",
+  "text": "A typical CARLOS app is",
+  "context": "Introduces the five properties.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s own words, verbatim, given during the rework. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.prop1.title",
+  "section": "What CARLOS is",
+  "label": "Property name",
+  "text": "One file",
+  "context": "One of five properties, each with a small drawing.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.prop1.body",
+  "section": "What CARLOS is",
+  "label": "Property description",
+  "text": "Web server, database, background jobs and interface, compiled into a single binary.",
+  "context": "The sentence under “One file”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.prop1.ref",
+  "section": "What CARLOS is",
+  "label": "Spec link",
+  "text": "spec §6",
+  "context": "A small link under “One file” to that section of the spec.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.prop2.title",
+  "section": "What CARLOS is",
+  "label": "Property name",
+  "text": "A database per customer",
+  "context": "One of five properties, each with a small drawing.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.prop2.body",
+  "section": "What CARLOS is",
+  "label": "Property description",
+  "text": "Every customer gets their own instance and their own data. Nothing shared, nothing to leak across.",
+  "context": "The sentence under “A database per customer”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.prop2.ref",
+  "section": "What CARLOS is",
+  "label": "Spec link",
+  "text": "spec §1",
+  "context": "A small link under “A database per customer” to that section of the spec.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.prop3.title",
+  "section": "What CARLOS is",
+  "label": "Property name",
+  "text": "Asleep until needed",
+  "context": "One of five properties, each with a small drawing.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.prop3.body",
+  "section": "What CARLOS is",
+  "label": "Property description",
+  "text": "It stops when nobody is using it and wakes on the next request, with nothing lost.",
+  "context": "The sentence under “Asleep until needed”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.prop3.ref",
+  "section": "What CARLOS is",
+  "label": "Spec link",
+  "text": "spec §8",
+  "context": "A small link under “Asleep until needed” to that section of the spec.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.prop4.title",
+  "section": "What CARLOS is",
+  "label": "Property name",
+  "text": "At home anywhere",
+  "context": "One of five properties, each with a small drawing.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.prop4.body",
+  "section": "What CARLOS is",
+  "label": "Property description",
+  "text": "The same binary runs on a hosted platform, your own servers or a laptop.",
+  "context": "The sentence under “At home anywhere”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.prop4.ref",
+  "section": "What CARLOS is",
+  "label": "Spec link",
+  "text": "spec §7",
+  "context": "A small link under “At home anywhere” to that section of the spec.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.prop5.title",
+  "section": "What CARLOS is",
+  "label": "Property name",
+  "text": "For people and agents",
+  "context": "One of five properties, each with a small drawing.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.prop5.body",
+  "section": "What CARLOS is",
+  "label": "Property description",
+  "text": "What a person can do in the interface, an agent can do through the API or the command line.",
+  "context": "The sentence under “For people and agents”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "what.prop5.ref",
+  "section": "What CARLOS is",
+  "label": "Spec link",
+  "text": "spec §11",
+  "context": "A small link under “For people and agents” to that section of the spec.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "practice.lead",
+  "section": "What CARLOS is",
+  "label": "Row heading",
+  "text": "Best practices built in, by default",
+  "context": "Introduces a row of four items under the five properties.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s own words, verbatim, given during the rework. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "practice.1.name",
+  "section": "What CARLOS is",
+  "label": "Best-practice item",
+  "text": "Performance",
+  "context": "One of four items, each with a small icon.",
+  "notes": "The coordinator’s wording. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "practice.1.ref",
+  "section": "What CARLOS is",
+  "label": "Spec link",
+  "text": "spec §13",
+  "context": "A small link under “Performance”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "practice.1.aria",
+  "section": "What CARLOS is",
+  "label": "Spec link label for screen readers",
+  "text": "Performance, spec section 13",
+  "context": "Read out for the “spec §13” link.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "practice.2.name",
+  "section": "What CARLOS is",
+  "label": "Best-practice item",
+  "text": "Security",
+  "context": "One of four items, each with a small icon.",
+  "notes": "The coordinator’s wording. Not yet through copy review. Repo: already in src/index.html."
+ },
+ {
+  "id": "practice.2.ref",
+  "section": "What CARLOS is",
+  "label": "Spec link",
+  "text": "spec §5",
+  "context": "A small link under “Security”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "practice.2.aria",
+  "section": "What CARLOS is",
+  "label": "Spec link label for screen readers",
+  "text": "Security, spec section 5",
+  "context": "Read out for the “spec §5” link.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "practice.3.name",
+  "section": "What CARLOS is",
+  "label": "Best-practice item",
+  "text": "Accessibility",
+  "context": "One of four items, each with a small icon.",
+  "notes": "The coordinator’s wording. Not yet through copy review. Repo: already in src/index.html."
+ },
+ {
+  "id": "practice.3.ref",
+  "section": "What CARLOS is",
+  "label": "Spec link",
+  "text": "spec §17",
+  "context": "A small link under “Accessibility”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "practice.3.aria",
+  "section": "What CARLOS is",
+  "label": "Spec link label for screen readers",
+  "text": "Accessibility, spec section 17",
+  "context": "Read out for the “spec §17” link.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "practice.4.name",
+  "section": "What CARLOS is",
+  "label": "Best-practice item",
+  "text": "Privacy",
+  "context": "One of four items, each with a small icon.",
+  "notes": "The coordinator’s wording. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "practice.4.ref",
+  "section": "What CARLOS is",
+  "label": "Spec link",
+  "text": "spec §3",
+  "context": "A small link under “Privacy”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "practice.4.aria",
+  "section": "What CARLOS is",
+  "label": "Spec link label for screen readers",
+  "text": "Privacy: data minimisation, logging, tracking and consent, spec section 3",
+  "context": "Read out for the “spec §3” link.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "practice.2.ref2",
+  "section": "What CARLOS is",
+  "label": "Second spec link",
+  "text": "§2",
+  "context": "A second small link under “Security”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "practice.2.aria2",
+  "section": "What CARLOS is",
+  "label": "Second spec link label for screen readers",
+  "text": "Trust classes and data security, spec section 2",
+  "context": "Read out for the “§2” link.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "tools.heading",
+  "section": "Framework and platform",
+  "label": "Section heading",
+  "text": "To make it easy, we built an agent-first modern framework and a platform",
+  "context": "Heading of the third section. No full stop, as Paul wrote it.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s own words, verbatim, given during the rework. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "tools.rastrillo.kind",
+  "section": "Framework and platform",
+  "label": "Card label",
+  "text": "The framework",
+  "context": "Small label above “Rastrillo”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "tools.rastrillo.body",
+  "section": "Framework and platform",
+  "label": "Card description",
+  "text": "A full-stack Go web framework. Ready-made parts, so your agent writes less from scratch.",
+  "context": "The sentence in the Rastrillo card.",
+  "notes": "Draft, written during the rework. Needs review. Reworked from two approved sentences in the current page. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "tools.platform.kind",
+  "section": "Framework and platform",
+  "label": "Card label",
+  "text": "The platform",
+  "context": "Small label above “CARLOS Platform”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "tools.platform.body",
+  "section": "Framework and platform",
+  "label": "Card description",
+  "text": "Puts your app online with HTTPS, backs up its data as it changes, and puts it to sleep when it is idle.",
+  "context": "The sentence in the CARLOS Platform card.",
+  "notes": "Draft, written during the rework. Needs review. Reworked from an approved sentence; “when nobody is using it” became “when it is idle”. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "tools.skill.lead",
+  "section": "Framework and platform",
+  "label": "Skill strip, lead-in",
+  "text": "And a skill, so your agent already knows how.",
+  "context": "Bold opening of the strip under the two cards.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "tools.skill.body",
+  "section": "Framework and platform",
+  "label": "Skill strip, body",
+  "text": "The team behind CARLOS has made a way to try it. Paste one line into your agent and it deploys a temporary app for you, live at a public link for 24 hours, with no account.",
+  "context": "Follows the lead-in in the strip.",
+  "notes": "Draft, written during the rework. Needs review. Written in the spirit of Paul’s “The team behind CARLOS has created a way to try”. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.heading",
+  "section": "What you get",
+  "label": "Section heading",
+  "text": "What you get",
+  "context": "Heading over three columns.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.ship.title",
+  "section": "What you get",
+  "label": "Column title",
+  "text": "Ship faster",
+  "context": "One of three columns, named after the hero’s three promises.",
+  "notes": "Draft, written during the rework. Needs review. The three titles echo Paul’s subheading. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.ship.figure",
+  "section": "What you get",
+  "label": "Headline figure",
+  "text": "12×",
+  "context": "The large figure in the “Ship faster” column.",
+  "notes": "A numeric claim. Paul is underclaiming: decide whether to keep it or use the alternative below. From the current page. Repo: already in src/index.html."
+ },
+ {
+  "id": "get.ship.figure.note",
+  "section": "What you get",
+  "label": "Figure caption",
+  "text": "faster to ship at Tito, building with agents on CARLOS principles.",
+  "context": "The line under the figure in “Ship faster”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.ship.alt",
+  "section": "What you get",
+  "label": "Underclaimed alternative to the figure",
+  "text": "New features live in seconds.",
+  "context": "Shown in place of the figure in “Ship faster” if the numbers are dropped (the mockup’s checkbox swaps them).",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.ship.alt.note",
+  "section": "What you get",
+  "label": "Caption for the alternative",
+  "text": "Tito rebuilt a ten-year-old Rails app this way.",
+  "context": "The line under the alternative.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.ship.item1",
+  "section": "What you get",
+  "label": "Column point",
+  "text": "Deploys with zero downtime",
+  "context": "One of three short points in “Ship faster”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.ship.item2",
+  "section": "What you get",
+  "label": "Column point",
+  "text": "Roll a release out to a few customers first",
+  "context": "One of three short points in “Ship faster”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.ship.item3",
+  "section": "What you get",
+  "label": "Column point",
+  "text": "Web app, API and CLI from one codebase",
+  "context": "One of three short points in “Ship faster”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.build.title",
+  "section": "What you get",
+  "label": "Column title",
+  "text": "Build better",
+  "context": "One of three columns, named after the hero’s three promises.",
+  "notes": "Draft, written during the rework. Needs review. The three titles echo Paul’s subheading. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.build.figure",
+  "section": "What you get",
+  "label": "Headline figure",
+  "text": "168 ms",
+  "context": "The large figure in the “Build better” column.",
+  "notes": "A numeric claim. Paul is underclaiming: decide whether to keep it or use the alternative below. From the current page’s “How we measured”. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.build.figure.note",
+  "section": "What you get",
+  "label": "Figure caption",
+  "text": "to first content on Tito’s CARLOS page. The Rails version took 758 ms.",
+  "context": "The line under the figure in “Build better”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.build.alt",
+  "section": "What you get",
+  "label": "Underclaimed alternative to the figure",
+  "text": "Fast because there is less of it.",
+  "context": "Shown in place of the figure in “Build better” if the numbers are dropped (the mockup’s checkbox swaps them).",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.build.alt.note",
+  "section": "What you get",
+  "label": "Caption for the alternative",
+  "text": "Pages are rendered on the server and ship far less JavaScript.",
+  "context": "The line under the alternative.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.build.item1",
+  "section": "What you get",
+  "label": "Column point",
+  "text": "Each customer’s data kept separate",
+  "context": "One of three short points in “Build better”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.build.item2",
+  "section": "What you get",
+  "label": "Column point",
+  "text": "Backed up as it changes, not nightly",
+  "context": "One of three short points in “Build better”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.build.item3",
+  "section": "What you get",
+  "label": "Column point",
+  "text": "Accessible from day one: WCAG 2.2 AA",
+  "context": "One of three short points in “Build better”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.save.title",
+  "section": "What you get",
+  "label": "Column title",
+  "text": "Save money",
+  "context": "One of three columns, named after the hero’s three promises.",
+  "notes": "Draft, written during the rework. Needs review. The three titles echo Paul’s subheading. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.save.figure",
+  "section": "What you get",
+  "label": "Headline figure",
+  "text": "70%–80%",
+  "context": "The large figure in the “Save money” column.",
+  "notes": "A numeric claim. Paul is underclaiming: decide whether to keep it or use the alternative below. The range is from Paul’s own sentence on the current page. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.save.figure.note",
+  "section": "What you get",
+  "label": "Figure caption",
+  "text": "less to run than a traditional web app.",
+  "context": "The line under the figure in “Save money”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.save.alt",
+  "section": "What you get",
+  "label": "Underclaimed alternative to the figure",
+  "text": "Stop paying for idle servers.",
+  "context": "Shown in place of the figure in “Save money” if the numbers are dropped (the mockup’s checkbox swaps them).",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.save.alt.note",
+  "section": "What you get",
+  "label": "Caption for the alternative",
+  "text": "Apps sleep when nobody is using them, and there is far less to rent.",
+  "context": "The line under the alternative.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.save.item1",
+  "section": "What you get",
+  "label": "Column point",
+  "text": "No database server, cache or cluster to pay for",
+  "context": "One of three short points in “Save money”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.save.item2",
+  "section": "What you get",
+  "label": "Column point",
+  "text": "Your cloud, your own hardware, or ours",
+  "context": "One of three short points in “Save money”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.save.item3",
+  "section": "What you get",
+  "label": "Column point",
+  "text": "Less compute, less carbon",
+  "context": "One of three short points in “Save money”.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.link.attributes",
+  "section": "What you get",
+  "label": "Link",
+  "text": "All the attributes",
+  "context": "Under the stacks; opens the attributes page.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "get.link.measured",
+  "section": "What you get",
+  "label": "Link",
+  "text": "How we measured",
+  "context": "Under the stacks; meant to open the measurement method.",
+  "notes": "Draft, written during the rework. Needs review. The method is not yet on the page it points to. Repo: already in src/index.html."
+ },
+ {
+  "id": "stacks.heading",
+  "section": "Less to run (interactive stacks)",
+  "label": "Block heading",
+  "text": "Less to run",
+  "context": "Heading beside the interactive picture.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.sub",
+  "section": "Less to run (interactive stacks)",
+  "label": "Block subheading",
+  "text": "What a typical multi-tenant app needs, before and after.",
+  "context": "Under “Less to run”.",
+  "notes": "Draft, written during the rework. Needs review. Written for the tower view; it does not describe the “Many services” view. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.toggle.aria",
+  "section": "Less to run (interactive stacks)",
+  "label": "Toggle label for screen readers",
+  "text": "Compare CARLOS with",
+  "context": "Names the pair of buttons that switch the left-hand picture.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.toggle.tower",
+  "section": "Less to run (interactive stacks)",
+  "label": "Toggle button",
+  "text": "One server stack",
+  "context": "Shows the wobbling tower of bricks on the left.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.toggle.services",
+  "section": "Less to run (interactive stacks)",
+  "label": "Toggle button",
+  "text": "Many services",
+  "context": "Shows the app held up by balloons on the left.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.reset",
+  "section": "Less to run (interactive stacks)",
+  "label": "Reset button",
+  "text": "Reset",
+  "context": "Appears once something has been knocked over, popped or cut; puts everything back.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.tower.aria",
+  "section": "Less to run (interactive stacks)",
+  "label": "Tower label for screen readers",
+  "text": "Before CARLOS, one server stack, top first",
+  "context": "Read out before the list of bricks.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.tower.app-backend",
+  "section": "Less to run (interactive stacks)",
+  "label": "Brick",
+  "text": "App backend",
+  "context": "One of two bricks side by side on the very top of the tower. They crack and break when the tower falls.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s own words, verbatim, given during the rework. Not yet through copy review. Paul called these draft labels. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.tower.app-frontend",
+  "section": "Less to run (interactive stacks)",
+  "label": "Brick",
+  "text": "App frontend",
+  "context": "One of two bricks side by side on the very top of the tower. They crack and break when the tower falls.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s own words, verbatim, given during the rework. Not yet through copy review. Paul called these draft labels. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.tower.background-workers",
+  "section": "Less to run (interactive stacks)",
+  "label": "Brick",
+  "text": "Background workers",
+  "context": "A brick in the tower.",
+  "notes": "Draft, written during the rework. Needs review. The names come from the current page’s stack diagram, lightly reworded. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.tower.web-server",
+  "section": "Less to run (interactive stacks)",
+  "label": "Brick",
+  "text": "Web server",
+  "context": "A brick in the tower.",
+  "notes": "Draft, written during the rework. Needs review. The names come from the current page’s stack diagram, lightly reworded. Repo: already in src/index.html."
+ },
+ {
+  "id": "stacks.tower.observability-layer",
+  "section": "Less to run (interactive stacks)",
+  "label": "Brick",
+  "text": "Observability layer",
+  "context": "A brick in the tower.",
+  "notes": "Draft, written during the rework. Needs review. The names come from the current page’s stack diagram, lightly reworded. Repo: already in src/index.html."
+ },
+ {
+  "id": "stacks.tower.containers",
+  "section": "Less to run (interactive stacks)",
+  "label": "Brick",
+  "text": "Containers",
+  "context": "A brick in the tower.",
+  "notes": "Draft, written during the rework. Needs review. The names come from the current page’s stack diagram, lightly reworded. Repo: already in src/index.html."
+ },
+ {
+  "id": "stacks.tower.microservices",
+  "section": "Less to run (interactive stacks)",
+  "label": "Cube row label",
+  "text": "Microservices",
+  "context": "A small tag beside a row of six loose little cubes in the middle of the tower.",
+  "notes": "The coordinator’s wording, relayed during the rework. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.tower.cluster-orchestrator",
+  "section": "Less to run (interactive stacks)",
+  "label": "Brick",
+  "text": "Cluster orchestrator",
+  "context": "A brick in the tower.",
+  "notes": "Draft, written during the rework. Needs review. The names come from the current page’s stack diagram, lightly reworded. Repo: already in src/index.html."
+ },
+ {
+  "id": "stacks.tower.app-server",
+  "section": "Less to run (interactive stacks)",
+  "label": "Brick",
+  "text": "App server",
+  "context": "A brick in the tower.",
+  "notes": "Draft, written during the rework. Needs review. The names come from the current page’s stack diagram, lightly reworded. Reads as redundant beside “App backend”; Paul to decide. Repo: already in src/index.html."
+ },
+ {
+  "id": "stacks.tower.database-server",
+  "section": "Less to run (interactive stacks)",
+  "label": "Brick",
+  "text": "Database server",
+  "context": "A brick in the tower.",
+  "notes": "Draft, written during the rework. Needs review. The names come from the current page’s stack diagram, lightly reworded. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.tower.memory-cache",
+  "section": "Less to run (interactive stacks)",
+  "label": "Brick",
+  "text": "Memory cache",
+  "context": "A brick in the tower.",
+  "notes": "Draft, written during the rework. Needs review. The names come from the current page’s stack diagram, lightly reworded. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.tower.load-balancer",
+  "section": "Less to run (interactive stacks)",
+  "label": "Brick",
+  "text": "Load balancer",
+  "context": "A brick in the tower.",
+  "notes": "Draft, written during the rework. Needs review. The names come from the current page’s stack diagram, lightly reworded. Repo: already in src/index.html."
+ },
+ {
+  "id": "stacks.tower.base",
+  "section": "Less to run (interactive stacks)",
+  "label": "Base brick",
+  "text": "Cloud provider",
+  "context": "The wide brick at the foot of the tower. It never moves.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s own words, verbatim, given during the rework. Not yet through copy review. Repo: already in src/index.html."
+ },
+ {
+  "id": "stacks.services.aria",
+  "section": "Less to run (interactive stacks)",
+  "label": "Balloon view label for screen readers",
+  "text": "Before CARLOS, many services holding up one app",
+  "context": "Read out before the list of balloons.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.balloon.hosting",
+  "section": "Less to run (interactive stacks)",
+  "label": "Balloon label",
+  "text": "Hosting",
+  "context": "Printed on one of nine balloons holding up “Your app”. Named by job, not by vendor.",
+  "notes": "The coordinator’s draft labels. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.balloon.database",
+  "section": "Less to run (interactive stacks)",
+  "label": "Balloon label",
+  "text": "Database",
+  "context": "Printed on one of nine balloons holding up “Your app”. Named by job, not by vendor.",
+  "notes": "The coordinator’s draft labels. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.balloon.auth",
+  "section": "Less to run (interactive stacks)",
+  "label": "Balloon label",
+  "text": "Auth",
+  "context": "Printed on one of nine balloons holding up “Your app”. Named by job, not by vendor.",
+  "notes": "The coordinator’s draft labels. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.balloon.email",
+  "section": "Less to run (interactive stacks)",
+  "label": "Balloon label",
+  "text": "Email",
+  "context": "Printed on one of nine balloons holding up “Your app”. Named by job, not by vendor.",
+  "notes": "The coordinator’s draft labels. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.balloon.payments",
+  "section": "Less to run (interactive stacks)",
+  "label": "Balloon label",
+  "text": "Payments",
+  "context": "Printed on one of nine balloons holding up “Your app”. Named by job, not by vendor.",
+  "notes": "The coordinator’s draft labels. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.balloon.file-storage",
+  "section": "Less to run (interactive stacks)",
+  "label": "Balloon label",
+  "text": "File storage",
+  "context": "Printed on one of nine balloons holding up “Your app”. Named by job, not by vendor.",
+  "notes": "The coordinator’s draft labels. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.balloon.workers",
+  "section": "Less to run (interactive stacks)",
+  "label": "Balloon label",
+  "text": "Workers",
+  "context": "Printed on one of nine balloons holding up “Your app”. Named by job, not by vendor.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s choice of word, given during the rework. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.balloon.search",
+  "section": "Less to run (interactive stacks)",
+  "label": "Balloon label",
+  "text": "Search",
+  "context": "Printed on one of nine balloons holding up “Your app”. Named by job, not by vendor.",
+  "notes": "The coordinator’s draft labels. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.balloon.webhooks",
+  "section": "Less to run (interactive stacks)",
+  "label": "Balloon label",
+  "text": "Webhooks",
+  "context": "Printed on one of nine balloons holding up “Your app”. Named by job, not by vendor.",
+  "notes": "Paul asked for this balloon; the label is a draft. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.services.app",
+  "section": "Less to run (interactive stacks)",
+  "label": "The app under the balloons",
+  "text": "Your app",
+  "context": "The block hanging from the balloons. It picks up damage as balloons are lost.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.after.aria",
+  "section": "Less to run (interactive stacks)",
+  "label": "CARLOS stack label for screen readers",
+  "text": "With CARLOS, top of the stack first",
+  "context": "Read out before the three CARLOS plates.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.after.app",
+  "section": "Less to run (interactive stacks)",
+  "label": "Top CARLOS plate",
+  "text": "Your app",
+  "context": "The top plate of the CARLOS pyramid.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s own words, verbatim, given during the rework. Not yet through copy review. Paul suggested it in place of “CARLOS App”. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "stacks.after.platform",
+  "section": "Less to run (interactive stacks)",
+  "label": "Middle CARLOS plate",
+  "text": "CARLOS Platform",
+  "context": "The middle plate of the CARLOS pyramid.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s own words, verbatim, given during the rework. Not yet through copy review. Repo: already in src/_data/start-copy.json key home.parts.platform.title and src/index.html."
+ },
+ {
+  "id": "stacks.after.base",
+  "section": "Less to run (interactive stacks)",
+  "label": "Bottom CARLOS plate",
+  "text": "Any host, any provider",
+  "context": "The bottom plate of the CARLOS pyramid. It never moves.",
+  "notes": "Paul’s words from the rework; confirm. Paul’s own words, verbatim, given during the rework. Not yet through copy review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "who.tito.body",
+  "section": "Who is using CARLOS",
+  "label": "One-line story",
+  "text": "Rebuilt a ten-year-old Rails app, and now lets customers choose where their data lives.",
+  "context": "The sentence beside “Tito”.",
+  "notes": "Draft, written during the rework. Needs review. Cut down from the approved case-study card. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "who.jelly.body",
+  "section": "Who is using CARLOS",
+  "label": "One-line story",
+  "text": "Rewritten on Rastrillo. Now sells on-prem installs that were impossible before.",
+  "context": "The sentence beside “Jelly”.",
+  "notes": "Draft, written during the rework. Needs review. Cut down from the approved case-study card. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "who.jelly.link",
+  "section": "Who is using CARLOS",
+  "label": "Link",
+  "text": "How Jelly did it",
+  "context": "Opens the Jelly case study.",
+  "notes": "Draft, written during the rework. Needs review. Shortened from the approved link text. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "who.eleven.body",
+  "section": "Who is using CARLOS",
+  "label": "One-line story",
+  "text": "The end-to-end encrypted messenger that led to CARLOS.",
+  "context": "The sentence beside “Eleven”.",
+  "notes": "Draft, written during the rework. Needs review. Cut down from the approved case-study card. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "who.eleven.link",
+  "section": "Who is using CARLOS",
+  "label": "Link",
+  "text": "About Eleven",
+  "context": "Opens the Eleven case study.",
+  "notes": "Draft, written during the rework. Needs review. Shortened from the approved link text. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "who.by",
+  "section": "Who is using CARLOS",
+  "label": "Closing line",
+  "text": "CARLOS is built by the people behind Tito and Jelly, and extracted from what they learned serving real customers.",
+  "context": "Small line under the three rows.",
+  "notes": "Draft, written during the rework. Needs review. Reworked from an approved sentence on the current page. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "end.heading",
+  "section": "Try it now",
+  "label": "Section heading",
+  "text": "Try it now",
+  "context": "Heading of the closing section, which repeats the paste box.",
+  "notes": "Draft, written during the rework. Needs review. Echoes Paul’s “or try it now:” in the hero. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "end.paste.works",
+  "section": "Try it now",
+  "label": "Line under the paste box",
+  "text": "Try it in with your preferred agent setup",
+  "context": "Small text beside the Copy button in the closing paste box only. The hero variant no longer shows it.",
+  "notes": "Existing text carried over from the live paste box. Contains a probable typo (“in with”) that Paul has not settled. Decide: fix, or drop here as in the hero. Repo: already in src/_data/start-copy.json key home.paste.works."
+ },
+ {
+  "id": "end.hand.text",
+  "section": "Try it now",
+  "label": "Alternative, question",
+  "text": "Rather set it up yourself?",
+  "context": "Under the closing paste box.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ },
+ {
+  "id": "end.hand.link",
+  "section": "Try it now",
+  "label": "Alternative, link",
+  "text": "Get started by hand",
+  "context": "Opens the by-hand instructions on the start page.",
+  "notes": "Draft, written during the rework. Needs review. Repo: not in the website repo yet; new string."
+ }
+]
