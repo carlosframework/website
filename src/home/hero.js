@@ -15,10 +15,20 @@
   const hero = document.querySelector('.c-hero');
   if (hero) {
     let width = 0;
+    // Side by side (64rem and wider), the two panes are centred against each other at rest; each is then held at that
+    // resting place, so the text pane growing below does not slide the replay down (or the text pane's own top up).
+    const inner = hero.querySelector('.c-hero-inner'), panes = inner ? [...inner.children] : [];
+    const pin = () => {
+      panes.forEach(c => { c.style.removeProperty('align-self'); c.style.removeProperty('margin-top'); });
+      if (!inner || getComputedStyle(inner).gridTemplateColumns.trim().split(/\s+/).length < 2) return;
+      const tops = panes.map(c => c.offsetTop), first = Math.min(...tops);   // offsetTop ignores the glass panes' drift
+      panes.forEach((c, i) => { c.style.alignSelf = 'start'; c.style.marginTop = (tops[i] - first) + 'px'; });
+    };
     const lock = force => {
       if (!force && hero.clientWidth === width) return;
       width = hero.clientWidth;
       hero.style.removeProperty('height');
+      pin();
       const room = parseFloat(getComputedStyle(document.documentElement).fontSize) * 2.1;
       hero.style.height = Math.ceil(hero.getBoundingClientRect().height + room) + 'px';
     };

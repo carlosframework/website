@@ -127,13 +127,25 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
       const page = await ctx.newPage();
       if (!copies) await page.addInitScript(() => Object.defineProperty(navigator, 'clipboard', { value: { writeText: () => Promise.reject(new Error('denied')) } }));
       await page.goto(url, { waitUntil: 'networkidle' });
-      const where = () => page.evaluate(() => { const c = document.querySelector('.hero-bg'); return { next: document.querySelector('.rw-what').getBoundingClientRect().top + scrollY, hero: document.querySelector('.c-hero').getBoundingClientRect().height, canvas: [c.clientWidth, c.clientHeight] }; });
+      // side by side, the replay pane and the top of the text pane are held too
+      const where = () => page.evaluate(wide => { const c = document.querySelector('.hero-bg'); return { next: document.querySelector('.rw-what').getBoundingClientRect().top + scrollY, hero: document.querySelector('.c-hero').getBoundingClientRect().height, canvas: [c.clientWidth, c.clientHeight],
+        ...(wide ? { replay: document.querySelector('.c-hero .rp').offsetTop, text: document.querySelector('.c-hero .hv-col').offsetTop } : {}) }; }, width >= 1024);
       const before = await where();
       await page.locator('.c-hero .pb-copy').click(); await page.waitForTimeout(600);
       assert.ok(await page.locator('.c-hero .paste').evaluate(el => el.classList.contains('is-copied') || el.classList.contains('copy-failed')), 'the copy note shows');
       assert.deepEqual(await where(), before, `${width} after Copy (${copies ? 'copied' : 'failed'})`);
       await page.locator('.hv-cloud summary').click(); await page.waitForTimeout(400);
       assert.deepEqual(await where(), before, `${width} with the hosts line open`);
+      await ctx.close();
+    }
+    // At rest the side-by-side panes sit exactly as centred (the hold changes nothing until something grows).
+    for (const width of [1280, 1440]) {
+      const ctx = await browser.newContext({ viewport: { width, height: 900 } });
+      const page = await ctx.newPage();
+      await page.goto(url, { waitUntil: 'load' });
+      const held = await page.evaluate(() => [...document.querySelectorAll('.c-hero-inner > *')].map(c => c.offsetTop));
+      const centred = await page.evaluate(() => { const inner = document.querySelector('.c-hero-inner'); [...inner.children].forEach(c => { c.style.alignSelf = ''; c.style.marginTop = ''; }); return [...inner.children].map(c => c.offsetTop); });
+      assert.deepEqual(held, centred, `${width}: resting layout unchanged`);
       await ctx.close();
     }
     // The switch: visible, pressed state follows, the page changes at once and remembers.
