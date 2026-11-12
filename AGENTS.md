@@ -70,8 +70,13 @@ person marker.**
 ## Conventions
 
 - **Only the clipboard and Attributes sidebar scripts run in the browser,**
-  plus, on the enabled-demo homepage, `src/home/hero.js` (the rotating word)
-  and `src/home/stacks.js` (the interactive stacks). The stacks load Matter.js
+  plus, on the enabled-demo homepage, `src/home/theme.js` (Auto, Light or
+  Dark, remembered in localStorage; loaded first in `<head>`, without defer, so
+  there is no flash of the wrong theme), `src/home/hero.js` (the rotating word)
+  and `src/home/stacks.js` (the interactive stacks, with a Pause control; they
+  move only while the script says so). `src/home/` is copied by
+  `hack/build-start.mjs` into enabled builds only. Homepage colours use
+  `light-dark()`; in light, green is for links and accents only. The stacks load Matter.js
   0.20 (MIT, served from `/home/` with its license header and
   `matter-0.20.0.LICENSE.txt`) in idle time once the section nears the
   viewport, never under reduced motion. Both are decorative: without them the
