@@ -189,6 +189,10 @@ test('homepage carries Paul’s 2026-11-12 approved copy byte for byte, with cur
  // Paul's later verbatim rewrites (2026-11-12, after the review) replace the reviewed text.
  const later={'tools.heading':'To make it easy, we built an agent-first modern web framework to build apps and a platform to deploy them on','tools.platform.body':'Get your CARLOS apps online with HTTPS, backups, provisioning, observability and analytics. Static sites work great too.','tools.skill.lead':'Try CARLOS with zero effort.','tools.skill.body':'The CARLOS skill has everything it needs to build and deploy a sample app and get it live right now.','what.heading':'CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily.'};
  for(const s of result.strings) if(later[s.id]) s.text=later[s.id];
+ // Paul, 2026-11-12: the replay no longer needs its "A real run, sped up" badge. Removed, not reworded.
+ const removed=new Set(['replay.badge']);
+ assert.ok(!Object.hasOwn(copy,'home.replay.badge'));
+ result.strings=result.strings.filter(s=>!removed.has(s.id));
  // Every approved string is in the copy data under its review id, exactly as approved.
  for(const {id,text} of result.strings) assert.equal(copy[`home.${id}`],text,id);
  // Approved later, verbatim, through the coordinator: the closing line under the best practices.
@@ -196,6 +200,7 @@ test('homepage carries Paul’s 2026-11-12 approved copy byte for byte, with cur
  assert.equal(copy['home.typical.closing.body'],'They’re the defaults we believe make web apps better for everyone, and for their agents.');
  await pages(async home=>{
   const text=visible(home);
+  assert.doesNotMatch(home,/rp-badge|A real run, sped up/);
   const sample=['hero.gloss','hero.cloud.summary','replay.agent.1','replay.agent.q3','replay.you.2','replay.caption','what.button','what.prop2.body','practice.4.aria','tools.heading','tools.skill.body','get.ship.item1','get.ship.item2','get.build.item2','get.save.item1','get.build.figure.note','stacks.sub','stacks.reset','stacks.balloon.file-storage','stacks.after.base','who.by','end.heading','end.paste.works','end.hand.link','typical.closing.lead','typical.closing.body'];
   for(const id of sample) assert.ok(text.includes(copy[`home.${id}`]),id);
   // Every approved string shown on the page; the alternatives to the figures are kept for a one-line switch.
