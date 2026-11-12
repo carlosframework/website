@@ -190,7 +190,7 @@ test('theme: Auto follows the system, Light and Dark are remembered, the switch 
 
 // The hero's drawn background, with a fake WebGL context that counts draws and remembers the theme uniform.
 const heroBgJS = await read('src/home/hero-bg.js');
-function heroBgWorld({ reduce = false, webgl = true } = {}) {
+function heroBgWorld({ reduce = false, webgl = true, search = '' } = {}) {
   const mq = media(reduce), darkQ = media(false), root = new El(''), hero = new El('c-hero hv hv-b', { left: 0, top: 0, width: 1280, height: 700 }), canvas = new El('hero-bg'), pause = new El('');
   pause.checked = false; hero.qs['.hero-bg'] = [canvas];
   Object.defineProperty(hero, 'clientWidth', { get: () => 1280 }); Object.defineProperty(hero, 'clientHeight', { get: () => 700 });
@@ -201,7 +201,7 @@ function heroBgWorld({ reduce = false, webgl = true } = {}) {
   const frames = new Map(), observers = [], mutations = []; let n = 0, now = 0;
   const g = {
     document: { querySelector: s => (s === '.c-hero' ? hero : s === '.rp-pause input' ? pause : null), documentElement: root, hidden: false, addEventListener() {} },
-    matchMedia: q => (q.includes('reduced-motion') ? mq : darkQ), addEventListener() {}, devicePixelRatio: 3, innerHeight: 900, Float32Array, Error,
+    matchMedia: q => (q.includes('reduced-motion') ? mq : darkQ), addEventListener() {}, devicePixelRatio: 3, innerHeight: 900, Float32Array, Error, location: { search }, URLSearchParams,
     requestAnimationFrame: f => { frames.set(++n, f); return n; }, cancelAnimationFrame: id => frames.delete(id),
     IntersectionObserver: class { constructor(cb) { this.cb = cb; observers.push(this); } observe() {} },
     MutationObserver: class { constructor(cb) { mutations.push(cb); } observe() {} },
@@ -269,3 +269,15 @@ test('hero background: without WebGL the hero keeps its CSS gradient', () => {
   const w = heroBgWorld({ webgl: false });
   assert.ok(w.hero.classList.contains('nogl')); assert.equal(w.frames.size, 0); assert.equal(w.draws.length, 0);
 });
+
+test('hero background: dark drifts at half speed and is the calm version; ?bg=calmer picks the calmer one', () => {
+  const w = heroBgWorld();
+  w.run(6); const t0 = w.draws.at(-1).T; w.run(6); const light = w.draws.at(-1).T - t0;
+  w.root.setAttribute('data-theme', 'dark'); w.mutations[0](); w.run(1);
+  const t1 = w.draws.at(-1).T; w.run(6); const dark = w.draws.at(-1).T - t1;
+  assert.ok(Math.abs(dark - light / 2) < 1e-6, `dark ${dark} against light ${light}`);
+  assert.equal(w.draws.at(-1).Q, 1);
+  const c = heroBgWorld({ search: '?bg=calmer' }); c.run(2);
+  assert.equal(c.draws.at(-1).Q, 2); assert.equal(c.g.__heroBg.state.calm, 2);
+});
+
