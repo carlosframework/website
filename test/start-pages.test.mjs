@@ -13,7 +13,7 @@ async function pages(fn,overrides={}) {await mkdir(base,{recursive:true});const 
 const plain=html=>html.replace(/<!--[\s\S]*?-->/g,'').replace(/<[^>]*>/g,'').replace(/&#39;/g,"'").replace(/&amp;/g,'&').replace(/&quot;/g,'"');
 test('enabled homepage has the approved centred hero and three parts',()=>pages(async(home,start)=>{
  const hero=home.match(/<section class="c-hero">[\s\S]*?<\/section>/)[0];
- assert.equal(plain(hero.match(/<h1>([\s\S]*?)<\/h1>/)[1]),"You're already using agents.");
+ assert.equal(plain(hero.match(/<h1>([\s\S]*?)<\/h1>/)[1]),"You’re already using agents.");
  assert.ok(hero.includes('<span class="nw">using agents.</span>'));
  const sub=hero.match(/<p class="sub">([\s\S]*?)<\/p>/)[1];
  assert.equal(plain(sub),'Now you want to ship faster, build better and save money.');
@@ -118,7 +118,7 @@ test('homepage and host copy matches Paul’s approved copy review verbatim',()=
  const approved={
   "start.hosts.two": "Make sure your agent has access to {siteHost} and {apiHost}",
   "start.hosts.one": "Make sure your agent has access to {host}",
-  "home.hero.heading": "You're already using agents.",
+  "home.hero.heading": "You’re already using agents.",
   "home.hero.subheading": "Now you want to ship faster, build better and save money.",
   "home.hero.answer": "You want CARLOS.",
   "home.hero.ask": "Read on, or try it now:",

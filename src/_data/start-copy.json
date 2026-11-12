@@ -37,7 +37,7 @@
   "start.config.error": "The start page could not be built:",
   "start.hosts.two": "Make sure your agent has access to {siteHost} and {apiHost}",
   "start.hosts.one": "Make sure your agent has access to {host}",
-  "home.hero.heading": "You're already using agents.",
+  "home.hero.heading": "You’re already using agents.",
   "home.hero.subheading": "Now you want to ship faster, build better and save money.",
   "home.hero.answer": "You want CARLOS.",
   "home.hero.ask": "Read on, or try it now:",
