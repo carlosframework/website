@@ -1,5 +1,5 @@
 // 🤖 "What you get": the three headline figures count to their values once, when the section scrolls into
-// view (12× from 1, 20 ms down from 750, 80% from 0), over 1.2 s with an ease-out. The final figure is the
+// view (12× from 1, 20 ms down from 250, 80% from 0), over 1.2 s with an ease-out. The final figure is the
 // real text in the page, so screen readers, readers without JavaScript and reduced motion get it as it is;
 // the running number is a visual-only copy laid over it. A figure that is not "number + unit" is left alone.
 (() => {

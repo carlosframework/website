@@ -55,7 +55,7 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  // "What you get" shows the headline figures; the number-free alternatives stay in the copy data.
  for(const k of ['ship','build','save']) {
   // the final figure is real text; the count-up is a visual-only overlay beside it
-  assert.ok(body.includes(`<p class="rw-fig" data-count-from="${{ship:1,build:750,save:0}[k]}"><span class="rw-fig-final">${escapeHTML(copy[`home.get.${k}.figure`])}</span><span class="rw-fig-run" aria-hidden="true"></span></p>`),k);
+  assert.ok(body.includes(`<p class="rw-fig" data-count-from="${{ship:1,build:250,save:0}[k]}"><span class="rw-fig-final">${escapeHTML(copy[`home.get.${k}.figure`])}</span><span class="rw-fig-run" aria-hidden="true"></span></p>`),k);
   assert.ok(!body.includes(copy[`home.get.${k}.alt`]),k);
  }
  // The closing paste box repeats the hero's, with the line under it and no second host note.
