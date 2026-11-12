@@ -121,6 +121,12 @@ for(const [name,overrides,hosts] of [
   assert.ok(plain(html).includes(`Follow the directions on ${site}/start`));
  }
 },overrides));
+test('start points agents at its Markdown twin, in the head and at the top of For your agent',()=>pages(async(_,start)=>{
+ assert.ok(start.match(/<head>[\s\S]*?<\/head>/)[0].includes('<link rel="alternate" type="text/markdown" href="/start/index.md">'));
+ const section=start.split('id="for-your-agent"')[1];
+ assert.ok(section.indexOf('<p class="agent-md">These instructions as Markdown: <a href="/start/index.md">/start/index.md</a></p>')>=0);
+ assert.ok(section.indexOf('class="agent-md"')<section.indexOf('<!-- agent-content -->'),'above the instructions, outside the twin');
+}));
 test('start order, approved text arrays, complete instructions and unchanged account block',()=>pages(async(_,start)=>{
  const positions=['<h1>','class="intro"','id="start-prompt"','<ol>','Keep it','href="#account"','id="account"','id="for-your-agent"','<!-- agent-content -->'].map(s=>start.indexOf(s));
  assert.ok(positions.every((p,i)=>p>=0 && (!i||p>positions[i-1])));

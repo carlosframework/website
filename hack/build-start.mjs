@@ -148,7 +148,8 @@ export async function buildStart(outputDir,config) {
    .replace(/<title>[^<]*<\/title>/,()=>`<title>${escapeHTML(copy['start.title'])}</title>`)
    .replace(/<meta name="description" content="[^"]*">/,()=>`<meta name="description" content="${escapeHTML(copy['start.meta.description'])}">\n<meta property="og:description" content="${escapeHTML(copy['start.meta.description'])}">`)
    .replace(/<link rel="canonical" href="[^"]*">/,()=>`<link rel="canonical" href="${escapeHTML(config.siteOrigin)}/start/">`)
-   .replace('</head>','<link rel="stylesheet" href="/start/start.css?v=0">\n</head>');
+   // The same instructions as Markdown, for agents that do not ask for it by Accept header.
+   .replace('</head>','<link rel="stylesheet" href="/start/start.css?v=0">\n<link rel="alternate" type="text/markdown" href="/start/index.md">\n</head>');
  }
  home=home.replace(/<!-- \/?start-demo:(?:hero|body) -->/g,'');
  // Remove previously generated or accidentally passthrough-copied source, also on watch rebuilds.
