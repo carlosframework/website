@@ -64,7 +64,15 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.doesNotMatch(hero+body,/—/);
  // Spec links keep their visible text as the name (WCAG 2.5.3) and carry the approved longer label as a description.
  for(const [ref,aria] of [['1.ref','1.aria'],['2.ref','2.aria'],['2.ref2','2.aria2'],['3.ref','3.aria'],['4.ref','4.aria']]) assert.ok(body.includes(`aria-describedby="practice-${aria.replace('.','-')}">${escapeHTML(copy['home.practice.'+ref])}</a><span id="practice-${aria.replace('.','-')}" hidden>${escapeHTML(copy['home.practice.'+aria])}</span>`),aria);
- for(const asset of ['/home/hero.css','/home/sections.css','/home/stacks.css','/home/hero.js','/home/stacks.js']) assert.ok(home.includes(`="${asset}?v=0"`),asset);
+ for(const asset of ['/home/hero.css','/home/sections.css','/home/stacks.css','/home/theme.css','/home/hero.js','/home/stacks.js']) assert.ok(home.includes(`="${asset}?v=0"`),asset);
+ // The theme is set before anything is drawn: theme.js first in <head>, blocking, ahead of every stylesheet.
+ const head=home.match(/<head>[\s\S]*?<\/head>/)[0];
+ assert.ok(head.includes('<script src="/home/theme.js?v=0"></script>'));
+ assert.ok(head.indexOf('/home/theme.js')<head.indexOf('/start/start.css') && head.indexOf('/home/theme.js')<head.indexOf('/home/hero.css'));
+ // Auto, Light and Dark in the header, Auto pressed until the script reads the remembered choice.
+ assert.ok(home.includes(`<div class="theme-switch" role="group" aria-label="${copy['home.theme.label']}" hidden><button type="button" data-theme-set="auto" aria-pressed="true">${copy['home.theme.auto']}</button><button type="button" data-theme-set="light" aria-pressed="false">${copy['home.theme.light']}</button><button type="button" data-theme-set="dark" aria-pressed="false">${copy['home.theme.dark']}</button></div>`));
+ // The stacks' Pause reuses the replay's approved words.
+ assert.ok(panel.includes(`<button type="button" class="ipause" data-pause="${copy['home.replay.pause']}" data-play="${copy['home.replay.play']}" hidden>${copy['home.replay.pause']}</button>`));
  assert.ok(home.includes(`<meta name="description" content="${copy['home.meta.description']}">`));
  assert.ok(home.includes(`<meta property="og:description" content="${copy['home.og.description']}">`));
  for(const html of [home,start]) {

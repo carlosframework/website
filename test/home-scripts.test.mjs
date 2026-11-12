@@ -1,0 +1,189 @@
+// 🤖 The homepage's two scripts in a VM with a small fake DOM: motion preference changes,
+// pause, a grab released before the physics arrives, parallel swipes, and the theme switch.
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { readFile } from 'node:fs/promises';
+import { createContext, runInContext } from 'node:vm';
+const read = p => readFile(p, 'utf8');
+const stacksJS = await read('src/home/stacks.js'), heroJS = await read('src/home/hero.js'), themeJS = await read('src/home/theme.js');
+const matterJS = await read('src/home/matter-0.20.0.min.js');
+
+class ClassList { constructor() { this.s = new Set(); } add(...c) { c.forEach(x => this.s.add(x)); } remove(...c) { c.forEach(x => this.s.delete(x)); } contains(c) { return this.s.has(c); } toggle(c, f = !this.s.has(c)) { f ? this.s.add(c) : this.s.delete(c); return f; } toString() { return [...this.s].join(' '); } }
+class El {
+  constructor(cls = '', rect = { left: 0, top: 0, width: 100, height: 40 }) {
+    this.classList = new ClassList(); cls.split(' ').filter(Boolean).forEach(c => this.classList.add(c));
+    this.dataset = {}; this.attrs = {}; this.hidden = false; this.rect = rect; this.l = {}; this.qs = {}; this.parent = null; this.textContent = '';
+    const style = {}; this.style = Object.assign(style, { removeProperty: k => { delete style[k]; }, setProperty: (k, v) => { style[k] = v; } });
+  }
+  get className() { return this.classList.toString(); } set className(v) { this.classList = new ClassList(); v.split(' ').filter(Boolean).forEach(c => this.classList.add(c)); }
+  addEventListener(t, f) { (this.l[t] ||= []).push(f); }
+  fire(t, e = {}) { for (const f of this.l[t] || []) f(e); }
+  querySelector(s) { return (this.qs[s] || [])[0] || null; }
+  querySelectorAll(s) { return this.qs[s] || []; }
+  getBoundingClientRect() { const r = this.rect; return { ...r, right: r.left + r.width, bottom: r.top + r.height, x: r.left, y: r.top }; }
+  closest(s) { return s === 'li' && this.tag === 'li' ? this : this.parent; }
+  contains() { return true; }
+  setAttribute(k, v) { this.attrs[k] = String(v); } getAttribute(k) { return this.attrs[k] ?? null; } removeAttribute(k) { delete this.attrs[k]; }
+  replaceChildren() {} remove() {} appendChild(c) { (this.kids ||= []).push(c); return c; } setPointerCapture() {}
+  get offsetWidth() { return 100; } get clientWidth() { return 600; } get offsetParent() { return {}; }
+}
+function media(matches) { const m = { matches, l: [], addEventListener: (t, f) => m.l.push(f), set(v) { m.matches = v; m.l.forEach(f => f({ matches: v })); } }; return m; }
+
+// A stacks panel in tower mode: three bricks on a base, and the three CARLOS plates.
+function stacksWorld({ reduce = false } = {}) {
+  const panel = new El('ipanel wobble pyramid'), stage = new El('istage', { left: 0, top: 0, width: 600, height: 500 });
+  panel.dataset.mode = 'tower';
+  const li = (cls, x, y, w) => { const e = new El(cls, { left: x, top: y, width: w, height: 40 }); e.tag = 'li'; return e; };
+  const tower = [li('', 60, 300, 120), li('', 55, 344, 130), li('', 50, 388, 140), li('base', 30, 432, 180)];
+  const after = [li('', 400, 344, 80), li('', 390, 388, 100), li('', 380, 432, 120)];
+  const uls = [new El(''), new El('')];
+  const all = [...tower, ...after];
+  Object.assign(stage.qs, { 'li, ul': [...all, ...uls], '.tower li': tower, '.stack.after li': after, '.stack ul': uls, li: all });
+  const resetBtn = new El('ireset'), pauseBtn = new El('ipause'), seg = new El('seg'), strings = new El('strings');
+  resetBtn.hidden = pauseBtn.hidden = seg.hidden = true; pauseBtn.dataset.pause = 'Pause'; pauseBtn.dataset.play = 'Play';
+  Object.assign(panel.qs, { '.istage': [stage], '.ireset': [resetBtn], '.strings': [strings], '.seg': [seg], '.ipause': [pauseBtn], '[data-mode-set]': [] });
+  const head = new El(''), mq = media(reduce), observers = [], frames = new Map(), idles = new Map(), cancelled = { idle: [], frame: [] };
+  let n = 0;
+  const g = {
+    document: { querySelector: s => (s === '.ipanel' ? panel : null), head, createElement: () => new El(''), createElementNS: () => new El('') },
+    matchMedia: () => mq, addEventListener() {}, performance: { now: () => Date.now() }, console, Math, setTimeout: () => 0, clearTimeout() {},
+    IntersectionObserver: class { constructor(cb) { this.cb = cb; this.on = true; observers.push(this); } observe() {} disconnect() { this.on = false; } },
+    requestAnimationFrame: f => { frames.set(++n, f); return n; }, cancelAnimationFrame: id => { frames.delete(id); cancelled.frame.push(id); },
+    requestIdleCallback: f => { idles.set(++n, f); return n; }, cancelIdleCallback: id => { idles.delete(id); cancelled.idle.push(id); },
+  };
+  g.window = g;
+  const ctx = createContext(g);
+  runInContext(stacksJS, ctx);
+  const see = () => observers.filter(o => o.on).forEach(o => o.cb([{ isIntersecting: true }], o));
+  const idle = () => { const fs = [...idles.values()]; idles.clear(); fs.forEach(f => f()); };
+  const script = () => head.kids?.[0];
+  const arrive = () => { runInContext(matterJS, ctx); script().onload(); };
+  return { g, ctx, panel, stage, tower, pauseBtn, mq, frames, idles, cancelled, see, idle, script, arrive, world: () => g.__i1.world };
+}
+
+test('stacks: still without motion, moving with it, and the pause control shown', () => {
+  const w = stacksWorld();
+  assert.ok(w.panel.classList.contains('moving'));
+  assert.equal(w.pauseBtn.hidden, false);
+  const r = stacksWorld({ reduce: true });
+  assert.ok(!r.panel.classList.contains('moving') && r.panel.classList.contains('static'));
+  assert.equal(r.pauseBtn.hidden, true);
+  r.see(); r.idle();
+  assert.equal(r.script(), undefined, 'no physics fetched under reduced motion');
+});
+
+test('stacks: reduced motion switched on later cancels the pending load, frames and the world', () => {
+  // waiting in idle time
+  let w = stacksWorld();
+  w.see(); assert.equal(w.idles.size, 1);
+  w.mq.set(true);
+  assert.equal(w.idles.size, 0); assert.equal(w.cancelled.idle.length, 1);
+  assert.ok(!w.panel.classList.contains('moving')); assert.equal(w.pauseBtn.hidden, true);
+  // the script already on its way: it arrives to nothing
+  w = stacksWorld();
+  w.see(); w.idle(); assert.ok(w.script());
+  w.mq.set(true); w.arrive();
+  assert.equal(w.world(), null);
+  // a running world: frames cancelled, pieces back at rest
+  w = stacksWorld();
+  w.see(); w.idle(); w.arrive();
+  assert.ok(w.world()); assert.ok(w.frames.size > 0); assert.ok(w.stage.classList.contains('live'));
+  w.mq.set(false); w.mq.set(true);
+  assert.equal(w.world(), null); assert.equal(w.frames.size, 0);
+  assert.ok(!w.stage.classList.contains('live')); assert.equal(w.tower[0].style.transform, undefined);
+  // and back again: it preloads once more
+  w.mq.set(false); assert.ok(w.panel.classList.contains('moving')); w.see(); assert.equal(w.idles.size, 1);
+});
+
+test('stacks: Pause freezes the CSS sway and the physics, Play resumes', () => {
+  const w = stacksWorld();
+  w.see(); w.idle(); w.arrive();
+  assert.ok(w.frames.size > 0);
+  w.pauseBtn.fire('click');
+  assert.equal(w.pauseBtn.textContent, 'Play'); assert.equal(w.pauseBtn.hidden, false);
+  assert.ok(!w.panel.classList.contains('moving')); assert.equal(w.frames.size, 0);
+  assert.ok(w.world(), 'paused in place, not taken apart');
+  w.stage.fire('pointerdown', { target: w.tower[0], pointerId: 1, clientX: 100, clientY: 310, preventDefault() {} });
+  assert.equal(w.world().drag, null, 'the pointer is ignored while paused');
+  w.pauseBtn.fire('click');
+  assert.equal(w.pauseBtn.textContent, 'Pause'); assert.ok(w.panel.classList.contains('moving')); assert.ok(w.frames.size > 0);
+});
+
+test('stacks: a grab released before the physics arrives does not take hold', () => {
+  const down = w => w.stage.fire('pointerdown', { target: w.tower[0], pointerId: 7, clientX: 100, clientY: 310, preventDefault() {} });
+  // held through the wait: it takes hold (the harness is real enough to grab)
+  let w = stacksWorld();
+  down(w); assert.ok(w.script());
+  w.arrive();
+  assert.ok(w.world().drag, 'held grab takes hold');
+  // let go before it arrived: no stale drag
+  w = stacksWorld();
+  down(w); w.stage.fire('pointerup', { pointerId: 7 });
+  w.arrive();
+  assert.ok(w.world()); assert.equal(w.world().drag, null);
+  // cancelled the same way
+  w = stacksWorld();
+  down(w); w.stage.fire('pointercancel', { pointerId: 7 });
+  w.arrive();
+  assert.equal(w.world().drag, null);
+});
+
+test('stacks: parallel segments never cross', () => {
+  const { g } = stacksWorld();
+  const crosses = g.__i1.crosses;
+  assert.equal(crosses({ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 0, y: 5 }, { x: 10, y: 5 }), null);
+  assert.equal(crosses({ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 2, y: 0 }, { x: 8, y: 0 }), null);
+  const x = crosses({ x: 0, y: 0 }, { x: 10, y: 10 }, { x: 0, y: 10 }, { x: 10, y: 0 });
+  assert.ok(Number.isFinite(x.t) && Number.isFinite(x.u));
+  assert.equal(crosses({ x: 0, y: 0 }, { x: 1, y: 1 }, { x: 5, y: 0 }, { x: 6, y: 0 }), null);
+});
+
+test('hero: the word rotates, Pause stills it, reduced motion stops it and puts "better" back', () => {
+  const mq = media(false), word = new El('hv-rot-word'), rot = new El('hv-rot'), line = new El('hv-ask'), pause = { checked: false };
+  rot.dataset.words = 'better remarkable faster decentralisable'; rot.qs['.hv-rot-word'] = [word]; rot.closest = () => line; word.textContent = 'better';
+  const intervals = new Map(), timeouts = new Map(); let n = 0;
+  const g = {
+    document: { querySelectorAll: s => (s === '.hv-rot' ? [rot] : []), querySelector: s => (s === '.rp-pause input' ? pause : null), hidden: false },
+    navigator: { languages: ['en-GB'] }, matchMedia: () => mq, requestAnimationFrame: () => 0,
+    setInterval: f => { intervals.set(++n, f); return n; }, clearInterval: id => intervals.delete(id),
+    setTimeout: f => { timeouts.set(++n, f); return n; }, clearTimeout: id => timeouts.delete(id),
+  };
+  runInContext(heroJS, createContext(g));
+  const step = () => { [...intervals.values()].forEach(f => f()); const ts = [...timeouts.values()]; timeouts.clear(); ts.forEach(f => f()); };
+  assert.equal(intervals.size, 1);
+  step(); assert.equal(word.textContent, 'remarkable');
+  pause.checked = true; step(); assert.equal(word.textContent, 'remarkable', 'Pause stills it'); pause.checked = false;
+  step(); assert.equal(word.textContent, 'faster');
+  [...intervals.values()][0](); assert.equal(timeouts.size, 1, 'a swap is pending');
+  mq.set(true);
+  assert.equal(intervals.size, 0); assert.equal(timeouts.size, 0);
+  assert.equal(word.textContent, 'better'); assert.equal(rot.style.width, undefined);
+  mq.set(false); assert.equal(intervals.size, 1);
+  // a reader who starts with reduced motion gets no timer at all
+  const m2 = media(true); const g2 = { ...g, matchMedia: () => m2 }; intervals.clear();
+  runInContext(heroJS, createContext(g2)); assert.equal(intervals.size, 0);
+});
+
+test('theme: Auto follows the system, Light and Dark are remembered, the switch is wired', () => {
+  const store = new Map(), root = new El(''), group = new El('theme-switch'), buttons = ['auto', 'light', 'dark'].map(k => { const b = new El(''); b.dataset.themeSet = k; return b; });
+  group.hidden = true; group.qs['[data-theme-set]'] = buttons;
+  const run = () => runInContext(themeJS, createContext({
+    document: { documentElement: root, readyState: 'complete', querySelector: s => (s === '.theme-switch' ? group : null), addEventListener() {} },
+    localStorage: { getItem: k => store.get(k) ?? null, setItem: (k, v) => store.set(k, v), removeItem: k => store.delete(k) }, addEventListener() {},
+  }));
+  run();
+  assert.equal(root.getAttribute('data-theme'), null); assert.equal(group.hidden, false);
+  assert.deepEqual(buttons.map(b => b.getAttribute('aria-pressed')), ['true', 'false', 'false']);
+  buttons[1].fire('click');
+  assert.equal(root.getAttribute('data-theme'), 'light'); assert.equal(store.get('carlos-theme'), 'light');
+  assert.deepEqual(buttons.map(b => b.getAttribute('aria-pressed')), ['false', 'true', 'false']);
+  // remembered on the next page load, before anything is drawn
+  root.removeAttribute('data-theme'); run();
+  assert.equal(root.getAttribute('data-theme'), 'light');
+  buttons[2].fire('click'); assert.equal(root.getAttribute('data-theme'), 'dark');
+  buttons[0].fire('click'); assert.equal(root.getAttribute('data-theme'), null); assert.equal(store.has('carlos-theme'), false);
+  // storage that throws (private mode) still switches this page
+  const r2 = new El(''), g2 = new El(''); g2.qs['[data-theme-set]'] = buttons;
+  runInContext(themeJS, createContext({ document: { documentElement: r2, readyState: 'complete', querySelector: () => g2, addEventListener() {} }, localStorage: { getItem() { throw Error('no'); }, setItem() { throw Error('no'); }, removeItem() { throw Error('no'); } }, addEventListener() {} }));
+  buttons[2].fire('click'); assert.equal(r2.getAttribute('data-theme'), 'dark');
+});

@@ -164,8 +164,14 @@ test('enabled homepage preserves everything outside the hero, the body and metad
  assert.equal(regions.length,2);
  const rest=source.slice(source.indexOf('<!-- /start-demo:body -->')+'<!-- /start-demo:body -->'.length);
  assert.ok(home.endsWith(rest));
- assert.equal(home.match(/<header[\s\S]*?<\/header>/)[0],source.match(/<header[\s\S]*?<\/header>/)[0]);
+ // The header is the source's, with the theme switch beside the navigation.
+ const header=home.match(/<header[\s\S]*?<\/header>/)[0];
+ assert.match(header,/<div class="masthead-end"><nav aria-label="Site">[\s\S]*?<\/nav><div class="theme-switch" role="group" aria-label="Theme" hidden>[\s\S]*?<\/div><\/div>/);
+ assert.equal(header.replace('<div class="masthead-end">','').replace(/<div class="theme-switch"[\s\S]*?<\/div><\/div>/,''),source.match(/<header[\s\S]*?<\/header>/)[0]);
+ assert.deepEqual((await readdir(join(dir,'home'))).sort(),(await readdir('src/home')).sort());
  assert.doesNotMatch(home,/start-demo:(hero|body|parts)/);
  await buildStart(dir,loadStartConfig({}));
  assert.equal(await read(join(dir,'index.html')),source.replace(/<!-- \/?start-demo:(?:hero|body) -->/g,''));
+ // Demo-off builds carry none of the homepage's own assets.
+ await assert.rejects(readdir(join(dir,'home')));
 }));

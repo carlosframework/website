@@ -210,5 +210,9 @@
   "home.end.hand.text": "Rather set it up yourself?",
   "home.end.hand.link": "Get started by hand",
   "home.typical.closing.lead": "CARLOS is a set of strong opinions, not rules.",
-  "home.typical.closing.body": "They’re the defaults we believe make web apps better for everyone, and for their agents."
+  "home.typical.closing.body": "They’re the defaults we believe make web apps better for everyone, and for their agents.",
+  "home.theme.label": "Theme",
+  "home.theme.auto": "Auto",
+  "home.theme.light": "Light",
+  "home.theme.dark": "Dark"
 }

@@ -107,8 +107,14 @@ async function homeHTML(config,copy,original) {
  const render=async name=>templates.renderString(await read(`src/_includes/${name}`),context).trim();
  return {hero:await render('home-hero.njk'),body:await render('home-body.njk')};
 }
-const homeHead=['/start/start.css','/home/hero.css','/home/sections.css','/home/stacks.css'].map(href=>`<link rel="stylesheet" href="${href}?v=0">`)
+// theme.js runs first and without defer, so a remembered Light or Dark is set before the first paint.
+const homeHead=['<script src="/home/theme.js?v=0"></script>'].concat(['/start/start.css','/home/hero.css','/home/sections.css','/home/stacks.css','/home/theme.css'].map(href=>`<link rel="stylesheet" href="${href}?v=0">`))
  .concat(['/start/start-tabs.js','/home/hero.js','/home/stacks.js'].map(src=>`<script src="${src}?v=0" defer></script>`)).join('\n');
+// Auto, Light or Dark, in the header beside the site navigation. Hidden until theme.js wires it.
+function themeSwitchHTML(copy) {
+ const t=key=>escapeHTML(copy[`home.theme.${key}`]);
+ return `<div class="theme-switch" role="group" aria-label="${t('label')}" hidden>${['auto','light','dark'].map(k=>`<button type="button" data-theme-set="${k}" aria-pressed="${k==='auto'}">${t(k)}</button>`).join('')}</div>`;
+}
 export async function buildStart(outputDir,config) {
  const original=await read('src/start/index.html');
  let home=await read('src/index.html');
@@ -123,6 +129,7 @@ export async function buildStart(outputDir,config) {
    .replace(bodyRegion,()=>page.body)
    .replace(/<meta name="description" content="[^"]*">/,()=>`<meta name="description" content="${escapeHTML(copy['home.meta.description'])}">`)
    .replace(/<meta property="og:description" content="[^"]*">/,()=>`<meta property="og:description" content="${escapeHTML(copy['home.og.description'])}">`)
+   .replace(/<nav aria-label="Site">[\s\S]*?<\/nav>/,nav=>`<div class="masthead-end">${nav}${themeSwitchHTML(copy)}</div>`)
    .replace('</head>',`${homeHead}\n</head>`);
   const contract=config.claimOff ? undefined : JSON.parse(await read('src/_data/start-claim-contract.json'));
   const starter=JSON.parse(await read(`src/start/starter/${config.starterVersion}/manifest.json`));
@@ -150,6 +157,9 @@ export async function buildStart(outputDir,config) {
   await writeFile(join(outputDir,target),config.enabled?css:css.split(marker)[0]);
  }
  await copyFile(config.enabled?'src/start/start-tabs.js':'src/_includes/start-account-tabs.js',join(dir,'start-tabs.js'));
+ // The homepage's own assets ship only with the page that uses them.
+ const assets=join(outputDir,'home');await rm(assets,{recursive:true,force:true});
+ if(config.enabled) {await mkdir(assets,{recursive:true});for(const name of await readdir('src/home')) await copyFile(join('src/home',name),join(assets,name));}
  if(!config.enabled) return;
  await writeFile(join(dir,'index.md'),agent);
  const downloads=join(dir,'starter',config.starterVersion);await mkdir(downloads,{recursive:true});
