@@ -102,6 +102,7 @@ async function homeHTML(config,copy,original) {
   toolsFoot:`${human}${foot.replace('architecture-inspiration','rw-foot')}<!-- /👨 -->`,
  };
  const context={t,c,html,human,figures:homeFigures,balloons,hosts:hostsHTML(config,copy),
+  questions:Object.keys(copy).filter(key=>/^home\.replay\.agent\.q\d+$/.test(key)).map(key=>copy[key]),
   gloss:{before:gloss.slice(0,at),word:words[0],after:gloss.slice(at+words[0].length),words:words.join(' ')},
   heroPaste:homePromptHTML(config,copy,'home-prompt'),endPaste:homePromptHTML(config,copy,'end-prompt',t('end.paste.works'))};
  const render=async name=>templates.renderString(await read(`src/_includes/${name}`),context).trim();

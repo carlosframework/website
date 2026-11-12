@@ -36,7 +36,7 @@
 }
 
 /* The picture: a scripted loop, CSS only. Paused by the checkbox; still under reduced motion. */
-.rp { --rp-cycle: 17.5s; margin: 0 auto; width: 100%; max-width: 30rem; text-align: left; border-radius: 16px; background: linear-gradient(180deg, light-dark(#ffffff, #1f2a2e), light-dark(#f7f5f1, #182024)); border: 1px solid light-dark(rgba(27, 31, 36, 0.14), rgba(127, 208, 182, 0.28)); box-shadow: 0 24px 48px -28px light-dark(rgba(40, 30, 10, 0.3), rgba(0, 0, 0, 0.8)), inset 0 1px 0 rgba(255, 255, 255, 0.06); overflow: hidden; font: 400 0.9rem/1.45 var(--site-sans); color: light-dark(#2b3036, #dfe6ee); }
+.rp { --rp-cycle: 18.9s; margin: 0 auto; width: 100%; max-width: 30rem; text-align: left; border-radius: 16px; background: linear-gradient(180deg, light-dark(#ffffff, #1f2a2e), light-dark(#f7f5f1, #182024)); border: 1px solid light-dark(rgba(27, 31, 36, 0.14), rgba(127, 208, 182, 0.28)); box-shadow: 0 24px 48px -28px light-dark(rgba(40, 30, 10, 0.3), rgba(0, 0, 0, 0.8)), inset 0 1px 0 rgba(255, 255, 255, 0.06); overflow: hidden; font: 400 0.9rem/1.45 var(--site-sans); color: light-dark(#2b3036, #dfe6ee); }
 .rp-bar { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem 0.55rem 0.9rem; border-bottom: 1px solid light-dark(rgba(27, 31, 36, 0.08), rgba(255, 255, 255, 0.08)); font-size: 0.78rem; color: light-dark(#5b6067, #9aa5b5); }
 .rp-dots { display: inline-flex; gap: 5px; }
 .rp-dots i { width: 8px; height: 8px; border-radius: 50%; background: light-dark(rgba(27, 31, 36, 0.16), rgba(255, 255, 255, 0.16)); }
@@ -74,29 +74,31 @@ body.site-home .c-hero, .rp { touch-action: manipulation; }
 .rp-shot img { pointer-events: none; -webkit-user-drag: none; }
 .rp-cap { padding: 0.5rem 0.9rem 0.6rem; background: light-dark(#f1eee8, #141b1f); font-size: 0.74rem; color: light-dark(#5b6067, #8e9aab); }
 
-/* The loop follows the recorded run's order. The dialogue moves briskly (lines appear in 0.4 s);
-   the app then holds, pans down through the results over 3.6 s and holds again before the loop restarts.
-   Times are in seconds of a 17.5 s cycle. */
-@keyframes rp-k1 { 0%, 1.7% { opacity: 0; transform: translateY(6px); } 4%, 93.1% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+/* The loop follows the recorded run's order. The dialogue moves briskly (lines appear in 0.4 s); the app
+   then holds 1.2 s, pans down through the menu over 5 s (the same pace as the earlier, shorter picture) and
+   holds again before the loop restarts. Times are in seconds of an 18.9 s cycle; .rp-s9 is the app. */
+@keyframes rp-k1 { 0%, 1.6% { opacity: 0; transform: translateY(6px); } 3.7%, 93.7% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
 .rp-s1 { animation: rp-k1 var(--rp-cycle) infinite both; }
-@keyframes rp-k2 { 0%, 6.9% { opacity: 0; transform: translateY(6px); } 9.1%, 93.1% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes rp-k2 { 0%, 6.3% { opacity: 0; transform: translateY(6px); } 8.5%, 93.7% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
 .rp-s2 { animation: rp-k2 var(--rp-cycle) infinite both; }
-@keyframes rp-k3 { 0%, 17.1% { opacity: 0; transform: translateY(6px); } 19.4%, 93.1% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes rp-k3 { 0%, 15.9% { opacity: 0; transform: translateY(6px); } 18%, 93.7% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
 .rp-s3 { animation: rp-k3 var(--rp-cycle) infinite both; }
-@keyframes rp-k4 { 0%, 30.9% { opacity: 0; transform: translateY(6px); } 33.1%, 93.1% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes rp-k4 { 0%, 28.6% { opacity: 0; transform: translateY(6px); } 30.7%, 93.7% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
 .rp-s4 { animation: rp-k4 var(--rp-cycle) infinite both; }
-@keyframes rp-k5 { 0%, 42.9% { opacity: 0; transform: translateY(6px); } 45.1%, 93.1% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes rp-k5 { 0%, 38.1% { opacity: 0; transform: translateY(6px); } 40.2%, 93.7% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
 .rp-s5 { animation: rp-k5 var(--rp-cycle) infinite both; }
-@keyframes rp-k6 { 0%, 49.7% { opacity: 0; transform: translateY(6px); } 52%, 93.1% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes rp-k6 { 0%, 41.3% { opacity: 0; transform: translateY(6px); } 43.4%, 93.7% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
 .rp-s6 { animation: rp-k6 var(--rp-cycle) infinite both; }
-@keyframes rp-k7 { 0%, 58.3% { opacity: 0; transform: translateY(6px); } 60.6%, 93.1% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes rp-k7 { 0%, 47.6% { opacity: 0; transform: translateY(6px); } 49.7%, 93.7% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
 .rp-s7 { animation: rp-k7 var(--rp-cycle) infinite both; }
-@keyframes rp-k8 { 0%, 61.7% { opacity: 0; transform: translateY(14px); } 64%, 93.1% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes rp-k8 { 0%, 54% { opacity: 0; transform: translateY(6px); } 56.1%, 93.7% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
 .rp-s8 { animation: rp-k8 var(--rp-cycle) infinite both; }
-@keyframes rp-scene1 { 0%, 27.4% { opacity: 1; } 29.7%, 100% { opacity: 0; } }
+@keyframes rp-k9 { 0%, 57.1% { opacity: 0; transform: translateY(14px); } 59.3%, 93.7% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+.rp-s9 { animation: rp-k9 var(--rp-cycle) infinite both; }
+@keyframes rp-scene1 { 0%, 25.4% { opacity: 1; } 27.5%, 100% { opacity: 0; } }
 .rp-scene1 { animation: rp-scene1 var(--rp-cycle) infinite both; }
-/* The pan: 1.2 s after the app appears, 3.6 s long, as before. Ends with the picture's foot at the window's foot, whatever the window's height. */
-@keyframes rp-pan { 0%, 68.6% { top: 0; transform: none; } 89.1%, 100% { top: 100%; transform: translateY(-100%); } }
+/* The pan ends with the picture's foot at the window's foot, whatever the window's height. */
+@keyframes rp-pan { 0%, 63.5% { top: 0; transform: none; } 89.9%, 100% { top: 100%; transform: translateY(-100%); } }
 .rp-shot img { animation: rp-pan var(--rp-cycle) infinite both; }
 
 @media (prefers-reduced-motion: reduce) {

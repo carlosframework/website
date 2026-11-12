@@ -31,7 +31,11 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.doesNotMatch(hero,/pb-works/);
  assert.match(hero,/<details class="hv-cloud"><summary>Using a cloud agent\?<\/summary><!-- 👨 Paul's words, verbatim --><p class="start-hosts">/);
  assert.match(hero,/<figure class="rp" aria-label="A real run of this journey, sped up">/);
- assert.match(hero,/<img src="\/home\/replay-panaderia-390\.png" width="780" height="1420" alt="The live page: Panadería Carlos, “Order today, collect mañana\.”, and a menu of Pan de pueblo, Magdalenas and Ensaimada\." decoding="async">/);
+ assert.ok(hero.includes(`<img src="/home/replay-panaderia-run4-390.png" width="780" height="1764" alt="${copy['home.replay.shot.alt']}" decoding="async">`));
+ // Run 4's excerpts (2026-11-12): three questions, then the agent's play-back of the plan and look, three progress lines and the live line.
+ assert.equal((hero.match(/<ol class="rp-qs">([\s\S]*?)<\/ol>/)[1].match(/<li>/g)||[]).length,3);
+ assert.deepEqual([...hero.matchAll(/class="rp-agent rp-s(\d)"[\s\S]*?<p>([\s\S]*?)<\/p>/g)].slice(1).map(m=>[m[1],plain(m[2])]),[['4',copy['home.replay.agent.plan']],['5',copy['home.replay.agent.p1']],['6',copy['home.replay.agent.p2']],['7',copy['home.replay.agent.p3']],['8',`${copy['home.replay.agent.p4']} ${copy['home.replay.url']}`]]);
+ assert.match(hero,/<div class="rp-app rp-s9">/);
  // The mockup's furniture stays behind.
  assert.doesNotMatch(home,/🤖|class="robot"|hv-draft|rw-draft|rw-draftbar|rw-claim|hero-switch|hv-a\b|hero-current|notes\.html|DRAFT COPY|noindex/);
  const body=home.match(/<div class="rw">[\s\S]*<\/div>\n?<\/main>/)[0];
@@ -190,7 +194,13 @@ test('homepage carries Paul’s 2026-11-12 approved copy byte for byte, with cur
  const later={'tools.heading':'To make it easy, we built an agent-first modern web framework to build apps and a platform to deploy them on','tools.platform.body':'Get your CARLOS apps online with HTTPS, backups, provisioning, observability and analytics. Static sites work great too.','tools.skill.lead':'Try CARLOS with zero effort.','tools.skill.body':'The CARLOS skill has everything it needs to build and deploy a sample app and get it live right now.','what.heading':'CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily.'};
  for(const s of result.strings) if(later[s.id]) s.text=later[s.id];
  // Paul, 2026-11-12: the replay no longer needs its "A real run, sped up" badge. Removed, not reworded.
- const removed=new Set(['replay.badge']);
+ // The re-recorded run 4 (2026-11-12) replaces the replay's quotations, alt text and caption: verbatim from
+ // ~/.cache/start-recording/replay4.json, trimmed with "…". Pending Paul's OK through the coordinator.
+ const run4={'replay.agent.1':"I’ve read the CARLOS start page. Its first step is to ask what you want to build and wait for your answer before I write any code or upload anything, so I have a few questions.",'replay.agent.q2':"How should it look and feel?",'replay.agent.q3':"How much have you built before?",'replay.agent.p1':"Now writing the app code.",'replay.agent.p2':"Everything works: orders save, they’re grouped by collection day with a per-day “To bake” total, and bad input is rejected. …",'replay.agent.p3':"The page looks right on both phone and desktop. …",'replay.agent.p4':"Your pre-order page for Panadería Carlos is online:",'replay.url':"green-bean-72.dev.trycarlos.com",'replay.shot.alt':"The live page: a cream and brown bakery page with a bread icon, the serif heading “Panadería Carlos”, “Order today, collect mañana.” and menu cards for Pan de pueblo, Magdalenas and Ensaimada.",'replay.caption':"Excerpts from one recorded run, 12 November 2026."};
+ for(const s of result.strings) if(run4[s.id]) s.text=run4[s.id];
+ assert.equal(copy['home.replay.agent.plan'],'That sounds lovely. Here’s what I’d build. … Look: warm cream background, a toasted-crust brown for buttons and highlights, a soft honey-gold second colour, elegant serif headings …');
+ const removed=new Set(['replay.badge','replay.agent.q4']);
+ assert.ok(!Object.hasOwn(copy,'home.replay.agent.q4'));
  assert.ok(!Object.hasOwn(copy,'home.replay.badge'));
  result.strings=result.strings.filter(s=>!removed.has(s.id));
  // Every approved string is in the copy data under its review id, exactly as approved.
