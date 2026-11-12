@@ -23,7 +23,7 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  // The answer, the line about CARLOS (one fixed sentence for screen readers), then the invitation.
  const ask=hero.match(/<p class="ask hv-ask">([\s\S]*?)<\/p>/)[1];
  assert.equal(plain(ask.replace(/<span class="hv-rot-line"[\s\S]*?web apps\.<\/span>/,'')),'You want CARLOS. A system for building better web apps. Read on, or try it now:');
- assert.match(ask,/<span class="hv-rot-line" aria-hidden="true">A system for building <span class="hv-rot" data-words="better remarkable faster accessible secure private simple resilient cheaper portable distributable decentralisable agent-ready"><span class="hv-rot-word">better<\/span><\/span> web apps\.<\/span>/);
+ assert.match(ask,/<span class="hv-rot-line" aria-hidden="true">A system for building <span class="hv-rot" data-words="better remarkable faster accessible secure private simple resilient portable distributable decentralisable agent-ready"><span class="hv-rot-word">better<\/span><\/span> web apps\.<\/span>/);
  assert.match(hero,/<a href="#architecture">Read on<\/a>/);
  assert.doesNotMatch(home,/class="hero-tools"|class="hero-wordmark"|class="hero-subtitle"|class="parts"|class="riff-grid"|id="ready"/);
  assert.match(hero,/<div class="paste v-soft hv-paste">/);
@@ -161,7 +161,7 @@ test('homepage and host copy matches Paul’s approved copy review verbatim',()=
   "home.hero.answer": "You want CARLOS.",
   "home.hero.ask": "Read on, or try it now:",
   "home.paste.label": "Paste this into your agent and it can take things from there",
-  "home.end.paste.works": "Try it in with your preferred agent setup",
+  "home.end.paste.works": "Try it with your preferred agent setup",
   "home.paste.done": "Copied. Paste it into your agent.",
   "home.parts.intro": "Three parts make it work:",
   "home.parts.skill.title": "The skill",
@@ -197,15 +197,15 @@ test('homepage carries Paul’s 2026-11-12 approved copy byte for byte, with cur
  assert.equal(result.action,'approve');
  assert.deepEqual(result.strings.map(s=>s.id),strings.map(s=>s.id));
  // Paul's later verbatim rewrites (2026-11-12, after the review) replace the reviewed text.
- const later={'get.ship.figure.note':'faster shipping to production','get.build.figure':'20 ms','get.build.figure.note':'Average response time, down from 750ms','get.save.figure':'80%','tools.heading':'To make it easy, we built an agent-first modern web framework to build apps and a platform to deploy them on','tools.platform.body':'Get your CARLOS apps online with HTTPS, backups, provisioning, observability and analytics. Static sites work great too.','tools.skill.lead':'Try CARLOS with zero effort.','tools.skill.body':'The CARLOS skill has everything it needs to build and deploy a sample app and get it live right now.','what.heading':'CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily.','hero.gloss':'A system for building better web apps.'};
+ const later={'get.ship.figure.note':'faster shipping to production','get.build.figure':'20 ms','get.build.figure.note':'Average response time, down from 250ms','get.ship.item2':'Roll releases to a few customers first','end.paste.works':'Try it with your preferred agent setup','get.save.figure.note':'less to run than a traditional web app','get.save.figure':'80%','tools.heading':'To make it easy, we built an agent-first modern web framework to build apps and a platform to deploy them on','tools.platform.body':'Get your CARLOS apps online with HTTPS, backups, provisioning, observability and analytics. Static sites work great too.','tools.skill.lead':'Try CARLOS with zero effort.','tools.skill.body':'The CARLOS skill has everything it needs to build and deploy a sample app and get it live right now.','what.heading':'CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily.','hero.gloss':'A system for building better web apps.'};
  for(const s of result.strings) if(later[s.id]) s.text=later[s.id];
  // Paul, 2026-11-12: the replay no longer needs its "A real run, sped up" badge. Removed, not reworded.
  // The re-recorded run 4 (2026-11-12) replaces the replay's quotations, alt text and caption: verbatim from
  // ~/.cache/start-recording/replay4.json, trimmed with "…". Pending Paul's OK through the coordinator.
- const run4={'replay.agent.1':"I’ve read the CARLOS start page. Its first step is to ask what you want to build and wait for your answer before I write any code or upload anything, so I have a few questions.",'replay.agent.q2':"How should it look and feel?",'replay.agent.q3':"How much have you built before?",'replay.agent.p1':"Now writing the app code.",'replay.agent.p2':"Everything works: orders save, they’re grouped by collection day with a per-day “To bake” total, and bad input is rejected. …",'replay.agent.p3':"The page looks right on both phone and desktop. …",'replay.agent.p4':"Your pre-order page for Panadería Carlos is online:",'replay.url':"green-bean-72.dev.trycarlos.com",'replay.shot.alt':"The live page: a cream and brown bakery page with a bread icon, the serif heading “Panadería Carlos”, “Order today, collect mañana.” and menu cards for Pan de pueblo, Magdalenas and Ensaimada.",'replay.caption':"Excerpts from one recorded run, 12 November 2026."};
+ const run4={'replay.agent.1':"I’ve read the CARLOS start page. … I have a few questions.",'replay.agent.q2':"How should it look and feel?",'replay.agent.q3':"How much have you built before?",'replay.agent.p1':"Now writing the app code.",'replay.agent.p2':"Everything works: orders save, they’re grouped by collection day with a per-day “To bake” total, and bad input is rejected. …",'replay.agent.p3':"The page looks right on both phone and desktop. …",'replay.agent.p4':"Your pre-order page for Panadería Carlos is online:",'replay.url':"green-bean-72.dev.trycarlos.com",'replay.shot.alt':"The live page: a cream and brown bakery page with a bread icon, the serif heading “Panadería Carlos”, “Order today, collect mañana.” and menu cards for Pan de pueblo, Magdalenas and Ensaimada.",'replay.caption':"Excerpts from one recorded run, 12 November 2026."};
  for(const s of result.strings) if(run4[s.id]) s.text=run4[s.id];
  assert.equal(copy['home.replay.agent.plan'],'That sounds lovely. Here’s what I’d build. … Look: warm cream background, a toasted-crust brown for buttons and highlights, a soft honey-gold second colour, elegant serif headings …');
- const removed=new Set(['replay.badge','replay.agent.q4']);
+ const removed=new Set(['replay.badge','replay.agent.q4','hero.gloss.word.cheaper']);
  assert.ok(!Object.hasOwn(copy,'home.replay.agent.q4'));
  assert.ok(!Object.hasOwn(copy,'home.replay.badge'));
  result.strings=result.strings.filter(s=>!removed.has(s.id));
