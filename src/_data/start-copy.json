@@ -140,7 +140,7 @@
   "home.get.heading": "What you get",
   "home.get.ship.title": "Ship faster",
   "home.get.ship.figure": "12×",
-  "home.get.ship.figure.note": "shipping to production when agents use CARLOS.",
+  "home.get.ship.figure.note": "faster shipping to production when agents use CARLOS.",
   "home.get.ship.alt": "New features live in seconds.",
   "home.get.ship.alt.note": "Tito rebuilt a ten-year-old Rails app this way.",
   "home.get.ship.item1": "Zero-downtime deploys",
