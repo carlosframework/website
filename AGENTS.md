@@ -73,11 +73,11 @@ person marker.**
   plus, on the enabled-demo homepage, `src/home/theme.js` (Auto, Light or
   Dark, remembered in localStorage; loaded first in `<head>`, without defer, so
   there is no flash of the wrong theme), `src/home/hero.js` (the rotating word), `src/home/hero-bg.js` (the hero's
-  WebGL background: L3 ink in light, a toned-down D1 nebula in dark at half
-  speed, `?bg=calmer` for an even quieter dark; half resolution,
-  DPR capped at 1.5, 30 fps, stopped off screen, in a hidden tab, by the
+  WebGL2 background: Fable's 3D meadow Q1, day in light and night in dark;
+  0.4 resolution, DPR capped at 1.5, 30 fps, a slow device gets half the
+  blades then a smaller picture; stopped off screen, in a hidden tab, by the
   replay's Pause and under reduced motion, where it draws one still frame;
-  without WebGL the CSS gradient stays), `src/home/figures.js` (the "What you get" figures
+  without WebGL2 the CSS gradient stays), `src/home/figures.js` (the "What you get" figures
   count up once in view, over the real text, which is all that screen readers,
   no-JS and reduced motion get)
   and `src/home/stacks.js` (the interactive stacks, with a Pause control; they
