@@ -28,7 +28,7 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.doesNotMatch(home,/class="hero-tools"|class="hero-wordmark"|class="hero-subtitle"|class="parts"|class="riff-grid"|id="ready"/);
  assert.match(hero,/<div class="paste v-soft hv-paste">/);
  // One drawn background behind the hero only, hidden from assistive technology.
- assert.match(home,/<section class="c-hero hv hv-b"><canvas class="hero-bg" aria-hidden="true"><\/canvas><div class="c-hero-inner">/);
+ assert.match(home,/<section class="c-hero hv hv-b"><div class="hero-bg-wrap" aria-hidden="true"><canvas class="hero-bg"><\/canvas><\/div><div class="c-hero-inner">/);
  assert.equal((home.match(/<canvas/g)||[]).length,1);
  assert.ok(hero.includes(escapeHTML(copy['home.paste.label'])));
  assert.doesNotMatch(hero,/pb-works/);

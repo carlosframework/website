@@ -190,10 +190,11 @@ test('theme: Auto follows the system, Light and Dark are remembered, the switch 
 
 // The hero's drawn background (the Q1 meadow), with a fake WebGL2 context that remembers the uniforms each draw used.
 const heroBgJS = await read('src/home/hero-bg.js');
-function heroBgWorld({ reduce = false, webgl = true, frameMs = 2 } = {}) {
+function heroBgWorld({ reduce = false, webgl = true, frameMs = 2, view = [1280, 700] } = {}) {
   const mq = media(reduce), darkQ = media(false), root = new El(''), hero = new El('c-hero hv hv-b', { left: 0, top: 0, width: 1280, height: 700 }), canvas = new El('hero-bg'), pause = new El('');
   pause.checked = false; hero.qs['.hero-bg'] = [canvas];
   Object.defineProperty(hero, 'clientWidth', { get: () => 1280 }); Object.defineProperty(hero, 'clientHeight', { get: () => 700 });
+  Object.defineProperty(canvas, 'clientWidth', { get: () => view[0] }); Object.defineProperty(canvas, 'clientHeight', { get: () => view[1] });   // the sticky canvas: one screen at most
   const uniforms = {}, blades = [];
   let clock = 0;
   const gl = new Proxy({}, { get: (_, k) => k === 'getUniformLocation' ? (_, name) => name
@@ -278,6 +279,12 @@ test('hero background: a slow device gets half the blades, then a smaller pictur
   assert.ok(w.state().scale < 0.4);
   const fast = heroBgWorld(); fast.run(140);
   assert.equal(fast.state().blades, 9000); assert.equal(fast.state().scale, 0.4);
+});
+
+test('hero background: the scene is laid out for the canvas (one screen at most), not the whole hero', () => {
+  const w = heroBgWorld({ view: [390, 664] });   // a phone: the hero is about two screens tall, the canvas one
+  w.run(2);
+  assert.deepEqual([w.canvas.width, w.canvas.height], [Math.round(390 * 1.5 * 0.4), Math.round(664 * 1.5 * 0.4)]);
 });
 
 test('hero background: without WebGL2 the hero keeps its CSS gradient', () => {

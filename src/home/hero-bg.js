@@ -4,7 +4,8 @@
 // screen) and blurred with two separable Gaussian passes, so it reads as an out-of-focus photograph. Day for the light
 // theme, night for the dark one, following the system or the header's Auto/Light/Dark live: a handful of faint stars,
 // day pollen motes, night fireflies spread across the hero. No sun or moon disc, only their light. The meadow is mostly
-// below the fold. Pointer and scroll move the camera a little; the glass panes drift the other way.
+// below the fold. The canvas is at most one screen tall and sticks while a tall hero scrolls past (home/hero.css).
+// Pointer and scroll move the camera a little; the glass panes drift the other way.
 // Cost limits: at most 30 frames a second, the device pixel ratio capped at 1.5, and a slow device gets half the blades,
 // then a smaller picture. Nothing is drawn while the hero is off screen, the tab is hidden or the replay's Pause is on;
 // under reduced motion one still frame. Without WebGL2 the hero keeps its CSS gradient.
@@ -167,7 +168,8 @@ void main(){
   hero.classList.add('has-bg');
 
   function draw() {
-    const W = hero.clientWidth, H = hero.clientHeight, k = Math.min(devicePixelRatio || 1, 1.5) * (P.scale || SCALE), wide = W >= 1024;
+    // laid out for the canvas, which is at most one screen tall (it sticks while a tall hero scrolls past)
+    const W = canvas.clientWidth || hero.clientWidth, H = canvas.clientHeight || hero.clientHeight, k = Math.min(devicePixelRatio || 1, 1.5) * (P.scale || SCALE), wide = W >= 1024;
     const cw = Math.max(2, Math.round(W * k)), ch = Math.max(2, Math.round(H * k));
     if (canvas.width !== cw || canvas.height !== ch) { canvas.width = cw; canvas.height = ch; P.fb.forEach(f => { gl.bindTexture(gl.TEXTURE_2D, f.tex); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, cw, ch, 0, gl.RGBA, gl.UNSIGNED_BYTE, null); }); }
     if (P.shape !== W + 'x' + H) { P.shape = W + 'x' + H; plant(wide); }

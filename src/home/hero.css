@@ -153,8 +153,12 @@ body.landing .rp-qs { gap: 0; }
 /* The drawn background (home/hero-bg.js) sits behind the hero only. Without WebGL the CSS gradient stays. */
 /* No clipping: hero.js holds the hero's height, and a pane that grows past it overlaps the next section, on top. */
 body.site-home .c-hero { position: relative; z-index: 1; isolation: isolate; }
-.c-hero .hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; display: block; pointer-events: none; }
-.c-hero.nogl .hero-bg { display: none; }
+/* The scene is at most one screen tall: a layer the size of the hero holds the canvas, which sticks to the top of
+   the screen as a tall hero (a phone's stacked panes) scrolls past, and ends where the hero ends. lvh does not change
+   as a phone's toolbars come and go, so the canvas never resizes or jumps; its foot may sit under a toolbar. */
+.c-hero .hero-bg-wrap { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.c-hero .hero-bg { position: sticky; top: 0; display: block; width: 100%; height: min(100vh, 100%); height: min(100lvh, 100%); }
+.c-hero.nogl .hero-bg-wrap { display: none; }
 
 /* Frosted glass: the text column and the replay are two panes over the picture. They turn solid where the
    browser cannot blur or the reader asks for less transparency, and stay put under reduced motion. */
