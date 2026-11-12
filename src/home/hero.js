@@ -8,19 +8,22 @@
   // The hero keeps the height it is first laid out at, plus room for Copy's one-line note, so the note, a failed-copy
   // message or the opened hosts line grow the glass pane, never the hero or the background drawn in it, and nothing
   // below moves. Anything taller than that room overlaps the top of the next section, with the pane on top.
-  // Measured again only when the width changes (a phone's address bar coming and going changes only the height).
+  // Measured once the page has finished loading, then again only when the width changes (a phone's address bar coming
+  // and going changes only the height). Not sooner: WebKit can run this script before the page's later stylesheets
+  // apply, and an unstyled hero (the replay's screenshot at full size) is thousands of pixels tall; locking that in
+  // left Safari with a hero ten screens high.
   const hero = document.querySelector('.c-hero');
   if (hero) {
     let width = 0;
-    const lock = () => {
-      if (hero.clientWidth === width) return;
+    const lock = force => {
+      if (!force && hero.clientWidth === width) return;
       width = hero.clientWidth;
       hero.style.removeProperty('height');
       const room = parseFloat(getComputedStyle(document.documentElement).fontSize) * 2.1;
       hero.style.height = Math.ceil(hero.getBoundingClientRect().height + room) + 'px';
     };
-    lock();
-    addEventListener('resize', lock);
+    if (document.readyState === 'complete') lock(true); else addEventListener('load', () => lock(true), { once: true });
+    addEventListener('resize', () => { if (document.readyState === 'complete') lock(); });
   }
   // -ize where the reader's first language is US or Canadian English; -ise everywhere else.
   const first = (navigator.languages && navigator.languages[0]) || navigator.language || '';

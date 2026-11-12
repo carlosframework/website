@@ -100,14 +100,34 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
       }
       await ctx.close();
     }
+    // The hero's held height is its content plus one line, never more, at any size and pixel density, before and
+    // after resizes (a hero locked while stylesheets were still loading once stood ten screens tall in Safari).
+    for (const [w, h] of [[1440, 900], [1728, 1117], [390, 844]]) for (const dpr of [1, 2]) {
+      const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: dpr });
+      const page = await ctx.newPage();
+      await page.goto(url, { waitUntil: 'load' });
+      const sane = async label => {
+        const m = await page.evaluate(() => { const hero = document.querySelector('.c-hero'), inner = hero.querySelector('.c-hero-inner'), room = parseFloat(getComputedStyle(document.documentElement).fontSize) * 2.1;
+          return { hero: hero.getBoundingClientRect().height, inner: inner.getBoundingClientRect().height, room }; });
+        assert.ok(m.hero <= Math.ceil(m.inner + m.room) + 1, `${label}: hero ${m.hero} against content ${m.inner} + ${m.room}`);
+        return m.hero;
+      };
+      const first = await sane(`${w}x${h} @${dpr}`);
+      await page.waitForTimeout(1500);
+      assert.equal(await sane(`${w}x${h} @${dpr} later`), first, 'steady while it runs');
+      for (const [nw, nh] of [[w - 160, h], [w, h - 120], [w, h]]) { await page.setViewportSize({ width: nw, height: nh }); await page.waitForTimeout(300); await sane(`${nw}x${nh} @${dpr}`); }
+      assert.equal(await sane('back'), first, 'back to where it started');
+      await ctx.close();
+    }
     // Copy's note, a failed copy and the opened hosts line grow the glass pane, never the hero: the background
-    // keeps its size and the next section does not move.
+    // keeps its size on the page (the slow-device guard may still change its drawing resolution) and the next section
+    // does not move.
     for (const width of [390, 1280]) for (const copies of [true, false]) {
       const ctx = await browser.newContext({ viewport: { width, height: 900 }, permissions: copies ? ['clipboard-read', 'clipboard-write'] : [] });
       const page = await ctx.newPage();
       if (!copies) await page.addInitScript(() => Object.defineProperty(navigator, 'clipboard', { value: { writeText: () => Promise.reject(new Error('denied')) } }));
       await page.goto(url, { waitUntil: 'networkidle' });
-      const where = () => page.evaluate(() => { const c = document.querySelector('.hero-bg'); return { next: document.querySelector('.rw-what').getBoundingClientRect().top + scrollY, hero: document.querySelector('.c-hero').getBoundingClientRect().height, canvas: [c.width, c.height] }; });
+      const where = () => page.evaluate(() => { const c = document.querySelector('.hero-bg'); return { next: document.querySelector('.rw-what').getBoundingClientRect().top + scrollY, hero: document.querySelector('.c-hero').getBoundingClientRect().height, canvas: [c.clientWidth, c.clientHeight] }; });
       const before = await where();
       await page.locator('.c-hero .pb-copy').click(); await page.waitForTimeout(600);
       assert.ok(await page.locator('.c-hero .paste').evaluate(el => el.classList.contains('is-copied') || el.classList.contains('copy-failed')), 'the copy note shows');

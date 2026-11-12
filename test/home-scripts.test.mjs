@@ -322,10 +322,15 @@ test('figures: reduced motion and figures that are not "number + unit" show the 
 test('hero: holds its first height plus a line for the Copy note, re-measured only when the width changes', () => {
   const hero = new El('c-hero', { left: 0, top: 0, width: 390, height: 1144 }); let cw = 390;
   Object.defineProperty(hero, 'clientWidth', { get: () => cw });
-  const listeners = {};
-  const g = { document: { querySelector: s => (s === '.c-hero' ? hero : null), querySelectorAll: () => [], documentElement: {} }, getComputedStyle: () => ({ fontSize: '16px' }),
+  const listeners = {}, doc = { readyState: 'interactive', querySelector: s => (s === '.c-hero' ? hero : null), querySelectorAll: () => [], documentElement: {} };
+  const g = { document: doc, getComputedStyle: () => ({ fontSize: '16px' }),
     addEventListener: (t, f) => { listeners[t] = f; }, navigator: { languages: ['en-GB'] }, matchMedia: () => media(false), setInterval: () => 0, clearInterval() {}, setTimeout: () => 0, clearTimeout() {} };
+  // Before the page has loaded, stylesheets may still be missing (WebKit), so the hero is far too tall: nothing is locked.
+  hero.rect = { ...hero.rect, height: 3405 };
   runInContext(heroJS, createContext(g));
+  assert.equal(hero.style.height, undefined, 'not measured before load');
+  listeners.resize(); assert.equal(hero.style.height, undefined, 'nor on a resize before load');
+  hero.rect = { ...hero.rect, height: 1144 }; doc.readyState = 'complete'; listeners.load();
   assert.equal(hero.style.height, `${Math.ceil(1144 + 16 * 2.1)}px`);
   hero.rect = { ...hero.rect, height: 1300 }; listeners.resize();   // a phone's address bar: same width
   assert.equal(hero.style.height, `${Math.ceil(1144 + 16 * 2.1)}px`, 'unchanged');
