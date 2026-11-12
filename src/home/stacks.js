@@ -61,8 +61,8 @@
     near = new IntersectionObserver(es => {
       if (!es.some(e => e.isIntersecting)) return;
       near.disconnect(); near = null;
-      idle = (window.requestIdleCallback || (f => setTimeout(f, 200)))(() => { idle = 0; load(ready); }, { timeout: 1500 });
-    }, { rootMargin: '400px 0px' });
+      idle = (window.requestIdleCallback || (f => setTimeout(f, 50)))(() => { idle = 0; load(ready); }, { timeout: 500 });   // Safari has no idle callback: a short timer
+    }, { rootMargin: '1800px 0px' });   // about two screens ahead, so a reader scrolling down finds it ready
     near.observe(stage);
   }
   // Reduced motion: cancel whatever is pending and put every piece back at rest.
@@ -413,7 +413,7 @@
   // height. The hand's pull (limited strength, against gravity) is shared between the two ends by leverage: grab
   // near one end and that end comes up while the other stays down and pivots; grab the middle and it rises level.
   // Pulled sideways, the low end scrapes along the surface with friction. Let go and each end falls and stops dead.
-  const GRAV = 0.9, HAND = 1.57, PULL = 0.06, rot = (x, y, a) => { const c = Math.cos(a), s = Math.sin(a); return { x: x * c - y * s, y: x * s + y * c }; };
+  const GRAV = 0.9, HAND = 1.57, PULL = 0.2, rot = (x, y, a) => { const c = Math.cos(a), s = Math.sin(a); return { x: x * c - y * s, y: x * s + y * c }; };
   function impact(it, side, speed) { // dust only where an end lands, pushed outwards along the seam, as much as the drop deserves
     const n = speed < 3 ? 0 : speed < 6 ? 1 : 2, c = rot(side * (it.w / 2 - 2), it.h / 2 + 2, it.ang || 0);
     for (let k = 0; k < n; k++) {
@@ -586,11 +586,12 @@
     };
     e.preventDefault();
     if (W) return begin();
-    const mine = grab = { id: e.pointerId };
+    // The physics is still on its way: show the press at once, and take hold the moment it arrives.
+    const mine = grab = { id: e.pointerId, li }; li.classList.add('held');
     load(() => { ready(); if (grab === mine && W) { grab = null; begin(); } }); // let go before it arrived: no grab
   });
   const release = e => {
-    if (grab && (!e || grab.id === e.pointerId)) grab = null;
+    if (grab && (!e || grab.id === e.pointerId)) { grab.li.classList.remove('held'); grab = null; }
     if (!W || !W.drag) return;
     const { it, rope, moved } = W.drag;
     if (rope) M.Composite.remove(W.world, rope); it.el.classList.remove('held'); W.drag = null;

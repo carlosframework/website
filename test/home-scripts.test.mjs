@@ -118,7 +118,8 @@ test('stacks: a grab released before the physics arrives does not take hold', ()
   assert.ok(w.world().drag, 'held grab takes hold');
   // let go before it arrived: no stale drag
   w = stacksWorld();
-  down(w); w.stage.fire('pointerup', { pointerId: 7 });
+  down(w); assert.ok(w.tower[0].classList.contains('held'), 'the press shows at once, before the physics arrives');
+  w.stage.fire('pointerup', { pointerId: 7 }); assert.ok(!w.tower[0].classList.contains('held'), 'and goes when let go');
   w.arrive();
   assert.ok(w.world()); assert.equal(w.world().drag, null);
   // cancelled the same way
