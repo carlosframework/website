@@ -111,10 +111,16 @@ async function homeHTML(config,copy,original) {
 // theme.js runs first and without defer, so a remembered Light or Dark is set before the first paint.
 const homeHead=['<script src="/home/theme.js?v=0"></script>'].concat(['/start/start.css','/home/hero.css','/home/sections.css','/home/stacks.css','/home/theme.css'].map(href=>`<link rel="stylesheet" href="${href}?v=0">`))
  .concat(['/start/start-tabs.js','/home/hero.js','/home/hero-bg.js','/home/figures.js','/home/stacks.js'].map(src=>`<script src="${src}?v=0" defer></script>`)).join('\n');
-// Auto, Light or Dark, in the header beside the site navigation. Hidden until theme.js wires it.
+// Auto, Light or Dark: three quiet icons at the end of the footer's meta row (hack/add-footer.mjs places them),
+// hidden until theme.js wires them. The labels are the accessible names and the tooltips.
+const themeIcons={
+ auto:'<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/>',
+ light:'<circle cx="12" cy="12" r="3.5"/><path d="M12 2.5V5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/>',
+ dark:'<path d="M19.5 14.6A8 8 0 1 1 9.4 4.5a6.5 6.5 0 0 0 10.1 10.1z"/>',
+};
 function themeSwitchHTML(copy) {
  const t=key=>escapeHTML(copy[`home.theme.${key}`]);
- return `<div class="theme-switch" role="group" aria-label="${t('label')}" hidden>${['auto','light','dark'].map(k=>`<button type="button" data-theme-set="${k}" aria-pressed="${k==='auto'}">${t(k)}</button>`).join('')}</div>`;
+ return `<div class="theme-switch" role="group" aria-label="${t('label')}" hidden>${['auto','light','dark'].map(k=>`<button type="button" data-theme-set="${k}" aria-pressed="${k==='auto'}" aria-label="${t(k)}" title="${t(k)}"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${themeIcons[k]}</svg></button>`).join('')}</div>`;
 }
 export async function buildStart(outputDir,config) {
  const original=await read('src/start/index.html');
@@ -130,7 +136,7 @@ export async function buildStart(outputDir,config) {
    .replace(bodyRegion,()=>page.body)
    .replace(/<meta name="description" content="[^"]*">/,()=>`<meta name="description" content="${escapeHTML(copy['home.meta.description'])}">`)
    .replace(/<meta property="og:description" content="[^"]*">/,()=>`<meta property="og:description" content="${escapeHTML(copy['home.og.description'])}">`)
-   .replace(/<nav aria-label="Site">[\s\S]*?<\/nav>/,nav=>`<div class="masthead-end">${nav}${themeSwitchHTML(copy)}</div>`)
+   .replace('<footer></footer>',()=>`<footer>${themeSwitchHTML(copy)}</footer>`)
    .replace('</head>',`${homeHead}\n</head>`);
   const contract=config.claimOff ? undefined : JSON.parse(await read('src/_data/start-claim-contract.json'));
   const starter=JSON.parse(await read(`src/start/starter/${config.starterVersion}/manifest.json`));

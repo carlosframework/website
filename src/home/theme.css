@@ -17,15 +17,15 @@ body.site-home .masthead nav a { color: light-dark(#464b52, #c4d7ce); }
 body.site-home .masthead nav a:hover { color: light-dark(#181c21, #ffffff); }
 body.site-home .masthead a:focus-visible { outline-color: light-dark(#1a5f4f, #c8ef8b); }
 body.site-home .masthead { touch-action: manipulation; }
-body.site-home .masthead-end { display: flex; align-items: center; flex-wrap: wrap; gap: 14px 26px; }
-
-/* The theme switch: three small buttons, one pressed. */
-.theme-switch { display: inline-flex; border: 1px solid light-dark(rgba(27, 31, 36, 0.18), rgba(255, 255, 255, 0.2)); border-radius: 99px; padding: 2px; gap: 2px; }
-.theme-switch[hidden] { display: none; }
-.theme-switch button { min-height: 28px; min-width: 28px; padding: 0 0.6rem; border: 0; border-radius: 99px; background: none; color: light-dark(#464b52, #c4d7ce); font: 500 12px/1 Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; cursor: pointer; }
-.theme-switch button:hover { color: light-dark(#181c21, #ffffff); }
-.theme-switch button[aria-pressed="true"] { background: light-dark(#181c21, #eff8ec); color: light-dark(#ffffff, #101c23); }
-.theme-switch button:focus-visible { outline: 3px solid light-dark(#1a5f4f, #c8ef8b); outline-offset: 2px; }
+/* The theme switch: three quiet icons at the end of the footer's meta row. */
+.site-footer .theme-switch { display: inline-flex; gap: 2px; margin-left: auto; padding: 2px; border: 1px solid var(--footer-rule); border-radius: 99px; }
+.site-footer .theme-switch[hidden] { display: none; }
+.site-footer .theme-switch button { display: inline-grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 99px; background: none; color: var(--footer-muted); cursor: pointer; }
+.site-footer .theme-switch svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.site-footer .theme-switch button:hover { color: var(--footer-ink); }
+.site-footer .theme-switch button[aria-pressed="true"] { color: var(--footer-ink); background: color-mix(in srgb, var(--footer-ink) 10%, transparent); }
+.site-footer .theme-switch button:focus-visible { outline: 2px solid var(--footer-accent); outline-offset: 2px; }
+@media (pointer: coarse) { .site-footer .theme-switch button { width: 44px; height: 44px; } }
 
 /* Hero ground and headline */
 body.site-home .c-hero { background: radial-gradient(60vw 50vw at 20% 30%, light-dark(rgba(214, 186, 140, 0.16), rgba(47, 212, 172, 0.16)), transparent 70%), radial-gradient(50vw 60vw at 85% 20%, light-dark(rgba(150, 130, 200, 0.12), rgba(120, 90, 200, 0.18)), transparent 70%), light-dark(#faf8f4, #0f161c); color: light-dark(#181c21, #e9edf4); }

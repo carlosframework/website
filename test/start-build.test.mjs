@@ -163,11 +163,17 @@ test('enabled homepage preserves everything outside the hero, the body and metad
  const regions=[...source.matchAll(/<!-- start-demo:(hero|body) -->([\s\S]*?)<!-- \/start-demo:\1 -->/g)];
  assert.equal(regions.length,2);
  const rest=source.slice(source.indexOf('<!-- /start-demo:body -->')+'<!-- /start-demo:body -->'.length);
- assert.ok(home.endsWith(rest));
- // The header is the source's, with the theme switch beside the navigation.
- const header=home.match(/<header[\s\S]*?<\/header>/)[0];
- assert.match(header,/<div class="masthead-end"><nav aria-label="Site">[\s\S]*?<\/nav><div class="theme-switch" role="group" aria-label="Theme" hidden>[\s\S]*?<\/div><\/div>/);
- assert.equal(header.replace('<div class="masthead-end">','').replace(/<div class="theme-switch"[\s\S]*?<\/div><\/div>/,''),source.match(/<header[\s\S]*?<\/header>/)[0]);
+ // Everything after the body is the source's, except that the footer placeholder carries the theme switch.
+ assert.match(home,/<footer><div class="theme-switch" role="group" aria-label="Theme" hidden>[\s\S]*?<\/div><\/footer>/);
+ assert.ok(home.replace(/<footer><div class="theme-switch"[\s\S]*?<\/div><\/footer>/,'<footer></footer>').endsWith(rest));
+ // The header is exactly the source's: the switch is no longer in it.
+ assert.equal(home.match(/<header[\s\S]*?<\/header>/)[0],source.match(/<header[\s\S]*?<\/header>/)[0]);
+ // The shared footer puts the page's switch at the end of its meta row; other pages get nothing there.
+ await addFooter(dir);
+ const footer=(await read(join(dir,'index.html'))).match(/<footer class="site-footer">[\s\S]*?<\/footer>/)[0];
+ assert.match(footer,/The Eleven Factors<\/a><div class="theme-switch" role="group" aria-label="Theme" hidden>/);
+ assert.equal((footer.match(/class="theme-switch"/g)||[]).length,1);
+ assert.doesNotMatch(await read(join(dir,'start/index.html')),/theme-switch|site-footer:theme/);
  assert.deepEqual((await readdir(join(dir,'home'))).sort(),(await readdir('src/home')).sort());
  assert.doesNotMatch(home,/start-demo:(hero|body|parts)/);
  await buildStart(dir,loadStartConfig({}));

@@ -18,7 +18,9 @@ export async function addFooter(outputDir) {
     if (!footer) throw new Error(`Cannot add footer to ${file}: missing footer`);
     // Docs retain their rendered source revision when the shared links change.
     const provenance = footer[0].match(/<p class="docs-provenance">[\s\S]*?<\/p>/)?.[0] ?? "";
-    const content = template.replace("<!-- site-footer:provenance -->", provenance);
+    // A page may carry its own theme switch (the demo homepage); it goes at the end of the footer's meta row.
+    const theme = footer[0].match(/<div class="theme-switch"[\s\S]*?<\/div>/)?.[0] ?? "";
+    const content = template.replace("<!-- site-footer:provenance -->", provenance).replace("<!-- site-footer:theme -->", theme);
     html = html.replace(footer[0], `<footer class="site-footer">\n${content}</footer>`);
     html = html.replace(/<!-- site-footer:head -->[\s\S]*?<!-- \/site-footer:head -->\n?/g, "");
     html = html.replace(/<\/head>/i, '<!-- site-footer:head -->\n<link rel="stylesheet" href="/footer.css?v=0">\n<!-- /site-footer:head -->\n</head>');

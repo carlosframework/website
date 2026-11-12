@@ -77,8 +77,10 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  const head=home.match(/<head>[\s\S]*?<\/head>/)[0];
  assert.ok(head.includes('<script src="/home/theme.js?v=0"></script>'));
  assert.ok(head.indexOf('/home/theme.js')<head.indexOf('/start/start.css') && head.indexOf('/home/theme.js')<head.indexOf('/home/hero.css'));
- // Auto, Light and Dark in the header, Auto pressed until the script reads the remembered choice.
- assert.ok(home.includes(`<div class="theme-switch" role="group" aria-label="${copy['home.theme.label']}" hidden><button type="button" data-theme-set="auto" aria-pressed="true">${copy['home.theme.auto']}</button><button type="button" data-theme-set="light" aria-pressed="false">${copy['home.theme.light']}</button><button type="button" data-theme-set="dark" aria-pressed="false">${copy['home.theme.dark']}</button></div>`));
+ // Auto, Light and Dark as icons in the footer, Auto pressed until the script reads the remembered choice.
+ assert.match(home,/<footer><div class="theme-switch" role="group" aria-label="Theme" hidden>/);
+ for(const k of ['auto','light','dark']) assert.ok(home.includes(`<button type="button" data-theme-set="${k}" aria-pressed="${k==='auto'}" aria-label="${copy[`home.theme.${k}`]}" title="${copy[`home.theme.${k}`]}"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">`),k);
+ assert.doesNotMatch(home.match(/<header[\s\S]*?<\/header>/)[0],/theme-switch|masthead-end/);
  // The stacks' Pause reuses the replay's approved words.
  assert.ok(panel.includes(`<button type="button" class="ipause" data-pause="${copy['home.replay.pause']}" data-play="${copy['home.replay.play']}" hidden>${copy['home.replay.pause']}</button>`));
  assert.ok(home.includes(`<meta name="description" content="${copy['home.meta.description']}">`));
