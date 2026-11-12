@@ -1,0 +1,211 @@
+/* 🤖 The interactive stacks in "Less to run" (enabled demo builds). Lifted from the
+   options sheet of the approved 2026-11-12 rework and scoped under .ipx. Until the
+   physics loads, and always under reduced motion, this is the whole picture. */
+.ipx { --bg: var(--rw-bg); --card: var(--rw-card); --ink: var(--rw-ink); --ink-2: var(--rw-ink-2); --muted: var(--rw-muted); --acc: var(--rw-acc); --line: var(--rw-line); --sans: var(--site-sans); --mono: var(--rw-mono); --slab: 40px; --pitch: 44px; min-width: 0; }
+.ipx .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+.ipx .seg[hidden] { display: none; }
+.ipx button { font: 600 0.85rem/1 var(--sans); color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 7px; min-height: 34px; padding: 0 0.8rem; cursor: pointer; }
+.ipx .seg button { border: 0; border-radius: 0; }
+.ipx .seg button + button { border-left: 1px solid var(--line); }
+.ipx button[aria-pressed="true"] { background: var(--acc); color: light-dark(#ffffff, #062a24); }
+.ipx button:focus-visible, .ipx a:focus-visible { outline: 3px solid var(--acc); outline-offset: 2px; }
+/* The two stacks: one baseline, same slab height */
+.ipx .stack { margin: 0; display: flex; flex-direction: column; min-width: 0; }
+.ipx .stack ul { --pad: 20px; position: relative; list-style: none; margin: 0; padding: 0 var(--pad) 4px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.ipx .stack.after ul { --pad: 16px; }
+.ipx .stack li { position: relative; z-index: 1; height: var(--slab); width: var(--w, 100%); display: flex; align-items: center; justify-content: center; gap: 0.35rem; text-align: center; padding: 0 0.35rem; border: 1px solid var(--line); border-radius: 4px; background: var(--card); color: var(--ink-2); font-size: 0.72rem; line-height: 1.15; translate: var(--x, 0) 0; rotate: var(--r, 0deg); }
+.ipx .stack li span { min-width: 0; }
+.ipx .ico { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; opacity: 0.8; }
+.ipx .stack.before li:nth-of-type(1) { --w: 64%; --x: 12px; --r: -1.8deg; }
+.ipx .stack.before li:nth-of-type(2) { --w: 76%; --x: -9px; --r: 1.3deg; }
+.ipx .stack.before li:nth-of-type(3) { --w: 70%; --x: 7px; --r: -0.9deg; }
+.ipx .stack.before li:nth-of-type(4) { --w: 84%; --x: -5px; --r: 1deg; }
+.ipx .stack.before li:nth-of-type(5) { --w: 80%; --x: 11px; --r: -1.1deg; }
+.ipx .stack.before li:nth-of-type(6) { --w: 88%; --x: -10px; --r: 0.7deg; }
+.ipx .stack.before li:nth-of-type(7) { --w: 92%; --x: 5px; --r: -0.5deg; }
+.ipx .stack.before li:nth-of-type(8) { --w: 86%; --x: -6px; --r: 0.6deg; }
+.ipx .stack.after li { border-color: color-mix(in srgb, var(--acc) 55%, transparent); background: color-mix(in srgb, var(--acc) 12%, var(--card)); color: var(--ink); font-weight: 650; }
+.ipx .stack figcaption { border-top: 2px solid var(--ink-2); padding: 0.5rem 0.25rem 0; text-align: center; font: 400 0.7rem/1.5 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.ipx .stack.after figcaption { color: var(--acc); }
+.ipx [data-glow^="n"] .stack.after li { border-color: light-dark(rgba(20, 35, 43, 0.34), rgba(233, 237, 244, 0.4)); background: var(--card); }
+.ipx [data-glow^="n"] .stack.after figcaption { color: var(--ink-2); }
+.ipx [data-glow="n2"] .stack.after li { box-shadow: 0 10px 16px -9px light-dark(rgba(20, 35, 43, 0.38), rgba(0, 0, 0, 0.85)), 0 1px 2px light-dark(rgba(20, 35, 43, 0.12), rgba(0, 0, 0, 0.5)); translate: 0 -1px; }
+/* House of cards: the Before stack sways as one precarious tower, the top moving most, with a small settle each swing. */
+.ipx .wobble .stack.before li { animation: sway 6.4s ease-in-out infinite; }
+.ipx .wobble .stack.before li:nth-of-type(1) { --amp: 1.5deg; --sx: 7px; }
+.ipx .wobble .stack.before li:nth-of-type(2) { --amp: 1.3deg; --sx: 6px; animation-delay: 0.05s; }
+.ipx .wobble .stack.before li:nth-of-type(3) { --amp: 1.1deg; --sx: 5px; animation-delay: 0.1s; }
+.ipx .wobble .stack.before li:nth-of-type(4) { --amp: 0.9deg; --sx: 4px; animation-delay: 0.15s; }
+.ipx .wobble .stack.before li:nth-of-type(5) { --amp: 0.7deg; --sx: 3px; animation-delay: 0.2s; }
+.ipx .wobble .stack.before li:nth-of-type(6) { --amp: 0.5deg; --sx: 2.2px; animation-delay: 0.25s; }
+.ipx .wobble .stack.before li:nth-of-type(7) { --amp: 0.35deg; --sx: 1.4px; animation-delay: 0.3s; }
+.ipx .wobble .stack.before li:nth-of-type(8) { --amp: 0.2deg; --sx: 0.7px; animation-delay: 0.35s; }
+.ipx .wobble .stack.before li:nth-of-type(9) { --amp: 0deg; --sx: 0px; }
+@keyframes sway {
+  0%, 100% { rotate: calc(var(--r, 0deg) - var(--amp)); translate: calc(var(--x, 0px) - var(--sx)) 0; }
+  46% { rotate: calc(var(--r, 0deg) + var(--amp)); translate: calc(var(--x, 0px) + var(--sx)) 0; }
+  50% { rotate: calc(var(--r, 0deg) + var(--amp) * 0.7); translate: calc(var(--x, 0px) + var(--sx) * 0.8) 1px; }
+  54% { rotate: calc(var(--r, 0deg) + var(--amp)); translate: calc(var(--x, 0px) + var(--sx)) 0; }
+}
+.ipx .wobble .stack.before li:nth-of-type(9) { --amp: 0.1deg; --sx: 0.3px; animation-delay: 0.4s; }
+/* The steady foundation: a little wider than everything above it, and it never moves. */
+.ipx .stack.before li.base { --w: calc(100% + 14px); max-width: none; animation: none !important; rotate: none; translate: none; color: var(--ink); font-weight: 600; }
+/* CARLOS as a stable stepped pyramid: square, centred, still. */
+.ipx .pyramid .stack.after li:nth-of-type(1) { width: 62%; }
+.ipx .pyramid .stack.after li:nth-of-type(2) { width: 81%; }
+.ipx .pyramid .stack.after li:nth-of-type(3) { width: 100%; }
+.ipx .pyramid .stack.after li { translate: none !important; rotate: none; }
+/* I1 Interactive */
+.ipx .ipanel { border: 1px solid var(--line); border-radius: 10px; padding: 0.9rem clamp(0.5rem, 2vw, 1.25rem) 0.8rem; margin-top: 1.25rem; }
+.ipx .ihead { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; }
+.ipx .istage { position: relative; display: grid; grid-template-columns: 1.3fr 1fr; align-items: end; height: 34rem; max-width: 46rem; margin: 0.75rem auto 0; overflow: hidden; touch-action: pan-y; }
+.ipx .ipanel .stack ul { --pad: clamp(0.5rem, 3vw, 2rem); }
+.ipx .ipanel .stack li { font-size: 0.85rem; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+.ipx .ipanel .stack li.base, .ipx .ipanel.static .stack li { cursor: default; touch-action: auto; }
+/* The CARLOS plates are as wide as their words too, and still step down in size. */
+.ipx .ipanel.pyramid .stack.after li { width: max-content; max-width: 100%; white-space: nowrap; }
+.ipx .ipanel.pyramid .stack.after li:nth-of-type(1) { padding: 0 1rem; }
+.ipx .ipanel.pyramid .stack.after li:nth-of-type(2) { padding: 0 1.4rem; }
+.ipx .ipanel.pyramid .stack.after li:nth-of-type(3) { padding: 0 1.8rem; }
+/* Bricks as wide as their words, in a fixed, silly order. */
+.ipx .ipanel .stack.tower li { width: max-content; max-width: none; padding: 0 0.8rem; white-space: nowrap; }
+.ipx .ipanel .stack.tower li.base { width: max-content; padding: 0 4.2rem; }
+.ipx .ipanel .stack.tower li:nth-of-type(1) { --x: 9px; --r: -1.6deg; }
+.ipx .ipanel .stack.tower li:nth-of-type(2) { --x: -7px; --r: 1.2deg; }
+.ipx .ipanel .stack.tower li:nth-of-type(3) { --x: 11px; --r: -0.8deg; }
+.ipx .ipanel .stack.tower li:nth-of-type(4) { --x: -6px; --r: 1deg; }
+.ipx .ipanel .stack.tower li:nth-of-type(5) { --x: -10px; --r: -0.7deg; }
+.ipx .ipanel .stack.tower li:nth-of-type(6) { --x: 8px; --r: 0.8deg; }
+.ipx .ipanel .stack.tower li:nth-of-type(7) { --x: -9px; --r: -0.5deg; }
+.ipx .ipanel .stack.tower li:nth-of-type(8) { --x: 6px; --r: 0.5deg; }
+.ipx .ipanel .stack.tower li:nth-of-type(9) { --x: -3px; --r: 0deg; }
+/* The two fragile bricks: a crack first, then pieces. */
+.ipx .istage li.cracked::after { content: ""; position: absolute; left: calc(var(--cut) - 5px); top: 0; bottom: 0; width: 10px; background: var(--ink-2); pointer-events: none; clip-path: polygon(72% 0, 84% 0, 16% 35%, 96% 65%, 36% 100%, 24% 100%, 82% 65%, 4% 35%); }
+.ipx .istage li.shattered { opacity: 0 !important; pointer-events: none; }
+.ipx .istage li.piece { border-color: var(--ink-2); }
+.ipx .frag.chip { width: 5px; height: 4px; left: -2px; top: -2px; background: var(--ink-2); border-radius: 1px; }
+/* Microservices: six loose little cubes in a row, carrying everything above. They rattle. */
+.ipx .ipanel .stack.tower li.micro { --cube: 20px; width: var(--cube); height: var(--cube); padding: 0; border-radius: 3px; --x: calc((var(--k) - 2.5) * (var(--cube) + 4px)); --r: 0deg; --amp: 2.5deg; --sx: 0.8px; animation-duration: 0.37s; animation-delay: calc(var(--k) * -0.11s); }
+.ipx .ipanel .stack.tower li.micro + li.micro { margin-top: calc(-1 * var(--cube) - 4px); }
+.ipx .ipanel .stack.tower li.micro::before { content: ""; width: 4px; height: 4px; border-radius: 50%; background: var(--ink-2); opacity: 0.6; }
+.ipx .ipanel .stack.tower li.micro[data-k="5"]::after { content: attr(data-label); position: absolute; left: calc(100% + 9px); top: 50%; translate: 0 -50%; font: 400 0.64rem/1 var(--mono); letter-spacing: 0.03em; color: var(--muted); white-space: nowrap; pointer-events: none; }
+.ipx .ipanel .stack.tower li.micro + li:not(.micro) { --x: 0px; }
+.ipx .ipanel .stack.tower li.pair-b + li { --x: 0px; }
+.ipx .ipanel .stack.tower li.pair-a { --x: calc(-50% - 2px); --r: -1.2deg; --amp: 1.7deg; --sx: 8px; }
+.ipx .ipanel .stack.tower li.pair-b { --x: calc(50% + 2px); --r: 1.4deg; --amp: 1.7deg; --sx: 8px; margin-top: calc(-1 * var(--slab) - 4px); }
+@media (max-width: 600px) {
+  .ipx .ipanel .stack.tower li.pair-a, .ipx .ipanel .stack.tower li.pair-b { padding: 0 0.35rem; gap: 0.2rem; font-size: 0.66rem; }
+  .ipx .ipanel .stack.tower ul { translate: 6px 0; }
+  .ipx .ipanel .istage.live .stack.tower ul { translate: none; }
+  .ipx .ipanel .stack.tower li.micro { --cube: 18px; }
+  .ipx .ipanel .istage { height: 38.5rem; }
+  .ipx .ipanel .stack.tower li.pair-b { margin-top: -48px; }
+  .ipx .ipanel .istage { grid-template-columns: 1.55fr 1fr; }
+}
+@media (max-width: 600px) {
+  .ipx .ipanel .stack.tower li { padding: 0 0.55rem; }
+  .ipx .ipanel .stack.tower li.base { padding: 0 1.8rem; }
+}
+.ipx .ipanel[data-mode="tower"] .services, .ipx .ipanel[data-mode="services"] .tower { display: none; }
+.ipx .istage.measure li { animation: none !important; rotate: none !important; }
+.ipx .istage.live .stack, .ipx .istage.live .stack ul { position: static; }
+.ipx .istage.live li { animation: none !important; translate: none !important; rotate: none !important; grid-area: auto !important; will-change: transform; z-index: 1; }
+.ipx .istage.live .services ul { display: block !important; }
+.ipx .istage.resetting li { transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.ipx .istage.resetting .stack.after li { transition: none; }
+.ipx .istage li.held { cursor: grabbing; z-index: 3; }
+.ipx .ipanel .stack.after li:last-child { cursor: default; touch-action: auto; }
+.ipx .istage.tremor { animation: tremor 0.16s linear; }
+@keyframes tremor { 0%, 100% { translate: 0 0; } 25% { translate: 0 2px; } 50% { translate: -1px -1px; } 75% { translate: 1px 1px; } }
+.ipx .dust { position: absolute; width: 14px; height: 7px; margin: -5px 0 0 -7px; border-radius: 50%; pointer-events: none; z-index: 2; background: radial-gradient(ellipse, light-dark(rgba(90, 100, 104, 0.45), rgba(210, 218, 222, 0.36)), transparent 70%); opacity: 0; animation: dust 0.55s ease-out forwards; }
+@keyframes dust { from { opacity: 0.9; transform: translate(0, 0) scale(calc(var(--s, 1) * 0.6)); } to { opacity: 0; transform: translate(var(--dx), -3px) scale(calc(var(--s, 1) * 2.4), calc(var(--s, 1) * 1.3)); } }
+.ipx .strings { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; stroke: var(--ink-2); stroke-width: 1; opacity: 0.55; }
+.ipx .services { align-self: stretch; }
+.ipx .services ul { flex: 1; display: grid !important; grid-template-columns: repeat(4, 1fr); grid-template-rows: auto auto auto 1fr; justify-items: center; align-content: start; gap: 6px 2px !important; padding-top: 10px !important; }
+.ipx .stack.before.services li { --w: 100%; animation: none; rotate: none; translate: none; }
+/* Balloons: rubber, lit from the upper left, slightly see-through, with a knot. They turn a little as they bob. */
+.ipx .stack.before.services li.balloon { width: 66px; height: 66px; border: 0; background: none; border-radius: 50%; padding: 0; overflow: visible; color: #23282d; font-size: 0.64rem; line-height: 1.08; }
+.ipx .stack.before.services li.balloon:nth-of-type(3n) { width: 72px; height: 72px; z-index: 2; }
+.ipx .stack.before.services li.balloon:nth-of-type(3n+1) { width: 61px; height: 61px; }
+.ipx .stack.before.services li.balloon:nth-of-type(n+5) { margin-left: 40%; }
+.ipx .stack.before.services li.balloon:nth-of-type(9) { grid-column: 2 / span 2; margin-left: 0; margin-top: -10px; }
+.ipx .balloon .skin { position: absolute; inset: 0; border-radius: 50% 50% 50% 50% / 47% 47% 53% 53%; background: radial-gradient(circle at 58% 68%, transparent 46%, rgba(40, 30, 40, 0.3) 100%), color-mix(in srgb, var(--c) 92%, transparent); box-shadow: inset -5px -7px 12px rgba(40, 30, 40, 0.18), 0 6px 12px -6px rgba(0, 0, 0, 0.45); animation: turn 5.5s ease-in-out var(--dl, 0s) infinite alternate; }
+.ipx .balloon .skin svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+/* the print: opaque ink in a deep shade of the balloon's own colour, on top of the rubber and its shading */
+.ipx .balloon .skin text { font: 700 15.5px var(--sans); text-anchor: middle; dominant-baseline: central; fill: color-mix(in srgb, var(--c) 16%, #17131a); }
+/* only the small gloss sits over the print, so it brightens the ink a little where it crosses, like shine on paint */
+.ipx .balloon .skin::before { content: ""; position: absolute; inset: 0; border-radius: inherit; z-index: 1; pointer-events: none; background: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.8) 0 6%, rgba(255, 255, 255, 0.22) 14%, transparent 27%); }
+.ipx .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.ipx .balloon .skin::after { content: ""; position: absolute; left: 50%; bottom: -6px; width: 9px; height: 7px; translate: -50% 0; background: color-mix(in srgb, var(--c) 80%, #3a2f3a); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+@keyframes turn { from { transform: scaleX(1) translateX(0); } to { transform: scaleX(0.92) translateX(1.5px); } }
+.ipx .stack.before.services li.app { grid-column: 1 / -1; align-self: start; margin-top: 4.5rem; width: 72%; height: 48px; font-weight: 650; color: var(--ink); overflow: visible; transition: border-color 0.3s, background 0.3s; }
+.ipx .istage li.popped { animation: pop 0.13s ease-out forwards !important; pointer-events: none; }
+@keyframes pop { 40% { scale: 1.22; opacity: 1; } 100% { scale: 1.3; opacity: 0; } }
+/* Darts and cuts */
+.ipx .ipanel:not(.static) .services li.balloon { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cg fill='none' stroke='%23fff' stroke-width='4.5' stroke-linecap='round'%3E%3Cpath d='M3 3l15 15'/%3E%3C/g%3E%3Cpath d='M3 3l9 9' stroke='%23555' stroke-width='1.6' stroke-linecap='round'/%3E%3Cpath d='M11 11l9 9' stroke='%23222' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M19 19l3 8 2-5 5-2z' fill='%23b03f29' stroke='%23fff' stroke-width='1'/%3E%3C/svg%3E") 3 3, pointer; }
+.ipx .dart { position: absolute; left: 0; top: 0; width: 44px; height: 12px; pointer-events: none; z-index: 6; transform-origin: 42px 6px; }
+.ipx .dart svg { display: block; width: 100%; height: 100%; overflow: visible; fill: none; stroke: light-dark(#27313a, #dfe6ee); stroke-linecap: round; }
+.ipx .dart .tip { stroke: light-dark(#6b7780, #aab6c0); }
+.ipx .dart .fl { fill: light-dark(#b03f29, #ff7f60); stroke: none; }
+.ipx .snip { position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; pointer-events: none; z-index: 5; background: linear-gradient(45deg, transparent 46%, var(--ink) 46% 54%, transparent 54%), linear-gradient(-45deg, transparent 46%, var(--ink) 46% 54%, transparent 54%); animation: snip 0.3s ease-out forwards; }
+@keyframes snip { from { scale: 0.4; opacity: 1; } to { scale: 1.3; opacity: 0; } }
+.ipx .flash { position: absolute; left: 0; top: 0; width: 90px; height: 90px; margin: -45px 0 0 -45px; border-radius: 50%; pointer-events: none; z-index: 4; background: radial-gradient(circle, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 65%); animation: flash 0.24s ease-out forwards; }
+@keyframes flash { from { scale: 0.4; opacity: 1; } to { scale: 1.5; opacity: 0; } }
+.ipx .frag { position: absolute; left: -5px; top: -4px; width: 10px; height: 7px; border-radius: 2px 5px 2px 4px; pointer-events: none; z-index: 4; }
+/* The small things a popped balloon lets loose */
+.ipx .frag svg { display: block; width: 100%; height: 100%; overflow: visible; fill: var(--card); stroke: var(--ink-2); stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
+.ipx .frag.cylinder, .ipx .frag.envelope, .ipx .frag.gear, .ipx .frag.link { width: 12px; height: 12px; left: -6px; top: -6px; background: none; border-radius: 0; }
+.ipx .frag.padlock { width: 15px; height: 17px; left: -7px; top: -8px; background: none; border-radius: 0; }
+.ipx .frag.gear svg, .ipx .frag.link svg { fill: none; }
+.ipx .frag.coin { width: 8px; height: 8px; left: -4px; top: -4px; border-radius: 50%; background: light-dark(#d8b65e, #e2c477); border: 1px solid rgba(60, 45, 10, 0.4); }
+.ipx .frag.slip { width: 7px; height: 11px; left: -3px; top: -5px; border-radius: 1px; background: var(--card); border: 1px solid var(--ink-2); }
+.ipx .frag.whizz { width: 22px; height: 26px; left: -11px; top: -13px; border-radius: 50% 50% 50% 50% / 46% 46% 54% 54%; box-shadow: inset -3px -4px 6px rgba(40, 30, 40, 0.2); }
+.ipx .frag.crumple { width: 24px; height: 22px; left: -12px; top: -11px; border-radius: 0; clip-path: polygon(12% 30%, 34% 4%, 58% 16%, 84% 6%, 96% 38%, 82% 58%, 98% 82%, 66% 96%, 44% 82%, 18% 96%, 4% 66%, 22% 50%); box-shadow: inset -4px -5px 7px rgba(40, 30, 40, 0.3), inset 3px 3px 5px rgba(255, 255, 255, 0.35); }
+.ipx .flash.glint { background: none; border: 2px solid light-dark(rgba(60, 70, 80, 0.7), rgba(255, 255, 255, 0.85)); width: 46px; height: 46px; margin: -23px 0 0 -23px; animation: glint 0.4s ease-out forwards; }
+.ipx .flash.glint::after { content: ""; position: absolute; left: 82%; top: 82%; width: 2px; height: 18px; background: inherit; border: inherit; border-width: 0 0 0 2px; rotate: -45deg; transform-origin: 0 0; }
+@keyframes glint { 0% { scale: 0.5; opacity: 0; } 30% { scale: 1; opacity: 1; } 70% { scale: 1.05; opacity: 1; } 100% { scale: 1.4; opacity: 0; } }
+.ipx .strings path { fill: none; }
+/* “Your app”, a little worse for wear with each balloon lost. */
+.ipx .app .cracks { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: var(--ink-2); stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; overflow: visible; }
+.ipx .app .cracks path { vector-effect: non-scaling-stroke; }
+.ipx .app [class*="d"] { display: none; }
+.ipx .app .cracks, .ipx .app .marks { display: block; }
+.ipx .app .marks { position: absolute; right: 7px; bottom: 4px; display: flex; gap: 3px; pointer-events: none; }
+.ipx .app .mk { width: 15px; height: 15px; fill: none; stroke: var(--ink-2); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; display: none; }
+.ipx .app .tape { position: absolute; left: 12%; top: -5px; width: 34px; height: 13px; rotate: -9deg; background: light-dark(#ead9b4, #b9a983); border: 1px solid light-dark(rgba(90, 70, 30, 0.35), rgba(0, 0, 0, 0.4)); opacity: 0.92; }
+.ipx .app.hurt1 .d1, .ipx .app.hurt2 .d2, .ipx .app.hurt3 .d3, .ipx .app.hurt5 .d5, .ipx .app.hurt6 .d6 { display: block; }
+.ipx .app.hurt4 .mk.d4, .ipx .app.hurt7 .mk.d7, .ipx .app.lost-auth .mk.auth, .ipx .app.lost-database .mk.database, .ipx .app.lost-webhooks .mk.webhooks { display: block; }
+.ipx .app.hurt3 { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 54%, 3.500% 40%, 0 28%); }
+.ipx .app.hurt3 .tape { clip-path: none; }
+.ipx .app.hurt4 .applabel { opacity: 0.55; }
+.ipx .app.hurt5 { border-style: dashed; }
+.ipx .app.hurt6 { clip-path: polygon(0 0, 100% 0, 100% 66%, 92% 76%, 88% 100%, 0 100%, 0 54%, 3.500% 40%, 0 28%); }
+.ipx .app.hurt7 { background: color-mix(in srgb, #b9552d 10%, var(--card)); }
+.ipx .app.hurt7 .mk.d7 { stroke: light-dark(#b03f29, #ff9a7a); }
+@media (max-width: 600px) {
+  .ipx .istage { height: 36rem; }
+  .ipx .ipanel .stack li { font-size: 0.72rem; height: 44px; }
+  .ipx .ipanel { --pitch: 48px; }
+  .ipx .stack.before.services li.balloon, .ipx .stack.before.services li.balloon:nth-of-type(3n+1) { width: 56px; height: 56px; font-size: 0.58rem; }
+  .ipx .stack.before.services li.balloon:nth-of-type(3n) { width: 62px; height: 62px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ipx .ipanel li, .ipx .ipanel .skin { animation: none !important; }
+}
+/* Phones: the whole picture has to fit under the browser's own bars, so the sheet's top bar scrolls away and the bricks are a little shorter. */
+@media (max-width: 600px) {
+  .ipx .ipanel .stack li { height: 38px; }
+  .ipx .ipanel .istage { height: 33.5rem; }
+  .ipx .ipanel .stack.tower li.pair-b { margin-top: -42px; }
+  .ipx .ipanel .istage { grid-template-columns: 1.22fr 1fr; }
+  .ipx .ipanel .stack.after ul { --pad: 3px; }
+  .ipx .ipanel .stack.tower li.pair-a, .ipx .ipanel .stack.tower li.pair-b { font-size: 0.62rem; padding: 0 0.3rem; }
+  .ipx .ipanel.pyramid .stack.after li { gap: 0.25rem; }
+  .ipx .ipanel.pyramid .stack.after li:nth-of-type(1) { padding: 0 0.6rem; }
+  .ipx .ipanel.pyramid .stack.after li:nth-of-type(2) { padding: 0 0.45rem; }
+  .ipx .ipanel.pyramid .stack.after li:nth-of-type(3) { width: 100%; padding: 0 0.4rem; white-space: normal; }
+}
+
+.rw .ipx .ipanel { border: 0; padding: 0; margin: 0; }
+.rw .ipx .ihead { justify-content: flex-start; }
+.rw .ipx .istage { margin-inline: 0 auto; }

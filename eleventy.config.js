@@ -70,6 +70,8 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/tool-icons": "tool-icons" });
   eleventyConfig.addPassthroughCopy({ "src/inner.css": "inner.css" });
   eleventyConfig.addPassthroughCopy({ "src/home-textures": "home-textures" });
+  // 🤖 The enabled-demo homepage's own styles, scripts, replay image and Matter.js (MIT).
+  eleventyConfig.addPassthroughCopy({ "src/home": "home" });
   eleventyConfig.addPassthroughCopy({ "src/header.css": "header.css" });
   eleventyConfig.addPassthroughCopy({ "src/footer.css": "footer.css" });
   eleventyConfig.addPassthroughCopy({ "src/docs.css": "docs.css" });
