@@ -187,3 +187,85 @@ test('theme: Auto follows the system, Light and Dark are remembered, the switch 
   runInContext(themeJS, createContext({ document: { documentElement: r2, readyState: 'complete', querySelector: () => g2, addEventListener() {} }, localStorage: { getItem() { throw Error('no'); }, setItem() { throw Error('no'); }, removeItem() { throw Error('no'); } }, addEventListener() {} }));
   buttons[2].fire('click'); assert.equal(r2.getAttribute('data-theme'), 'dark');
 });
+
+// The hero's drawn background, with a fake WebGL context that counts draws and remembers the theme uniform.
+const heroBgJS = await read('src/home/hero-bg.js');
+function heroBgWorld({ reduce = false, webgl = true } = {}) {
+  const mq = media(reduce), darkQ = media(false), root = new El(''), hero = new El('c-hero hv hv-b', { left: 0, top: 0, width: 1280, height: 700 }), canvas = new El('hero-bg'), pause = new El('');
+  pause.checked = false; hero.qs['.hero-bg'] = [canvas];
+  Object.defineProperty(hero, 'clientWidth', { get: () => 1280 }); Object.defineProperty(hero, 'clientHeight', { get: () => 700 });
+  const draws = [], uniforms = {};
+  const gl = new Proxy({}, { get: (_, k) => k === 'drawArrays' ? () => draws.push({ ...uniforms }) : k === 'getUniformLocation' ? (_, name) => name
+    : k.startsWith('uniform') ? (loc, ...v) => { uniforms[loc] = v.length > 1 ? v : v[0]; } : k.startsWith('get') && k.endsWith('Parameter') ? () => true : typeof k === 'string' && /^[A-Z_]+$/.test(k) ? 1 : () => ({}) });
+  canvas.getContext = () => (webgl ? gl : null);
+  const frames = new Map(), observers = [], mutations = []; let n = 0, now = 0;
+  const g = {
+    document: { querySelector: s => (s === '.c-hero' ? hero : s === '.rp-pause input' ? pause : null), documentElement: root, hidden: false, addEventListener() {} },
+    matchMedia: q => (q.includes('reduced-motion') ? mq : darkQ), addEventListener() {}, devicePixelRatio: 3, innerHeight: 900, Float32Array, Error,
+    requestAnimationFrame: f => { frames.set(++n, f); return n; }, cancelAnimationFrame: id => frames.delete(id),
+    IntersectionObserver: class { constructor(cb) { this.cb = cb; observers.push(this); } observe() {} },
+    MutationObserver: class { constructor(cb) { mutations.push(cb); } observe() {} },
+  };
+  g.window = g;
+  runInContext(heroBgJS, createContext(g));
+  // run queued frames, each 40 ms after the last (above the 30 fps step); returns how many ran
+  const run = (max = 20) => { let k = 0; while (frames.size && k < max) { const [id, f] = frames.entries().next().value; frames.delete(id); now += 40; f(now); k++; } return k; };
+  return { g, hero, canvas, pause, mq, darkQ, root, draws, frames, observers, mutations, run };
+}
+
+test('hero background: draws at 30 fps, half resolution, DPR capped at 1.5', () => {
+  const w = heroBgWorld();
+  assert.equal(w.run(10), 10);
+  assert.ok(w.draws.length >= 9);
+  assert.deepEqual([w.canvas.width, w.canvas.height], [Math.round(1280 * 0.75), Math.round(700 * 0.75)]);
+  assert.equal(w.draws.at(-1).D, 0);
+  assert.ok(w.frames.size > 0, 'still running');
+});
+
+test('hero background: reduced motion draws one still frame and stops; switching it on later stops the loop', () => {
+  let w = heroBgWorld({ reduce: true });
+  w.run();
+  assert.equal(w.draws.length, 1); assert.equal(w.frames.size, 0);
+  assert.equal(w.draws[0].T, 37, 'the same still moment every time');
+  w = heroBgWorld();
+  w.run(5); const before = w.draws.length;
+  w.mq.set(true); w.run();
+  assert.equal(w.frames.size, 0, 'no frames left queued');
+  assert.equal(w.draws.length, before + 1, 'one still frame, then nothing');
+  assert.equal(w.draws.at(-1).T, 37);
+  w.mq.set(false); w.run(5); assert.ok(w.frames.size > 0, 'moves again');
+});
+
+test('hero background: the replay Pause stops it, and Play resumes it', () => {
+  const w = heroBgWorld();
+  w.run(5);
+  w.pause.checked = true; w.pause.fire('change'); w.run();
+  assert.equal(w.frames.size, 0);
+  const n = w.draws.length; w.run(); assert.equal(w.draws.length, n);
+  w.pause.checked = false; w.pause.fire('change'); w.run(5);
+  assert.ok(w.draws.length > n && w.frames.size > 0);
+});
+
+test('hero background: off screen or a hidden tab stops it; a theme change redraws while still', () => {
+  const w = heroBgWorld();
+  w.run(3);
+  w.observers[0].cb([{ isIntersecting: false }]); w.run();
+  assert.equal(w.frames.size, 0);
+  w.observers[0].cb([{ isIntersecting: true }]); w.run(3); assert.ok(w.frames.size > 0);
+  w.g.document.hidden = true; w.run(); assert.equal(w.frames.size, 0);
+  w.g.document.hidden = false;
+  // paused, then the header switch picks Dark: one redraw with the dark uniform, no loop
+  w.pause.checked = true; w.pause.fire('change'); w.run();
+  const n = w.draws.length;
+  w.root.setAttribute('data-theme', 'dark'); w.mutations[0](); w.run();
+  assert.equal(w.draws.length, n + 1); assert.equal(w.draws.at(-1).D, 1); assert.equal(w.frames.size, 0);
+  // and Auto again, following a light system
+  w.root.removeAttribute('data-theme'); w.mutations[0](); w.run();
+  assert.equal(w.draws.at(-1).D, 0);
+  w.darkQ.set(true); w.run(); assert.equal(w.draws.at(-1).D, 1, 'Auto follows the system live');
+});
+
+test('hero background: without WebGL the hero keeps its CSS gradient', () => {
+  const w = heroBgWorld({ webgl: false });
+  assert.ok(w.hero.classList.contains('nogl')); assert.equal(w.frames.size, 0); assert.equal(w.draws.length, 0);
+});

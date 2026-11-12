@@ -27,6 +27,9 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.match(hero,/<a href="#architecture">Read on<\/a>/);
  assert.doesNotMatch(home,/class="hero-tools"|class="hero-wordmark"|class="hero-subtitle"|class="parts"|class="riff-grid"|id="ready"/);
  assert.match(hero,/<div class="paste v-soft hv-paste">/);
+ // One drawn background behind the hero only, hidden from assistive technology.
+ assert.match(home,/<section class="c-hero hv hv-b"><canvas class="hero-bg" aria-hidden="true"><\/canvas><div class="c-hero-inner">/);
+ assert.equal((home.match(/<canvas/g)||[]).length,1);
  assert.ok(hero.includes(escapeHTML(copy['home.paste.label'])));
  assert.doesNotMatch(hero,/pb-works/);
  assert.match(hero,/<details class="hv-cloud"><summary>Using a cloud agent\?<\/summary><!-- 👨 Paul's words, verbatim --><p class="start-hosts">/);
@@ -68,7 +71,7 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.doesNotMatch(hero+body,/—/);
  // Spec links keep their visible text as the name (WCAG 2.5.3) and carry the approved longer label as a description.
  for(const [ref,aria] of [['1.ref','1.aria'],['2.ref','2.aria'],['2.ref2','2.aria2'],['3.ref','3.aria'],['4.ref','4.aria']]) assert.ok(body.includes(`aria-describedby="practice-${aria.replace('.','-')}">${escapeHTML(copy['home.practice.'+ref])}</a><span id="practice-${aria.replace('.','-')}" hidden>${escapeHTML(copy['home.practice.'+aria])}</span>`),aria);
- for(const asset of ['/home/hero.css','/home/sections.css','/home/stacks.css','/home/theme.css','/home/hero.js','/home/stacks.js']) assert.ok(home.includes(`="${asset}?v=0"`),asset);
+ for(const asset of ['/home/hero.css','/home/sections.css','/home/stacks.css','/home/theme.css','/home/hero.js','/home/hero-bg.js','/home/stacks.js']) assert.ok(home.includes(`="${asset}?v=0"`),asset);
  // The theme is set before anything is drawn: theme.js first in <head>, blocking, ahead of every stylesheet.
  const head=home.match(/<head>[\s\S]*?<\/head>/)[0];
  assert.ok(head.includes('<script src="/home/theme.js?v=0"></script>'));

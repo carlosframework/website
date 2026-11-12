@@ -1,7 +1,7 @@
 {#- 🤖 Homepage hero for enabled demo builds (hack/build-start.mjs): Paul's headline and
     paste box, with a looping picture of one real run beside it. t('x.y') reads "home.x.y"
     from src/_data/start-copy.json, the id from the 2026-11-12 copy review. -#}
-<!-- /👨 --><section class="c-hero hv hv-b"><div class="c-hero-inner">
+<!-- /👨 --><section class="c-hero hv hv-b"><canvas class="hero-bg" aria-hidden="true"></canvas><div class="c-hero-inner">
 <div class="hv-col">
 {{ human | safe }}<h1>{{ html.heading | safe }}</h1><p class="sub">{{ html.sub | safe }}</p><!-- /👨 -->
 <p class="ask hv-ask">{{ human | safe }}<span>{{ c('home.hero.answer') }}</span><!-- /👨 --> <span class="hv-gloss"><span class="hv-sr">{{ t('hero.gloss') }}</span><span class="hv-rot-line" aria-hidden="true">{{ gloss.before }}<span class="hv-rot" data-words="{{ gloss.words }}"><span class="hv-rot-word">{{ gloss.word }}</span></span>{{ gloss.after }}</span></span> {{ human | safe }}<span>{{ html.ask | safe }}</span><!-- /👨 --></p>

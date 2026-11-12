@@ -48,6 +48,58 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
       assert.deepEqual(violations, [], `${width} ${theme} (system ${scheme})`);
       await ctx.close();
     }
+    // The glass panes over the drawn background: axe cannot see through backdrop-filter, so measure it. For
+    // several moments of the background, the panes are captured with their text made transparent, and each
+    // piece of text is compared with the worst of the pixels under its own line boxes.
+    for (const width of [390, 1280]) for (const theme of ['light', 'dark']) {
+      const ctx = await browser.newContext({ viewport: { width, height: width === 390 ? 844 : 900 } });
+      await ctx.addInitScript(t => localStorage.setItem('carlos-theme', t), theme);
+      const page = await ctx.newPage();
+      await page.goto(url, { waitUntil: 'networkidle' });
+      const drawn = await page.evaluate(() => !document.querySelector('.c-hero').classList.contains('nogl'));
+      if (!drawn) { await ctx.close(); continue; }   // no WebGL in this browser: the CSS gradient is covered by axe above
+      await page.locator('.rp-pause').click();
+      await page.addStyleTag({ content: `.rp-log li, .rp-app, .rp-scene1 { animation: none !important; opacity: 1 !important; transform: none !important; }
+        .hide-text, .hide-text * { color: transparent !important; -webkit-text-fill-color: transparent !important; text-decoration-color: transparent !important; }
+        .hide-text svg, .hide-text .pb-caret, .hide-text .rp-dots, .hide-text .rp-app, .hide-text .pb-copy { visibility: hidden !important; } .hide-text .hv-rot-word { background: none !important; }
+        .scene-a .rp-scene2, .scene-b .rp-scene1 { display: none !important; }` });
+      for (const scene of ['scene-a', 'scene-b']) for (const t of [12, 61, 120, 240]) {
+        const items = await page.evaluate(([scene, t]) => {
+          document.body.classList.remove('scene-a', 'scene-b'); document.body.classList.add(scene); window.__heroBg.set(t);
+          document.querySelectorAll('.is-sheen').forEach(e => e.classList.remove('is-sheen'));
+          return [...document.querySelectorAll('.c-hero .hv-col *, .c-hero .rp-bar *, .c-hero .rp-log *, .c-hero .rp-cap')]
+            .filter(el => !el.closest('.rp-app, .pb-copy, svg') && !el.closest('details:not([open]) > :not(summary)') && getComputedStyle(el).visibility !== 'hidden')
+            .flatMap(el => [...el.childNodes].filter(n => n.nodeType === 3 && n.textContent.trim()).map(n => {
+              const cs = getComputedStyle(el), r = document.createRange(); r.selectNodeContents(n);
+              return { text: n.textContent.trim().slice(0, 40), color: cs.color, large: parseFloat(cs.fontSize) >= 24 || (parseFloat(cs.fontSize) >= 18.66 && +cs.fontWeight >= 700),
+                rects: [...r.getClientRects()].filter(q => q.width > 2 && q.height > 2).map(q => [q.left, q.top + scrollY, q.width, q.height]) };
+            })).filter(i => i.rects.length);
+        }, [scene, t]);
+        await page.waitForTimeout(200);
+        const hero = await page.evaluate(() => { const r = document.querySelector('.c-hero').getBoundingClientRect(); return { y: r.top + scrollY, h: r.height }; });
+        await page.evaluate(() => document.querySelector('.c-hero').classList.add('hide-text'));
+        const shot = await page.screenshot({ fullPage: true, clip: { x: 0, y: hero.y, width, height: hero.h } });
+        await page.evaluate(() => document.querySelector('.c-hero').classList.remove('hide-text'));
+        const low = await page.evaluate(async ([b64, items, top]) => {
+          const img = new Image(); img.src = 'data:image/png;base64,' + b64; await img.decode();
+          const c = new OffscreenCanvas(img.width, img.height), x = c.getContext('2d'); x.drawImage(img, 0, 0);
+          const lin = v => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }, L = (r, g, b) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+          return items.map(i => {
+            const [fr, fg, fb] = i.color.match(/[\d.]+/g).map(Number), lf = L(fr, fg, fb), rs = [];
+            for (const [l, tp, w, h] of i.rects) {
+              const X = Math.max(0, Math.round(l)), Y = Math.max(0, Math.round(tp - top)), W = Math.min(img.width - X, Math.round(w)), H = Math.min(img.height - Y, Math.round(h));
+              if (W < 1 || H < 1) continue;
+              const d = x.getImageData(X, Y, W, H).data;
+              for (let k = 0; k < d.length; k += 4) { const lb = L(d[k], d[k + 1], d[k + 2]); rs.push((Math.max(lf, lb) + 0.05) / (Math.min(lf, lb) + 0.05)); }
+            }
+            rs.sort((a, b) => a - b);
+            return { text: i.text, need: i.large ? 3 : 4.5, r: rs[Math.floor(rs.length * 0.005)] };   // the worst half percent of the pixels under the text
+          }).filter(v => v.r !== undefined && v.r < v.need);
+        }, [shot.toString('base64'), items, hero.y]);
+        assert.deepEqual(low, [], `${width} ${theme} background moment ${t} (${scene})`);
+      }
+      await ctx.close();
+    }
     // The switch: visible, pressed state follows, the page changes at once and remembers.
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, colorScheme: 'dark' });
     const page = await ctx.newPage();

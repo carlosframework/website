@@ -34,14 +34,14 @@ body.site-home .c-hero .sub { color: light-dark(#2b3036, #dfe6ee); }
 body.site-home .c-hero .sub em { color: light-dark(#14181d, #f1f5ef); }
 body.site-home .c-hero .ask { color: light-dark(#464b52, #c9d2de); }
 body.site-home .c-hero .ask a { color: light-dark(#1a5f4f, #2fd4ac); }
-body.site-home .c-hero .start-hosts { color: light-dark(#5b6067, #9aa5b5); }
+body.site-home .c-hero .start-hosts { color: light-dark(#5b6067, #a9b4c2); }
 body.site-home .c-hero .start-hosts code { color: light-dark(#2b3036, #c9d2de); }
 
 /* Paste boxes (hero and closing) */
 body.site-home .v-soft { background: linear-gradient(180deg, light-dark(#ffffff, #1f2a2e), light-dark(#fbfaf7, #1a2327)); border-color: light-dark(rgba(27, 31, 36, 0.16), rgba(127, 208, 182, 0.28)); box-shadow: 0 14px 32px -18px light-dark(rgba(40, 30, 10, 0.22), rgba(0, 0, 0, 0.75)), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
 body.site-home .v-soft:focus-within, body.site-home .v-soft.is-copied { border-color: light-dark(rgba(26, 95, 79, 0.55), rgba(47, 212, 172, 0.6)); box-shadow: 0 14px 32px -18px light-dark(rgba(40, 30, 10, 0.22), rgba(0, 0, 0, 0.75)), 0 0 0 4px light-dark(rgba(26, 95, 79, 0.1), rgba(47, 212, 172, 0.12)); }
 body.site-home .v-soft .pb-to { color: light-dark(#464b52, #9fdcc8); }
-body.site-home .hv .hv-paste .pb-to { color: light-dark(#5b6067, #8e9aab); }
+body.site-home .hv .hv-paste .pb-to { color: light-dark(#5b6067, #a9b4c2); }
 body.site-home .v-soft .pb-line { color: light-dark(#14181d, #f3f1ea); }
 body.site-home .v-soft .pb-sign { stroke: light-dark(#1a5f4f, #2fd4ac); }
 body.site-home .v-soft .pb-caret { background: light-dark(#1a5f4f, #7fd0b6); }
