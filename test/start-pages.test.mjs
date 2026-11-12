@@ -22,8 +22,8 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.match(hero,/<!-- 👨 Paul's words, verbatim --><h1>/);
  // The answer, the line about CARLOS (one fixed sentence for screen readers), then the invitation.
  const ask=hero.match(/<p class="ask hv-ask">([\s\S]*?)<\/p>/)[1];
- assert.equal(plain(ask.replace(/<span class="hv-rot-line"[\s\S]*?web apps\.<\/span>/,'')),'You want CARLOS. A system for better web apps. Read on, or try it now:');
- assert.match(ask,/<span class="hv-rot-line" aria-hidden="true">A system for <span class="hv-rot" data-words="better remarkable faster accessible secure private simple resilient cheaper portable distributable decentralisable agent-ready"><span class="hv-rot-word">better<\/span><\/span> web apps\.<\/span>/);
+ assert.equal(plain(ask.replace(/<span class="hv-rot-line"[\s\S]*?web apps\.<\/span>/,'')),'You want CARLOS. A system for building better web apps. Read on, or try it now:');
+ assert.match(ask,/<span class="hv-rot-line" aria-hidden="true">A system for building <span class="hv-rot" data-words="better remarkable faster accessible secure private simple resilient cheaper portable distributable decentralisable agent-ready"><span class="hv-rot-word">better<\/span><\/span> web apps\.<\/span>/);
  assert.match(hero,/<a href="#architecture">Read on<\/a>/);
  assert.doesNotMatch(home,/class="hero-tools"|class="hero-wordmark"|class="hero-subtitle"|class="parts"|class="riff-grid"|id="ready"/);
  assert.match(hero,/<div class="paste v-soft hv-paste">/);
@@ -195,7 +195,7 @@ test('homepage carries Paul’s 2026-11-12 approved copy byte for byte, with cur
  assert.equal(result.action,'approve');
  assert.deepEqual(result.strings.map(s=>s.id),strings.map(s=>s.id));
  // Paul's later verbatim rewrites (2026-11-12, after the review) replace the reviewed text.
- const later={'get.ship.figure.note':'faster to ship at Tito, using agents building with CARLOS.','get.build.figure':'20 ms','get.build.figure.note':'Average response time, down from 750ms','get.save.figure':'80%','tools.heading':'To make it easy, we built an agent-first modern web framework to build apps and a platform to deploy them on','tools.platform.body':'Get your CARLOS apps online with HTTPS, backups, provisioning, observability and analytics. Static sites work great too.','tools.skill.lead':'Try CARLOS with zero effort.','tools.skill.body':'The CARLOS skill has everything it needs to build and deploy a sample app and get it live right now.','what.heading':'CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily.'};
+ const later={'get.ship.figure.note':'faster to ship at Tito, using agents building with CARLOS.','get.build.figure':'20 ms','get.build.figure.note':'Average response time, down from 750ms','get.save.figure':'80%','tools.heading':'To make it easy, we built an agent-first modern web framework to build apps and a platform to deploy them on','tools.platform.body':'Get your CARLOS apps online with HTTPS, backups, provisioning, observability and analytics. Static sites work great too.','tools.skill.lead':'Try CARLOS with zero effort.','tools.skill.body':'The CARLOS skill has everything it needs to build and deploy a sample app and get it live right now.','what.heading':'CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily.','hero.gloss':'A system for building better web apps.'};
  for(const s of result.strings) if(later[s.id]) s.text=later[s.id];
  // Paul, 2026-11-12: the replay no longer needs its "A real run, sped up" badge. Removed, not reworded.
  // The re-recorded run 4 (2026-11-12) replaces the replay's quotations, alt text and caption: verbatim from
