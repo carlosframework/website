@@ -68,6 +68,10 @@ body.landing .rp-qs { list-style: decimal; margin: 0; padding-left: 1.2rem; colo
 .rp-app-bar span { width: 8px; height: 8px; border-radius: 50%; background: #2a9d7f; flex: none; }
 .rp-shot { height: 19rem; overflow: hidden; }
 .rp-shot img { display: block; width: 100%; height: auto; }
+/* A tap on the hero or the replay never zooms the page (pinch zoom still works); the screenshot is a picture, not a target. */
+body.site-home .c-hero, .rp { touch-action: manipulation; }
+.rp-shot { -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
+.rp-shot img { pointer-events: none; -webkit-user-drag: none; }
 .rp-cap { padding: 0.5rem 0.9rem 0.6rem; background: light-dark(#f1eee8, #141b1f); font-size: 0.74rem; color: light-dark(#5b6067, #8e9aab); }
 
 /* The loop follows the recorded run's order. The dialogue moves briskly (lines appear in 0.4 s);

@@ -21,6 +21,9 @@
   color: var(--rw-ink);
   background: var(--rw-bg);
 }
+/* Double-tap never zooms (pinch zoom still works). The stacks keep their own, stricter rules: the stage pans
+   vertically only and the blocks take every touch, which already rules out double-tap zoom there. */
+.rw { touch-action: manipulation; }
 .rw section { padding: clamp(3rem, 8vw, 6rem) clamp(1.15rem, 4vw, 2.5rem); border-top: 1px solid var(--rw-line); }
 .rw section:first-child { border-top: 0; }
 .rw .rw-wrap { max-width: 72rem; margin-inline: auto; }
