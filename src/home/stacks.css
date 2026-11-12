@@ -31,7 +31,8 @@
 .ipx [data-glow^="n"] .stack.after figcaption { color: var(--ink-2); }
 .ipx [data-glow="n2"] .stack.after li { box-shadow: 0 10px 16px -9px light-dark(rgba(20, 35, 43, 0.38), rgba(0, 0, 0, 0.85)), 0 1px 2px light-dark(rgba(20, 35, 43, 0.12), rgba(0, 0, 0, 0.5)); translate: 0 -1px; }
 /* House of cards: the Before stack sways as one precarious tower, the top moving most, with a small settle each swing. */
-.ipx .wobble .stack.before li { animation: sway 6.4s ease-in-out infinite; }
+/* The sway runs only while home/stacks.js says motion is on (.moving): never without the script, under reduced motion or when paused. */
+.ipx .wobble.moving .stack.before li { animation: sway 6.4s ease-in-out infinite; }
 .ipx .wobble .stack.before li:nth-of-type(1) { --amp: 1.5deg; --sx: 7px; }
 .ipx .wobble .stack.before li:nth-of-type(2) { --amp: 1.3deg; --sx: 6px; animation-delay: 0.05s; }
 .ipx .wobble .stack.before li:nth-of-type(3) { --amp: 1.1deg; --sx: 5px; animation-delay: 0.1s; }
@@ -129,13 +130,14 @@
 .ipx .stack.before.services li.balloon:nth-of-type(3n+1) { width: 61px; height: 61px; }
 .ipx .stack.before.services li.balloon:nth-of-type(n+5) { margin-left: 40%; }
 .ipx .stack.before.services li.balloon:nth-of-type(9) { grid-column: 2 / span 2; margin-left: 0; margin-top: -10px; }
-.ipx .balloon .skin { position: absolute; inset: 0; border-radius: 50% 50% 50% 50% / 47% 47% 53% 53%; background: radial-gradient(circle at 58% 68%, transparent 46%, rgba(40, 30, 40, 0.3) 100%), color-mix(in srgb, var(--c) 92%, transparent); box-shadow: inset -5px -7px 12px rgba(40, 30, 40, 0.18), 0 6px 12px -6px rgba(0, 0, 0, 0.45); animation: turn 5.5s ease-in-out var(--dl, 0s) infinite alternate; }
+.ipx .balloon .skin { position: absolute; inset: 0; border-radius: 50% 50% 50% 50% / 47% 47% 53% 53%; background: radial-gradient(circle at 58% 68%, transparent 46%, rgba(40, 30, 40, 0.3) 100%), color-mix(in srgb, var(--c) 92%, transparent); box-shadow: inset -5px -7px 12px rgba(40, 30, 40, 0.18), 0 6px 12px -6px rgba(0, 0, 0, 0.45); }
 .ipx .balloon .skin svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 /* the print: opaque ink in a deep shade of the balloon's own colour, on top of the rubber and its shading */
 .ipx .balloon .skin text { font: 700 15.5px var(--sans); text-anchor: middle; dominant-baseline: central; fill: color-mix(in srgb, var(--c) 16%, #17131a); }
 /* only the small gloss sits over the print, so it brightens the ink a little where it crosses, like shine on paint */
 .ipx .balloon .skin::before { content: ""; position: absolute; inset: 0; border-radius: inherit; z-index: 1; pointer-events: none; background: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.8) 0 6%, rgba(255, 255, 255, 0.22) 14%, transparent 27%); }
 .ipx .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.ipx .ipanel.moving .balloon .skin { animation: turn 5.5s ease-in-out var(--dl, 0s) infinite alternate; }
 .ipx .balloon .skin::after { content: ""; position: absolute; left: 50%; bottom: -6px; width: 9px; height: 7px; translate: -50% 0; background: color-mix(in srgb, var(--c) 80%, #3a2f3a); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
 @keyframes turn { from { transform: scaleX(1) translateX(0); } to { transform: scaleX(0.92) translateX(1.5px); } }
 .ipx .stack.before.services li.app { grid-column: 1 / -1; align-self: start; margin-top: 4.5rem; width: 72%; height: 48px; font-weight: 650; color: var(--ink); overflow: visible; transition: border-color 0.3s, background 0.3s; }
@@ -208,4 +210,5 @@
 
 .rw .ipx .ipanel { border: 0; padding: 0; margin: 0; }
 .rw .ipx .ihead { justify-content: flex-start; }
+.ipx .ipause[hidden] { display: none; }
 .rw .ipx .istage { margin-inline: 0 auto; }

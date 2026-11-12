@@ -1,11 +1,12 @@
 // 🤖 Ported from the approved 2026-11-12 homepage rework (options sheet, panel I1).
 // I1 Interactive: the two stacks as physical things.
-// Until someone touches it, this is the plain CSS wobble and nothing here runs. The first pointer over
-// the stage loads Matter.js (MIT) and turns the blocks into rigid bodies:
+// Without this script the stacks are a still picture. With it, the tower sways (CSS, under .moving), and Matter.js
+// (MIT) is fetched in idle time once the panel nears the screen, turning the blocks into rigid bodies:
 //   - the Before pile is loose boxes on a fixed "Cloud provider" base: wind from the pointer, pull one out and it falls
 //   - "Many services" hangs the app from a bunch of balloons: pop one and it sags
 //   - the CARLOS pyramid is heavy, damped and tethered home, so it barely gives and snaps back
-// Under reduced motion none of this is attached: the stacks are a still picture.
+// Under reduced motion, or while paused with the panel's Pause button, nothing moves. Reduced motion switched on
+// later stops everything and puts the picture back at rest; Pause freezes it where it is.
 (() => {
   const panel = document.querySelector('.ipanel');
   if (!panel) return;
@@ -35,38 +36,67 @@
   // The view switch needs this script, so it stays hidden without it.
   const seg = panel.querySelector('.seg'); if (seg) seg.hidden = false;
   stillStrings(); addEventListener('resize', stillStrings); addEventListener('load', stillStrings);
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { panel.classList.add('static'); return; }
 
   const ROPE = 8; // segments in each string
-  let M, loading = false, raf = 0, lastTouch = 0;
+  let M, loading = false, raf = 0, lastTouch = 0, idle = 0, near = null, paused = false, visible = true;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)'), pauseBtn = panel.querySelector('.ipause');
+  const still = () => reduce.matches || paused;
   // The physics engine is fetched once. Anything that asks for it while it is on its way is queued, in order,
-  // so a grab made during the wait still takes hold when it arrives.
+  // so a grab made during the wait still takes hold when it arrives (unless the pointer has let go by then).
   const waiting = [];
   const load = then => {
+    if (still()) return;
     if (M) return then();
     waiting.push(then);
     if (loading) return;
     loading = true;
     const s = document.createElement('script');
-    s.src = '/home/matter-0.20.0.min.js'; s.onload = () => { M = window.Matter; while (waiting.length) waiting.shift()(); };
+    s.src = '/home/matter-0.20.0.min.js'; s.onload = () => { M = window.Matter; if (still()) waiting.length = 0; while (waiting.length) waiting.shift()(); };
     document.head.appendChild(s);
   };
-  const ready = () => { if (!W) build(); };
+  const ready = () => { if (!W && !still()) build(); };
   // Fetch and set it up in idle time as soon as the panel is near the screen, so the first touch does not have to wait for it.
-  new IntersectionObserver((es, io) => {
-    if (!es.some(e => e.isIntersecting)) return;
-    io.disconnect();
-    (window.requestIdleCallback || (f => setTimeout(f, 200)))(() => load(ready), { timeout: 1500 });
-  }, { rootMargin: '400px 0px' }).observe(stage);
+  function preload() {
+    if (near || W) return;
+    near = new IntersectionObserver(es => {
+      if (!es.some(e => e.isIntersecting)) return;
+      near.disconnect(); near = null;
+      idle = (window.requestIdleCallback || (f => setTimeout(f, 200)))(() => { idle = 0; load(ready); }, { timeout: 1500 });
+    }, { rootMargin: '400px 0px' });
+    near.observe(stage);
+  }
+  // Reduced motion: cancel whatever is pending and put every piece back at rest.
+  function halt() {
+    if (near) { near.disconnect(); near = null; }
+    if (idle) { (window.cancelIdleCallback || clearTimeout)(idle); idle = 0; }
+    waiting.length = 0; grab = null;
+    if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    if (W) { W = null; stage.classList.remove('live', 'ready', 'measure', 'resetting', 'tremor'); stage.style.removeProperty('height'); clear(); resetBtn.hidden = true; stillStrings(); }
+  }
+  // Pause freezes the picture where it is: the CSS sway stops, the physics loop stops, the pointer is ignored.
+  function motion() {
+    const off = still();
+    panel.classList.toggle('moving', !off);
+    panel.classList.toggle('static', off);
+    if (pauseBtn) { pauseBtn.hidden = reduce.matches; pauseBtn.textContent = paused ? pauseBtn.dataset.play : pauseBtn.dataset.pause; }
+    if (reduce.matches) return halt();
+    if (paused) { if (raf) { cancelAnimationFrame(raf); raf = 0; } grab = null; return; }
+    preload(); if (W) wake();
+  }
+  if (pauseBtn) pauseBtn.addEventListener('click', () => { paused = !paused; motion(); });
+  reduce.addEventListener('change', motion);
 
   // ---- build a world from where the blocks are drawn right now --------------------------------
-  function build() {
-    stage.classList.remove('live'); stage.classList.add('measure');
+  function clear() { // every piece back where the page's own layout draws it
     stage.querySelectorAll('li, ul').forEach(el => { for (const k of ['position', 'left', 'top', 'width', 'height', 'margin', 'transform']) el.style.removeProperty(k); }); // keeps each balloon's own colour
     stage.querySelectorAll('.popped').forEach(el => el.classList.remove('popped'));
     stage.querySelectorAll('.frag, .flash, .piece, .dart, .snip').forEach(el => el.remove());
     stage.querySelectorAll('.cracked, .shattered').forEach(el => el.classList.remove('cracked', 'shattered'));
     stage.querySelectorAll('.app').forEach(el => { el.className = 'app'; });
+  }
+  function build() {
+    stage.classList.remove('live'); stage.classList.add('measure');
+    clear();
     const sr = stage.getBoundingClientRect(), mode = panel.dataset.mode;
     const box = el => { const r = el.getBoundingClientRect(); return { el, x: r.left - sr.left + r.width / 2, y: r.top - sr.top + r.height / 2, w: r.width, h: r.height }; };
     const left = [...stage.querySelectorAll(`.${mode} li`)].map(box), right = [...stage.querySelectorAll('.stack.after li')].map(box);
@@ -169,7 +199,7 @@
   // the lower piece stays tied to the app.
   const crosses = (a, b, c, d) => { // do segments a-b and c-d cross? returns how far along each, or null
     const rx = b.x - a.x, ry = b.y - a.y, sx = d.x - c.x, sy = d.y - c.y, den = rx * sy - ry * sx;
-    if (Math.abs(den) < 1e-6) return -1;
+    if (Math.abs(den) < 1e-6) return null; // parallel: they never cross
     const t = ((c.x - a.x) * sy - (c.y - a.y) * sx) / den, u = ((c.x - a.x) * ry - (c.y - a.y) * rx) / den;
     return t >= 0 && t <= 1 && u >= 0 && u <= 1 ? { t, u } : null;
   };
@@ -440,11 +470,11 @@
     for (const it of [A, P]) { M.Body.setPosition(it.body, { x: it.cx, y: it.cy }); M.Body.setAngle(it.body, it.ang); }
     return !!d || P.yl + P.yr + A.yl + A.yr > 0 || Math.abs(P.vx) > 0.02 || Math.abs(A.vx) > 0.02;
   }
-  let visible = true;
+  // Off screen the whole loop stops; it starts again when the panel comes back.
   new IntersectionObserver(es => { visible = es[es.length - 1].isIntersecting; if (visible) kick(); }, { rootMargin: '100px 0px' }).observe(stage);
   function tick() {
     raf = 0;
-    if (!W) return;
+    if (!W || !visible || still()) return;
     if (W.hold > performance.now()) { // the tower is gliding home after a reset; the CARLOS plates must still answer at once
       carlosStep();
       for (const it of [W.cApp, W.cPlat]) { const p = it.body.position; it.el.style.transform = `translate(${(p.x - it.w / 2).toFixed(2)}px, ${(p.y - it.h / 2).toFixed(2)}px) rotate(${it.body.angle.toFixed(4)}rad)`; }
@@ -501,13 +531,14 @@
     const awake = W.drag || lifting || W.items.some(it => !it.body.isStatic && !it.body.isSleeping);
     if (awake || off || W.shiver > performance.now() || W.frags.length || W.darts.some(d => d.phase === 'fly' || d.phase === 'fall') || (W.intact && visible)) kick();
   }
-  function kick() { if (!raf) raf = requestAnimationFrame(tick); }
+  function kick() { if (!raf && W && visible && !still()) raf = requestAnimationFrame(tick); }
   const wake = () => { if (W) { W.items.forEach(it => M.Sleeping.set(it.body, false)); kick(); } };
 
   // ---- pointer: wind, drag, pop ---------------------------------------------------------------
   const at = e => { const r = stage.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
   let prev = null, prevT = 0;
   stage.addEventListener('pointermove', e => {
+    if (still()) return;
     lastTouch = performance.now();
     if (!W) { load(ready); return; }
     const p = at(e);
@@ -533,7 +564,9 @@
     kick();
   });
   stage.addEventListener('pointerleave', () => { prev = null; });
+  let grab = null; // a pointer that went down before the physics arrived
   stage.addEventListener('pointerdown', e => {
+    if (still()) return;
     lastTouch = performance.now();
     const li = e.target.closest('li');
     if (!li || !stage.contains(li)) return;
@@ -552,9 +585,12 @@
       li.classList.add('held'); kick();
     };
     e.preventDefault();
-    if (W) begin(); else load(() => { ready(); begin(); });
+    if (W) return begin();
+    const mine = grab = { id: e.pointerId };
+    load(() => { ready(); if (grab === mine && W) { grab = null; begin(); } }); // let go before it arrived: no grab
   });
   const release = e => {
+    if (grab && (!e || grab.id === e.pointerId)) grab = null;
     if (!W || !W.drag) return;
     const { it, rope, moved } = W.drag;
     if (rope) M.Composite.remove(W.world, rope); it.el.classList.remove('held'); W.drag = null;
@@ -565,5 +601,6 @@
   resetBtn.addEventListener('click', () => { lastTouch = performance.now(); rebuild(); });
   let rw = stage.clientWidth;
   addEventListener('resize', () => { if (W && stage.clientWidth !== rw) { rw = stage.clientWidth; build(); } });
-  window.__i1 = { get world() { return W; }, letGo: () => letGo() };
+  motion();
+  window.__i1 = { get world() { return W; }, letGo: () => letGo(), crosses };
 })();
