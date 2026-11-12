@@ -37,7 +37,7 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  const body=home.match(/<div class="rw">[\s\S]*<\/div>\n?<\/main>/)[0];
  assert.match(body,/<section class="rw-what" id="architecture"/);
  assert.deepEqual([...body.matchAll(/<section class="(rw-[a-z]+)"/g)].map(m=>m[1]),['rw-what','rw-tools','rw-get','rw-who','rw-end']);
- assert.match(body,/<h2 id="rw-what-title">CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily\.<\/h2>\s*<p class="rw-what-sub">Inspired by UNIX principles, CARLOS deploys full stack web apps as single processes using fast compiled languages, unlocking a slew of benefits\.<\/p>/);
+ assert.match(body,/<h2 id="rw-what-title">CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily\.<\/h2>\s*<p class="rw-what-sub">Inspired by UNIX principles, CARLOS deploys full stack web apps as single processes rather than sprawling containerised services, using fast compiled languages, unlocking a slew of benefits\.<\/p>/);
  assert.match(body,/<p class="rw-follow">It’s defined by an <a href="https:\/\/spec\.carlosframework\.com" target="_blank" rel="noopener noreferrer">open specification<\/a>\.<\/p>/);
  assert.match(body,/<p class="rw-closing"><strong>CARLOS is a set of strong opinions, not rules\.<\/strong> They’re the defaults we believe make web apps better for everyone, and for their agents\.<\/p>/);
  assert.ok(body.indexOf('class="rw-practice"')<body.indexOf('class="rw-closing"') && body.indexOf('class="rw-closing"')<body.indexOf('<section class="rw-tools"'));
