@@ -314,3 +314,17 @@ test('figures: reduced motion and figures that are not "number + unit" show the 
   const o = figuresWorld({ figures: [['70%–80%', 0]] });
   assert.ok(!o.els[0].el.classList.contains('is-counting')); assert.equal(o.observers.length, 0);
 });
+
+test('hero: holds its first height plus a line for the Copy note, re-measured only when the width changes', () => {
+  const hero = new El('c-hero', { left: 0, top: 0, width: 390, height: 1144 }); let cw = 390;
+  Object.defineProperty(hero, 'clientWidth', { get: () => cw });
+  const listeners = {};
+  const g = { document: { querySelector: s => (s === '.c-hero' ? hero : null), querySelectorAll: () => [], documentElement: {} }, getComputedStyle: () => ({ fontSize: '16px' }),
+    addEventListener: (t, f) => { listeners[t] = f; }, navigator: { languages: ['en-GB'] }, matchMedia: () => media(false), setInterval: () => 0, clearInterval() {}, setTimeout: () => 0, clearTimeout() {} };
+  runInContext(heroJS, createContext(g));
+  assert.equal(hero.style.height, `${Math.ceil(1144 + 16 * 2.1)}px`);
+  hero.rect = { ...hero.rect, height: 1300 }; listeners.resize();   // a phone's address bar: same width
+  assert.equal(hero.style.height, `${Math.ceil(1144 + 16 * 2.1)}px`, 'unchanged');
+  cw = 400; hero.rect = { ...hero.rect, height: 1100 }; listeners.resize();
+  assert.equal(hero.style.height, `${Math.ceil(1100 + 16 * 2.1)}px`, 'a new width is measured afresh');
+});

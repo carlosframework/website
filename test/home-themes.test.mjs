@@ -100,6 +100,22 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
       }
       await ctx.close();
     }
+    // Copy's note, a failed copy and the opened hosts line grow the glass pane, never the hero: the background
+    // keeps its size and the next section does not move.
+    for (const width of [390, 1280]) for (const copies of [true, false]) {
+      const ctx = await browser.newContext({ viewport: { width, height: 900 }, permissions: copies ? ['clipboard-read', 'clipboard-write'] : [] });
+      const page = await ctx.newPage();
+      if (!copies) await page.addInitScript(() => Object.defineProperty(navigator, 'clipboard', { value: { writeText: () => Promise.reject(new Error('denied')) } }));
+      await page.goto(url, { waitUntil: 'networkidle' });
+      const where = () => page.evaluate(() => { const c = document.querySelector('.hero-bg'); return { next: document.querySelector('.rw-what').getBoundingClientRect().top + scrollY, hero: document.querySelector('.c-hero').getBoundingClientRect().height, canvas: [c.width, c.height] }; });
+      const before = await where();
+      await page.locator('.c-hero .pb-copy').click(); await page.waitForTimeout(600);
+      assert.ok(await page.locator('.c-hero .paste').evaluate(el => el.classList.contains('is-copied') || el.classList.contains('copy-failed')), 'the copy note shows');
+      assert.deepEqual(await where(), before, `${width} after Copy (${copies ? 'copied' : 'failed'})`);
+      await page.locator('.hv-cloud summary').click(); await page.waitForTimeout(400);
+      assert.deepEqual(await where(), before, `${width} with the hosts line open`);
+      await ctx.close();
+    }
     // The switch: visible, pressed state follows, the page changes at once and remembers.
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, colorScheme: 'dark' });
     const page = await ctx.newPage();

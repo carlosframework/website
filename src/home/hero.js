@@ -3,7 +3,25 @@
 // Screen readers get the stable sentence beside it; the rotating copy is aria-hidden.
 // The replay's Pause control stops the rotation too, so one control stills the whole hero.
 // Reduced motion switched on at any time stops it and puts "better" back.
+// It also holds the hero's height steady (below).
 (() => {
+  // The hero keeps the height it is first laid out at, plus room for Copy's one-line note, so the note, a failed-copy
+  // message or the opened hosts line grow the glass pane, never the hero or the background drawn in it, and nothing
+  // below moves. Anything taller than that room overlaps the top of the next section, with the pane on top.
+  // Measured again only when the width changes (a phone's address bar coming and going changes only the height).
+  const hero = document.querySelector('.c-hero');
+  if (hero) {
+    let width = 0;
+    const lock = () => {
+      if (hero.clientWidth === width) return;
+      width = hero.clientWidth;
+      hero.style.removeProperty('height');
+      const room = parseFloat(getComputedStyle(document.documentElement).fontSize) * 2.1;
+      hero.style.height = Math.ceil(hero.getBoundingClientRect().height + room) + 'px';
+    };
+    lock();
+    addEventListener('resize', lock);
+  }
   // -ize where the reader's first language is US or Canadian English; -ise everywhere else.
   const first = (navigator.languages && navigator.languages[0]) || navigator.language || '';
   const zed = /^en-(US|CA)\b/i.test(first);
