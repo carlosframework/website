@@ -97,7 +97,7 @@ async function homeHTML(config,copy,original) {
   heading:escapeHTML(c('home.hero.heading')).replace(/using agents\./,text=>`<span class="nw">${text}</span>`),
   sub:escapeHTML(c('home.hero.subheading')).replace(/ship faster,|build better|save money\./g,text=>`<span class="nw">${text}</span>`).replace(/faster|better|save money/g,text=>`<em>${text}</em>`),
   ask:escapeHTML(c('home.hero.ask')).replace(/^Read on/,text=>`<a href="#architecture">${text}</a>`),
-  whatHeading:wrap(t('what.heading'),'by going back to basics','<em>','</em>'),
+  whatHeading:escapeHTML(t('what.heading')),
   whatFollow:wrap(t('what.follow'),'open specification','<a href="https://spec.carlosframework.com" target="_blank" rel="noopener noreferrer">','</a>'),
   toolsFoot:`${human}${foot.replace('architecture-inspiration','rw-foot')}<!-- /👨 -->`,
  };

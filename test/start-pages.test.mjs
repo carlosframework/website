@@ -37,7 +37,7 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  const body=home.match(/<div class="rw">[\s\S]*<\/div>\n?<\/main>/)[0];
  assert.match(body,/<section class="rw-what" id="architecture"/);
  assert.deepEqual([...body.matchAll(/<section class="(rw-[a-z]+)"/g)].map(m=>m[1]),['rw-what','rw-tools','rw-get','rw-who','rw-end']);
- assert.match(body,/<h2 id="rw-what-title">CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily, <em>by going back to basics<\/em>\.<\/h2>/);
+ assert.match(body,/<h2 id="rw-what-title">CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily\.<\/h2>\s*<p class="rw-what-sub">Inspired by UNIX principles, CARLOS deploys full stack web apps as single processes using fast compiled languages, unlocking a slew of benefits\.<\/p>/);
  assert.match(body,/<p class="rw-follow">It’s defined by an <a href="https:\/\/spec\.carlosframework\.com" target="_blank" rel="noopener noreferrer">open specification<\/a>\.<\/p>/);
  assert.match(body,/<p class="rw-closing"><strong>CARLOS is a set of strong opinions, not rules\.<\/strong> They’re the defaults we believe make web apps better for everyone, and for their agents\.<\/p>/);
  assert.ok(body.indexOf('class="rw-practice"')<body.indexOf('class="rw-closing"') && body.indexOf('class="rw-closing"')<body.indexOf('<section class="rw-tools"'));
@@ -187,7 +187,7 @@ test('homepage carries Paul’s 2026-11-12 approved copy byte for byte, with cur
  assert.equal(result.action,'approve');
  assert.deepEqual(result.strings.map(s=>s.id),strings.map(s=>s.id));
  // Paul's later verbatim rewrites (2026-11-12, after the review) replace the reviewed text.
- const later={'tools.heading':'To make it easy, we built an agent-first modern web framework to build apps and a platform to deploy them on','tools.platform.body':'Get your CARLOS apps online with HTTPS, backups, provisioning, observability and analytics. Static sites work great too.','tools.skill.lead':'Try CARLOS with zero effort.','tools.skill.body':'The CARLOS skill has everything it needs to build and deploy a sample app and get it live right now.'};
+ const later={'tools.heading':'To make it easy, we built an agent-first modern web framework to build apps and a platform to deploy them on','tools.platform.body':'Get your CARLOS apps online with HTTPS, backups, provisioning, observability and analytics. Static sites work great too.','tools.skill.lead':'Try CARLOS with zero effort.','tools.skill.body':'The CARLOS skill has everything it needs to build and deploy a sample app and get it live right now.','what.heading':'CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily.'};
  for(const s of result.strings) if(later[s.id]) s.text=later[s.id];
  // Every approved string is in the copy data under its review id, exactly as approved.
  for(const {id,text} of result.strings) assert.equal(copy[`home.${id}`],text,id);

@@ -34,6 +34,7 @@ body.landing .rw a { color: var(--rw-acc); }
 .rw .rw-what { background: var(--rw-bg); scroll-margin-top: 0; }
 .rw .rw-what h2 { font-size: clamp(1.7rem, 3.7vw, 2.75rem); max-width: 34ch; }
 .rw .rw-what h2 em { font-style: normal; color: var(--rw-acc); }
+.rw .rw-what-sub { margin-top: .9rem; max-width: 58ch; font-size: clamp(1.15rem, 2.2vw, 1.4rem); line-height: 1.5; color: var(--rw-ink-2); }
 .rw .rw-what .rw-lede { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.5rem; margin-top: 1.5rem; color: var(--rw-ink-2); }
 .rw .rw-btn { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 46px; padding: 0 1.25rem; border-radius: 7px; font-weight: 650; text-decoration: none; background: var(--rw-acc); }
 body.landing .rw a.rw-btn { color: light-dark(#ffffff, #062a24); }

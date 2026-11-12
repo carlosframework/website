@@ -9,7 +9,8 @@
 <div class="rw">
 
 <section class="rw-what" id="architecture" aria-labelledby="rw-what-title"><div class="rw-wrap">
-  <!-- 👨 Paul's words, verbatim --><h2 id="rw-what-title">{{ html.whatHeading | safe }}</h2><!-- /👨 -->
+  <!-- 👨 Paul's words, verbatim --><h2 id="rw-what-title">{{ html.whatHeading | safe }}</h2>
+  <p class="rw-what-sub">{{ t('what.sub') }}</p><!-- /👨 -->
   <p class="rw-follow">{{ html.whatFollow | safe }}</p>
   <p class="rw-lede"><a class="rw-btn" href="{{ spec }}" {{ blank | safe }}>{{ t('what.button') }} {{ ext | safe }}</a><span class="rw-ver">{{ t('what.version') }}</span></p>
 
