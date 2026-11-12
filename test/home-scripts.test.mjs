@@ -345,3 +345,18 @@ test('hero: holds its first height plus a line for the Copy note, re-measured on
   cw = 400; hero.rect = { ...hero.rect, height: 1100 }; listeners.resize();
   assert.equal(hero.style.height, `${Math.ceil(1100 + 16 * 2.1)}px`, 'a new width is measured afresh');
 });
+
+test('hero: a height-only resize measures again when it changed the replay (a taller window), not otherwise (a phone toolbar)', () => {
+  const hero = new El('c-hero', { left: 0, top: 0, width: 900, height: 700 }), replay = new El('rp'); let rpH = 300;
+  Object.defineProperty(hero, 'clientWidth', { get: () => 900 }); Object.defineProperty(replay, 'offsetHeight', { get: () => rpH });
+  hero.qs['.rp'] = [replay];
+  const listeners = {}, doc = { readyState: 'complete', querySelector: s => (s === '.c-hero' ? hero : null), querySelectorAll: () => [], documentElement: {} };
+  runInContext(heroJS, createContext({ document: doc, getComputedStyle: () => ({ fontSize: '16px' }), addEventListener: (t, f) => { listeners[t] = f; },
+    navigator: { languages: ['en-GB'] }, matchMedia: () => media(false), setInterval: () => 0, clearInterval() {}, setTimeout: () => 0, clearTimeout() {} }));
+  const held = h => `${Math.ceil(h + 16 * 2.1)}px`;
+  assert.equal(hero.style.height, held(700));
+  hero.rect = { ...hero.rect, height: 760 }; listeners.resize();
+  assert.equal(hero.style.height, held(700), 'same replay height (a phone toolbar): held');
+  rpH = 552; hero.rect = { ...hero.rect, height: 952 }; listeners.resize();
+  assert.equal(hero.style.height, held(952), 'a taller window grew the replay: measured again');
+});

@@ -8,8 +8,8 @@
   // The hero keeps the height it is first laid out at, plus room for Copy's one-line note, so the note, a failed-copy
   // message or the opened hosts line grow the glass pane, never the hero or the background drawn in it, and nothing
   // below moves. Anything taller than that room overlaps the top of the next section, with the pane on top.
-  // Measured once the page has finished loading, then again only when the width changes (a phone's address bar coming
-  // and going changes only the height). Not sooner: WebKit can run this script before the page's later stylesheets
+  // Measured once the page has finished loading, then again when the width changes or the window's height changes the
+  // replay (a phone's address bar coming and going changes neither). Not sooner: WebKit can run this script before the page's later stylesheets
   // apply, and an unstyled hero (the replay's screenshot at full size) is thousands of pixels tall; locking that in
   // left Safari with a hero ten screens high.
   const hero = document.querySelector('.c-hero');
@@ -17,7 +17,11 @@
     let width = 0;
     // Side by side (64rem and wider), the two panes are centred against each other at rest; each is then held at that
     // resting place, so the text pane growing below does not slide the replay down (or the text pane's own top up).
-    const inner = hero.querySelector('.c-hero-inner'), panes = inner ? [...inner.children] : [];
+    const inner = hero.querySelector('.c-hero-inner'), panes = inner ? [...inner.children] : [], replay = hero.querySelector('.rp');
+    // The replay is sized from the screen's height (small-viewport units, which a phone's toolbars do not change), so a
+    // window made taller or shorter changes the hero's content: measure again then too. Copy's note and the hosts line
+    // never change the replay's height, so they still grow only the pane.
+    let replayH = 0;
     const pin = () => {
       panes.forEach(c => { c.style.removeProperty('align-self'); c.style.removeProperty('margin-top'); });
       if (!inner || getComputedStyle(inner).gridTemplateColumns.trim().split(/\s+/).length < 2) return;
@@ -31,9 +35,10 @@
       pin();
       const room = parseFloat(getComputedStyle(document.documentElement).fontSize) * 2.1;
       hero.style.height = Math.ceil(hero.getBoundingClientRect().height + room) + 'px';
+      replayH = replay ? replay.offsetHeight : 0;
     };
     if (document.readyState === 'complete') lock(true); else addEventListener('load', () => lock(true), { once: true });
-    addEventListener('resize', () => { if (document.readyState === 'complete') lock(); });
+    addEventListener('resize', () => { if (document.readyState === 'complete') lock(replay ? replay.offsetHeight !== replayH : false); });
   }
   // -ize where the reader's first language is US or Canadian English; -ise everywhere else.
   const first = (navigator.languages && navigator.languages[0]) || navigator.language || '';

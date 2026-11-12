@@ -138,6 +138,22 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
       assert.deepEqual(await where(), before, `${width} with the hosts line open`);
       await ctx.close();
     }
+    // A window made taller at the same width grows the replay (it is sized from the screen's height): the held
+    // height follows, so nothing overflows the hero onto the section below. And back again.
+    for (const [w, h0, h1] of [[900, 300, 900], [1280, 520, 1000], [390, 500, 900]]) {
+      const ctx = await browser.newContext({ viewport: { width: w, height: h0 } });
+      const page = await ctx.newPage();
+      await page.goto(url, { waitUntil: 'load' });
+      const fits = async label => {
+        const m = await page.evaluate(() => { const hero = document.querySelector('.c-hero').getBoundingClientRect(), inner = document.querySelector('.c-hero-inner').getBoundingClientRect(), rp = document.querySelector('.c-hero .rp').getBoundingClientRect(), next = document.querySelector('.rw-what').getBoundingClientRect();
+          return { hero: hero.bottom, inner: inner.bottom, replay: rp.bottom, next: next.top }; });
+        assert.ok(m.inner <= m.hero + 1 && m.replay <= m.hero + 1 && m.hero <= m.next + 1, `${label}: ${JSON.stringify(m)}`);
+      };
+      await fits(`${w}x${h0}`);
+      await page.setViewportSize({ width: w, height: h1 }); await page.waitForTimeout(300); await fits(`${w}x${h0} to ${w}x${h1}`);
+      await page.setViewportSize({ width: w, height: h0 }); await page.waitForTimeout(300); await fits(`back to ${w}x${h0}`);
+      await ctx.close();
+    }
     // At rest the side-by-side panes sit exactly as centred (the hold changes nothing until something grows).
     for (const width of [1280, 1440]) {
       const ctx = await browser.newContext({ viewport: { width, height: 900 } });
