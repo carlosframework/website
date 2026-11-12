@@ -1,0 +1,143 @@
+{#- 🤖 Homepage sections after the hero, for enabled demo builds (hack/build-start.mjs).
+    Copy comes from src/_data/start-copy.json: t('x.y') reads "home.x.y", the id from the
+    2026-11-12 copy review; c('key') reads an older key. Literal text here is existing,
+    already approved site copy. Ported from the approved rework mockup. -#}
+{%- set ext = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>' -%}
+{%- set arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' -%}
+{%- set blank = 'target="_blank" rel="noopener noreferrer"' -%}
+{%- set spec = 'https://spec.carlosframework.com' -%}
+<div class="rw">
+
+<section class="rw-what" id="architecture" aria-labelledby="rw-what-title"><div class="rw-wrap">
+  <!-- 👨 Paul's words, verbatim --><h2 id="rw-what-title">{{ html.whatHeading | safe }}</h2><!-- /👨 -->
+  <p class="rw-follow">{{ html.whatFollow | safe }}</p>
+  <p class="rw-lede"><a class="rw-btn" href="{{ spec }}" {{ blank | safe }}>{{ t('what.button') }} {{ ext | safe }}</a><span class="rw-ver">{{ t('what.version') }}</span></p>
+
+  <!-- 👨 Paul's words, verbatim --><p class="rw-props-title">{{ t('what.props.title') }}</p><!-- /👨 -->
+  <ul class="rw-props" role="list">
+    <li>
+      <svg class="rw-pic" viewBox="0 0 88 48" aria-hidden="true"><rect class="on" x="2" y="4" width="58" height="40" rx="5"/><ellipse cx="16" cy="17" rx="6" ry="2.6"/><path d="M10 17v13c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6V17"/><path d="M30 16h22M30 24h22M30 32h13"/><path class="on" d="M68 24h14M77 19l5 5-5 5"/></svg>
+      <h3>{{ t('what.prop1.title') }}</h3>
+      <p>{{ t('what.prop1.body') }}</p>
+      <a class="rw-ref" href="{{ spec }}/#6-full-stack-units" {{ blank | safe }}>{{ t('what.prop1.ref') }}</a>
+    </li>
+    <li>
+      <svg class="rw-pic" viewBox="0 0 88 48" aria-hidden="true"><g><rect class="on" x="2" y="6" width="24" height="36" rx="5" stroke-dasharray="3 3"/><ellipse cx="14" cy="19" rx="6" ry="2.6"/><path d="M8 19v10c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6V19"/></g><g transform="translate(31 0)"><rect class="on" x="2" y="6" width="24" height="36" rx="5" stroke-dasharray="3 3"/><ellipse cx="14" cy="19" rx="6" ry="2.6"/><path d="M8 19v10c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6V19"/></g><g transform="translate(62 0)"><rect class="on" x="2" y="6" width="24" height="36" rx="5" stroke-dasharray="3 3"/><ellipse cx="14" cy="19" rx="6" ry="2.6"/><path d="M8 19v10c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6V19"/></g></svg>
+      <h3>{{ t('what.prop2.title') }}</h3>
+      <p>{{ t('what.prop2.body') }}</p>
+      <a class="rw-ref" href="{{ spec }}/#1-tenant-isolation" {{ blank | safe }}>{{ t('what.prop2.ref') }}</a>
+    </li>
+    <li>
+      <svg class="rw-pic" viewBox="0 0 88 48" aria-hidden="true"><rect class="dim" x="2" y="26" width="9" height="16" rx="2"/><rect class="dim" x="14" y="26" width="9" height="16" rx="2"/><rect class="fill" x="26" y="12" width="9" height="30" rx="2"/><rect class="fill" x="38" y="18" width="9" height="24" rx="2"/><rect class="dim" x="50" y="26" width="9" height="16" rx="2"/><rect class="dim" x="62" y="26" width="9" height="16" rx="2"/><rect class="fill" x="74" y="8" width="9" height="34" rx="2"/></svg>
+      <h3>{{ t('what.prop3.title') }}</h3>
+      <p>{{ t('what.prop3.body') }}</p>
+      <a class="rw-ref" href="{{ spec }}/#8-hibernation-and-wake" {{ blank | safe }}>{{ t('what.prop3.ref') }}</a>
+    </li>
+    <li>
+      <svg class="rw-pic" viewBox="0 0 88 48" aria-hidden="true"><path d="M9 34a6 6 0 0 1-.7-12A8.3 8.3 0 0 1 24 19.5 7.2 7.2 0 0 1 24 34z"/><rect x="36" y="10" width="18" height="10" rx="2"/><rect x="36" y="24" width="18" height="10" rx="2"/><path d="M40 15h.01M40 29h.01"/><rect x="64" y="14" width="18" height="13" rx="2"/><path d="M61 33h24"/><path class="on" d="M4 42h80" stroke-dasharray="2 4"/></svg>
+      <h3>{{ t('what.prop4.title') }}</h3>
+      <p>{{ t('what.prop4.body') }}</p>
+      <a class="rw-ref" href="{{ spec }}/#7-self-hosting-and-portability" {{ blank | safe }}>{{ t('what.prop4.ref') }}</a>
+    </li>
+    <li>
+      <svg class="rw-pic" viewBox="0 0 88 48" aria-hidden="true"><circle cx="14" cy="15" r="6"/><path d="M3 40c0-7 5-11 11-11s11 4 11 11"/><path class="on" d="M33 26h10M39 22l4 4-4 4"/><rect x="50" y="8" width="34" height="30" rx="5"/><path class="on" d="M57 19l5 4-5 4M66 28h9"/></svg>
+      <h3>{{ t('what.prop5.title') }}</h3>
+      <p>{{ t('what.prop5.body') }}</p>
+      <a class="rw-ref" href="{{ spec }}/#11-apis-clis-and-agents" {{ blank | safe }}>{{ t('what.prop5.ref') }}</a>
+    </li>
+  </ul>
+  <div class="rw-practice">
+    <!-- 👨 Paul's words, verbatim --><p class="rw-practice-lead">{{ t('practice.lead') }}</p><!-- /👨 -->
+    <ul class="rw-practice-list" role="list">
+      <li class="rw-practice-item"><svg class="rw-practice-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 17a8 8 0 1 1 14 0"/><path d="M12 14l3.5-5"/><circle cx="12" cy="14" r="1.2"/><path d="M4 20.5h16"/></svg><span class="rw-practice-name">{{ t('practice.1.name') }}</span><span class="rw-practice-refs"><a href="{{ spec }}/#13-performance-and-efficiency" {{ blank | safe }} aria-describedby="practice-1-aria">{{ t('practice.1.ref') }}</a><span id="practice-1-aria" hidden>{{ t('practice.1.aria') }}</span></span></li>
+      <li class="rw-practice-item"><svg class="rw-practice-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4.5"/></svg><span class="rw-practice-name">{{ t('practice.2.name') }}</span><span class="rw-practice-refs"><a href="{{ spec }}/#5-security" {{ blank | safe }} aria-describedby="practice-2-aria">{{ t('practice.2.ref') }}</a><span id="practice-2-aria" hidden>{{ t('practice.2.aria') }}</span> <a href="{{ spec }}/#2-trust-classes-and-data-security" {{ blank | safe }} aria-describedby="practice-2-aria2">{{ t('practice.2.ref2') }}</a><span id="practice-2-aria2" hidden>{{ t('practice.2.aria2') }}</span></span></li>
+      <li class="rw-practice-item"><svg class="rw-practice-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="4.5" r="1.7"/><path d="M5 8.5c2.3.8 4.6 1.2 7 1.2s4.7-.4 7-1.2M12 9.7V14M12 14l-3 6.5M12 14l3 6.5"/></svg><span class="rw-practice-name">{{ t('practice.3.name') }}</span><span class="rw-practice-refs"><a href="{{ spec }}/#17-accessibility" {{ blank | safe }} aria-describedby="practice-3-aria">{{ t('practice.3.ref') }}</a><span id="practice-3-aria" hidden>{{ t('practice.3.aria') }}</span></span></li>
+      <li class="rw-practice-item"><svg class="rw-practice-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 3l18 18"/><path d="M10.6 6.1A9.6 9.6 0 0 1 12 6c5 0 8.5 4.2 9.5 6-.5.9-1.3 2.1-2.6 3.2M6.3 7.6C4.3 8.9 3 10.8 2.5 12c1 1.8 4.5 6 9.5 6 1.5 0 2.9-.4 4.1-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg><span class="rw-practice-name">{{ t('practice.4.name') }}</span><span class="rw-practice-refs"><a href="{{ spec }}/#3-data-minimisation-logging-tracking-and-consent" {{ blank | safe }} aria-describedby="practice-4-aria">{{ t('practice.4.ref') }}</a><span id="practice-4-aria" hidden>{{ t('practice.4.aria') }}</span></span></li>
+    </ul>
+  </div>
+  <!-- 👨 Paul's words, verbatim --><p class="rw-closing"><strong>{{ t('typical.closing.lead') }}</strong> {{ t('typical.closing.body') }}</p><!-- /👨 -->
+</div></section>
+
+<section class="rw-tools" aria-labelledby="rw-tools-title"><div class="rw-wrap">
+  <!-- 👨 Paul's words, verbatim --><h2 id="rw-tools-title">{{ t('tools.heading') }}</h2><!-- /👨 -->
+  <div class="rw-pair">
+    <article class="rw-tool is-rastrillo">
+      <div class="rw-tool-body"><img src="/tool-icons/rastrillo.svg" width="48" height="48" alt="">
+        <p class="rw-kind">{{ t('tools.rastrillo.kind') }}</p>
+        <h3>{{ c('home.parts.rastrillo.title') }}</h3>
+        <p>{{ t('tools.rastrillo.body') }}</p>
+      </div>
+      <p class="rw-links"><a href="https://rastrillo.org" {{ blank | safe }}>{{ c('home.parts.rastrillo.site') }} {{ ext | safe }}</a><a href="https://rastrillo.org/design-system/" {{ blank | safe }}>{{ c('home.parts.rastrillo.design') }} {{ ext | safe }}</a></p>
+    </article>
+    <article class="rw-tool is-platform">
+      <div class="rw-tool-body"><img src="/tool-icons/platform.svg?v=2" width="48" height="48" alt="">
+        <p class="rw-kind">{{ t('tools.platform.kind') }}</p>
+        <h3>{{ c('home.parts.platform.title') }}</h3>
+        <p>{{ t('tools.platform.body') }}</p>
+      </div>
+      <p class="rw-links"><a href="https://carloku.com" {{ blank | safe }}>{{ c('home.parts.platform.start') }} {{ ext | safe }}</a><a href="/platform/self-host/">{{ c('home.parts.platform.self') }}</a></p>
+    </article>
+  </div>
+  <div class="rw-skill">
+    <svg class="rw-skill-ic" viewBox="0 0 32 32" aria-hidden="true"><path d="M6 7h20a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H14l-6 5v-5H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/><path d="M11 13h10M11 17h6"/></svg>
+    <p><strong>{{ t('tools.skill.lead') }}</strong> {{ t('tools.skill.body') }}</p>
+    <p class="rw-skill-links"><a class="rw-more" href="https://github.com/carlosframework/skills/blob/main/skills/getting-started/SKILL.md" {{ blank | safe }}>{{ c('home.parts.skill.start') }} {{ ext | safe }}</a><a class="rw-more" href="https://github.com/carlosframework/skills/blob/main/skills/building-carlos-apps/SKILL.md" {{ blank | safe }}>{{ c('home.parts.skill.build') }} {{ ext | safe }}</a></p>
+  </div>
+  {{ html.toolsFoot | safe }}
+</div></section>
+
+<section class="rw-get" aria-labelledby="rw-get-title"><div class="rw-wrap">
+  <h2 id="rw-get-title">{{ t('get.heading') }}</h2>
+  <div class="rw-three">
+{%- for k in ['ship', 'build', 'save'] %}
+    <article class="rw-out">
+      <h3>{{ t('get.' + k + '.title') }}</h3>
+{%- if figures %}
+      <p class="rw-fig">{{ t('get.' + k + '.figure') }}</p>
+      <p class="rw-fig-note">{{ t('get.' + k + '.figure.note') }}</p>
+{%- else %}
+      <p class="rw-alt">{{ t('get.' + k + '.alt') }}</p>
+      <p class="rw-alt-note">{{ t('get.' + k + '.alt.note') }}</p>
+{%- endif %}
+      <ul><li>{{ t('get.' + k + '.item1') }}</li><li>{{ t('get.' + k + '.item2') }}</li><li>{{ t('get.' + k + '.item3') }}</li></ul>
+    </article>
+{%- endfor %}
+  </div>
+
+  <div class="rw-less">
+    <h3>{{ t('stacks.heading') }}<span>{{ t('stacks.sub') }}</span></h3>
+    <div class="ipx"><article class="ipanel wobble pyramid" data-glow="n2" data-mode="tower">
+<div class="ihead"><span class="seg" role="group" aria-label="{{ t('stacks.toggle.aria') }}" hidden><button type="button" data-mode-set="tower" aria-pressed="true">{{ t('stacks.toggle.tower') }}</button><button type="button" data-mode-set="services" aria-pressed="false">{{ t('stacks.toggle.services') }}</button></span>
+<button type="button" class="ireset" hidden>{{ t('stacks.reset') }}</button></div>
+<div class="istage">
+<svg class="strings" aria-hidden="true" focusable="false"></svg>
+<figure class="stack before tower"><ul role="list" aria-label="{{ t('stacks.tower.aria') }}"><li class="pair-a"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg><span>{{ t('stacks.tower.app-backend') }}</span></li><li class="pair-b"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/></svg><span>{{ t('stacks.tower.app-frontend') }}</span></li><li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>{{ t('stacks.tower.background-workers') }}</span></li><li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><span>{{ t('stacks.tower.web-server') }}</span></li><li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span>{{ t('stacks.tower.observability-layer') }}</span></li><li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9zM4 7.5l8 4.5 8-4.5M12 12v9"/></svg><span>{{ t('stacks.tower.containers') }}</span></li>
+{%- for k in range(6) %}<li class="micro" data-k="{{ k }}" style="--k:{{ k }}"{% if k == 5 %} data-label="{{ t('stacks.tower.microservices') }}"{% endif %}{% if k == 0 %}><span class="sr">{{ t('stacks.tower.microservices') }}</span>{% else %} aria-hidden="true">{% endif %}</li>{% endfor -%}
+<li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.5"/><circle cx="12" cy="4" r="1.5"/><circle cx="5" cy="18" r="1.5"/><circle cx="19" cy="18" r="1.5"/><path d="M12 5.5v4M10 13.7 6.2 17M14 13.7l3.8 3.3"/></svg><span>{{ t('stacks.tower.cluster-orchestrator') }}</span></li><li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg><span>{{ t('stacks.tower.app-server') }}</span></li><li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg><span>{{ t('stacks.tower.database-server') }}</span></li><li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3 5 13h6l-1 8 8-10h-6z"/></svg><span>{{ t('stacks.tower.memory-cache') }}</span></li><li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v5M12 9 5 15M12 9l7 6M12 9v10M5 15v4M19 15v4"/></svg><span>{{ t('stacks.tower.load-balancer') }}</span></li><li class="base"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4 4 0 0 1-.5-7.97A5.5 5.5 0 0 1 17 8.5a4.75 4.75 0 0 1 0 9.5z"/></svg><span>{{ t('stacks.tower.base') }}</span></li></ul><figcaption>Before CARLOS</figcaption></figure>
+<figure class="stack before services"><ul role="list" aria-label="{{ t('stacks.services.aria') }}">
+{%- for b in balloons %}<li class="balloon" data-job="{{ b.job }}" style="--c:{{ b.tint }};--dl:{{ b.delay }}s"><span class="skin">{{ b.svg | safe }}</span><span class="sr">{{ b.label }}</span></li>{% endfor -%}
+<li class="app"><span class="applabel">{{ t('stacks.services.app') }}</span><svg class="cracks" viewBox="0 0 200 48" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="d1" d="M22 36l9-3M26 40l7-2M150 10l8 2"/><path class="d2" d="M168 0l-6 9 7 5-5 8 9 4"/><path class="d3" d="M0 14l7 5-7 6"/><path class="d5" d="M92 0l5 12-8 9 7 10-5 17"/><path class="d6" d="M176 48l8-12 16-4"/></svg><i class="tape d3" aria-hidden="true"></i><span class="marks" aria-hidden="true"><svg class="mk d4" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3h7l4 4v5M7 3v18h5M14 3v4h4M13 15l3 2-3 2 3 2"/></svg><svg class="mk d7" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4 2.5 20h19zM12 10v5M12 17.5v.5"/></svg><svg class="mk auth" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7-2.5"/><path d="M11 14l2 1.5-2 1.5"/></svg><svg class="mk database" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><ellipse cx="12" cy="6" rx="7" ry="2.5" stroke-dasharray="2 2"/><path d="M5 6v12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V6" stroke-dasharray="2 2"/></svg><svg class="mk webhooks" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 14l-2 2a3 3 0 0 1-4.2-4.2l3-3M14 10l2-2a3 3 0 0 1 4.2 4.2l-3 3M9 5V3M5 9H3M15 19v2M19 15h2"/></svg></span></li></ul><figcaption>Before CARLOS</figcaption></figure>
+<figure class="stack after"><ul role="list" aria-label="{{ t('stacks.after.aria') }}"><li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg><span>{{ t('stacks.after.app') }}</span></li><li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 8l9 5 9-5zM3 12l9 5 9-5M3 16l9 5 9-5"/></svg><span>{{ t('stacks.after.platform') }}</span></li><li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4 4 0 0 1-.5-7.97A5.5 5.5 0 0 1 17 8.5a4.75 4.75 0 0 1 0 9.5z"/></svg><span>{{ t('stacks.after.base') }}</span></li></ul><figcaption>With CARLOS</figcaption></figure>
+</div>
+</article></div>
+  </div>
+  <p class="rw-get-foot"><a class="rw-more" href="/attributes/">{{ t('get.link.attributes') }} {{ arrow | safe }}</a><a class="rw-more" href="/case-studies/tito/">{{ t('get.link.measured') }} {{ arrow | safe }}</a></p>
+</div></section>
+
+<section class="rw-who" aria-labelledby="rw-who-title"><div class="rw-wrap">
+  <h2 id="rw-who-title">Who is using CARLOS?</h2>
+  <ul class="rw-rows" role="list">
+    <li><span class="rw-name">Tito</span><p>{{ t('who.tito.body') }}</p><a href="/case-studies/tito/">Read the Tito story</a></li>
+    <li><span class="rw-name">Jelly</span><p>{{ t('who.jelly.body') }}</p><a href="/case-studies/jelly/">{{ t('who.jelly.link') }}</a></li>
+    <li><span class="rw-name">Eleven</span><p>{{ t('who.eleven.body') }}</p><a href="/case-studies/eleven/">{{ t('who.eleven.link') }}</a></li>
+  </ul>
+  <p class="rw-by">{{ t('who.by') }}</p>
+</div></section>
+
+<section class="rw-end" aria-labelledby="rw-end-title"><div class="rw-wrap">
+  <h2 id="rw-end-title">{{ t('end.heading') }}</h2>
+  {{ endPaste | safe }}
+  <p class="rw-hand">{{ t('end.hand.text') }} <a href="/start/#account">{{ t('end.hand.link') }}</a></p>
+</div></section>
+
+</div>

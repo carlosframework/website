@@ -11,40 +11,60 @@ const env={CARLOS_START_DEMO:'1',CARLOS_START_SITE_ORIGIN:'https://carlosframewo
 const base=process.env.STARTER_SCRATCH||tmpdir();assert.ok(!/^\/tmp(?:\/|$)/.test(base),'use disk scratch');
 async function pages(fn,overrides={}) {await mkdir(base,{recursive:true});const dir=await mkdtemp(join(base,'start-pages-'));try{await buildStart(dir,loadStartConfig({...env,...overrides}));await fn(await read(join(dir,'index.html')),await read(join(dir,'start/index.html')));}finally{await rm(dir,{recursive:true,force:true});}}
 const plain=html=>html.replace(/<!--[\s\S]*?-->/g,'').replace(/<[^>]*>/g,'').replace(/&#39;/g,"'").replace(/&amp;/g,'&').replace(/&quot;/g,'"');
-test('enabled homepage has the approved centred hero and three parts',()=>pages(async(home,start)=>{
- const hero=home.match(/<section class="c-hero">[\s\S]*?<\/section>/)[0];
+test('enabled homepage has hero B, its replay and the approved rework sections',()=>pages(async(home,start)=>{
+ const hero=home.match(/<section class="c-hero hv hv-b">[\s\S]*?<\/figure>\n<\/div><\/section>/)[0];
  assert.equal(plain(hero.match(/<h1>([\s\S]*?)<\/h1>/)[1]),"You’re already using agents.");
  assert.ok(hero.includes('<span class="nw">using agents.</span>'));
  const sub=hero.match(/<p class="sub">([\s\S]*?)<\/p>/)[1];
  assert.equal(plain(sub),'Now you want to ship faster, build better and save money.');
  for(const word of ['faster','better','save money']) assert.ok(sub.includes(`<em>${word}</em>`));
- assert.ok(sub.includes('<span class="nw">save money.</span>'.replace('save money.','<em>save money</em>.')) || sub.includes('<em>save money</em>.'));
+ assert.ok(sub.includes('<em>save money</em>.'));
  assert.match(hero,/<!-- 👨 Paul's words, verbatim --><h1>/);
- assert.ok(plain(hero).includes('You want CARLOS. Read on, or try it now:'));
+ // The answer, the line about CARLOS (one fixed sentence for screen readers), then the invitation.
+ const ask=hero.match(/<p class="ask hv-ask">([\s\S]*?)<\/p>/)[1];
+ assert.equal(plain(ask.replace(/<span class="hv-rot-line"[\s\S]*?web apps\.<\/span>/,'')),'You want CARLOS. A system for better web apps. Read on, or try it now:');
+ assert.match(ask,/<span class="hv-rot-line" aria-hidden="true">A system for <span class="hv-rot" data-words="better remarkable faster accessible secure private simple resilient cheaper portable distributable decentralisable agent-ready"><span class="hv-rot-word">better<\/span><\/span> web apps\.<\/span>/);
  assert.match(hero,/<a href="#architecture">Read on<\/a>/);
- assert.doesNotMatch(home,/class="hero-tools"|class="hero-wordmark"|class="hero-subtitle"/);
- assert.match(hero,/<div class="paste v-soft">/);
- assert.doesNotMatch(hero,/🤖|class="robot"/);
- for(const key of ['home.paste.label','home.paste.works']) assert.ok(hero.includes(escapeHTML(copy[key])));
- const parts=home.match(/<section class="parts"[\s\S]*?<\/section>/)[0];
- assert.match(parts,/id="architecture"/);
- assert.doesNotMatch(parts,/🤖|class="robot"/);
- assert.match(parts,/<ol class="px-flow" role="list">/);
- assert.equal((parts.match(/<li class="px px-/g)||[]).length,3);
- assert.doesNotMatch(parts,/px-join|px-go|builds your app with|runs on|[↗→↓]/);
- assert.equal((parts.match(/<li\b/g)||[]).length,3);
- assert.match(parts,/<div class="parts-heading">[\s\S]*?<h2[^>]*>[\s\S]*?<p class="px-intro">[\s\S]*?<\/p><\/div><ol class="px-flow"/);
- assert.equal((parts.match(/<p class="px-links">/g)||[]).length,3);
- assert.equal((parts.match(/<svg class="px-ext"/g)||[]).length,6);
- assert.deepEqual([...parts.matchAll(/<li class="px px-([^" ]+)"/g)].map(m=>m[1]),['skill','rastrillo','platform']);
- for(const [key,value] of Object.entries(copy).filter(([key])=>key.startsWith('home.parts.'))) assert.ok(parts.includes(escapeHTML(value)),key);
- assert.match(parts,/<a href="\/attributes\/" target="_blank" rel="noopener noreferrer">The CARLOS architecture<\/a>/);
+ assert.doesNotMatch(home,/class="hero-tools"|class="hero-wordmark"|class="hero-subtitle"|class="parts"|class="riff-grid"|id="ready"/);
+ assert.match(hero,/<div class="paste v-soft hv-paste">/);
+ assert.ok(hero.includes(escapeHTML(copy['home.paste.label'])));
+ assert.doesNotMatch(hero,/pb-works/);
+ assert.match(hero,/<details class="hv-cloud"><summary>Using a cloud agent\?<\/summary><!-- 👨 Paul's words, verbatim --><p class="start-hosts">/);
+ assert.match(hero,/<figure class="rp" aria-label="A real run of this journey, sped up">/);
+ assert.match(hero,/<img src="\/home\/replay-panaderia-390\.png" width="780" height="1420" alt="The live page: Panadería Carlos, “Order today, collect mañana\.”, and a menu of Pan de pueblo, Magdalenas and Ensaimada\." decoding="async">/);
+ // The mockup's furniture stays behind.
+ assert.doesNotMatch(home,/🤖|class="robot"|hv-draft|rw-draft|rw-draftbar|rw-claim|hero-switch|hv-a\b|hero-current|notes\.html|DRAFT COPY|noindex/);
+ const body=home.match(/<div class="rw">[\s\S]*<\/div>\n?<\/main>/)[0];
+ assert.match(body,/<section class="rw-what" id="architecture"/);
+ assert.deepEqual([...body.matchAll(/<section class="(rw-[a-z]+)"/g)].map(m=>m[1]),['rw-what','rw-tools','rw-get','rw-who','rw-end']);
+ assert.match(body,/<h2 id="rw-what-title">CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily, <em>by going back to basics<\/em>\.<\/h2>/);
+ assert.match(body,/<p class="rw-follow">It’s defined by an <a href="https:\/\/spec\.carlosframework\.com" target="_blank" rel="noopener noreferrer">open specification<\/a>\.<\/p>/);
+ assert.match(body,/<p class="rw-closing"><strong>CARLOS is a set of strong opinions, not rules\.<\/strong> They’re the defaults we believe make web apps better for everyone, and for their agents\.<\/p>/);
+ assert.ok(body.indexOf('class="rw-practice"')<body.indexOf('class="rw-closing"') && body.indexOf('class="rw-closing"')<body.indexOf('<section class="rw-tools"'));
  const source=await read('src/index.html');
- assert.ok(parts.includes(source.match(/<h2 id="promise-title">[\s\S]*?<\/h2>/)[0]));
- assert.ok(plain(parts).includes(plain(source.match(/<span class="arch-text">([^<]*)/)[1])));
- assert.ok(parts.includes(source.match(/<p class="architecture-inspiration">[\s\S]*?<\/p>/)[0].replace('architecture-inspiration','px-foot')));
- for(const href of ['https://github.com/carlosframework/skills/blob/main/skills/getting-started/SKILL.md','https://github.com/carlosframework/skills/blob/main/skills/building-carlos-apps/SKILL.md','https://rastrillo.org','https://rastrillo.org/design-system/','https://carloku.com','/platform/self-host/']) assert.ok(parts.includes(`href="${href}" target="_blank" rel="noopener noreferrer"`));
- assert.doesNotMatch(hero+parts,/style=|—/);
+ assert.ok(body.includes(source.match(/<p class="architecture-inspiration">[\s\S]*?<\/p>/)[0].replace('architecture-inspiration','rw-foot')));
+ for(const href of ['https://github.com/carlosframework/skills/blob/main/skills/getting-started/SKILL.md','https://github.com/carlosframework/skills/blob/main/skills/building-carlos-apps/SKILL.md','https://rastrillo.org','https://rastrillo.org/design-system/','https://carloku.com']) assert.ok(body.includes(`href="${href}" target="_blank" rel="noopener noreferrer"`),href);
+ for(const href of ['/platform/self-host/','/attributes/','/case-studies/tito/','/case-studies/jelly/','/case-studies/eleven/','/start/#account']) assert.ok(body.includes(`href="${href}"`),href);
+ // "What you get" shows the headline figures; the number-free alternatives stay in the copy data.
+ for(const k of ['ship','build','save']) {
+  assert.ok(body.includes(`<p class="rw-fig">${escapeHTML(copy[`home.get.${k}.figure`])}</p>`),k);
+  assert.ok(!body.includes(copy[`home.get.${k}.alt`]),k);
+ }
+ // The closing paste box repeats the hero's, with the line under it and no second host note.
+ const end=body.match(/<section class="rw-end"[\s\S]*?<\/section>/)[0];
+ assert.match(end,/<span id="end-prompt">/);
+ assert.ok(end.includes(`<p class="pb-works">${escapeHTML(copy['home.end.paste.works'])}</p>`));
+ // The interactive stacks: labels for screen readers from the copy, the view switch hidden until its script runs.
+ const panel=body.match(/<article class="ipanel[\s\S]*?<\/article>/)[0];
+ assert.match(panel,/<span class="seg" role="group" aria-label="Compare CARLOS with" hidden>/);
+ for(const id of ['stacks.tower.aria','stacks.services.aria','stacks.after.aria']) assert.ok(panel.includes(`aria-label="${escapeHTML(copy['home.'+id])}"`),id);
+ assert.deepEqual([...panel.matchAll(/<li class="balloon" data-job="([^"]+)"[\s\S]*?<span class="sr">([^<]+)<\/span><\/li>/g)].map(m=>`${m[1]}:${m[2]}`),['hosting:Hosting','database:Database','auth:Auth','email:Email','payments:Payments','file-storage:File storage','workers:Workers','search:Search','webhooks:Webhooks']);
+ assert.match(panel,/<li class="micro" data-k="0" style="--k:0"><span class="sr">Microservices<\/span><\/li>/);
+ assert.match(panel,/<li class="micro" data-k="5" style="--k:5" data-label="Microservices" aria-hidden="true"><\/li>/);
+ assert.doesNotMatch(hero+body,/—/);
+ // Spec links keep their visible text as the name (WCAG 2.5.3) and carry the approved longer label as a description.
+ for(const [ref,aria] of [['1.ref','1.aria'],['2.ref','2.aria'],['2.ref2','2.aria2'],['3.ref','3.aria'],['4.ref','4.aria']]) assert.ok(body.includes(`aria-describedby="practice-${aria.replace('.','-')}">${escapeHTML(copy['home.practice.'+ref])}</a><span id="practice-${aria.replace('.','-')}" hidden>${escapeHTML(copy['home.practice.'+aria])}</span>`),aria);
+ for(const asset of ['/home/hero.css','/home/sections.css','/home/stacks.css','/home/hero.js','/home/stacks.js']) assert.ok(home.includes(`="${asset}?v=0"`),asset);
  assert.ok(home.includes(`<meta name="description" content="${copy['home.meta.description']}">`));
  assert.ok(home.includes(`<meta property="og:description" content="${copy['home.og.description']}">`));
  for(const html of [home,start]) {
@@ -123,7 +143,7 @@ test('homepage and host copy matches Paul’s approved copy review verbatim',()=
   "home.hero.answer": "You want CARLOS.",
   "home.hero.ask": "Read on, or try it now:",
   "home.paste.label": "Paste this into your agent and it can take things from there",
-  "home.paste.works": "Try it in with your preferred agent setup",
+  "home.end.paste.works": "Try it in with your preferred agent setup",
   "home.paste.done": "Copied. Paste it into your agent.",
   "home.parts.intro": "Three parts make it work:",
   "home.parts.skill.title": "The skill",
@@ -143,7 +163,36 @@ test('homepage and host copy matches Paul’s approved copy review verbatim',()=
   "home.parts.platform.self": "or self-host"
 };
  for(const [key,value] of Object.entries(approved)) assert.equal(copy[key],value,key);
- assert.deepEqual(Object.keys(copy).filter(key=>key.startsWith("home.hero.")).sort(),["home.hero.answer","home.hero.ask","home.hero.heading","home.hero.subheading"]);
+ assert.ok(!Object.hasOwn(copy,'home.paste.works'));
+ assert.deepEqual(Object.keys(copy).filter(key=>key.startsWith("home.hero.")&&!key.startsWith("home.hero.gloss")).sort(),["home.hero.answer","home.hero.ask","home.hero.cloud.summary","home.hero.heading","home.hero.subheading"]);
+});
+
+// Visible text: text nodes outside script, style and comments, plus the attributes people hear or read.
+const visible=html=>{
+ const body=html.replace(/<!--[\s\S]*?-->/g,'').replace(/<(script|style)\b[\s\S]*?<\/\1>/g,'').replace(/<head>[\s\S]*?<\/head>/,'');
+ const attrs=[...body.matchAll(/\s(?:alt|aria-label|title|data-label|data-words|data-copied|data-original|data-copy-success|data-copy-fallback)="([^"]*)"/g)].map(m=>m[1]);
+ return [plain(body),...attrs.map(plain)].join('\n');
+};
+test('homepage carries Paul’s 2026-11-12 approved copy byte for byte, with curly quotes in visible text',async()=>{
+ const result=JSON.parse(await read('copy-review/home-2026-11-12/result.json'));
+ const strings=JSON.parse(await read('copy-review/home-2026-11-12/strings.json'));
+ assert.equal(result.action,'approve');
+ assert.deepEqual(result.strings.map(s=>s.id),strings.map(s=>s.id));
+ // Every approved string is in the copy data under its review id, exactly as approved.
+ for(const {id,text} of result.strings) assert.equal(copy[`home.${id}`],text,id);
+ // Approved later, verbatim, through the coordinator: the closing line under the best practices.
+ assert.equal(copy['home.typical.closing.lead'],'CARLOS is a set of strong opinions, not rules.');
+ assert.equal(copy['home.typical.closing.body'],'They’re the defaults we believe make web apps better for everyone, and for their agents.');
+ await pages(async home=>{
+  const text=visible(home);
+  const sample=['hero.gloss','hero.cloud.summary','replay.agent.1','replay.agent.q3','replay.you.2','replay.caption','what.button','what.prop2.body','practice.4.aria','tools.heading','tools.skill.body','get.ship.item1','get.ship.item2','get.build.item2','get.save.item1','get.build.figure.note','stacks.sub','stacks.reset','stacks.balloon.file-storage','stacks.after.base','who.by','end.heading','end.paste.works','end.hand.link','typical.closing.lead','typical.closing.body'];
+  for(const id of sample) assert.ok(text.includes(copy[`home.${id}`]),id);
+  // Every approved string shown on the page; the alternatives to the figures are kept for a one-line switch.
+  for(const {id,text:value} of result.strings) if(!/^get\.[a-z]+\.alt/.test(id) && !id.startsWith('hero.gloss.word.')) assert.ok(text.includes(value),id);
+  for(const {id,text:value} of result.strings.filter(s=>s.id.startsWith('hero.gloss.word.'))) assert.ok(home.includes(`data-words="`) && home.match(/data-words="([^"]*)"/)[1].split(' ').includes(value),id);
+  assert.doesNotMatch(text,/['"]/,'straight quotes in visible text');
+  assert.doesNotMatch(home,/&#39;|&quot;(?![^<]*>)/);
+ });
 });
 
 test('clipboard success, reset, failure and retry keep both paste boxes usable',async()=>{

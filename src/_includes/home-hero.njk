@@ -1,0 +1,36 @@
+{#- 🤖 Homepage hero for enabled demo builds (hack/build-start.mjs): Paul's headline and
+    paste box, with a looping picture of one real run beside it. t('x.y') reads "home.x.y"
+    from src/_data/start-copy.json, the id from the 2026-11-12 copy review. -#}
+<!-- /👨 --><section class="c-hero hv hv-b"><div class="c-hero-inner">
+<div class="hv-col">
+{{ human | safe }}<h1>{{ html.heading | safe }}</h1><p class="sub">{{ html.sub | safe }}</p><!-- /👨 -->
+<p class="ask hv-ask">{{ human | safe }}<span>{{ c('home.hero.answer') }}</span><!-- /👨 --> <span class="hv-gloss"><span class="hv-sr">{{ t('hero.gloss') }}</span><span class="hv-rot-line" aria-hidden="true">{{ gloss.before }}<span class="hv-rot" data-words="{{ gloss.words }}"><span class="hv-rot-word">{{ gloss.word }}</span></span>{{ gloss.after }}</span></span> {{ human | safe }}<span>{{ html.ask | safe }}</span><!-- /👨 --></p>
+{{ heroPaste | safe }}
+<details class="hv-cloud"><summary>{{ t('hero.cloud.summary') }}</summary>{{ hosts | safe }}</details>
+</div>
+<figure class="rp" aria-label="{{ t('replay.figure.aria') }}">
+  <div class="rp-bar"><span class="rp-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="rp-title">{{ t('replay.title') }}</span><span class="rp-badge">{{ t('replay.badge') }}</span>
+    <label class="rp-pause"><input type="checkbox"><span class="rp-pause-off">{{ t('replay.pause') }}</span><span class="rp-pause-on">{{ t('replay.play') }}</span></label></div>
+  <div class="rp-stage">
+    <ol class="rp-log rp-scene1" role="list">
+      <li class="rp-you rp-s1"><span class="rp-who">{{ t('replay.who.you') }}</span><p>{{ t('replay.you.1') }}</p></li>
+      <li class="rp-agent rp-s2"><span class="rp-who">{{ t('replay.who.agent') }}</span><div><p>{{ t('replay.agent.1') }}</p>
+        <ol class="rp-qs"><li>{{ t('replay.agent.q1') }}</li><li>{{ t('replay.agent.q2') }}</li><li>{{ t('replay.agent.q3') }}</li><li>{{ t('replay.agent.q4') }}</li></ol></div></li>
+      <li class="rp-you rp-s3"><span class="rp-who">{{ t('replay.who.you') }}</span><p>{{ t('replay.you.2') }}</p></li>
+    </ol>
+    <div class="rp-scene2">
+      <ol class="rp-log" role="list">
+        <li class="rp-agent rp-s4"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ t('replay.agent.p1') }}</p></li>
+        <li class="rp-agent rp-s5"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ t('replay.agent.p2') }}</p></li>
+        <li class="rp-agent rp-s6"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ t('replay.agent.p3') }}</p></li>
+        <li class="rp-agent rp-s7"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ t('replay.agent.p4') }} <span class="rp-url">{{ t('replay.url') }}</span></p></li>
+      </ol>
+      <div class="rp-app rp-s8">
+        <div class="rp-app-bar" aria-hidden="true"><span></span>{{ t('replay.url') }}</div>
+        <div class="rp-shot"><img src="/home/replay-panaderia-390.png" width="780" height="1420" alt="{{ t('replay.shot.alt') }}" decoding="async"></div>
+      </div>
+    </div>
+  </div>
+  <figcaption class="rp-cap">{{ t('replay.caption') }}</figcaption>
+</figure>
+</div></section>
