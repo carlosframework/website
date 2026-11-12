@@ -137,7 +137,7 @@ void main(){
     return { p, u };
   };
   const P = { v: Q1, t: STILL_AT, last: 0, dirty: true, seen: true, P: [0, 0], ms: [], count: 0, shape: '', frames: 0 };
-  let gl = null, raf = 0, mx = 0, my = 0;
+  let gl = null, raf = 0, mx = null, my = null;   // no pointer yet: the picture and the panes stay centred
 
   // the field is planted once per shape of hero, from fixed seeds, and sorted far to near so it can be painted without a depth buffer
   const plant = wide => {
@@ -221,7 +221,7 @@ void main(){
         P.t += Math.min(0.1, (now - P.last) / 1000); P.last = now;
         // the pointer moves the camera a little, eased so it never jumps; the glass drifts the other way
         const r = hero.getBoundingClientRect();
-        const tx = Math.max(-1, Math.min(1, (mx - r.left - r.width / 2) / r.width * 2)), ty = Math.max(-1, Math.min(1, -(my - r.top - r.height / 2) / r.height * 2));
+        const tx = mx === null ? 0 : Math.max(-1, Math.min(1, (mx - r.left - r.width / 2) / r.width * 2)), ty = my === null ? 0 : Math.max(-1, Math.min(1, -(my - r.top - r.height / 2) / r.height * 2));
         P.P[0] += (tx - P.P[0]) * 0.05; P.P[1] += (ty - P.P[1]) * 0.05;
         hero.style.setProperty('--gx', (-P.P[0] * 4).toFixed(2)); hero.style.setProperty('--gy', (P.P[1] * 3).toFixed(2));
         draw();
