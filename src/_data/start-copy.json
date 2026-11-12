@@ -96,7 +96,7 @@
   "home.replay.shot.alt": "The live page: Panadería Carlos, “Order today, collect mañana.”, and a menu of Pan de pueblo, Magdalenas and Ensaimada.",
   "home.replay.caption": "Excerpts from one recorded run, 11 November 2026.",
   "home.what.heading": "CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily.",
-  "home.what.sub": "Inspired by UNIX principles, CARLOS deploys full stack web apps as single processes rather than sprawling containerised services, using fast compiled languages, unlocking a slew of benefits.",
+  "home.what.sub": "Inspired by UNIX principles, CARLOS deploys full stack web apps as single processes rather than sprawling containerised services, using fast compiled languages. This unlocks a slew of benefits.",
   "home.what.follow": "It’s defined by an open specification.",
   "home.what.button": "Read the spec",
   "home.what.version": "v0.1, draft for comment",
