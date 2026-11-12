@@ -72,7 +72,11 @@ person marker.**
 - **Only the clipboard and Attributes sidebar scripts run in the browser,**
   plus, on the enabled-demo homepage, `src/home/theme.js` (Auto, Light or
   Dark, remembered in localStorage; loaded first in `<head>`, without defer, so
-  there is no flash of the wrong theme), `src/home/hero.js` (the rotating word)
+  there is no flash of the wrong theme), `src/home/hero.js` (the rotating word), `src/home/hero-bg.js` (the hero's
+  WebGL background: Fable's D1 nebula in dark, L3 ink in light; half resolution,
+  DPR capped at 1.5, 30 fps, stopped off screen, in a hidden tab, by the
+  replay's Pause and under reduced motion, where it draws one still frame;
+  without WebGL the CSS gradient stays)
   and `src/home/stacks.js` (the interactive stacks, with a Pause control; they
   move only while the script says so). `src/home/` is copied by
   `hack/build-start.mjs` into enabled builds only. Homepage colours use
