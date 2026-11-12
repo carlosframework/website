@@ -6,8 +6,8 @@
 // day pollen motes, night fireflies spread across the hero. No sun or moon disc, only their light. The meadow is mostly
 // below the fold. The canvas is at most one screen tall and sticks while a tall hero scrolls past (home/hero.css).
 // Pointer and scroll move the camera a little; the glass panes drift the other way.
-// Cost limits: at most 30 frames a second, the device pixel ratio capped at 1.5, and a slow device gets half the blades,
-// then a smaller picture. Nothing is drawn while the hero is off screen, the tab is hidden or the replay's Pause is on;
+// Cost limits: at most 30 frames a second, the device pixel ratio capped at 1.5, and a slow device (frames coming more
+// than 40 ms apart) gets half the blades, then a smaller picture; measured without ever waiting on the GPU. Nothing is drawn while the hero is off screen, the tab is hidden or the replay's Pause is on;
 // under reduced motion one still frame. Without WebGL2 the hero keeps its CSS gradient.
 (() => {
   const Q1 = { blades: 9000, rays: 1, dof: 1, fog: 0.042, glow: 0, tall: 1, thin: 1 };
@@ -185,7 +185,6 @@ void main(){
       for (const name in look) if (u[name]) (look[name].length ? gl.uniform3fv(u[name], look[name]) : gl.uniform1f(u[name], look[name]));
       if (u.Glow) gl.uniform1f(u.Glow, v.glow); if (u.Rays) gl.uniform1f(u.Rays, v.rays); if (u.Hpx) gl.uniform1f(u.Hpx, ch); if (u.Px) gl.uniform1f(u.Px, 2 / cw); return u; };
     const attr = (buf, loc, size, stride, off, div) => { gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, size, gl.FLOAT, false, stride, off); gl.vertexAttribDivisor(loc, div); };
-    const timed = P.count++ % 15 === 0, t0 = performance.now();
     gl.viewport(0, 0, cw, ch); gl.bindFramebuffer(gl.FRAMEBUFFER, P.fb[0].fb);
     use(P.sky); attr(P.tri, 0, 2, 0, 0, 0); gl.disableVertexAttribArray(1); gl.disableVertexAttribArray(2); gl.drawArrays(gl.TRIANGLES, 0, 3);
     use(P.blade); attr(P.strip, 0, 2, 0, 0, 0); attr(P.bladeBuf, 1, 4, 32, 0, 1); attr(P.bladeBuf, 2, 4, 32, 16, 1); gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 10, P.nBlades);
@@ -202,14 +201,6 @@ void main(){
       return [x * z / fx, 0.42 + (y - hz) * z / fy, z, s > 0.68 ? 0.5 : 0.17, s, 0, 0, 1]; }))
       : new Float32Array(P.flies.flatMap(([x, y, z, s, ph]) => [x + Math.sin(t * 0.21 + ph) * 0.9 + Math.sin(t * 0.47 + ph * 2) * 0.3, y + Math.sin(t * 0.33 + ph * 3) * 0.22, z + Math.cos(t * 0.17 + ph) * 0.8, 0.1, s, 0, 0, 1]));
     gl.bindBuffer(gl.ARRAY_BUFFER, P.flyBuf); gl.bufferData(gl.ARRAY_BUFFER, motes, gl.DYNAMIC_DRAW); points(P.flyBuf, motes.length / 8);
-    if (timed) {   // the slow-device guard: waiting for a pixel makes the GPU finish, so this is the whole frame
-      gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
-      P.ms.push(performance.now() - t0); if (P.ms.length > 9) P.ms.shift();
-      const mid = [...P.ms].sort((x, y) => x - y)[P.ms.length >> 1];
-      if (P.ms.length >= 4 && mid > 40) {   // a slow device gets a lighter scene, not a slower one: first half the blades, then a smaller picture
-        if (!P.less) { P.less = 0.5; P.shape = ''; P.ms = []; } else if ((P.scale || SCALE) > 0.3) { P.scale = (P.scale || SCALE) * 0.8; P.ms = []; } }
-      P.msMid = mid;
-    }
     P.frames++; P.dirty = false;
   }
   const moving = () => gl && P.seen && !document.hidden && !reduce.matches && !(pause && pause.checked);
@@ -218,6 +209,11 @@ void main(){
     if (!gl) return;
     if (moving()) {
       if (now - P.last >= FRAME - 2) {
+        // The slow-device guard, without stalling anything: if frames keep coming more than 40 ms apart (the aim is 33),
+        // the device gets a lighter scene, not a slower one: first half the blades, then a smaller picture.
+        if (P.last) { P.ms.push(now - P.last); if (P.ms.length > 30) P.ms.shift();
+          if (P.ms.length === 30) { const mid = [...P.ms].sort((x, y) => x - y)[15]; P.msMid = mid;
+            if (mid > 40) { if (!P.less) { P.less = 0.5; P.shape = ''; } else if ((P.scale || SCALE) > 0.3) P.scale = (P.scale || SCALE) * 0.8; P.ms = []; } } }
         P.t += Math.min(0.1, (now - P.last) / 1000); P.last = now;
         // the pointer moves the camera a little, eased so it never jumps; the glass drifts the other way
         const r = hero.getBoundingClientRect();

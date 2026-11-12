@@ -190,7 +190,7 @@ test('theme: Auto follows the system, Light and Dark are remembered, the switch 
 
 // The hero's drawn background (the Q1 meadow), with a fake WebGL2 context that remembers the uniforms each draw used.
 const heroBgJS = await read('src/home/hero-bg.js');
-function heroBgWorld({ reduce = false, webgl = true, frameMs = 2, view = [1280, 700] } = {}) {
+function heroBgWorld({ reduce = false, webgl = true, gap = 40, view = [1280, 700] } = {}) {
   const mq = media(reduce), darkQ = media(false), root = new El(''), hero = new El('c-hero hv hv-b', { left: 0, top: 0, width: 1280, height: 700 }), canvas = new El('hero-bg'), pause = new El('');
   pause.checked = false; hero.qs['.hero-bg'] = [canvas];
   Object.defineProperty(hero, 'clientWidth', { get: () => 1280 }); Object.defineProperty(hero, 'clientHeight', { get: () => 700 });
@@ -200,7 +200,6 @@ function heroBgWorld({ reduce = false, webgl = true, frameMs = 2, view = [1280, 
   const gl = new Proxy({}, { get: (_, k) => k === 'getUniformLocation' ? (_, name) => name
     : k.startsWith('uniform') ? (loc, ...v) => { uniforms[loc] = v.length > 1 ? v : v[0]; }
     : k === 'drawArraysInstanced' ? (mode, first, count, n) => blades.push(n)
-    : k === 'readPixels' ? () => { clock += frameMs; }   // how long the device takes to finish a frame
     : k.startsWith('get') && k.endsWith('Parameter') ? () => true : typeof k === 'string' && /^[A-Z_0-9]+$/.test(k) ? 1 : () => ({}) });
   canvas.getContext = type => (webgl && type === 'webgl2' ? gl : null);
   const frames = new Map(), observers = [], mutations = []; let n = 0, now = 0;
@@ -215,8 +214,8 @@ function heroBgWorld({ reduce = false, webgl = true, frameMs = 2, view = [1280, 
   runInContext(heroBgJS, createContext(g));
   const state = () => g.__heroBg.state;
   const look = () => ({ T: uniforms.Q?.[0], Night: uniforms.Night });
-  // run queued frames, each 40 ms after the last (above the 30 fps step); returns how many ran
-  const run = (max = 20) => { let k = 0; while (frames.size && k < max) { const [id, f] = frames.entries().next().value; frames.delete(id); now += 40; f(now); k++; } return k; };
+  // run queued frames, each `gap` ms after the last (40: just above the 30 fps step); returns how many ran
+  const run = (max = 20) => { let k = 0; while (frames.size && k < max) { const [id, f] = frames.entries().next().value; frames.delete(id); now += gap; clock = now; f(now); k++; } return k; };
   return { g, hero, canvas, pause, mq, darkQ, root, frames, observers, mutations, run, state, look, blades };
 }
 const drawn = w => w.state().frames;
@@ -271,13 +270,14 @@ test('hero background: off screen or a hidden tab stops it; a theme change redra
   w.darkQ.set(true); w.run(); assert.equal(w.look().Night, 1, 'Auto follows the system live');
 });
 
-test('hero background: a slow device gets half the blades, then a smaller picture', () => {
-  const w = heroBgWorld({ frameMs: 60 });
-  w.run(70);   // the guard looks at every fifteenth frame, and acts after four
+test('hero background: a slow device gets half the blades, then a smaller picture, without waiting on the GPU', () => {
+  const w = heroBgWorld({ gap: 60 });   // frames coming 60 ms apart
+  w.run(40);   // the guard judges the last thirty frames
   assert.equal(w.state().blades, 4500);
-  w.run(70);
+  w.run(40);
   assert.ok(w.state().scale < 0.4);
-  const fast = heroBgWorld(); fast.run(140);
+  assert.doesNotMatch(heroBgJS, /readPixels|\.finish\(/, 'no GPU sync on the main thread');
+  const fast = heroBgWorld({ gap: 34 }); fast.run(140);
   assert.equal(fast.state().blades, 9000); assert.equal(fast.state().scale, 0.4);
 });
 
