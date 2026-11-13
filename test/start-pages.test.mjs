@@ -72,7 +72,7 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.doesNotMatch(hero+body,/—/);
  // Spec links keep their visible text as the name (WCAG 2.5.3) and carry the approved longer label as a description.
  for(const [ref,aria] of [['1.ref','1.aria'],['2.ref','2.aria'],['2.ref2','2.aria2'],['3.ref','3.aria'],['4.ref','4.aria']]) assert.ok(body.includes(`aria-describedby="practice-${aria.replace('.','-')}">${escapeHTML(copy['home.practice.'+ref])}</a><span id="practice-${aria.replace('.','-')}" hidden>${escapeHTML(copy['home.practice.'+aria])}</span>`),aria);
- for(const asset of ['/home/hero.css','/home/sections.css','/home/apps.css','/home/stacks.css','/home/theme.css','/home/hero.js','/home/hero-bg.js','/home/apps.js','/home/figures.js','/home/stacks.js']) assert.ok(home.includes(`="${asset}?v=0"`),asset);
+ for(const asset of ['/home/hero.css','/home/sections.css','/home/apps.css','/home/stacks.css','/home/theme.css','/home/hero.js','/home/hero-bg.js','/home/replay-speed.js','/home/apps.js','/home/figures.js','/home/stacks.js']) assert.ok(home.includes(`="${asset}?v=0"`),asset);
  // The theme is set before anything is drawn: theme.js first in <head>, blocking, ahead of every stylesheet.
  const head=home.match(/<head>[\s\S]*?<\/head>/)[0];
  assert.ok(head.includes('<script src="/home/theme.js?v=0"></script>'));
@@ -106,7 +106,7 @@ test('enabled homepage has the apps carousel under the hero',()=>pages(async(hom
  assert.ok(heroEnd>0 && home.indexOf('<section class="rw-apps"')>heroEnd);
  assert.match(home.slice(heroEnd),/^<\/figure>\n<\/div><\/section>\s*<div class="rw">\s*<section class="rw-apps"/,'the first section after the hero');
  assert.match(section,/^<section class="rw-apps" aria-roledescription="carousel" aria-labelledby="rw-apps-title" data-carousel>/);
- assert.ok(section.includes(`<!-- 👨 Paul's words, verbatim --><h2 id="rw-apps-title">What kinds of apps can be built using CARLOS?</h2>\n    <p class="ap-sub">CARLOS excels at producing fast, accessible sites that can be deployed easily, locally, on-prem, or on-cloud, as well as providing APIs, CLIs, MCPs, and backends for native apps.</p><!-- /👨 -->`));
+ assert.ok(section.includes(`<!-- 👨 Paul's words, verbatim --><h2 id="rw-apps-title">What kinds of apps can be built using CARLOS?</h2>\n    <p class="ap-sub">CARLOS excels at producing fast, accessible websites and apps that can be deployed easily, locally, on-prem, or on-cloud, as well as providing APIs, CLIs, MCPs, and backends for native apps.</p><!-- /👨 -->`));
  assert.equal(copy['home.apps.heading'],'What kinds of apps can be built using CARLOS?');
  const slides=[...section.matchAll(/<li class="ap-slide"[\s\S]*?<\/li>/g)].map(m=>m[0]);
  assert.equal(slides.length,sources.apps.length);
@@ -119,8 +119,9 @@ test('enabled homepage has the apps carousel under the hero',()=>pages(async(hom
   assert.equal(pageName.toLowerCase(),app);
   const name=gallery.name??pageName, href=gallery.url??url;
   assert.ok(slide.includes(`role="group" aria-roledescription="slide" aria-label="${i+1} of ${slides.length}" data-name="${escapeHTML(name)}"`),app);
-  // a real screenshot, sized, with alt text, in AVIF and WebP with a JPEG fallback
-  assert.ok(slide.includes(`<source type="image/avif" srcset="/home/apps/${app}.avif"><source type="image/webp" srcset="/home/apps/${app}.webp"><img src="/home/apps/${app}.jpg" width="960" height="600" alt="${escapeHTML(copy['home.apps.shot.alt'].replace('{app}',name))}" loading="lazy" decoding="async">`),app);
+  // a real screenshot, sized, with alt text, 360 and 720 wide for 1x and 2x screens, in AVIF and WebP with a JPEG fallback
+  const sizes='(min-width: 1000px) 30vw, (min-width: 640px) 44vw, 78vw', set=type=>`/home/apps/${app}-360.${type} 360w, /home/apps/${app}-720.${type} 720w`;
+  assert.ok(slide.includes(`<source type="image/avif" srcset="${set('avif')}" sizes="${sizes}"><source type="image/webp" srcset="${set('webp')}" sizes="${sizes}"><img src="/home/apps/${app}-360.jpg" srcset="${set('jpg')}" sizes="${sizes}" width="360" height="225" alt="${escapeHTML(copy['home.apps.shot.alt'].replace('{app}',name))}" loading="lazy" decoding="async">`),app);
   if(logoSpells) {
    // the wordmark stands in for its letters: the name is never printed beside a logo that already spells it
    const h3=slide.match(/<h3 class="ap-spelled">([\s\S]*?)<\/h3>/)[1];
@@ -140,18 +141,44 @@ test('enabled homepage has the apps carousel under the hero',()=>pages(async(hom
  // With the script the current app snaps to the middle; a drag turns snapping off until it ends.
  assert.match(css,/\.rw \.rw-apps\.is-live \.ap-slide \{ scroll-snap-align: center; \}/);
  assert.match(css,/\.rw \.ap-track\.is-dragging \{ scroll-snap-type: none;/);
- assert.match(css,/\.rw \.ap-ctrl\[hidden\] \{ display: none; \}/);
+ assert.match(css,/\.rw \.ap-ctrl\[hidden\], \.rw \.ap-dots\[hidden\] \{ display: none; \}/);
  assert.match(css,/@media \(prefers-reduced-motion: no-preference\) \{ \.rw \.ap-track \{ scroll-behavior: smooth; \} \}/);
- assert.match(section,/<div class="ap-ctrl" hidden>/);
- assert.match(section,/<div class="ap-dots" role="group" aria-label="Choose an app" hidden>/);
- // Pause reuses the replay's approved words; the status line is the only live region.
- assert.ok(section.includes(`<button type="button" class="ap-pause" data-pause="${copy['home.replay.pause']}" data-play="${copy['home.replay.play']}">${copy['home.replay.pause']}</button>`));
+ // Under the row, centred: previous, the dots with the quiet pause right after the last one, next.
+ const ctrl=section.match(/<div class="ap-ctrl" hidden>[\s\S]*?<\/button>\s*<\/div>\s*<\/div>?/)?.[0]||section.slice(section.indexOf('<div class="ap-ctrl" hidden>'));
+ assert.ok(ctrl.startsWith('<div class="ap-ctrl" hidden>'));
+ assert.ok(ctrl.indexOf('class="ap-prev"')<ctrl.indexOf('class="ap-dots"') && ctrl.indexOf('class="ap-dots"')<ctrl.indexOf('class="ap-play"') && ctrl.indexOf('class="ap-play"')<ctrl.indexOf('class="ap-next"'));
+ assert.match(section,/<div class="ap-dotrow"><div class="ap-dots" role="group" aria-label="Choose an app" hidden>/);
+ assert.doesNotMatch(section.match(/<div class="ap-head">[\s\S]*?<\/div>\s*<ul/)[0],/<button/,'no controls beside the heading');
+ // The pause is an icon with the replay's approved words as its name and tooltip; the status line is the only live region.
+ assert.ok(section.includes(`<button type="button" class="ap-play" data-pause="${copy['home.replay.pause']}" data-play="${copy['home.replay.play']}" aria-label="${copy['home.replay.pause']}" title="${copy['home.replay.pause']}"><svg class="ap-ic-pause" viewBox="0 0 16 16" aria-hidden="true" focusable="false">`));
  for(const k of ['prev','next']) assert.ok(section.includes(`<button type="button" class="ap-${k}" aria-label="${copy['home.apps.'+k]}" title="${copy['home.apps.'+k]}">`),k);
  assert.match(section,/<p class="ap-status" aria-live="polite" aria-atomic="true" data-format="\{app\}, \{n\} of \{total\}"><\/p>/);
  assert.ok(section.includes(`<a class="rw-more" href="/apps/">${copy['home.apps.all']} `));
  assert.doesNotMatch(section,/—/);
 }));
 // 🤖 Paul's 2026-11-13 edits, as the carousel shows them, and the rules that keep the overrides honest.
+// 🤖 The replay plays at reading pace by default, with a quiet speed control before Pause (Paul, 2026-11-13).
+test('enabled homepage replay has a speed control, and reading-pace timing in its stylesheet',()=>pages(async(home)=>{
+ const bar=home.match(/<div class="rp-bar">[\s\S]*?<\/label><\/div>/)[0];
+ assert.ok(bar.includes(`<span class="rp-speed" role="group" aria-label="${copy['home.replay.speed']}" hidden><button type="button" class="rp-slower" aria-label="${copy['home.replay.slower']}" title="${copy['home.replay.slower']}">`));
+ assert.ok(bar.includes(`<output class="rp-rate" aria-live="polite" data-format="{rate}×">1×</output><button type="button" class="rp-faster" aria-label="${copy['home.replay.faster']}" title="${copy['home.replay.faster']}">`));
+ assert.ok(bar.indexOf('class="rp-speed"')<bar.indexOf('class="rp-pause"'),'beside Pause, before it');
+ const css=await read('src/home/hero.css');
+ const cycle=Number(css.match(/\.rp \{ --rp-cycle: ([\d.]+)s; \}/)[1]);
+ const words={1:copy['home.replay.you.1'],2:[copy['home.replay.agent.1'],copy['home.replay.agent.q1'],copy['home.replay.agent.q2'],copy['home.replay.agent.q3']].join(' '),3:copy['home.replay.you.2'],4:copy['home.replay.agent.plan'],5:copy['home.replay.agent.p1'],6:copy['home.replay.agent.p2'],7:copy['home.replay.agent.p3'],8:copy['home.replay.agent.p4']};
+ const line=k=>{const m=css.match(new RegExp(`@keyframes rp-k${k} \\{ 0%, ([\\d.]+)% \\{ opacity: 0;[^}]*\\} ([\\d.]+)%, ([\\d.]+)% \\{ opacity: 1;`));return {from:m[1]*cycle/100,full:m[2]*cycle/100};};
+ for(let k=1;k<=9;k++) {
+  const {from,full}=line(k);
+  // at full contrast within about a quarter of a second, never sitting grey
+  assert.ok(full-from<=0.31,`line ${k} fades in over ${(full-from).toFixed(2)} s`);
+  // the line before it had time to be read at 200 words a minute
+  if(k>1 && k<=9 && k!==4) { const n=words[k-1].split(/\s+/).length; assert.ok(from-line(k-1).from>=n*0.3,`line ${k-1}: ${n} words get ${(from-line(k-1).from).toFixed(1)} s`); }
+ }
+ const scene2=Number(css.match(/@keyframes rp-scene1 \{ 0%, ([\d.]+)%/)[1])*cycle/100;
+ assert.ok(scene2-line(3).from>=words[3].split(/\s+/).length*0.3,'the last line of the first scene is read before it goes');
+ assert.match(css,/\.rp-agent p \{ color: light-dark\(#2b3036, #dfe6ee\); \}/);
+ assert.match(css,/@media \(prefers-reduced-motion: reduce\) \{\n  \.rp \*, \.rp \{ animation: none !important; \}\n[^@]*?\.rp-pause, \.rp-speed \{ display: none !important; \}/);
+}));
 test('apps carousel overrides are explicit and checked against the Apps page',()=>pages(async(home)=>{
  const section=home.match(/<section class="rw-apps"[\s\S]*?<\/div><\/section>/)[0];
  const slide=name=>section.match(new RegExp(`<li class="ap-slide"[^>]*data-name="${name}">[\\s\\S]*?</li>`))?.[0];

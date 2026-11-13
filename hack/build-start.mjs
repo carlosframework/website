@@ -147,7 +147,7 @@ async function homeHTML(config,copy,original) {
 }
 // theme.js runs first and without defer, so a remembered Light or Dark is set before the first paint.
 const homeHead=['<script src="/home/theme.js?v=0"></script>'].concat(['/start/start.css','/home/hero.css','/home/sections.css','/home/apps.css','/home/stacks.css','/home/theme.css'].map(href=>`<link rel="stylesheet" href="${href}?v=0">`))
- .concat(['/start/start-tabs.js','/home/hero.js','/home/hero-bg.js','/home/apps.js','/home/figures.js','/home/stacks.js'].map(src=>`<script src="${src}?v=0" defer></script>`)).join('\n');
+ .concat(['/start/start-tabs.js','/home/hero.js','/home/hero-bg.js','/home/replay-speed.js','/home/apps.js','/home/figures.js','/home/stacks.js'].map(src=>`<script src="${src}?v=0" defer></script>`)).join('\n');
 // Auto, Light or Dark: three quiet icons at the end of the footer's meta row (hack/add-footer.mjs places them),
 // hidden until theme.js wires them. The labels are the accessible names and the tooltips.
 const themeIcons={

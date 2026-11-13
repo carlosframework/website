@@ -1,8 +1,9 @@
 {
-  "//": "🤖 Screenshots for the homepage apps carousel (src/_includes/home-body.njk, src/home/apps.js). Each is the app's public landing page, captured with headless Chromium at a 1280x800 light viewport, scaled to 960x600 and saved as AVIF, WebP and a JPEG fallback. Names, descriptions, logos and links come from the Apps page (src/apps/index.html): `app` is the Apps page name, lowercased, and `url` must be the Apps page's own link, or the build fails. `gallery` is the explicit exception: a name or url the carousel shows instead, each with the reason; an override that matches the Apps page is stale and also fails the build. `logoSpells` is the text a wordmark logo already spells: that part of the name is shown by the logo alone (and stays the logo's alt text), so it is not printed twice. Listed in the Apps page order.",
+  "//": "🤖 Screenshots for the homepage apps carousel (src/_includes/home-body.njk, src/home/apps.js). Each is the app's public landing page, captured with headless Chromium at a 1280x800 light viewport, saved 360 and 720 pixels wide (360x225, and 720x450 for sharp 2x screens) as AVIF, WebP and a JPEG fallback (<app>-360.*, <app>-720.*). Names, descriptions, logos and links come from the Apps page (src/apps/index.html): `app` is the Apps page name, lowercased, and `url` must be the Apps page's own link, or the build fails. `gallery` is the explicit exception: a name or url the carousel shows instead, each with the reason; an override that matches the Apps page is stale and also fails the build. `logoSpells` is the text a wordmark logo already spells: that part of the name is shown by the logo alone (and stays the logo's alt text), so it is not printed twice. Listed in the Apps page order.",
   "captured": "2026-11-13",
   "viewport": "1280x800",
-  "size": [960, 600],
+  "size": [360, 225],
+  "widths": [360, 720],
   "apps": [
     { "app": "tito", "url": "https://ti.to", "logoSpells": "Tito",
       "gallery": { "name": "The new Tito", "url": "https://go.tito.io/home", "why": "Paul, 2026-11-13: show the new Tito; screenshot from go.tito.io/home" } },
