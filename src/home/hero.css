@@ -3,8 +3,9 @@
    this file only adds. Ported from the approved 2026-11-12 rework, hero B. */
 
 /* Three tiers of type: the headline (the one heavy thing), the subheading (regular, muted, emphasis by italics
-   alone), then one body size and weight for the three lines under them: "You want CARLOS." a touch heavier, the
-   rotating word and "Read on" marked only by the accent. Weights: 700, 500, 400. The gaps: a tight pair for the
+   alone), then one body size for the three lines under them: "You want CARLOS." a touch heavier, the rotating word
+   marked only by the accent. The last line is muted, with "Read on" in bold and the main ink: a link told apart by
+   its weight, not colour alone, underlined on hover and focus. Weights: 700, 500, 400. The gaps: a tight pair for the
    headline and subheading, then the same step between each tier below. */
 .c-hero.hv .sub { font-weight: 400; font-size: clamp(1.15rem, 4.6vw, 1.5rem); line-height: 1.3; letter-spacing: -0.01em; margin-bottom: 1.5rem; }
 .c-hero.hv .sub em { font-weight: 400; }
@@ -12,7 +13,10 @@
 .c-hero.hv .hv-ask > span { display: block; }
 .c-hero.hv .hv-ask > span:first-child { font-weight: 500; }
 .c-hero.hv .hv-ask .hv-gloss { margin: 0 0 0.5rem; }
-.c-hero.hv .ask a { font-weight: 400; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+.c-hero.hv .hv-ask > span:last-child { color: var(--hv-muted); }
+.c-hero.hv .ask a { font-weight: 700; text-decoration: none; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+.c-hero.hv .ask a:hover, .c-hero.hv .ask a:focus-visible { text-decoration: underline; }
+.c-hero.hv .ask a:focus-visible { outline: 2px solid var(--hv-accent); outline-offset: 3px; border-radius: 3px; }
 
 /* One calm box: a small label, then the line and the button on one row. */
 .hv .hv-paste { padding: 0.8rem 0.8rem 0.8rem 1.15rem; }

@@ -31,12 +31,12 @@ body.site-home .masthead { touch-action: manipulation; }
 
 /* Hero ground and headline */
 body.site-home .c-hero { background: radial-gradient(60vw 50vw at 20% 30%, light-dark(rgba(214, 186, 140, 0.16), rgba(47, 212, 172, 0.16)), transparent 70%), radial-gradient(50vw 60vw at 85% 20%, light-dark(rgba(150, 130, 200, 0.12), rgba(120, 90, 200, 0.18)), transparent 70%), light-dark(#faf8f4, #0f161c); color: light-dark(#181c21, #e9edf4); }
-/* Three inks in the hero's text: the main ink, a muted ink and one green accent (links and the rotating word). */
+/* Three inks in the hero's text: the main ink, a muted ink and one green accent (the rotating word). */
 body.site-home .c-hero { --hv-ink: light-dark(#14181d, #f1f5ef); --hv-muted: light-dark(#4f545b, #b3bdc9); --hv-accent: light-dark(#1a5f4f, #2fd4ac); }
 body.site-home .c-hero h1 { color: var(--hv-ink); }
 body.site-home .c-hero .sub, body.site-home .c-hero .sub em { color: var(--hv-muted); }
 body.site-home .c-hero .ask { color: var(--hv-ink); }
-body.site-home .c-hero .ask a { color: var(--hv-accent); }
+body.site-home .c-hero .ask a { color: var(--hv-ink); }
 body.site-home .c-hero .start-hosts { color: light-dark(#5b6067, #a9b4c2); }
 body.site-home .c-hero .start-hosts code { color: light-dark(#2b3036, #c9d2de); }
 

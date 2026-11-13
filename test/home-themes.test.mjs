@@ -64,7 +64,8 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
       const drawn = await page.evaluate(() => !document.querySelector('.c-hero').classList.contains('nogl'));
       if (!drawn) { await ctx.close(); continue; }   // no WebGL in this browser: the CSS gradient is covered by axe above
       await page.locator('.rp-pause').click();
-      await page.addStyleTag({ content: `.rp-log li, .rp-app, .rp-scene1 { animation: none !important; opacity: 1 !important; transform: none !important; }
+      // (every line shown at once, so the "loading" placeholder, which only ever stands in for lines not yet shown, goes)
+      await page.addStyleTag({ content: `.rp-log li, .rp-app, .rp-scene1 { animation: none !important; opacity: 1 !important; transform: none !important; } .rp-loading { display: none !important; }
         .hide-text, .hide-text * { color: transparent !important; -webkit-text-fill-color: transparent !important; text-decoration-color: transparent !important; }
         .hide-text svg, .hide-text .pb-caret, .hide-text .rp-dots, .hide-text .rp-app, .hide-text .pb-copy { visibility: hidden !important; } .hide-text .hv-rot-word { background: none !important; }
         .scene-a .rp-scene2, .scene-b .rp-scene1 { display: none !important; }` });
