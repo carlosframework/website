@@ -470,13 +470,18 @@ test('apps: the app at rest pops forward, eases back before the row moves, and t
   a.run(200); const k = a.frames_(); assert.ok(k > 80, `a slow turn: ${k} frames`); a.settle(); assert.equal(a.upAt(), 5);
   // a drag: back the moment it starts, nothing pops while held, the settled app pops
   const d = appsWorld({ random: 0 }); d.see(true);
-  d.track.fire('pointerdown', { pointerType: 'mouse', button: 0, clientX: 600, pointerId: 1 });
+  d.track.fire('pointerdown', { pointerType: 'mouse', button: 0, clientX: 600, clientY: 300, pointerId: 1 });
   assert.equal(d.upAt(), 4, 'a press that has not moved is still a click');
-  d.track.fire('pointermove', { clientX: 540, pointerId: 1 }); assert.equal(d.upAt(), -1);
+  d.track.fire('pointermove', { clientX: 540, clientY: 300, pointerId: 1 }); assert.equal(d.upAt(), -1);
   d.settle(); assert.equal(d.upAt(), -1, 'not while held');
-  d.track.fire('pointerup', { clientX: 540, pointerId: 1 }); d.frames_(); d.settle(); assert.equal(d.upAt(), 5);
+  d.track.fire('pointerup', { clientX: 540, clientY: 300, pointerId: 1 }); d.frames_(); d.settle(); assert.equal(d.upAt(), 5);
   // a touch, and a trackpad moving the row: back at once
-  const t = appsWorld({ random: 0 }); t.track.fire('pointerdown', { pointerType: 'touch' }); assert.equal(t.upAt(), -1);
+  const t = appsWorld({ random: 0 }); t.track.fire('pointerdown', { pointerType: 'touch', clientX: 500, clientY: 300, pointerId: 2 });
+  assert.equal(t.upAt(), 4, 'a tap is not a drag'); t.track.fire('pointermove', { pointerType: 'touch', clientX: 470, clientY: 302, pointerId: 2 }); assert.equal(t.upAt(), -1, 'a swipe takes it back');
+  // a finger moving mostly up or down is the page's: the row leaves it alone
+  const v = appsWorld({ random: 0 }), left = v.track.scrollLeft; v.track.fire('pointerdown', { pointerType: 'touch', clientX: 500, clientY: 300, pointerId: 3 });
+  v.track.fire('pointermove', { pointerType: 'touch', clientX: 497, clientY: 260, pointerId: 3 }); v.track.fire('pointermove', { pointerType: 'touch', clientX: 470, clientY: 200, pointerId: 3 });
+  assert.equal(v.track.scrollLeft, left); assert.equal(v.upAt(), 4); assert.ok(!v.track.classList.contains('is-dragging'));
   const pad = appsWorld({ random: 0 }); pad.track.scrollLeft += 40; pad.track.fire('scroll'); assert.equal(pad.upAt(), -1);
   // reduced motion: nothing pops, and nothing waits
   const r = appsWorld({ reduce: true, random: 0 }); assert.equal(r.upAt(), -1);
@@ -506,7 +511,7 @@ test('apps: it loops both ways with eased glides, and the dots and status give t
   // a dot goes the short way round
   const d = appsWorld({ random: 0 }); d.press(d.dots[3]); d.frames_(); assert.equal(d.at(), 3); d.settle(); assert.equal(d.at(), 7);
   // a swipe that comes to rest on a copy is moved to the real app too
-  const s = appsWorld({ random: 0 }); s.track.fire('pointerdown', { pointerType: 'touch' });
+  const s = appsWorld({ random: 0 }); s.track.fire('pointerdown', { pointerType: 'touch', clientX: 0, clientY: 0, pointerId: 9 });
   s.track.scrollLeft = 700 * 2 - 130; s.settle(); assert.equal(s.current(), 2); assert.equal(s.at(), 6);
   // the arrow keys move one app and focus goes with it
   const kb = appsWorld({ random: 0 }); kb.press(kb.track, { key: 'ArrowRight', preventDefault() {} });
@@ -527,20 +532,44 @@ test('apps: hover, focus, off screen and a hidden tab hold it; the quiet pause, 
   w.play.fire('click');
   assert.equal(w.play.getAttribute('aria-label'), 'Play'); assert.ok(w.play.classList.contains('is-stopped')); assert.equal(w.advance(), 0);
   w.play.fire('click'); assert.equal(w.play.getAttribute('aria-label'), 'Pause'); assert.equal(w.advance(), 1); w.frames_(); w.settle();
-  w.track.fire('pointerdown', { pointerType: 'touch' }); assert.equal(w.play.getAttribute('aria-label'), 'Play'); assert.equal(w.advance(), 0);
+  w.track.fire('pointerdown', { pointerType: 'touch', clientX: 0, clientY: 0, pointerId: 9 }); assert.equal(w.play.getAttribute('aria-label'), 'Play'); assert.equal(w.advance(), 0);
   // choosing an app stops it
   const v = appsWorld(); v.see(true);
   v.press(v.next); v.frames_(); assert.equal(v.current(), 1); assert.equal(v.status.textContent, 'Jelly, 2 of 4'); assert.equal(v.play.getAttribute('aria-label'), 'Play'); assert.equal(v.advance(), 0);
   // a mouse drag moves the row, settles on an app and is not a click on it
   const d = appsWorld(); d.see(true);
-  d.track.fire('pointerdown', { pointerType: 'mouse', button: 0, clientX: 600, pointerId: 1 });
-  d.track.fire('pointermove', { clientX: 597, pointerId: 1 }); assert.ok(!d.track.classList.contains('is-dragging'), 'a wobble is still a click');
-  d.track.fire('pointermove', { clientX: 540, pointerId: 1 });
+  d.track.fire('pointerdown', { pointerType: 'mouse', button: 0, clientX: 600, clientY: 300, pointerId: 1 });
+  d.track.fire('pointermove', { clientX: 597, clientY: 300, pointerId: 1 }); assert.ok(!d.track.classList.contains('is-dragging'), 'a wobble is still a click');
+  d.track.fire('pointermove', { clientX: 540, clientY: 300, pointerId: 1 });
   assert.ok(d.track.classList.contains('is-dragging')); assert.equal(d.track.scrollLeft, 700 * 4 - 130 + 60); assert.equal(d.play.getAttribute('aria-label'), 'Play');
   d.settle(); assert.equal(d.track.scrollLeft, 700 * 4 - 130 + 60, 'no snapping back mid-drag');
-  d.track.fire('pointerup', { clientX: 540, pointerId: 1 }); d.frames_();
+  d.track.fire('pointerup', { clientX: 540, clientY: 300, pointerId: 1 }); d.frames_();
   assert.ok(!d.track.classList.contains('is-dragging')); assert.equal(d.current(), 1, 'a deliberate short drag moves one app'); assert.equal(d.at(), 5);
   let blocked = false; d.track.fire('click', { preventDefault() { blocked = true; }, stopPropagation() {} }); assert.ok(blocked);
+});
+
+test('apps: only the address is a link; a click on a card beside the middle turns the ring to it; Tab does too', () => {
+  const at = (w, el, also = {}) => ({ closest: sel => (sel === 'a' ? also.a || null : sel === '.ap-slide' ? el : null), ...also });
+  const w = appsWorld({ random: 0 }); w.see(true);   // slide 4 in the middle
+  // the middle card: a click on its screenshot does nothing
+  let prevented = false; w.track.fire('click', { target: at(w, w.order[4]), preventDefault() { prevented = true; } }); w.run(200); w.frames_();
+  assert.equal(w.current(), 0); assert.equal(w.at(), 4); assert.ok(!prevented);
+  // the card to its right: the ring turns one app, and it stops the row's own movement
+  w.track.fire('click', { target: at(w, w.order[5]) }); w.run(200); assert.equal(w.current(), 1); w.frames_(); w.settle();
+  assert.equal(w.at(), 5); assert.equal(w.upAt(), 5); assert.equal(w.play.getAttribute('aria-label'), 'Play');
+  // a copy two to the left (the ring has no ends): two apps back
+  w.track.fire('click', { target: at(w, w.order[3]) }); w.run(200); w.frames_(); w.settle(); assert.equal(w.current(), 3);
+  // a click on an address is the link's: left alone
+  const v = appsWorld({ random: 0 }); v.track.fire('click', { target: at(v, v.order[5], { a: {} }) }); v.run(200); v.frames_(); assert.equal(v.current(), 0);
+  // a click straight after a drag is swallowed
+  const d = appsWorld({ random: 0 }); d.see(true);
+  d.track.fire('pointerdown', { pointerType: 'mouse', button: 0, clientX: 600, clientY: 300, pointerId: 1 }); d.track.fire('pointermove', { clientX: 520, clientY: 300, pointerId: 1 }); d.track.fire('pointerup', { clientX: 520, clientY: 300, pointerId: 1 });
+  let swallowed = false; d.track.fire('click', { target: at(d, d.order[5]), preventDefault() { swallowed = true; }, stopPropagation() {} }); assert.ok(swallowed, 'no click after a drag');
+  // Tab to an address: its card comes to the middle (the short way round)
+  const f = appsWorld({ random: 0 }); f.track.fire('focusin', { target: at(f, f.real[3]) }); f.run(200); f.frames_();
+  assert.equal(f.current(), 3); assert.equal(f.at(), 3, 'one step back, not three forward'); f.settle(); assert.equal(f.order[f.at()], f.real[3]);
+  // nothing listens to the wheel, so a vertical wheel always scrolls the page
+  assert.equal(w.track.l.wheel, undefined);
 });
 
 test('apps: reduced motion never moves by itself, hides the pause, jumps instead of gliding and still loops', () => {
@@ -556,37 +585,48 @@ test('apps: reduced motion never moves by itself, hides the pause, jumps instead
   assert.equal(z.at(), 5);
 });
 
-// 🤖 The replay's speed (home/replay-speed.js): slower and faster step through 0.5x to 2x, every one of the replay's
-// animations gets the rate in place, the ends are marked rather than disabled (focus stays), the choice lasts for
-// the visit, and under reduced motion the control stays hidden.
-const speedJS = await read('src/home/replay-speed.js');
-function speedWorld({ reduce = false, saved = null, storage = true } = {}) {
-  const mq = media(reduce), rp = new El('rp'), box = new El('rp-speed'), slower = new El('rp-slower'), faster = new El('rp-faster'), out = new El('rp-rate');
-  box.hidden = true; out.dataset.format = '{rate}×';
-  Object.assign(box.qs, { '.rp-slower': [slower], '.rp-faster': [faster], '.rp-rate': [out] }); rp.qs['.rp-speed'] = [box];
-  const anims = [1, 2, 3].map(() => ({ playbackRate: 1, updatePlaybackRate(r) { this.playbackRate = r; } }));
-  rp.getAnimations = () => anims;
-  const store = new Map(saved === null ? [] : [['carlos.replay.speed', saved]]);
-  const sessionStorage = storage ? { getItem: k => store.get(k) ?? null, setItem: (k, v) => store.set(k, v) } : { getItem() { throw Error('off'); }, setItem() { throw Error('off'); } };
-  runInContext(speedJS, createContext({ document: { querySelector: s => (s === '.rp' ? rp : null) }, matchMedia: () => mq, sessionStorage, Number, String, Math }));
-  return { mq, box, slower, faster, out, anims, store, rate: () => [...new Set(anims.map(a => a.playbackRate))] };
-}
-test('replay speed: slower and faster, applied to every animation, remembered for the visit', () => {
-  const w = speedWorld();
-  assert.equal(w.box.hidden, false); assert.equal(w.out.textContent, '1×'); assert.deepEqual(w.rate(), [1]);
-  w.faster.fire('click'); assert.equal(w.out.textContent, '1.5×'); assert.deepEqual(w.rate(), [1.5]); assert.equal(w.store.get('carlos.replay.speed'), '1.5');
-  w.faster.fire('click'); assert.equal(w.out.textContent, '2×'); assert.equal(w.faster.getAttribute('aria-disabled'), 'true');
-  w.faster.fire('click'); assert.deepEqual(w.rate(), [2], 'no faster than 2x');
-  for (let k = 0; k < 5; k++) w.slower.fire('click');
-  assert.equal(w.out.textContent, '0.5×'); assert.deepEqual(w.rate(), [0.5]); assert.equal(w.slower.getAttribute('aria-disabled'), 'true'); assert.equal(w.faster.getAttribute('aria-disabled'), 'false');
-  // the next page of the visit starts where this one left off; a stray value is ignored
-  assert.deepEqual(speedWorld({ saved: '0.5' }).rate(), [0.5]);
-  assert.deepEqual(speedWorld({ saved: '7' }).rate(), [1]);
-  // storage that throws still changes this page
-  const off = speedWorld({ storage: false }); off.faster.fire('click'); assert.deepEqual(off.rate(), [1.5]);
-});
-test('replay speed: hidden under reduced motion, and shown again with the rate when it is switched off', () => {
-  const r = speedWorld({ reduce: true, saved: '2' });
-  assert.equal(r.box.hidden, true); assert.deepEqual(r.rate(), [1], 'the still picture is left alone');
-  r.mq.set(false); assert.equal(r.box.hidden, false); assert.deepEqual(r.rate(), [2]);
+// 🤖 The hero replay as a chat (home/replay.js): the timeline it plays, worked out from the lines. The page-level
+// behaviour (typing spans, caret, thinking dots, steps, speed) is checked in a browser before each release.
+const replayJS = await read('src/home/replay.js');
+const rpTimeline = () => { const g = { document: { querySelector: () => null }, matchMedia: () => media(false), Math, Number, String, Infinity }; g.globalThis = g; runInContext(replayJS, createContext(g)); return g.__rpTimeline; };
+test('replay: a loading screen, typed lines, thinking before each agent message, then streamed words, at reading pace', () => {
+  const T = rpTimeline();
+  const words = n => Array.from({ length: n }, (_, k) => `w${k}`).join(' ');
+  const turns = [
+    { kind: 'you', text: 'Follow the directions, please.', units: [...'Follow the directions, please.'] },
+    { kind: 'agent', text: words(12), units: words(12).split(' ') },
+    { kind: 'scene' },
+    { kind: 'agent', text: words(30), units: words(30).split(' ') },
+    { kind: 'app' },
+  ];
+  const tl = T.plan(turns), at = t => T.stateAt(tl, t);
+  // loading first, nothing shown
+  assert.ok(at(0).loading); assert.equal(JSON.stringify(at(0).turns.map(x => x.phase)), JSON.stringify(['hidden', 'hidden', 'hidden']));
+  assert.ok(!at(T.LOAD).loading);
+  // the person types a character at a time, unevenly, with a beat after punctuation
+  const you = tl.turns[0], gaps = T.typing(you.text);
+  assert.ok(new Set(gaps.map(g => Math.round(g))).size > 5, 'not a metronome');
+  assert.ok(gaps[you.text.indexOf(',')] > 150, 'a beat after a comma');
+  let last = 0;
+  for (let t = you.from; t <= you.shown; t += 40) { const c = at(t).turns[0].count; assert.ok(c >= last); last = c; }
+  assert.equal(at(you.shown).turns[0].phase, 'shown'); assert.equal(at(you.shown).turns[0].count, you.text.length);
+  // the agent thinks first, then streams a word every 65 ms
+  const agent = tl.turns[1];
+  assert.equal(Math.round(agent.from - agent.at), T.THINK); assert.equal(at(agent.at + 10).turns[1].phase, 'thinking');
+  assert.equal(at(agent.from + T.WORD * 4 + 1).turns[1].count, 4);
+  // each line is left long enough to read at about 200 words a minute before the next turn starts
+  assert.ok(tl.turns[3].at - tl.turns[3 - 2].from >= 12 * T.READ * 0.7);
+  assert.ok(tl.turns[3].done - tl.turns[3].from >= 30 * T.READ, 'a long message gets its reading time');
+  // the second scene, then the app and its pan, then a fade before it starts again
+  const scene = tl.turns[2], app = tl.turns[4];
+  assert.ok(!at(scene.at - 1).scene2 && at(scene.at).scene2);
+  assert.ok(!at(app.at - 1).appOn && at(app.at).appOn);
+  assert.equal(at(app.pan).pan, 0); assert.equal(at(app.panEnd).pan, 1); assert.equal(Math.round(app.panEnd - app.pan), T.PAN);
+  assert.ok(at(tl.fade).ending && !at(tl.fade - 1).ending && tl.total > tl.fade);
+  // steps land on the end of each turn, the app, and the end of its pan, in order
+  const stops = T.stops(tl);
+  assert.equal(JSON.stringify(stops), JSON.stringify([...stops].sort((a, b) => a - b)));
+  assert.equal(JSON.stringify(stops.slice(0, 3)), JSON.stringify([you.shown, agent.shown, tl.turns[3].shown]));
+  assert.equal(stops.at(-1), app.panEnd);
+  for (const st of stops.slice(0, 3)) assert.ok(at(st).turns.every(x => x.phase !== 'arriving' && x.phase !== 'thinking'), 'a step shows whole lines');
 });

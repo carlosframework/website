@@ -3,8 +3,9 @@
 // With it the row has no ends: a copy of every app sits on each side (hidden from screen readers and out of the
 // tab order), and when the row comes to rest on a copy it jumps by exactly one set to the real app, the same
 // picture, so nothing visibly moves. The current app sits in the middle and a visit starts on a random app.
-// Previous and next, a dot per app (the short way round), swipe, trackpad, a mouse drag and the arrow keys with
-// focus in the row move it (focus follows the app in the middle). It also moves on by itself, slowly: every 10 s,
+// Previous and next, a dot per app (the short way round), a drag from anywhere on the stage (mouse, finger or pen,
+// with momentum), a trackpad, a click on an app beside the middle one, and the arrow keys or Tab with focus in the
+// row move it (focus follows the app in the middle). Only each app's address is a link; the screenshot is not. It also moves on by itself, slowly: every 10 s,
 // with a long, eased turn. That waits while the pointer is over the apps, while focus is in them, while the
 // section is off screen and while the tab is hidden, and stops for good when someone presses the quiet pause
 // beside the dots (WCAG 2.2.2), touches or drags the row, or picks an app; play starts it again. The status line
@@ -174,7 +175,7 @@
     if (up && !glider && !waiting && Math.abs(track.scrollLeft - centre(pos)) > 2) sink();
     clearTimeout(settle);
     settle = setTimeout(() => {
-      if (drag || glider || waiting) return;
+      if ((drag && drag.moved) || glider || waiting) return;
       pos = nearest();
       recentre();
       mark(pos % n);
@@ -183,26 +184,33 @@
     }, 150);
   }, { passive: true });
 
-  // Taking hold of the row stops its own movement for good; a mouse can drag it, and a drag is not a click.
+  // Taking hold of the row: a mouse, a finger or a pen drags it from anywhere on the stage, screenshots included.
+  // A finger moving mostly up or down is left to scroll the page (touch-action: pan-y in home/apps.css). On release
+  // the row carries on with the speed it was let go at and settles on the nearest app. A drag is never a click.
+  const HOLD = 5;
   track.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
     halt();
-    if (e.pointerType !== 'mouse') { sink(); return stop(); }
-    if (e.button !== 0) return;
-    pos = nearest(); recentre();
-    drag = { x: e.clientX, left: track.scrollLeft, from: pos, id: e.pointerId, moved: false };
+    if (e.pointerType !== 'mouse') stop(); // a touch stops the row's own movement for good
+    drag = { x: e.clientX, y: e.clientY, left: track.scrollLeft, id: e.pointerId, moved: false, seen: [[e.timeStamp || 0, e.clientX]] };
   });
   track.addEventListener('pointermove', e => {
     if (!drag || e.pointerId !== drag.id) return;
-    const dx = e.clientX - drag.x;
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
     if (!drag.moved) {
-      if (Math.abs(dx) < 6) return;
+      if (Math.abs(dx) <= HOLD && Math.abs(dy) <= HOLD) return;
+      if (Math.abs(dy) > Math.abs(dx)) { drag = null; return; } // up or down: the page's, not ours
       drag.moved = true;
+      if (glider || waiting) { clearTimeout(waiting); waiting = 0; owed = 0; halt(); }
+      const was = track.scrollLeft; pos = nearest(); recentre(); drag.left += track.scrollLeft - was; drag.from = pos; // the same picture, one set over
       sink();
       track.classList.add('is-dragging');
       if (track.setPointerCapture) track.setPointerCapture(e.pointerId);
       stop();
     }
-    track.scrollLeft = drag.left - dx;
+    track.scrollLeft = drag.left - (e.clientX - drag.x);
+    drag.seen.push([e.timeStamp || 0, e.clientX]);
+    if (drag.seen.length > 6) drag.seen.shift();
   });
   const release = e => {
     if (!drag || e.pointerId !== drag.id) return;
@@ -210,14 +218,30 @@
     if (!d.moved) return;
     dragged = true; setTimeout(() => { dragged = false; }, 0);
     track.classList.remove('is-dragging');
-    let p = nearest();
-    const dx = e.clientX - d.x;
+    // the speed it was let go at (px per ms over the last few moves) carries it on, up to three apps
+    const [t0, x0] = d.seen[0], [t1, x1] = d.seen[d.seen.length - 1];
+    const speed = t1 > t0 ? (x1 - x0) / (t1 - t0) : 0;
+    const aim = track.scrollLeft - speed * 260;
+    let p = nearest(), best = Infinity;
+    for (let q = 0; q < all.length; q++) { const gap = Math.abs(centre(q) - aim); if (gap < best) { best = gap; p = q; } }
+    p = Math.max(d.from - 3, Math.min(d.from + 3, p));
+    const dx = (e.clientX ?? x1) - d.x;
     if (p === d.from && Math.abs(dx) > 40) p += dx < 0 ? 1 : -1; // a short, deliberate drag still moves one app
-    move(p);
+    move(p, Math.min(900, STEP_MS + 120 * Math.abs(p - nearest())));
   };
   track.addEventListener('pointerup', release);
   track.addEventListener('pointercancel', release);
   track.addEventListener('click', e => { if (dragged) { e.preventDefault(); e.stopPropagation(); } }, true);
+  // Only the address is a link. A click anywhere else on an app beside the middle one turns the ring to it;
+  // on the middle one it does nothing.
+  track.addEventListener('click', e => {
+    const t = e.target;
+    if (!t || !t.closest || t.closest('a')) return;
+    const p = all.indexOf(t.closest('.ap-slide'));
+    if (p < 0 || p % n === ahead()) return;
+    stop();
+    go(p - (pos + owed));
+  });
   track.addEventListener('dragstart', e => e.preventDefault());
 
   // Left and right with focus in the row: move one app, and focus goes with it.
@@ -231,7 +255,14 @@
   });
   track.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') { hover = true; sync(); } });
   track.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { hover = false; sync(); } });
-  track.addEventListener('focusin', () => { focus = true; sync(); });
+  // Tab reaches the addresses; the app whose address has focus turns to the middle.
+  track.addEventListener('focusin', e => {
+    focus = true; sync();
+    const p = e.target && e.target.closest ? all.indexOf(e.target.closest('.ap-slide')) : -1;
+    if (p < n || p >= 2 * n) return;
+    const by = ((p - n - ahead()) % n + n) % n;
+    if (by) go(by > n / 2 ? by - n : by);
+  });
   track.addEventListener('focusout', e => { if (!track.contains(e.relatedTarget)) { focus = false; sync(); } });
   play.addEventListener('click', () => { stopped = !stopped; sync(); });
   prev.addEventListener('click', () => { stop(); go(-1); });

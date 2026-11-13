@@ -33,7 +33,7 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.ok(hero.includes(escapeHTML(copy['home.paste.label'])));
  assert.doesNotMatch(hero,/pb-works/);
  assert.match(hero,/<details class="hv-cloud"><summary>Using a cloud agent\?<\/summary><!-- 👨 Paul's words, verbatim --><p class="start-hosts">/);
- assert.match(hero,/<figure class="rp" aria-label="A real run of this journey, sped up">/);
+ assert.match(hero,/<figure class="rp" aria-label="A real run of this journey, sped up" data-thinking="Thinking">/);
  assert.ok(hero.includes(`<img src="/home/replay-panaderia-run4-390.png" width="780" height="1764" alt="${copy['home.replay.shot.alt']}" decoding="async">`));
  // Run 4's excerpts (2026-11-12): three questions, then the agent's play-back of the plan and look, three progress lines and the live line.
  assert.equal((hero.match(/<ol class="rp-qs">([\s\S]*?)<\/ol>/)[1].match(/<li>/g)||[]).length,3);
@@ -72,7 +72,7 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.doesNotMatch(hero+body,/—/);
  // Spec links keep their visible text as the name (WCAG 2.5.3) and carry the approved longer label as a description.
  for(const [ref,aria] of [['1.ref','1.aria'],['2.ref','2.aria'],['2.ref2','2.aria2'],['3.ref','3.aria'],['4.ref','4.aria']]) assert.ok(body.includes(`aria-describedby="practice-${aria.replace('.','-')}">${escapeHTML(copy['home.practice.'+ref])}</a><span id="practice-${aria.replace('.','-')}" hidden>${escapeHTML(copy['home.practice.'+aria])}</span>`),aria);
- for(const asset of ['/home/hero.css','/home/sections.css','/home/apps.css','/home/stacks.css','/home/theme.css','/home/hero.js','/home/hero-bg.js','/home/replay-speed.js','/home/apps.js','/home/figures.js','/home/stacks.js']) assert.ok(home.includes(`="${asset}?v=0"`),asset);
+ for(const asset of ['/home/hero.css','/home/sections.css','/home/apps.css','/home/stacks.css','/home/theme.css','/home/hero.js','/home/hero-bg.js','/home/replay.js','/home/apps.js','/home/figures.js','/home/stacks.js']) assert.ok(home.includes(`="${asset}?v=0"`),asset);
  // The theme is set before anything is drawn: theme.js first in <head>, blocking, ahead of every stylesheet.
  const head=home.match(/<head>[\s\S]*?<\/head>/)[0];
  assert.ok(head.includes('<script src="/home/theme.js?v=0"></script>'));
@@ -121,7 +121,9 @@ test('enabled homepage has the apps carousel under the hero',()=>pages(async(hom
   assert.ok(slide.includes(`role="group" aria-roledescription="slide" aria-label="${i+1} of ${slides.length}" data-name="${escapeHTML(name)}"`),app);
   // a real screenshot, sized, with alt text, 360 and 720 wide for 1x and 2x screens, in AVIF and WebP with a JPEG fallback
   const sizes='(min-width: 1000px) 40vw, (min-width: 640px) 58vw, 88vw', set=type=>`/home/apps/${app}-360.${type} 360w, /home/apps/${app}-720.${type} 720w, /home/apps/${app}-960.${type} 960w`;
-  assert.ok(slide.includes(`<source type="image/avif" srcset="${set('avif')}" sizes="${sizes}"><source type="image/webp" srcset="${set('webp')}" sizes="${sizes}"><img src="/home/apps/${app}-360.jpg" srcset="${set('jpg')}" sizes="${sizes}" width="360" height="225" alt="${escapeHTML(copy['home.apps.shot.alt'].replace('{app}',name))}" loading="lazy" decoding="async">`),app);
+  assert.ok(slide.includes(`<source type="image/avif" srcset="${set('avif')}" sizes="${sizes}"><source type="image/webp" srcset="${set('webp')}" sizes="${sizes}"><img src="/home/apps/${app}-360.jpg" srcset="${set('jpg')}" sizes="${sizes}" width="360" height="225" alt="${escapeHTML(copy['home.apps.shot.alt'].replace('{app}',name))}" loading="lazy" decoding="async" draggable="false">`),app);
+  // the screenshot is not a link: the address is the card's only link
+  assert.doesNotMatch(slide,/<a [^>]*>(?:(?!<\/a>)[\s\S])*<picture/,app);
   if(logoSpells) {
    // the wordmark stands in for its letters: the name is never printed beside a logo that already spells it
    const h3=slide.match(/<h3 class="ap-spelled">([\s\S]*?)<\/h3>/)[1];
@@ -141,6 +143,11 @@ test('enabled homepage has the apps carousel under the hero',()=>pages(async(hom
  // With the script the current app snaps to the middle; a drag turns snapping off until it ends.
  assert.match(css,/\.rw \.rw-apps\.is-live \.ap-slide \{ scroll-snap-align: center; \}/);
  assert.match(css,/\.rw \.ap-track\.is-dragging \{ scroll-snap-type: none;/);
+ // the stage turns under a drag; a vertical wheel or a finger moving up and down stays the page's
+ assert.match(css,/\.rw \.ap-track \{[^}]*overflow-x: auto; overflow-y: hidden;/);
+ assert.match(css,/\.rw \.rw-apps\.is-live \.ap-track \{ cursor: grab; touch-action: pan-y;[^}]*user-select: none; \}/);
+ assert.match(css,/\.rw \.rw-apps\.is-live \.ap-link \{ cursor: pointer; \}/);
+ assert.doesNotMatch(css,/\.ap-link::after/,'no link stretched over the card');
  // The pop brings the whole card forward; only the popping and sinking classes carry a transition (so the
  // cards never lag the turning row), and none under reduced motion.
  assert.match(css,/\.rw \.rw-apps\.is-live \.ap-slide\.is-up \{ z-index: 1; transition: transform 0\.32s/);
@@ -166,8 +173,13 @@ test('enabled homepage has the apps carousel under the hero',()=>pages(async(hom
 test('enabled homepage replay has a speed control, and reading-pace timing in its stylesheet',()=>pages(async(home)=>{
  const bar=home.match(/<div class="rp-bar">[\s\S]*?<\/label><\/div>/)[0];
  assert.ok(bar.includes(`<span class="rp-speed" role="group" aria-label="${copy['home.replay.speed']}" hidden><button type="button" class="rp-slower" aria-label="${copy['home.replay.slower']}" title="${copy['home.replay.slower']}">`));
- assert.ok(bar.includes(`<output class="rp-rate" aria-live="polite" data-format="{rate}×">1×</output><button type="button" class="rp-faster" aria-label="${copy['home.replay.faster']}" title="${copy['home.replay.faster']}">`));
+ assert.ok(bar.includes(`<output class="rp-rate" aria-live="polite" data-format="{rate}×">1.5×</output><button type="button" class="rp-faster" aria-label="${copy['home.replay.faster']}" title="${copy['home.replay.faster']}">`));
  assert.ok(bar.indexOf('class="rp-speed"')<bar.indexOf('class="rp-pause"'),'beside Pause, before it');
+ // back and forward a turn, hidden until home/replay.js plays the chat; the thinking dots' name for screen readers
+ assert.ok(bar.includes(`<span class="rp-steps" hidden><button type="button" class="rp-back" aria-label="${copy['home.replay.back']}" title="${copy['home.replay.back']}">`));
+ assert.ok(bar.includes(`<button type="button" class="rp-fwd" aria-label="${copy['home.replay.fwd']}" title="${copy['home.replay.fwd']}">`));
+ assert.ok(bar.indexOf('class="rp-steps"')<bar.indexOf('class="rp-speed"'));
+ assert.ok(home.includes(`<figure class="rp" aria-label="${copy['home.replay.figure.aria']}" data-thinking="${copy['home.replay.thinking']}">`));
  const css=await read('src/home/hero.css');
  const cycle=Number(css.match(/\.rp \{ --rp-cycle: ([\d.]+)s; \}/)[1]);
  const words={1:copy['home.replay.you.1'],2:[copy['home.replay.agent.1'],copy['home.replay.agent.q1'],copy['home.replay.agent.q2'],copy['home.replay.agent.q3']].join(' '),3:copy['home.replay.you.2'],4:copy['home.replay.agent.plan'],5:copy['home.replay.agent.p1'],6:copy['home.replay.agent.p2'],7:copy['home.replay.agent.p3'],8:copy['home.replay.agent.p4']};
@@ -182,7 +194,7 @@ test('enabled homepage replay has a speed control, and reading-pace timing in it
  const scene2=Number(css.match(/@keyframes rp-scene1 \{ 0%, ([\d.]+)%/)[1])*cycle/100;
  assert.ok(scene2-line(3).from>=words[3].split(/\s+/).length*0.3,'the last line of the first scene is read before it goes');
  assert.match(css,/\.rp-agent p \{ color: light-dark\(#2b3036, #dfe6ee\); \}/);
- assert.match(css,/@media \(prefers-reduced-motion: reduce\) \{\n  \.rp \*, \.rp \{ animation: none !important; \}\n[^@]*?\.rp-pause, \.rp-speed \{ display: none !important; \}/);
+ assert.match(css,/@media \(prefers-reduced-motion: reduce\) \{\n  \.rp \*, \.rp \{ animation: none !important; \}\n[^@]*?\.rp-pause, \.rp-speed, \.rp-steps, \.rp-loading, \.rp-think, \.rp-caret \{ display: none !important; \}/);
 }));
 test('apps carousel overrides are explicit and checked against the Apps page',()=>pages(async(home)=>{
  const section=home.match(/<section class="rw-apps"[\s\S]*?<\/div><\/section>/)[0];

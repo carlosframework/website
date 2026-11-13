@@ -20,14 +20,19 @@
    that brings it back also keeps the focus ring inside the scroller's clip. Without JavaScript the apps snap to the
    content column's left edge. With it (.is-live) the current app snaps to the middle, its neighbours peeking in on
    both sides, and home/apps.js adds copies at each end so the row never runs out. */
-.rw .ap-track { --ap-bleed: calc((100vw - 100cqi) / 2); position: relative; list-style: none; display: flex; gap: var(--ap-gap); margin: clamp(1.5rem, 3vw, 2.25rem) calc(-1 * var(--ap-bleed)) 0; padding: 6px var(--ap-bleed) 0.9rem; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--ap-bleed); scrollbar-width: thin; scrollbar-color: var(--rw-line) transparent; }
+.rw .ap-track { --ap-bleed: calc((100vw - 100cqi) / 2); position: relative; list-style: none; display: flex; gap: var(--ap-gap); margin: clamp(1.5rem, 3vw, 2.25rem) calc(-1 * var(--ap-bleed)) 0; padding: 6px var(--ap-bleed) 0.9rem; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--ap-bleed); scrollbar-width: thin; scrollbar-color: var(--rw-line) transparent; }
 .rw .rw-apps.is-live .ap-track { scrollbar-width: none; }
 .rw .rw-apps.is-live .ap-track::-webkit-scrollbar { display: none; }
 .rw .rw-apps.is-live .ap-track { will-change: scroll-position; }
 .rw .rw-apps.is-live .ap-slide { scroll-snap-align: center; }
 /* The depth is decoration: under reduced motion the row stays flat whatever the script last wrote. */
 @media (prefers-reduced-motion: reduce) { .rw .ap-slide { transform: none !important; opacity: 1 !important; } .rw .ap-slide.is-up .ap-shot { transform: none; } .rw .rw-apps.is-live .ap-slide.is-up, .rw .rw-apps.is-live .ap-slide.is-sinking { transition: none; } }
-.rw .ap-track.is-dragging { scroll-snap-type: none; scroll-behavior: auto; cursor: grabbing; user-select: none; }
+.rw .ap-track.is-dragging { scroll-snap-type: none; scroll-behavior: auto; }
+/* The stage is for turning (home/apps.js): grab anywhere, screenshots included; a finger moving up or down still
+   scrolls the page, and a vertical wheel is never caught (overflow-y: hidden above). Only the addresses are links. */
+.rw .rw-apps.is-live .ap-track { cursor: grab; touch-action: pan-y; -webkit-user-select: none; user-select: none; }
+.rw .rw-apps.is-live .ap-track.is-dragging, .rw .rw-apps.is-live .ap-track.is-dragging * { cursor: grabbing; }
+.rw .rw-apps.is-live .ap-link { cursor: pointer; }
 /* home/apps.js eases the glide itself; snapping waits until it lands on the next app. */
 .rw .ap-track.is-gliding { scroll-snap-type: none; scroll-behavior: auto; }
 @media (prefers-reduced-motion: no-preference) { .rw .ap-track { scroll-behavior: smooth; } }
@@ -53,13 +58,11 @@
 /* A wordmark that spells the name (or part of it) sits in the heading in place of those letters. */
 .rw .ap-slide h3.ap-spelled { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.45rem; }
 .rw .ap-about { margin-top: 0.35rem; color: var(--rw-ink-2); font-size: 0.93rem; line-height: 1.5; text-wrap: pretty; }
-/* The way out: the app's own address. Its ::after covers the whole slide, so the screenshot and text are one link. */
+/* The way out: the app's own address, the only link on the card. */
 .rw .ap-link { justify-self: start; display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; font: 400 0.8rem/1.4 var(--rw-mono); letter-spacing: 0.02em; text-decoration: none; }
 .rw .ap-link svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
-.rw .ap-link::after { content: ""; position: absolute; inset: -4px; border-radius: 12px; }
-.rw .ap-slide:hover .ap-link { text-decoration: underline; text-underline-offset: 0.22em; }
-.rw .ap-link:focus-visible { outline: none; }
-.rw .ap-link:focus-visible::after { outline: 2px solid var(--rw-acc); }
+.rw .ap-link:hover { text-decoration: underline; text-underline-offset: 0.22em; }
+.rw .ap-link:focus-visible { outline: 2px solid var(--rw-acc); outline-offset: 2px; border-radius: 4px; }
 
 /* Under the row: previous, the dots and next as one group centred on the page (so the dots sit under the middle
    app), "See all apps" at the end; on phones each on its own line, centred. */
