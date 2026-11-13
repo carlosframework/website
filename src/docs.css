@@ -119,21 +119,56 @@
   align-items: start;
 }
 
-/* Two columns once there is room for both. Below this the nav keeps its
-   document order — it is written before the article — so it simply
-   stacks above the content, with no toggle and no script. */
+/* Wide screens (Paul, 2026-11-06, after Stripe's docs): the nav is pinned
+   hard-left at full height, a fixed head (title and search) over a list
+   that scrolls on its own, so nothing moves as you go between pages. The
+   page's scrollbar gutter is always reserved for the same reason. Below
+   this the nav keeps its document order and stacks above the content,
+   with only the current section's pages listed. */
+html { scrollbar-gutter: stable; }
 @media (min-width: 60rem) {
+  .docs-body { padding-inline: 0; --page-gutter: 0px; }
+  .docs-body .masthead { padding-inline: 1.25rem clamp(2rem, 5vw, 4.5rem); }
   .docs-shell {
-    grid-template-columns: 15rem minmax(0, 1fr);
-    gap: clamp(2.5rem, 5vw, 4rem);
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+    grid-template-columns: 17rem minmax(0, 1fr);
   }
   .docs-nav {
     position: sticky;
-    top: 2rem;
-    max-height: calc(100vh - 4rem);
-    overflow-y: auto;
-    overscroll-behavior: contain;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-right: 1px solid var(--rule);
+    background: var(--bg);
   }
+  .nav-head { flex: none; padding: 1.5rem 1.25rem 1rem; border-bottom: 1px solid var(--rule-soft); }
+  .docs-nav .nav-groups { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0.4rem 1.25rem 3rem; }
+  .docs-body main { padding: clamp(1.75rem, 4vw, 3rem) clamp(2rem, 5vw, 4.5rem) 4rem; min-width: 0; }
+}
+
+/* On this page: the page's ## headings in a rail, once there is room. */
+.docs-toc { display: none; }
+@media (min-width: 80rem) {
+  .docs-shell.has-toc { grid-template-columns: 17rem minmax(0, 1fr) 15rem; }
+  .docs-toc {
+    display: block;
+    position: sticky;
+    top: 0;
+    max-height: 100vh;
+    overflow-y: auto;
+    padding: clamp(1.75rem, 4vw, 3rem) 1.5rem 3rem 0;
+    font-size: 0.86rem;
+  }
+  .docs-toc-title { margin: 0 0 0.5rem; font-size: 0.715rem; font-weight: 600; letter-spacing: 0.11em; text-transform: uppercase; color: var(--muted); }
+  .docs-toc ul { list-style: none; margin: 0; padding: 0; }
+  .docs-toc li + li { margin-top: 0.3rem; }
+  .docs-toc a { color: var(--ink-2); text-decoration: none; }
+  .docs-toc a:hover { color: var(--accent); }
 }
 
 /* ------------------------------------------------------------------- nav -- */
@@ -388,3 +423,124 @@
 /* Let the article shrink inside the grid; wide code scrolls within its block. */
 .docs-shell > main { min-width: 0; width: 100%; }
 .docs-article { overflow-wrap: anywhere; }
+
+/* -------------------------------------------------------------- diagrams -- */
+
+/* Figures from ```diagram and ```stepper fences (hack/docs-markdown.mjs).
+   Their SVGs are inlined, so shapes take these colours: an SVG marks its
+   parts with class="shape", "shape group", "shape dim" or "shape on";
+   lines with "line", "line dim" or "line on"; text with "small", "dim"
+   or "on". Nothing else is styled, so a diagram reads in light and dark. */
+.docs-article .diagram { margin: 1.75rem 0; }
+.docs-article .diagram svg { display: block; width: 100%; height: auto; }
+.diagram .shape { fill: var(--surface); stroke: var(--rule); stroke-width: 1.5; }
+.diagram .shape.group { fill: none; stroke-dasharray: 5 4; }
+.diagram .shape.dim { stroke: var(--rule-soft); fill: var(--bg-sunk); }
+.diagram .shape.on { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.diagram .line { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.diagram .line.on { stroke: var(--accent); stroke-width: 2.5; }
+.diagram .line.dim { stroke: var(--rule); }
+.diagram text { fill: var(--ink); font-family: var(--font-sans); font-size: 14px; }
+.diagram text.small { fill: var(--ink-2); font-size: 12px; }
+.diagram text.dim { fill: var(--muted); }
+.diagram text.on { fill: var(--accent-deep); font-weight: 600; }
+.docs-article .diagram figcaption { margin-top: 0.6rem; color: var(--ink-2); font-size: 0.95rem; }
+
+/* A stepper without JavaScript: every frame, numbered, in order. */
+.docs-article ol.frames { margin: 0; padding: 0; list-style: none; counter-reset: frame; }
+.docs-article ol.frames > li.frame { counter-increment: frame; margin: 0 0 1.5rem; padding: 0.9rem 1rem; border: 1px solid var(--rule); }
+.docs-article ol.frames > li + li { margin-top: 0; }
+.docs-article li.frame figcaption::before { content: "Step " counter(frame) ". "; font-weight: 600; color: var(--ink); }
+.stepper-controls { display: none; }
+
+/* With docs-stepper.js: one frame at a time, Back and Next. */
+.stepper.is-enhanced li.frame { display: none; margin: 0; }
+.stepper.is-enhanced li.frame.is-current { display: block; animation: frame-in 180ms ease-out; }
+.stepper.is-enhanced li.frame figcaption { display: none; }
+.stepper.is-enhanced .stepper-controls { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.75rem; }
+.stepper-controls button { padding: 0.4rem 0.9rem; border: 1px solid var(--ink-2); background: var(--surface); color: var(--ink); font: inherit; cursor: pointer; }
+.stepper-controls button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-deep); }
+.stepper-controls button:disabled { opacity: 0.4; cursor: default; }
+.stepper-controls .stepper-count { color: var(--muted); font-size: 0.9rem; }
+.stepper-caption { flex-basis: 100%; margin: 0.25rem 0 0; color: var(--ink-2); }
+@keyframes frame-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .stepper.is-enhanced li.frame.is-current { animation: none; }
+  .stepper * { transition-duration: 0s !important; animation-duration: 0s !important; }
+}
+@media print {
+  .stepper.is-enhanced li.frame { display: block; margin: 0 0 1rem; }
+  .stepper.is-enhanced li.frame figcaption { display: block; }
+  .stepper-controls { display: none !important; }
+}
+/* Narrow screens: a diagram keeps a readable size and scrolls sideways in
+   its own box, never the page. */
+@media (max-width: 30rem) {
+  .docs-article .diagram figure, .docs-article figure.diagram { overflow-x: auto; }
+  .docs-article .diagram svg { min-width: 36rem; }
+}
+
+/* ------------------------------------------------- nav head and search -- */
+
+.nav-head .docs-nav-title { margin: 0 0 0.35rem; }
+.nav-head .docs-nav-title + .docs-nav-title { margin-bottom: 0; }
+
+/* Search: a button-like box. Without JavaScript it goes to the page index
+   on /docs/; with docs-search.js, a click or "/" opens a dialog. */
+.docs-nav a.docs-search {
+  display: flex; align-items: center; gap: 0.55rem;
+  margin: 0.9rem 0 0; padding: 0.5rem 0.65rem;
+  border: 1px solid var(--rule); border-radius: 6px;
+  background: var(--surface); color: var(--muted);
+  font-size: 0.9rem; line-height: 1.2; text-decoration: none;
+}
+.docs-nav a.docs-search:hover, .docs-nav a.docs-search:focus-visible { border-color: var(--ink-2); color: var(--ink); }
+.docs-search svg { flex: none; }
+.docs-search span { flex: 1; }
+.docs-search kbd {
+  padding: 0.05rem 0.4rem; border: 1px solid var(--rule); border-radius: 4px;
+  font: 0.78rem/1.4 var(--font-mono); color: var(--muted); background: var(--bg-sunk);
+}
+
+/* Section labels are links to their part of /docs/, lined up with the
+   title rather than indented like the pages under them. */
+.docs-nav a.docs-nav-section { display: block; padding-left: 0; border-left: 0; color: var(--muted); }
+.docs-nav a.docs-nav-section:hover { color: var(--ink); border-left: 0; }
+.docs-nav .nav-group:first-child .docs-nav-section { margin-top: 0.9rem; padding-top: 0; border-top: 0; }
+.docs-nav .nav-group ul { margin: 0; padding: 0; }
+
+/* Narrow screens (Paul's mockup review): the nav collapses to one row of
+   section labels that scrolls sideways in its own box, each linking to its
+   part of /docs/, so the article starts near the top of the screen. */
+@media (max-width: 59.99rem) {
+  .docs-nav .nav-groups { display: flex; gap: 1.1rem; overflow-x: auto; margin-top: 0.9rem; padding-bottom: 0.4rem; white-space: nowrap; scrollbar-width: thin; }
+  .docs-nav .nav-group ul { display: none; }
+  .docs-nav .nav-group .docs-nav-section,
+  .docs-nav .nav-group:first-child .docs-nav-section { margin: 0; padding: 0.3rem 0; border-top: 0; }
+  .docs-nav .nav-group.is-current .docs-nav-section { color: var(--accent); }
+}
+
+/* The page index on /docs/: every page, A to Z, with its section. */
+.docs-article ul.docs-page-index { columns: 2 16rem; padding-left: 0; list-style: none; }
+.docs-article ul.docs-page-index > li + li { margin-top: 0.3rem; }
+.docs-page-index span { color: var(--muted); font-size: 0.82rem; }
+
+/* --------------------------------------------------------- search dialog -- */
+
+dialog.search-dialog {
+  width: min(36rem, calc(100vw - 2rem)); margin: 12vh auto auto; padding: 0;
+  border: 1px solid var(--rule); border-radius: 10px;
+  background: var(--surface); color: var(--ink); box-shadow: var(--shadow-2);
+}
+dialog.search-dialog::backdrop { background: rgb(0 0 0 / 0.35); }
+.search-dialog form { display: flex; align-items: center; border-bottom: 1px solid var(--rule); }
+.search-dialog input { flex: 1; min-width: 0; padding: 0.9rem 1rem; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: 1.05rem; outline: none; }
+.search-close { flex: none; margin-right: 0.5rem; width: 2rem; height: 2rem; border: 0; border-radius: 6px; background: transparent; color: var(--muted); font-size: 1.35rem; line-height: 1; cursor: pointer; }
+.search-close:hover, .search-close:focus-visible { background: var(--bg-sunk); color: var(--ink); }
+.search-dialog ul { margin: 0; padding: 0.4rem; list-style: none; max-height: 50vh; overflow-y: auto; }
+.search-dialog li { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; }
+.search-dialog li a { flex: 1; padding: 0.45rem 0.6rem; border-radius: 6px; color: var(--ink); text-decoration: none; }
+.search-dialog li a:hover, .search-dialog li a:focus-visible { background: var(--accent-soft); color: var(--accent-deep); outline: none; }
+.search-dialog li span { padding-right: 0.6rem; color: var(--muted); font-size: 0.82rem; white-space: nowrap; }
+.search-dialog .search-empty { padding: 0.6rem; color: var(--muted); }
+.search-dialog .search-hint { margin: 0; padding: 0.5rem 1rem; border-top: 1px solid var(--rule-soft); color: var(--muted); font-size: 0.8rem; }

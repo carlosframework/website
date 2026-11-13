@@ -68,6 +68,17 @@ try {
 }
 
 const files = walk(source);
+
+// Diagrams: docs/site/diagrams/*.svg, inlined by hack/docs-markdown.mjs.
+// A corpus without the directory simply has none.
+const diagramsSource = join(source, "diagrams");
+let diagrams = [];
+try {
+  diagrams = readdirSync(diagramsSource).filter((n) => n.endsWith(".svg")).sort();
+} catch {
+  diagrams = [];
+}
+const diagramsDest = join(dest, "diagrams");
 if (files.length === 0) {
   console.error(`no markdown under ${source}`);
   process.exit(1);
@@ -154,6 +165,25 @@ if (check) {
   for (const rel of vendored) {
     if (!files.some((f) => relative(source, f) === rel)) problems.push(`stale: ${rel}`);
   }
+  for (const name of diagrams) {
+    let have = null;
+    try {
+      have = readFileSync(join(diagramsDest, name), "utf8");
+    } catch {
+      problems.push(`missing: diagrams/${name}`);
+      continue;
+    }
+    if (have !== readFileSync(join(diagramsSource, name), "utf8")) problems.push(`differs: diagrams/${name}`);
+  }
+  let vendoredDiagrams = [];
+  try {
+    vendoredDiagrams = readdirSync(diagramsDest).filter((n) => n.endsWith(".svg"));
+  } catch {
+    vendoredDiagrams = [];
+  }
+  for (const name of vendoredDiagrams) {
+    if (!diagrams.includes(name)) problems.push(`stale: diagrams/${name}`);
+  }
   if (readFileSync(navDest, "utf8") !== navOut) problems.push("differs: nav.json");
   if (readFileSync(anchorsDest, "utf8") !== anchorsOut) problems.push("differs: anchors.json");
   try {
@@ -186,9 +216,11 @@ for (const file of files) {
   mkdirSync(dirname(target), { recursive: true });
   writeFileSync(target, readFileSync(file));
 }
+if (diagrams.length) mkdirSync(diagramsDest, { recursive: true });
+for (const name of diagrams) writeFileSync(join(diagramsDest, name), readFileSync(join(diagramsSource, name)));
 writeFileSync(join(dest, "docs.json"), dirData);
 writeFileSync(navDest, navOut);
 writeFileSync(anchorsDest, anchorsOut);
 writeFileSync(changelogDest, changelogOut);
 writeFileSync(versionDest, versionOut(sha));
-console.log(`synced ${files.length} pages from ${sha.slice(0, 7)}`);
+console.log(`synced ${files.length} pages and ${diagrams.length} diagrams from ${sha.slice(0, 7)}`);

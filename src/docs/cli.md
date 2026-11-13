@@ -154,6 +154,10 @@ later, puts the app's routes and instances on a fleet your account owns.
 in that empty spelling: leaving it off is a usage error, never a silent
 clear.
 
+`carlos apps place` refuses an app whose sealed values were sealed to a different key from the target's, and `carlos apps create --place` does the same for an app that already has config. The message lists the values. Unset them, place the app, then set them again and rotate any credential the console minted.
+
+carlos apps place refuses a rootfs app, whatever the target, because a rootfs app's instances do not move. Give a rootfs app its fleet with --place fleet/<name> when you create it, before its first ship. [Rootfs apps](/docs/rootfs) says why.
+
 Two more flags are stamped at claim time. `--control-plane` marks the app as
 the control plane, after which it refuses trash, purge, rename and transfer,
 and refuses a service credential's promote — owner only. `--build-probe /path`
@@ -214,6 +218,12 @@ box, after the first one has stayed up for ten seconds; it starts at 1. Any
 member of the app can change both, here or on the app's settings page in the
 console.
 
+--interactive on lets any member open a terminal session on the app's instances with carlos run -it or carlos console. A session can read and change everything the instance can, so it is off until an owner turns it on. Any member can turn it off.
+
+```sh
+carlos apps set shop --interactive on
+```
+
 `carlos apps set` also controls the update settings an instance may change:
 
 ```sh
@@ -221,6 +231,10 @@ carlos apps set shop --instance-control updates,pin --default-updates manual
 ```
 
 --instance-control names the settings an instance may change itself once instances can act for themselves. --default-updates and --default-major apply wherever an instance has not chosen; --default-channel is the channel new instances are created on.
+
+Set the count with carlos apps set shop --copies 2. Each instance of shop gets two copies on different eligible fleet boxes. The command refuses a count larger than the eligible fleet.
+
+If a box is lost or detached, the requested count stays the same. The platform uses a distinct spare when one is available, otherwise the app runs short until a suitable box returns.
 
 System operators can also set an app's instance policy: which private addresses its instances may reach and the size each instance runs at. `carlos apps show` reads it back.
 
@@ -243,6 +257,10 @@ The console records a change, and the app's boxes apply it. A box that follows t
 
 ### carlos ship
 
+Ship with --stateless when your app keeps its data outside its box. The release gets no local database, CARLOS_DB or Litestream. You provide and operate its database and other data services.
+
+If the box running the release command disappears, its result may be unknown. The deploy stops and the previous build keeps serving. Deploying again runs the command again, so release commands must be safe to repeat. Rails migrations record completed migrations in schema_migrations.
+
 Publishes a release. The artifact is hashed, stored under its content
 address, and recorded in a manifest that never changes afterwards. Shipping
 does not change what anything serves — for that, see
@@ -263,6 +281,8 @@ so write it for the person doing a rollback at 2am.
 Files under an asset folder are fetched without the visitor's cookies or login, so put only public files there. Anything that needs to know who is asking belongs outside those folders.
 
 Servers keep a copy only when your app answers with status 200, a `Cache-Control` that allows it (for example `public, max-age=31536000, immutable`), a `Content-Type` that is not HTML, and no `Set-Cookie`. Each response says what happened in a `Carlos-Cache` header: `hit` came from a saved copy, `miss` had no saved copy yet, so the server fetched it and tried to keep one, and `bypass` was fetched without keeping a copy.
+
+--env KEY=VALUE gives every process in the check a variable, such as a placeholder secret or a store setting. The check never reads the app's real config or secrets. It sets CARLOS_SOCKET, CARLOS_DB, CARLOS_HOST and CARLOS_REGION itself, so --env cannot set those.
 
 ### carlos promote
 
@@ -325,6 +345,12 @@ A host behind a password gate ([carlos gate](/docs/cli#carlos-gate)) is watched 
 carlos deploy --app hello ./hello
 ```
 
+`carlos deploy --app hello --env PORT=8080 ./hello` creates the app and its first instance if they are missing, then deploys your built binary and waits for it to serve. Existing instances stay unchanged. Use `--region` to choose a new app’s region; for an existing app, it checks the region.
+
+Repeat `--env KEY=value` to set ordinary variables before shipping. They go into the environment bundle shared by the selected instances. If those instances use different bundles, select one with `--host`. Values are not printed, but remain in shell history; use `carlos secrets set` for secrets.
+
+The console must support instances and provide a platform domain. Trashed apps are not restored. If setup fails partway through, the app, instance or variables already created remain. Fix the reported error and retry.
+
 Signed-in only. With saved project defaults you can run `carlos deploy` with
 no arguments and no questions. A first run at a terminal fills the blanks by
 asking. If your account owns no apps yet, it offers to claim one named after
@@ -377,6 +403,36 @@ app is served only at its own platform address, so `--host` and
 carlos deploy --temporary --ttl 3d ./dist
 ```
 
+#### Markdown variants for a static site
+
+Put `shop/index.html` beside `shop/index.md` to offer HTML and Markdown at
+`/shop/`. For a page at `/page.html`, put `page.html` beside `page.md`.
+Ship both files. No application server or configuration switch is needed.
+
+The edge serves the Markdown file when the request's `Accept` header gives
+`text/markdown` a positive quality value (`q`) strictly higher than
+`text/html`. This request prefers Markdown.
+
+```sh
+curl -H 'Accept: text/markdown;q=1, text/html;q=0.5' https://example.com/shop/
+```
+
+If `q` is omitted, its quality is 1. A more specific media range takes
+precedence over a wildcard when determining each type's quality. If
+qualities are equal, `Accept` is missing, or neither type is acceptable, the
+edge serves HTML. A page without a Markdown twin continues to serve HTML. A
+Markdown file alone does not create a page or a directory index.
+
+The served Markdown has the content type `text/markdown; charset=utf-8`. For
+a page with a twin, both representations include `Vary: Accept`, including
+HEAD, conditional and range responses. Existing `Vary` values are preserved,
+with `Accept-Encoding` included when the response is compressed.
+
+The existing slash redirects and `_redirects` rules apply before selecting
+a representation. For example, `/shop` still redirects to `/shop/` unless
+your redirect rules override that behaviour. You can request
+`/shop/index.md` or `/page.md` directly as ordinary files.
+
 #### Redirects for a static site
 
 Put a file named `_redirects` at the top of the site directory. It uses the
@@ -414,6 +470,62 @@ https://www.example.com/*  https://example.com/:splat  301!
 cannot use, and name the line. Netlify's conditions, such as `Country=`, and
 proxying to another host are not supported. A file can have up to 2,000
 rules. The edge does not serve the `_redirects` file itself.
+
+A folder requested without its trailing slash, such as `/blog/post`, is
+redirected with a 301 to `/blog/post/`, where its `index.html` is served.
+Each page then has one address, and relative links in the page resolve
+against its own folder. If the site's `_redirects` rules name that path, or
+redirect its slash form, the folder is served at the path as asked instead.
+
+#### Response headers for a static site
+
+Put a file named `_headers` at the top of the site directory to set response
+headers on the paths you choose. It uses the format Netlify and Cloudflare
+Pages use: a path on a line of its own, then the headers for it, each on an
+indented line below it.
+
+```text
+# Released versions never change.
+/1.0.0/*
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+
+# The latest 1.x moves with each release.
+/1/*
+  Cache-Control: public, max-age=300
+  Access-Control-Allow-Origin: *
+```
+
+`Access-Control-Allow-Origin: *` lets pages on other sites fetch these
+files, load them as JavaScript modules and pin them with integrity hashes. A
+plain stylesheet or script tag works without it.
+
+- A path works as a `_redirects` source does. `:name` matches one segment, a
+  `*` at the end matches the rest of the path, and a URL with a host applies
+  only to requests for that host.
+- Rules match the address the browser asked for, before any `_redirects`
+  rewrite. If `/1/*` is rewritten to `/1.0.0/:splat`, a request for
+  `/1/site.css` gets the headers for `/1/*`.
+- Every rule that matches applies. When two set the same header, the one
+  lower in the file wins, so put general rules first and specific ones after
+  them.
+- Headers are sent with a file served normally, including its 304 and range
+  responses. Redirects, not-found pages and errors don't get them.
+- A `Cache-Control` rule replaces the `no-cache` every file gets by default.
+
+These headers can be set:
+
+| Header | Values |
+| --- | --- |
+| `Cache-Control` | any list of directives, such as `public, max-age=300` |
+| `Access-Control-Allow-Origin` | `*` |
+| `Access-Control-Expose-Headers` | a list of header names |
+| `Cross-Origin-Resource-Policy` | `same-origin`, `same-site` or `cross-origin` |
+| `Timing-Allow-Origin` | `*` |
+
+`carlos ship` and `carlos deploy` refuse a `_headers` file with a line they
+cannot use, and name the line. Any other header is refused too. A file can
+have up to 100 paths. The edge does not serve the `_headers` file itself.
 
 #### Two builds at once
 
@@ -522,6 +634,19 @@ lease; there is no pointer to delete.
 
 One thing this is not: traffic splitting. A canary is a URL, not a
 percentage of production traffic on the app's own hostname.
+
+### carlos devbox
+
+Publish a dev server or a folder as an HTTPS link on a shared devbox, for people on eg a tailnet. A live link follows your dev server on 127.0.0.1, so edits show up as you save. A folder link serves a copy of the folder, and sharing it again replaces the copy.
+
+```sh
+carlos devbox share --port 5173 shop
+carlos devbox share --dir ./dist docs
+carlos devbox unshare shop
+carlos devbox list
+```
+
+If you work through an AI agent, run both the dev server and carlos devbox share outside the agent's sandbox. A dev server started inside the sandbox listens where the devbox cannot reach it, and the sandbox also stops the command from reaching the devbox service.
 
 ### carlos restart
 
@@ -641,7 +766,19 @@ The command runs for at most 30 minutes unless you pass --timeout, up to 6 hours
 
 A hibernating instance is woken first. A live one keeps serving, and the command opens the same database beside it. One run at a time per instance. carlos run needs the instance's box on the nested layout, and it is refused while the instance is moving.
 
+For a rootfs app the command after -- runs inside the instance's image and is found on the image's PATH.
+
+On a customer fleet, the instance's box reaches the console for the run itself, so carlos run works there as it does on any other box.
+
+With -it, the command runs in a terminal session instead: what you type goes to it and its screen comes back, so a REPL or a shell works. The app must allow it first, with carlos apps set <app> --interactive on, which only an owner can do. A session ends when the command exits, after 30 minutes without a keystroke, after 6 hours, or soon after your connection drops. A deploy, a restart or a move of the instance ends it too. Ctrl-C and Ctrl-D go to the command. One session at a time per instance, beside any run. Who opened it, where, when it ended and how are in the audit log. What you type and what it prints are not kept.
+
+```sh
+carlos run -it --app shop --instance shop.example.com -- bin/rails console
+```
+
 carlos run exits with the command's own status, 128 plus the signal number when a signal ended it, 124 when it timed out, 125 when it was interrupted or the instance let go of it without a result, 130 when you cancelled it, 3 when the box refused it or did not pick it up within 60 seconds, and 2 when the console refused it.
+
+A session exits with the command's own status, 124 when it ended for lack of keystrokes or at 6 hours, 125 when it was interrupted or its box's connection dropped, 130 when you cancelled it before it started, 3 when the box refused it or none opened it within 60 seconds, 2 when the console refused it, and 1 when carlos lost its connection to the console.
 
 carlos logs shows when each run started, who asked for it and how it ended. The command's output is not kept there. A service's run reads "started by service ci", with the person it named, if any, marked as the service's statement.
 
@@ -714,6 +851,14 @@ A key is honoured for 24 hours, or until the same caller has made 32 newer keyed
 Keyed creates are off until the operator of the console turns them on, with `CARLOS_RUN_KEYS=on`, and answer `503 keys_not_ready` until then. The operator does that only once every box runs a build that keeps them. It is a one-way switch: a box rolled back to an older build afterwards forgets the keys silently, and a retry could then start a second run.
 
 Deleting an instance deletes its keys with it. A retry that arrives after the host was deleted and created again starts a fresh run on the new instance.
+
+### carlos console
+
+Opens the console process your app's manifest declares, in a terminal session, as carlos run -it would. carlos ship fills one in for Rails, Laravel and Django apps when the manifest has none. An app without one is refused, and the message says how to name a command instead.
+
+```sh
+carlos console --app shop --instance shop.example.com
+```
 
 ### carlos schedule
 
@@ -840,6 +985,20 @@ Values land in the app's default bundle. `--environment <name>` writes a named
 bundle instead, layered on top of the default when config is materialized.
 `carlos env environments --app hello` lists the bundle names an app has.
 
+An environment a team scope owns is different: it is standalone, never
+inheriting the default bundle, and the platform mints its mail and relay
+credentials for it alone. An account owner marks one with `carlos env adopt
+--app hello --environment slice --scope alta` (refused while an instance is
+bound to it), clears it with `carlos env release`, or creates one from an
+existing environment's own keys with `carlos env fork --app hello --from
+lagged --to lagged-team --scope alta`. Fork never copies the default bundle or
+a platform-managed key; sealed secrets are copied as they are. A team
+credential (see [carlos services](#carlos-services)) reads and writes only the
+environments its scope owns, and creates one by writing to a name no instance
+references. Binding an instance into an owned environment is a person's
+explicit act: `carlos instances create` and `carlos instances set-environment`
+take `--scope <name>` for it.
+
 Binding a route to a bundle is a different verb depending on the route.
 [carlos instances set-environment](/docs/cli#carlos-instances) is the one to
 reach for: on a provisioned route the binding lives in the instance record,
@@ -855,6 +1014,11 @@ carries on with the old values until its own supervisor restarts it. `set` and
 `unset` say so, naming the routes it applies to, and say when they could not
 work it out rather than staying quiet about it.
 
+A write that reaches a route no pass delivers to says so ("this write did
+not reach <host>"), with the two ways out: name the unit that runs the
+process on the box, or opt the bundle into file delivery. A stamped route
+the root pass will refuse is reported as blocked with the reason.
+
 ### carlos secrets
 
 The same shape as `carlos env`, sealed. `list` prints key names and never
@@ -864,9 +1028,20 @@ values.
 carlos secrets set --app hello STRIPE_KEY=sk_live_example
 ```
 
+A write that reaches a route no pass delivers to says so ("this write did
+not reach <host>"), with the two ways out: name the unit that runs the
+process on the box, or opt the bundle into file delivery. A stamped route
+the root pass will refuse is reported as blocked with the reason.
+
 Sealing uses a public key; the private half lives on the box that decrypts
 them and never leaves it, in either mode. `carlos secrets genkey` mints the
 pair, and it is always local to your terminal.
+
+An app placed on a fleet is sealed to the fleet's key, which `carlos secrets set` takes from the console. Leave `CARLOS_SECRETS_PUBKEY` unset in your terminal for it, and use a `carlos` CLI that knows about fleet keys, because the console refuses a secret from an older one.
+
+In direct-bucket mode, `carlos secrets set` refuses for any account that owns a fleet, because it cannot tell which key an app needs. Unset `CARLOS_DEPLOYMENT_BUCKET` and `CARLOS_DEPLOYMENT_DIR`, sign in with `carlos auth login`, and run `carlos secrets set` through the console.
+
+`carlos secrets fingerprint` prints the fingerprint of the `CARLOS_SECRETS_KEY` in `/etc/carlos/host.env`, or in the file you name with `--file`. It runs on your machine, calls no console and never prints the key.
 
 An empty value is refused rather than stored. A command substitution that
 produced nothing looks exactly like a real value at the point you type it, and
@@ -874,6 +1049,16 @@ a stored empty secret usually surfaces much later as a feature quietly not
 working. Use `carlos env set` for a value that is meant to be empty.
 
 ### carlos instances
+
+In an active high availability region, a non-hibernating binary socket create is refused with status 400 before the instance or its data is created. The refusal does not apply to resident rootfs instances. A binary socket import gets the same refusal before import work begins. A hibernating import keeps the existing status 409 refusal.
+
+If earlier data remains for the address, the create is refused with status 409. The message names the data found: lock, files, replica or other. Choose another address, or ask an operator to purge the old data.
+
+An operator can enable high availability for named pools in a region. Only instances and sidecars for apps placed in those pools use high availability there. Other creates work as usual. High availability creates also work outside the console's home region, using that region's data for the earlier-data check. If the data cannot be checked, the create is refused with status 503 before any write. Try again. If any box uses different data storage from the region, high availability creates are refused with status 503. The message names the box. An operator must reconfigure or retire it. If high availability covers every create in a region, a non-home or pooled high availability create is refused with status 409: "use the console's home region without a pool."
+
+New creates in an HA region need a box with room. A 503 response tells you to retry after 60 seconds. Missing evidence pauses creates. It does not report zero capacity. Existing instances can still wake.
+
+Named-pool creates need a serving box that reports membership of the requested pool. Older boxes do not report this evidence. If no box confirms capacity and evidence is missing, the create returns 503 because capacity is unknown. Nothing is created. Shared-pool creates use the existing shared-pool reports.
 
 An app's instances are the places it actually runs. `carlos instances enable`
 is the app's opt-in to provisioning, and until it is set the API refuses to
@@ -923,6 +1108,10 @@ build that failed there is tried again, as a canary:
 ```sh
 carlos instances retry --app hello shop-1.hello.example.com
 ```
+
+When a box refuses an instance's config, REASON in `carlos instances list` says why and what to do. A box without a secrets key needs `CARLOS_SECRETS_KEY` in its `host.env` and a restart with `systemctl restart carlos-edge`. A box that cannot open a secret needs its key compared with the fleet's using `carlos secrets fingerprint` and `carlos fleets ls`. If the keys match, run `carlos secrets set` for the listed values and rotate any credential the console minted.
+
+For a rootfs app, RUNTIME says `rootfs`, or `rootfs, hibernates` for an instance that sleeps when idle. WORKERS counts the instance's running workers out of the ones it declares, and names a worker that keeps crashing. A binary instance shows `binary` and a dash.
 
 `--environment <e>` on `create`, and `set-environment` on a route that
 already exists, bind one instance to one of the app's named config bundles.
@@ -990,6 +1179,8 @@ no bundle can override:
 | `CARLOS_CONTROL_SOCKET` | the socket the platform listens on for your app's purge and scheduling calls |
 | `CARLOS_PURGE` | `header` when the edge honours a `Carlos-Purge` response header |
 | `CARLOS_ADMIN_TOKEN` | a secret shared with this one instance: the platform presents it when it calls your app, and your app presents it on `CARLOS_CONTROL_SOCKET` |
+
+The box keeps a sealed copy of each instance's `<host>.env`. It also keeps sealed copies of the `instance.key` and `report.token` files an app keeps at the top of its own directory. These copies are stored in the region's data bucket. Each copy is sealed to the box's secrets key and bound to your app. Only a box that can already read your app's secrets can open it. When a box starts an instance whose `<host>.env` is missing, it puts the sealed copy back first. This keeps the instance's `CARLOS_ADMIN_TOKEN` and `CARLOS_INSTANCE_KEY` instead of giving it new ones. A file that is there is never replaced. You can edit other values in `<host>.env`. The box seals the new contents within a minute. `CARLOS_ADMIN_TOKEN`, `CARLOS_INSTANCE_KEY`, `instance.key` and `report.token` cannot change once sealed. If the box finds a different value, it refuses to start the instance and raises an alert. Deleting the file does not reset it. A box without the secrets key a copy was sealed to will not start that instance. This includes a box whose key was changed. Put the old key back.
 
 A seed (the `--seed` command of `carlos instances enable`) runs with the same
 environment, `CARLOS_HOST` included, and no control socket.
@@ -1114,6 +1305,10 @@ carlos sidecars create --app eleven bot-acme
 carlos sidecars ls --app eleven
 ```
 
+New creates in an HA region need a box with room. A 503 response tells you to retry after 60 seconds. Missing evidence pauses creates. It does not report zero capacity. Existing instances can still wake.
+
+Named-pool creates need a serving box that reports membership of the requested pool. Older boxes do not report this evidence. If no box confirms capacity and evidence is missing, the create returns 503 because capacity is unknown. Nothing is created. Shared-pool creates use the existing shared-pool reports.
+
 Sidecars hibernate by default, and a sleeping one has only two ways back up:
 its own schedule, or `carlos sidecars wake`. Nothing can dial it awake, which
 is the difference that matters when you are reasoning about one — an instance
@@ -1198,12 +1393,21 @@ The REGION column names where each route or box runs, such as London (UK).
 
 ### carlos domains
 
+```sh
+carlos domains check shop.example
+carlos domains buy shop.example --app shop
+```
+
 Attaches a customer's own hostname to one of the app's routes, detaches it,
 or lists what is claimed.
 
 ```sh
 carlos domains attach --app hello www.example.com
 ```
+
+New creates in an HA region need a box with room. A 503 response tells you to retry after 60 seconds. Missing evidence pauses creates. It does not report zero capacity. Existing instances can still wake.
+
+Named-pool creates need a serving box that reports membership of the requested pool. Older boxes do not report this evidence. If no box confirms capacity and evidence is missing, the create returns 503 because capacity is unknown. Nothing is created. Shared-pool creates use the existing shared-pool reports.
 
 `--route` picks which route to point at, and you can leave it off when the app
 has exactly one instance record. The `list` verb joins the claims to the
@@ -1286,6 +1490,30 @@ expecting many new instances a week should also enable `--wildcard` on
 ```sh
 carlos domains detach --app teams '*.example.com'
 ```
+
+#### One domain, one instance per region
+
+A regional domain is served in each region by that region's own instance of the app. A request that reaches a server in one region is answered there and never sent to another region. If that region's instance is not running, the request gets a 503.
+
+```sh
+carlos domains placements --app shop example.com
+carlos domains placements --app shop --set ie=shop-ie.example.net --set uk=shop-uk.example.net example.com
+carlos domains placements --app shop --set ie=shop-ie.example.net --set uk=shop-uk.example.net --wildcard --catchall example.com
+```
+
+`--set` gives the whole set each time, one `region=instance` per region. Without `--set`, the command shows each region's instance, whether it is ready, and the addresses where its servers answer. Once every region you named is ready, point DNS for the domain at those addresses with latency-based routing.
+
+A regional domain has to be new. A hostname already attached as an ordinary domain is refused, and so is one that a catch-all already covers. To make an attached hostname regional, detach it first, then set its placements again. `--wildcard` and `--catchall` are set when the domain is created and cannot be changed afterwards. To change them, detach it first, then set its placements again.
+
+Each instance stays separate, with its own data, backups and hostname. Path prefixes, static sites and fleet placements are not supported on a regional domain.
+
+When the deployment uses configured regional ingress, set `CONSOLE_REGION_INGRESS` to the complete deployment-wide set of public ingress IP addresses. Keep `PLATFORM_EDGE_IPS` aligned with that same public set. Every `PLATFORM_EDGE_IPS` entry must be a public ingress address. A platform box EIP can qualify if it is public ingress.
+
+Before rolling the console, validate the complete `CONSOLE_REGION_INGRESS` value. Verify that the agents accept the same addresses through `PLATFORM_EDGE_IPS` before setting `CONSOLE_REGION_INGRESS`. Set the console ingress before any group box publishes an edges file.
+
+With configured ingress, DNS guidance uses A records for both apexes and subdomains. `carlos domains placements` refuses configured high availability placements while regional placement readiness is unavailable. The refusal names the configured public ingress addresses and does not list member addresses.
+
+The root CLI help still says that `carlos domains placements` shows the addresses to point DNS at for each region. That help remains unchanged. The configured-ingress refusal limits that promise until regional placement readiness is available.
 
 ### carlos features
 
@@ -1384,6 +1612,16 @@ narrows to one instance.
 ### carlos explain
 
 `carlos explain <code> --app <a>` reads a reference code from a page the platform's edge protection answered. It says which rule fired and when, and shows the request while a record of it is kept, for 7 days.
+
+### carlos protection
+
+```sh
+carlos protection [--account a] [--app x] [--record-only on|off]
+```
+
+Show or set whether protection only records on this app. When this is on,
+protection records what it would have blocked on this app and blocks nothing.
+Use it if protection is stopping something real while you fix it.
 
 ### carlos errors
 
@@ -2039,7 +2277,100 @@ will only refuse the label. Put it straight into the box's credential store.
 Rotation is not revocation. A fresh token refuses the box's next dial-in with
 the old one, but it does not evict a channel the box is already holding. If a
 credential may be compromised, `detach-box` is the command that actually
-stops it.
+stops it. A box that has ever run an instance is detached only after its
+instances have moved and its machine is terminated, as the next section says.
+
+On a fleet with two or more boxes, the console picks the box each instance
+runs on. To take a box out, drain it, terminate its machine, then detach it:
+
+```sh
+carlos fleets drain acme pi-1
+# once its instances have moved, terminate the machine
+carlos fleets detach-box --terminated acme pi-1
+```
+
+`drain` moves every instance assigned to the box to the fleet's other boxes
+and gives the box no new ones. If any instance has nowhere to go, nothing
+changes and the command names the affected apps. This happens when no other box
+is ready for it, when the platform does not manage its process, or when the
+console has not placed it on a box yet. The box keeps its access while its
+instances leave, so it can stop them and upload their final writes.
+
+`--terminated` tells the console that the box's machine is gone. The console
+cannot check for itself that a box has uploaded everything, so it detaches a
+box that has run instances only with this flag. Without it the command refuses
+and says to drain first. Drain before you terminate the machine: writes the
+box never uploaded are lost with it. A box that has gone silent is detached the
+same way once you know its machine is gone. Its instances move to other boxes
+on their own. A box that has never run an instance detaches at once, without
+the flag. On the fleet page, tick Machine terminated before you press Detach.
+
+In `carlos fleets ls`, a draining box shows `draining` in STATUS. LABELS
+PAUSED reads `yes` while a box of the fleet runs a release too old for the
+console to move instances between boxes. The console stops moving them and
+logs an alert until that box is updated. It reads `unknown` when the console
+could not read every box's report, and `-` otherwise.
+
+An app on a fleet cannot hold a secret until the fleet has its own secrets key. The key is a pair. The private half stays on your fleet's boxes and the platform never sees it. The public half goes to the console, which seals every secret and credential for the fleet's apps to it.
+
+Make the pair with `carlos secrets genkey`. Put the private half in `/etc/carlos/host.env` on every box as `CARLOS_SECRETS_KEY`, then restart the agent with `systemctl restart carlos-edge`. Register the public half with `carlos fleets secrets-key <name> <pubkey>`. Only an account owner can do that.
+
+Register it with `carlos fleets secrets-key home <pubkey>`, or pass `--file` with a file that holds a `CARLOS_SECRETS_PUBKEY=` line or the bare key. The command prints the key's fingerprint.
+
+A key belongs to one fleet only, and it cannot be the platform's own. Registering the same key on the same fleet again changes nothing.
+
+If apps on the fleet already hold sealed values, the command lists them. They were sealed to another key, so the fleet's boxes cannot open them. Set each secret again with `carlos secrets set`, and run `carlos store rotate` or `carlos email rotate` for a credential the console minted. The STALE column of `carlos fleets ls` counts what is left.
+
+To check that a box holds the registered key, run `carlos secrets fingerprint` on the box. Its answer should start with the characters in the SECRETS KEY column of `carlos fleets ls`, which shows the first 12 after `sha256:`.
+
+You can replace a fleet's key only while none of its apps holds a sealed value. Unset those apps' secrets, register the new key, set the secrets again and rotate the credentials the console minted. If a key may have leaked, take the box off the fleet first. A box that has never run an instance can be detached at once with `carlos fleets detach-box <fleet> <label>`. Otherwise drain it with `carlos fleets drain <fleet> <label>`, terminate its machine once its instances have moved, then detach it with `carlos fleets detach-box --terminated <fleet> <label>`. Rotate the credentials after detaching. The drain needs the box's current token: rotating first would cut the box off before it sees its instances leave. A detached box stops reading the platform's store.
+
+<!-- COPY: managed fleet command documentation awaits controller review. -->
+### carlos fleets create
+
+If managed fleets are enabled, preview your fleet request and follow its progress:
+
+```sh
+carlos fleets create --managed --region eu-west-1 --size large --boxes 3 production
+```
+
+Before submitting your request, the CLI prints the region, size, instance type
+and box count. If the settings change before the console accepts your request,
+it also prints the accepted plan. Repeat the same request while the operation
+is in progress to follow that operation.
+
+The provider-neutral core in 2a is tested against fakes and stays off. The real
+adapter and complete readiness ship in 2b. This phase introduces no monthly
+charge or hourly compute billing. Bring-your-own creation still uses `--bucket`.
+
+### carlos fleets boxes add
+
+Add boxes in the region and size you chose when creating the fleet:
+
+```sh
+carlos fleets boxes add --boxes 1 production
+```
+
+New boxes use the current settings for that size. If the operator has removed
+the region or size, you cannot add boxes. Operations already in progress keep
+their accepted plans.
+
+### carlos fleets show
+
+Check each box's state and reported version. For managed fleets, you also see
+readiness checks and operation progress:
+
+```sh
+carlos fleets show --account shop production
+```
+
+While an operation is in progress, you see updates every two seconds. Ctrl-C
+stops following; the console keeps working. Run `carlos fleets show production` to follow it again.
+If some boxes fail, ready boxes remain available. You see the failed box labels
+and reasons, and the command exits with a failure status. With no operation in progress, it prints once.
+
+If a box has not reported its version, you see `unknown`. Bring-your-own fleets
+have no managed readiness checks. Use `--account-id` to select an exact account ID.
 
 ### carlos services
 
@@ -2066,6 +2397,16 @@ move `canary/<name>` channels only. CI reads it from
 `CARLOS_SERVICE_TOKEN` with `CARLOS_CONSOLE`.
 
 `run` is for a server that starts commands of an app against its instances, and no other role does that. It is minted with `--app` and `--commands`, and it can run only the commands it names. See [Runs from a service](#runs-from-a-service); it also says what a prefix allows.
+
+`team` is for a server that provisions instances for teams inside one app
+without reaching the app's own: it is minted with `--app` and `--scope`, and it
+reaches only the environments its scope owns (see [carlos env](#carlos-env)),
+the instances bound to them, and their hostnames. It creates socket-backed
+instances, sets their env and secrets, restarts and deletes them, and attaches
+explicit hostnames to them. It never sees the default bundle or an instance on
+it, never sets a platform-managed key, and anything outside its scope answers
+as if it did not exist. Revoking the credential does not release its
+environments; `carlos env release` does.
 
 One door stays shut to every role: `carlos instances enable`, which writes the
 manifest bounding which domain, pool and regions an instance may be created
@@ -2094,8 +2435,9 @@ carlos add --app hello --socket /run/hello.sock hello.example.com
 `--channel` sets what the route follows, `--kind` picks instance, service or
 static, and `--addr` takes a TCP upstream where the app is not a socket
 tenant. `--unit console.service` names the systemd unit that owns the route's
-process, which is what lets adoption cycle it; leave it off for an ordinary
-exec child.
+process, which is what lets adoption cycle it and the root pass deliver its
+config; it needs `--addr` and neither `--socket` nor `--hibernate`; leave it
+off for an ordinary exec child.
 
 ### carlos remove
 
@@ -2121,6 +2463,32 @@ carlos route --host hello.example.com --channel edge
 `--grant` and `--revoke` change a capability. `--hibernate` lets the route sleep
 when idle. `--backing` and `--unit` are two answers to one question — who owns
 this route's process — so the command will not let you write both.
+
+Naming a unit also hands its config to the root pass: on every config
+write the pass renders the route's bundle to `/etc/carlos/apps/<host>.env`,
+keeps a drop-in under `/etc/systemd/system/<unit>.d/` that makes the box's
+`/etc/carlos/units/<unit>.base.env` (if there is one) and that file the
+unit's only `EnvironmentFile=` sources, reloads systemd and restarts the
+unit. The box delivers only to a unit that `/etc/carlos/named-units.json`
+(a root-owned file written when the box is set up) declares for the route,
+with the route's host, account and app, never from the route row alone:
+
+```json
+{"schema":1,"units":[
+  {"host":"relay.example.com","account":"bab","app":"relay","unit":"relay.service",
+   "addr":"127.0.0.1:8451","health":{"path":"/ready"}}
+]}
+```
+
+Removing a unit's line is what removes its drop-in; changing or removing
+the route only stops delivery. The box's own file for the unit,
+`/etc/carlos/units/<unit>.base.env`, must be plain ASCII `NAME=value`
+lines and `#` comments. A unit that loads any other environment
+file, or a variable named in both the base file and the route's config, is
+refused and the reason is logged on the box until one of them is changed.
+A stamp needs an addr upstream and no hibernation; `--unit` refuses a
+socket or hibernating row, `--hibernate` refuses a stamped one, and
+`--unit -` always clears.
 
 `--replication` picks how often the route's database is copied off the box:
 `stream` syncs on every change, about once a second; `batched` at most every
@@ -2294,6 +2662,12 @@ sink configured. `alerts=sns-unavailable` means a topic is set but the box
 could not build its SNS client, so nothing is delivered through it. A dash
 means the box runs an older binary and did not say.
 
+For the console box, if `CARLOS_ALERT_ENGINE_BEAT` is set in its `host.env`,
+the column also shows ` engine-beat=on` while the agent watches the console's
+alert engine, or ` engine-beat=off (...)` with the reason. For example,
+`engine-beat=off (agent runs as root, so the backstop is off)`. Boxes without
+the setting show no additional field.
+
 ```sh
 carlos status --live
 ```
@@ -2368,6 +2742,73 @@ box's own agent tick.
 Two things that are true of the deployment rather than of one app: the
 platform's own release channel, and the deployment-wide settings an operator
 owns.
+
+<!-- COPY: managed fleet settings text awaits controller copy review. -->
+#### carlos system demos
+
+Manage anonymous demos through your configured console. Ops account owners and
+listed system operators can stop serving or remove an exact public demo host.
+Check serving confirmation and cleanup separately. A protected worker can take up to
+35 seconds to confirm a stop. Cleanup stays pending until the box acknowledges
+its purge. Old workers must be drained and upgraded before activation.
+
+```sh
+carlos system demos status
+carlos system demos serving off
+carlos system demos takedown --host shop.example.com
+carlos system demos takedown-status --host shop.example.com
+carlos system demos serving on
+carlos system demos reports --limit 50
+carlos system demos reports --after <id> --limit 50
+carlos system demos reports resolve --id <id>
+```
+
+Caps apply to one lifetime: 2,000 requests and 200,000,000 body bytes by default.
+Changing the configured caps affects new demos. Turning serving on preserves
+existing counters and never restores a retired demo. Remove old Plan 1 demos
+before activation. They cannot be given a fresh allowance.
+
+Reports are listed oldest first, including resolved reports. Use `--after` with
+an ID from the preceding page and `--limit` from 1 to 100. Resolving a report does
+not take its demo down. Recheck the first page when reviewing new arrivals.
+Pagination is not a fixed snapshot.
+
+`status`, `serving`, `takedown`, and `takedown-status` accept `--console` to choose
+a console. `--host` requires the exact public demo hostname. Successful commands
+and pending operations exit 0. Remote failures exit 1. Invalid arguments exit 2.
+
+#### carlos system managed-fleets show
+
+Read the deployment's managed fleet settings through the console:
+
+```sh
+carlos system managed-fleets show
+```
+
+You must be listed in `CARLOS_SYSTEM_OPERATORS` to read or change these settings.
+Account ownership alone does not grant access. Without configured settings,
+managed fleets are disabled, with zero capacity.
+
+#### carlos system managed-fleets set
+
+Replace the settings with a JSON file:
+
+```sh
+carlos system managed-fleets set --file f.json
+```
+
+The file contains `enabled`, `ceiling`, `account_limit` and `regions`. Each region
+has `image`, `subnets`, `security_groups`, `root_gb` and a `sizes` map from names
+such as `large` to approved ARM instance types such as `m7g.large`.
+`account_limit: 0` uses the deployment ceiling; otherwise both limits apply.
+Unknown fields and invalid values are refused before anything is written.
+
+The command reads the current revision before writing. If another operator
+changes it meanwhile, the write is refused: run `show`, check the settings,
+and try again. Enabling requires a usable change index. This configures the
+provider-neutral core; real managed launches remain off until the approved
+provider drill. Disabling admission leaves existing reservations and cleanup
+intact.
 
 #### The platform's own binary
 
@@ -2449,6 +2890,22 @@ image before starting `apply`, `recover`, `edge` or `console`. Once armed,
 the local floor remains enforced independently of `CARLOS_HOST_CLAIM`.
 The member command remains `carlos ops host resolve`.
 
+#### carlos system named-units
+
+`carlos system named-units install <file>` installs the box's declaration
+of named units, `/etc/carlos/named-units.json`, from `<file>`. It runs as
+root only. It checks the file first (schema 1, one JSON document, one line
+per host and per unit, as shown under `carlos route`), then replaces the
+live file in one step while holding the lock the config pass holds, so a
+pass never sees half a change. Provisioning writes the file before the
+agent starts, or runs this command; editing the file by hand while carlos
+runs is not supported, and a pass that sees the file change under it does
+nothing and says so.
+
+```sh
+carlos system named-units install /root/named-units.json
+```
+
 #### carlos system db-worker
 
 `carlos system db-worker` runs on platform boxes only. systemd starts it for each forwarded database query. You never run it yourself.
@@ -2458,6 +2915,12 @@ The member command remains `carlos ops host resolve`.
 Before starting claim-enabled services on a box with legacy journals, stop the edge and agent. Run `carlos system journal-migrate` as root with `CARLOS_HOST_CLAIM=1` and the deployment environment loaded. The command imports journals only when signed root stop evidence verifies them. It leaves the original files in place. After migration, root ignores changed legacy files and logs an alert. Keep the migration marker.
 
 The migration census reads the backfill plan `backfill-collect` wrote. It reports each ordinary instance route on the box as that box's installation, so `backfill-adopt` can give the host to this box. If the window masks units by moving each unit file aside and linking `/dev/null` in its place, pass `--window DIR`, the window's directory, with the originals in `DIR/held`. The census then accepts those masks and no others.
+
+#### carlos system pdf status
+
+```sh
+carlos system pdf status
+```
 
 #### Deployment-wide object scanning
 
@@ -2623,7 +3086,9 @@ In a region with HA on, the boxes its Auto Scaling group launches set themselves
 
 carlos system host-env write builds /etc/carlos/host.env from the deployment's parameters: SecureStrings in AWS SSM under /carlos/<deployment>/<region>/ and, for the values every region shares, /carlos/<deployment>/shared/. If a required value is missing, it stops and writes nothing.
 
-carlos system install-channel installs the release the box's channel names, as both carlos and carlos.prev, once it passes the published host floor. A box that already runs a release is refused: carlos system update moves it.
+For claim-free group boot, `host-env write --group --install` checks the root-owned group configuration, leaves out host-claim variables, writes the environment, then runs bootstrap and install-channel. The boot queue overrides a queue copied from a fixed box. Pools must be explicit and match the group configuration. `--install` requires `--group`.
+
+carlos system install-channel installs the release the box's channel names, as both carlos and carlos.prev, once it passes the published host floor. A box that already runs a release is refused: carlos system update moves it. A claim-free group can install without a floor only when the operator sets `floor` to `absent-expected` in SSM `boot/bootstrap-object` and both the floor and its authorization are absent. The boot object requires `floor` to be `absent-expected` or `required`; root copies it into `/etc/carlos/group.json` and includes it in `config_digest`. A published floor is always verified. A missing half or a failed read stops installation.
 
 With --policy FILE, the armed policy carlos system claims run sign-policy wrote, it installs before the host floor is published. The policy's floor stands in for the published one, and once a floor is published the two must be the same. It also arms a box that carlos system update has already moved to the channel's release: carlos is left as it is, and carlos.prev, the release before, is replaced by it, so guard-arm finds the release in both. A box on another release, or with an armed guard, is still refused.
 
@@ -2645,6 +3110,8 @@ carlos system host-env seed --deployment prod --region ie --kms-key alias/carlos
 Seeding needs ssm:GetParametersByPath and ssm:PutParameter on the deployment's two parameter paths, and kms:Encrypt and kms:Decrypt on its configuration key.
 
 ### carlos move
+
+Moves into or out of an active high availability region are refused before staging, stopping or other move state is written. Imports into an active high availability region are refused before import data is written. An immutable high availability record remains refused even after the region setting is turned off. Static records are exempt only from this new regional refusal. Existing seed, runtime, shape and immutable-record refusals still apply. Operations that already started can finish or be cleaned up.
 
 Moves one instance to another region. The instance keeps serving while its
 data is copied, then goes offline for the cut. If the new region cannot start

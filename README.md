@@ -7,11 +7,19 @@ small enough to understand, sealed so tightly the operator is not a party to
 it, and yours to run. Extracted — not designed — from five systems that kept
 rebuilding the same shape.
 
+The hand-written pages — [`src/index.html`](src/index.html), `src/platform/`,
+`src/rastrillo/` — ship as plain HTML and CSS: no build step, no dependencies, and JavaScript
+only as progressive enhancement on a page that works without it. The
+framework's own rules apply to its website. `/docs` is the
+one exception: a dozen reference pages sharing a sidebar go through Eleventy
+(see `AGENTS.md`), so that part of the repo does have a devDependency and a
+build step, run before you ship rather than in anyone's browser.
+
 🤖 Eleventy builds the site into `_site/` and injects the shared footer.
 Enabled demo builds generate `/start/index.html` and
-`/start/index.md` from one agent source and publish the pinned starter. The
-browser runs local scripts for clipboard controls and the
-Attributes sidebar.
+`/start/index.md` from one agent source, publish the pinned starter, and
+give the homepage its demo hero and sections, whose scripts are progressive
+enhancements like the rest (see `AGENTS.md`).
 
 🤖 The demo journey defaults off. To build it, set `CARLOS_START_DEMO=1` and
 explicitly set `CARLOS_START_SITE_ORIGIN`, `CARLOS_START_CONSOLE_ORIGIN` and

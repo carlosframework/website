@@ -5,7 +5,7 @@
   "scripts": {
     "build": "eleventy",
     "serve": "eleventy --serve",
-    "check": "eleventy && node hack/check-docs.mjs && node hack/check-skills.mjs && npm run check:start",
+    "check": "node hack/test-docs-markdown.mjs && node hack/test-sync-docs.mjs && eleventy && node hack/check-docs.mjs && node hack/check-skills.mjs && npm run check:start",
     "check:starter": "node hack/check-starter.mjs",
     "sync-docs": "node hack/sync-docs.mjs",
     "sync-skills": "node hack/sync-skills.mjs",

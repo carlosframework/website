@@ -13,9 +13,13 @@ is adopting CARLOS deliberately and is listed on the site as an adopter,
 not an extraction source — it doesn't count toward the "5 systems" stat. The pages are static and the
 stylesheet (`site.css`) is plain: what a visitor downloads is HTML and CSS,
 with local scripts for clipboard controls and the Attributes sidebar, and no
-third-party runtime resources. Keep the rest of the site free of browser
-JavaScript and bundlers. Both pages
-remain usable without JavaScript; the Get started pathways use native radios.
+third-party runtime resources. JavaScript elsewhere follows PRODUCT.md's rule
+(2026-11-06): only where it meaningfully improves the experience, only as
+progressive enhancement on a page that works and reads without it, as small
+local files with no dependencies and no bundlers. The clipboard controls and
+the Attributes sidebar enhancement are examples; the Get started pathways use
+native radios. (The footer AI disclaimer is gone: see Paul's 2026-11-07 ruling
+below.)
 Durable product context for design tooling lives in
 `PRODUCT.md`.
 
@@ -69,8 +73,12 @@ person marker.**
 
 ## Conventions
 
-- **Only the clipboard and Attributes sidebar scripts run in the browser,**
-  plus, on the enabled-demo homepage, `src/home/theme.js` (Auto, Light or
+- **JavaScript only as progressive enhancement** (PRODUCT.md, 2026-11-06): where it
+  meaningfully improves the experience, on a page that works and reads without it,
+  as small local files. Today that is the clipboard controls, the Attributes
+  sidebar, the docs navigation, search and stepper (`src/docs-nav.js`,
+  `src/docs-search.js`, `src/docs-stepper.js`) and, on the enabled-demo homepage,
+  `src/home/theme.js` (Auto, Light or
   Dark, remembered in localStorage; loaded first in `<head>`, without defer, so
   there is no flash of the wrong theme), `src/home/hero.js` (the rotating word), `src/home/hero-bg.js` (the hero's
   WebGL2 background: Fable's 3D meadow Q1, day in light and night in dark;
