@@ -73,10 +73,10 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
           document.body.classList.remove('scene-a', 'scene-b'); document.body.classList.add(scene); window.__heroBg.set(t);
           document.querySelectorAll('.is-sheen').forEach(e => e.classList.remove('is-sheen'));
           return [...document.querySelectorAll('.c-hero .hv-col *, .c-hero .rp-bar *, .c-hero .rp-log *, .c-hero .rp-cap')]
-            .filter(el => !el.closest('.rp-app, .pb-copy, svg, .rp-sr, .hv-sr') && !el.closest('details:not([open]) > :not(summary)') && getComputedStyle(el).visibility !== 'hidden')
+            .filter(el => !el.closest('.rp-app, .pb-copy, svg, .rp-sr, .hv-sr') && getComputedStyle(el).opacity !== '0' && !el.closest('details:not([open]) > :not(summary)') && getComputedStyle(el).visibility !== 'hidden')
             .flatMap(el => [...el.childNodes].filter(n => n.nodeType === 3 && n.textContent.trim()).map(n => {
               const cs = getComputedStyle(el), r = document.createRange(); r.selectNodeContents(n);
-              return { text: n.textContent.trim().slice(0, 40), color: cs.color, large: parseFloat(cs.fontSize) >= 24 || (parseFloat(cs.fontSize) >= 18.66 && +cs.fontWeight >= 700),
+              return { text: `${el.className}: ${n.textContent.trim().slice(0, 40)}`, color: cs.color, large: parseFloat(cs.fontSize) >= 24 || (parseFloat(cs.fontSize) >= 18.66 && +cs.fontWeight >= 700),
                 rects: [...r.getClientRects()].filter(q => q.width > 2 && q.height > 2).map(q => [q.left, q.top + scrollY, q.width, q.height]) };
             })).filter(i => i.rects.length);
         }, [scene, t]);
@@ -105,16 +105,16 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
       }
       await ctx.close();
     }
-    // The hero's held height is its content plus one line, never more, at any size and pixel density, before and
+    // The hero's held height is its content, never more, at any size and pixel density, before and
     // after resizes (a hero locked while stylesheets were still loading once stood ten screens tall in Safari).
     for (const [w, h] of [[1440, 900], [1728, 1117], [390, 844]]) for (const dpr of [1, 2]) {
       const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: dpr });
       const page = await ctx.newPage();
       await page.goto(url, { waitUntil: 'load' });
       const sane = async label => {
-        const m = await page.evaluate(() => { const hero = document.querySelector('.c-hero'), inner = hero.querySelector('.c-hero-inner'), room = parseFloat(getComputedStyle(document.documentElement).fontSize) * 2.1;
-          return { hero: hero.getBoundingClientRect().height, inner: inner.getBoundingClientRect().height, room }; });
-        assert.ok(m.hero <= Math.ceil(m.inner + m.room) + 1, `${label}: hero ${m.hero} against content ${m.inner} + ${m.room}`);
+        const m = await page.evaluate(() => { const hero = document.querySelector('.c-hero'), inner = hero.querySelector('.c-hero-inner');
+          return { hero: hero.getBoundingClientRect().height, inner: inner.getBoundingClientRect().height }; });
+        assert.ok(m.hero <= Math.ceil(m.inner) + 1, `${label}: hero ${m.hero} against content ${m.inner}`);
         return m.hero;
       };
       const first = await sane(`${w}x${h} @${dpr}`);
@@ -124,7 +124,7 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
       assert.equal(await sane('back'), first, 'back to where it started');
       await ctx.close();
     }
-    // Copy's note, a failed copy and the opened hosts line grow the glass pane, never the hero: the background
+    // A failed copy's message and the opened hosts line grow the glass pane, never the hero: the background
     // keeps its size on the page (the slow-device guard may still change its drawing resolution) and the next section
     // does not move.
     for (const width of [390, 1280]) for (const copies of [true, false]) {
@@ -137,10 +137,34 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
         ...(wide ? { replay: document.querySelector('.c-hero .rp').offsetTop, replayH: document.querySelector('.c-hero .rp').offsetHeight, text: document.querySelector('.c-hero .hv-col').offsetTop } : {}) }; }, width >= 1024);
       const before = await where();
       await page.locator('.c-hero .pb-copy').click(); await page.waitForTimeout(600);
-      assert.ok(await page.locator('.c-hero .paste').evaluate(el => el.classList.contains('is-copied') || el.classList.contains('copy-failed')), 'the copy note shows');
+      assert.ok(await page.locator('.c-hero .paste').evaluate(el => el.classList.contains('is-copied') || el.classList.contains('copy-failed')), 'the copy state shows');
       assert.deepEqual(await where(), before, `${width} after Copy (${copies ? 'copied' : 'failed'})`);
       await page.locator('.hv-cloud summary').click(); await page.waitForTimeout(400);
       assert.deepEqual(await where(), before, `${width} with the hosts line open`);
+      await ctx.close();
+    }
+    // A successful copy moves nothing, in the hero or the closing box: the button says "Copied" at the same size, and
+    // the sentence after it is for screen readers only (it is in the polite status, visually hidden). Every element
+    // keeps its place and size on the page and the pane keeps its height. (Reduced motion keeps the replay and the
+    // rotating word still, and the pane from drifting, so only Copy can move anything.)
+    for (const width of [390, 1280]) {
+      const ctx = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: 'reduce', permissions: ['clipboard-read', 'clipboard-write'] });
+      const page = await ctx.newPage();
+      await page.goto(url, { waitUntil: 'networkidle' });
+      const layout = () => page.evaluate(() => ({ pane: document.querySelector('.hv-pane').getBoundingClientRect().height,
+        boxes: [...document.querySelectorAll('.c-hero *, .rw-end .paste, .rw-end .paste *')].filter(el => !el.closest('.pb-copy > *, .pb-done, .hero-bg-wrap') && el.getClientRects().length)
+          .map(el => { const r = el.getBoundingClientRect(); return [el.tagName, r.left + scrollX, r.top + scrollY, r.width, r.height].map(v => typeof v === 'number' ? Math.round(v * 2) / 2 : v).join(' '); }) }));
+      for (const box of ['.c-hero .paste', '.rw-end .paste']) {
+        const before = await layout();
+        await page.locator(`${box} .pb-copy`).click(); await page.waitForTimeout(600);
+        const after = await layout();
+        assert.ok(await page.locator(box).evaluate(el => el.classList.contains('is-copied')), `${width} ${box}: copied`);
+        assert.equal(await page.locator(`${box} .pb-copy span`).textContent(), 'Copied');
+        assert.equal(await page.locator(`${box} .pb-done`).textContent(), 'Copied. Paste it into your agent.', `${width} ${box}: screen readers still hear it`);
+        assert.ok(await page.locator(`${box} .pb-done`).evaluate(el => el.getBoundingClientRect().width <= 1 && getComputedStyle(el).clipPath === 'inset(50%)'), `${width} ${box}: not shown`);
+        assert.equal(after.pane, before.pane, `${width} ${box}: pane height`);
+        assert.deepEqual(after.boxes.filter((b, i) => b !== before.boxes[i]), [], `${width} ${box}: nothing moved`);
+      }
       await ctx.close();
     }
     // A window made taller at the same width grows the replay (it is sized from the screen's height): the held

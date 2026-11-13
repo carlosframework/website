@@ -5,9 +5,10 @@
 // Reduced motion switched on at any time stops it and puts "better" back.
 // It also holds the hero's height steady (below).
 (() => {
-  // The hero keeps the height it is first laid out at, plus room for Copy's one-line note, so the note, a failed-copy
-  // message or the opened hosts line grow the glass pane, never the hero or the background drawn in it, and nothing
-  // below moves. Anything taller than that room overlaps the top of the next section, with the pane on top.
+  // The hero keeps the height it is first laid out at, so a failed-copy message or the opened hosts line grow the glass
+  // pane, never the hero or the background drawn in it, and nothing below moves: the pane overlaps the top of the next
+  // section, on top. A successful copy changes nothing on screen (the button says "Copied"; the sentence after it is
+  // for screen readers only), so no room is kept for it.
   // Measured once the page has finished loading, then again when the width changes or the window's height changes the
   // replay (a phone's address bar coming and going changes neither). Not sooner: WebKit can run this script before the page's later stylesheets
   // apply, and an unstyled hero (the replay's screenshot at full size) is thousands of pixels tall; locking that in
@@ -20,8 +21,8 @@
     // replay down, stretches it, nor moves the text's own top.
     const pane = hero.querySelector('.hv-pane'), cols = pane ? [...pane.children] : [], replay = hero.querySelector('.rp');
     // The replay's least height comes from the screen's height (small-viewport units, which a phone's toolbars do not
-    // change), so a window made taller or shorter changes the hero's content: measure again then too. Copy's note and
-    // the hosts line never change it, so they still grow only the pane.
+    // change), so a window made taller or shorter changes the hero's content: measure again then too. A failed copy's
+    // message and the hosts line never change it, so they still grow only the pane.
     const least = () => replay ? parseFloat(getComputedStyle(replay).minHeight) || 0 : 0;
     let replayH = 0;
     const pin = () => {
@@ -35,8 +36,7 @@
       width = hero.clientWidth;
       hero.style.removeProperty('height');
       pin();
-      const room = parseFloat(getComputedStyle(document.documentElement).fontSize) * 2.1;
-      hero.style.height = Math.ceil(hero.getBoundingClientRect().height + room) + 'px';
+      hero.style.height = Math.ceil(hero.getBoundingClientRect().height) + 'px';
       replayH = least();
     };
     if (document.readyState === 'complete') lock(true); else addEventListener('load', () => lock(true), { once: true });
