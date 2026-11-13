@@ -2,7 +2,7 @@
 // nothing at 390 and 1280 px in Light, Dark and Auto, and the switch changes the theme live.
 // Needs a local Chromium, playwright-core and axe-core, which this repo does not install:
 //   HOME_THEMES_PLAYWRIGHT=/path/to/node_modules/playwright-core/index.mjs
-//   HOME_THEMES_AXE=/path/to/node_modules/axe-core/axe.min.js
+//   HOME_THEMES_AXE=/path/to/node_modules/axe-core/axe.min.js   (axe-core 4.14.0: the test checks the version)
 //   HOME_THEMES_CHROME=/path/to/chrome
 // Without all three it is skipped.
 import assert from 'node:assert/strict';
@@ -22,6 +22,10 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
   const dir = await mkdtemp(join(base, 'home-themes-'));
   const { chromium } = await import(pw);
   const axe = await readFile(axePath, 'utf8');
+  // Pinned: a newer axe can add rules (4.14 is the one that caught a list of carousel groups), so a different
+  // version is a failure to update this line on purpose, not a quiet change in what is checked.
+  const axeVersion = axe.match(/axe v([\d.]+)/)?.[1];
+  assert.equal(axeVersion, '4.14.0', `HOME_THEMES_AXE is axe-core ${axeVersion}; this test is pinned to 4.14.0`);
   const env = { ...process.env, CARLOS_START_DEMO: '1', CARLOS_START_SITE_ORIGIN: 'https://carlosframework.com', CARLOS_START_CONSOLE_ORIGIN: 'https://console.carloku.com', CARLOS_START_ACCOUNT_URL: 'https://console.carloku.com/', CARLOS_START_CLAIM: 'off' };
   execFileSync(process.execPath, ['node_modules/@11ty/eleventy/cmd.cjs', `--output=${dir}`, '--quiet'], { env, stdio: 'pipe' });
   const server = createServer(async (req, res) => {
