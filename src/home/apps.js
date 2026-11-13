@@ -242,9 +242,12 @@
     dragged = true; setTimeout(() => { dragged = false; }, 0);
     // the row's own speed when let go, px per ms (+ towards the next app): only the last 100 ms of movement counts, over
     // at least a frame, so holding still before letting go is no flick, however fast it moved before
-    const end = e.timeStamp || 0, recent = d.seen.filter(([t]) => end - t <= 100);
-    const [t0, x0] = recent[0] || [0, 0], [t1, x1] = recent[recent.length - 1] || [0, 0];
-    const speed = end && recent.length > 1 ? -(x1 - x0) / Math.max(16, t1 - t0) : 0; // no times, no speed
+    // (the move just before that window counts too, so a slow device's flick, a frame or more apart, still has two)
+    const end = e.timeStamp || 0, last = d.seen.length - 1, fresh = last >= 0 && end - d.seen[last][0] <= 100;
+    let from = last; while (from > 0 && end - d.seen[from - 1][0] <= 100) from--;
+    if (from > 0) from--;
+    const [t0, x0] = d.seen[from] || [0, 0], [t1, x1] = d.seen[last] || [0, 0];
+    const speed = end && fresh && last > from ? -(x1 - x0) / Math.max(16, t1 - t0) : 0; // no times, or held still: no speed
     const now = track.scrollLeft, past = (now - centre(d.from)) / stepW;
     let k;
     if (Math.abs(speed) > FLICK) { const ahead = past + speed * 260 / stepW; k = Math.sign(speed) * Math.max(1, Math.round(Math.abs(ahead))); }

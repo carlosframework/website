@@ -1,0 +1,45 @@
+[
+ {
+  "id": "replay.live",
+  "section": "Demo box timestamps",
+  "label": "Live line",
+  "text": "Live at {time}",
+  "context": "In the hero's demo box, each recorded session now shows the real elapsed time beside each line. This small chip ends the last line of each session, e.g. 'Live at 4:41': how long after the paste the app went live.",
+  "notes": "{time} is m:ss"
+ },
+ {
+  "id": "replay.at",
+  "section": "Demo box timestamps",
+  "label": "Screen-reader time",
+  "text": "at {time}",
+  "context": "Not shown. Screen readers hear it at the end of each line, e.g. 'at 1 minute 14 seconds'."
+ },
+ {
+  "id": "replay.minute",
+  "section": "Demo box timestamps",
+  "label": "Minute (one)",
+  "text": "{n} minute",
+  "context": "Not shown. How screen readers hear one minute."
+ },
+ {
+  "id": "replay.minutes",
+  "section": "Demo box timestamps",
+  "label": "Minutes",
+  "text": "{n} minutes",
+  "context": "Not shown. How screen readers hear several minutes."
+ },
+ {
+  "id": "replay.second",
+  "section": "Demo box timestamps",
+  "label": "Second (one)",
+  "text": "{n} second",
+  "context": "Not shown. How screen readers hear one second."
+ },
+ {
+  "id": "replay.seconds",
+  "section": "Demo box timestamps",
+  "label": "Seconds",
+  "text": "{n} seconds",
+  "context": "Not shown. How screen readers hear several seconds."
+ }
+]

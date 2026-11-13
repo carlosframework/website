@@ -9,7 +9,8 @@
 // read the session in the open tab as a whole.
 // Speed: slower and faster around a readout, 0.5x to 2x, 1.5x unless this visit chose otherwise (sessionStorage).
 // Steps: back and forward a turn at a time, pausing the replay (Play resumes); Left and Right do the same while the
-// panel's controls have focus. The tabs follow the APG tablist pattern (arrows, Home and End move and choose).
+// panel's controls have focus. The dots under the panel choose a session at any time and follow the APG tablist
+// pattern (arrows, Home and End move and choose); the row under the title bar names the session showing.
 (() => {
   // ---- the timeline, in ms at 1x: worked out once from the lines themselves
   const LOAD = 1100, GAP = 500, THINK = 1000, WORD = 65, READ = 300, SCENE = 450, HOLD = 1500, PAN = 5000, REST = 900, FADE = 600;
@@ -54,7 +55,10 @@
   if (!stage) return;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const pause = rp.querySelector('.rp-pause input');
-  const speedBox = rp.querySelector('.rp-speed'), steps = rp.querySelector('.rp-steps'), tabsBox = rp.querySelector('.rp-tabs');
+  const speedBox = rp.querySelector('.rp-speed'), steps = rp.querySelector('.rp-steps');
+  // the dots under the panel are the sessions' tablist; the row where the tabs were names the session showing
+  const tabsBox = (rp.parentNode && rp.parentNode.querySelector('.rp-dotrow')) || null;
+  const nowName = rp.querySelector('.rp-now-name'), nowCount = rp.querySelector('.rp-now-count');
   const slower = rp.querySelector('.rp-slower'), faster = rp.querySelector('.rp-faster'), out = rp.querySelector('.rp-rate');
   const back = rp.querySelector('.rp-back'), fwd = rp.querySelector('.rp-fwd');
   const panels = [...rp.querySelectorAll('.rp-session')], tabs = tabsBox ? [...tabsBox.querySelectorAll('[role="tab"]')] : [];
@@ -83,7 +87,8 @@
   const wrap = (el, unit) => {
     const spans = [], walk = node => {
       for (const child of [...node.childNodes]) {
-        if (child.nodeType === 1) { if (!child.classList.contains('rp-who')) walk(child); continue; }
+        // the speaker, the stamps and the words only screen readers hear are not typed or streamed: they are there with the line
+        if (child.nodeType === 1) { if (!child.classList.contains('rp-who') && !child.classList.contains('rp-time') && !child.classList.contains('rp-live') && !child.classList.contains('rp-sr')) walk(child); continue; }
         if (child.nodeType !== 3 || !child.nodeValue) continue;
         const frag = document.createDocumentFragment();
         for (const piece of unit === 'char' ? [...child.nodeValue] : child.nodeValue.split(/(\s+)/)) {
@@ -98,6 +103,9 @@
     walk(el);
     return spans;
   };
+  // the words of a line as seen: not the speaker, the stamps or the words only screen readers hear
+  const skip = el => ['rp-who', 'rp-time', 'rp-live', 'rp-sr'].some(c => el.classList.contains(c));
+  const shown = node => [...node.childNodes].map(c => (c.nodeType === 3 ? c.nodeValue : c.nodeType === 1 && !skip(c) ? shown(c) : '')).join(' ');
   // ---- each session: its lines wrapped, its timeline, and how far it was last drawn
   const sessions = panels.map(el => {
     const turns = [];
@@ -105,7 +113,7 @@
       const li = el.querySelector(`.rp-s${k}`);
       if (!li) return null;
       const kind = li.classList.contains('rp-you') ? 'you' : 'agent';
-      const text = [...li.childNodes].filter(c => !(c.classList && c.classList.contains('rp-who'))).map(c => c.textContent).join(' ').replace(/\s+/g, ' ').trim();
+      const text = shown(li).replace(/\s+/g, ' ').trim(); // its reading time counts what is read on screen
       turns.push({ li, kind, text, units: wrap(li, kind === 'you' ? 'char' : 'word') });
       if (k === 3) turns.push({ kind: 'scene' });
     }
@@ -230,9 +238,24 @@
       cur = S;
     }
     S.el.hidden = false;
-    tabs.forEach((tab, k) => { const on = sessions[k] === S; tab.setAttribute('aria-selected', String(on)); tab.tabIndex = on ? 0 : -1; if (on && focus) tab.focus(); });
+    tabs.forEach((tab, k) => { const on = sessions[k] === S; tab.setAttribute('aria-selected', String(on)); tab.tabIndex = on ? 0 : -1; if (on && focus) tab.focus({ preventScroll: true }); });
+    title(S);
     t = 0;
     if (live) { S.last = {}; draw(0); } else plain(S);
+  }
+  // The title row: the session's name and "n of N", crossfading quickly when it changes (at once under reduced motion).
+  let titleSwap = 0;
+  function title(S) {
+    if (!nowName) return;
+    const k = sessions.indexOf(S), tab = tabs[k];
+    const name = tab ? (tab.getAttribute('aria-label') || tab.textContent) : nowName.textContent;
+    const count = nowCount && nowCount.dataset.format ? nowCount.dataset.format.replace('{n}', k + 1).replace('{total}', sessions.length) : '';
+    if (nowName.textContent === name) return;
+    const put = () => { nowName.textContent = name; if (nowCount) nowCount.textContent = count; nowName.parentNode.classList.remove('is-swapping'); };
+    clearTimeout(titleSwap);
+    if (reduce.matches || !live) return put();
+    nowName.parentNode.classList.add('is-swapping');
+    titleSwap = setTimeout(put, 120);
   }
   tabs.forEach((tab, k) => {
     tab.addEventListener('click', () => {
@@ -262,5 +285,7 @@
   };
   if (reduce.addEventListener) reduce.addEventListener('change', start);
   tip();
+  // a random session to start each visit (without JavaScript it is the first, playing the CSS loop)
+  show(sessions[Math.floor(Math.random() * sessions.length)]);
   start();
 })();

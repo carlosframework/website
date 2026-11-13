@@ -12,7 +12,8 @@ const base=process.env.STARTER_SCRATCH||tmpdir();assert.ok(!/^\/tmp(?:\/|$)/.tes
 async function pages(fn,overrides={}) {await mkdir(base,{recursive:true});const dir=await mkdtemp(join(base,'start-pages-'));try{await buildStart(dir,loadStartConfig({...env,...overrides}));await fn(await read(join(dir,'index.html')),await read(join(dir,'start/index.html')));}finally{await rm(dir,{recursive:true,force:true});}}
 const plain=html=>html.replace(/<!--[\s\S]*?-->/g,'').replace(/<[^>]*>/g,'').replace(/&#39;/g,"'").replace(/&amp;/g,'&').replace(/&quot;/g,'"');
 test('enabled homepage has hero B, its replay and the approved rework sections',()=>pages(async(home,start)=>{
- const hero=home.match(/<section class="c-hero hv hv-b">[\s\S]*?<\/figure>\n<\/div><\/section>/)[0];
+ // the hero: its section ends after the replay's pane (the panel and its dots)
+ const hero=home.match(/<section class="c-hero hv hv-b">[\s\S]*?<\/figure>[\s\S]*?<\/div>\s*<\/div>\n<\/div><\/section>/)[0];
  assert.equal(plain(hero.match(/<h1>([\s\S]*?)<\/h1>/)[1]),"You’re already using agents.");
  assert.ok(hero.includes('<span class="nw">using agents.</span>'));
  const sub=hero.match(/<p class="sub">([\s\S]*?)<\/p>/)[1];
@@ -38,23 +39,38 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  // is excerpts of its run, and its live line links to the app's permanent example copy in a new tab.
  const {sessions}=JSON.parse(await read('src/home/replays/sessions.json'));
  assert.ok(sessions.length>=5);
- const tabs=hero.match(/<div class="rp-tabs" role="tablist" aria-label="([^"]+)" hidden>([\s\S]*?)<\/div>/);
- assert.equal(tabs[1],copy['home.replay.tabs']);
- assert.deepEqual([...tabs[2].matchAll(/<button type="button" role="tab" class="rp-tab" id="rp-tab-([a-z-]+)" aria-controls="rp-session-\1" aria-selected="(true|false)" tabindex="(0|-1)">([^<]+)<\/button>/g)].map(m=>[m[1],m[2],m[3],m[4]]),
+ // Under the window, one dot per session: the sessions' tablist, each dot named and titled with its session (Paul,
+ // 2026-11-13). The row under the title bar names the session showing and where it is among them.
+ const dots=home.match(/<\/figure>\s*<div class="rp-dotrow" role="tablist" aria-label="([^"]+)" hidden>([\s\S]*?)<\/div>\s*<\/div>/);
+ assert.ok(dots,'the dots sit under the window, outside the panel');
+ assert.equal(dots[1],copy['home.replay.tabs']);
+ assert.deepEqual([...dots[2].matchAll(/<button type="button" role="tab" class="rp-dot" id="rp-tab-([a-z-]+)" aria-controls="rp-session-\1" aria-selected="(true|false)" tabindex="(0|-1)" aria-label="([^"]+)" title="\4"><\/button>/g)].map(m=>[m[1],m[2],m[3],m[4]]),
   sessions.map(({slug},i)=>[slug,String(!i),i?'-1':'0',copy[`home.replay.${slug}.tab`]]));
- sessions.forEach(({slug,url,shot},i)=>{
+ assert.match(hero,/<div class="rp-col">\s*(?:<!--[\s\S]*?-->\s*)?<figure class="rp"/);
+ assert.ok(hero.includes(`<div class="rp-now"><span class="rp-now-name">${copy[`home.replay.${sessions[0].slug}.tab`]}</span> <span class="rp-now-count" data-format="${copy['home.apps.position']}">1 of ${sessions.length}</span></div>`));
+ assert.doesNotMatch(home,/class="rp-tabs"|class="rp-tab"/);
+ // each line's text as quoted: without its stamp, its stamp read aloud, or the live chip (checked on their own below)
+ const quoted=html=>plain(html.replace(/<span class="rp-time"[^>]*>[^<]*<\/span>|<span class="rp-sr">[^<]*<\/span>|<span class="rp-live"[^>]*>[^<]*<\/span>/g,'')).replace(/\s+/g,' ').trim();
+ const mss=x=>`${Math.floor(x/60)}:${String(x%60).padStart(2,'0')}`;
+ const words=x=>{const m=Math.floor(x/60),sec=x%60,o=[];if(m) o.push(copy[`home.replay.time.${m===1?'minute':'minutes'}`].replace('{n}',m));if(sec||!m) o.push(copy[`home.replay.time.${sec===1?'second':'seconds'}`].replace('{n}',sec));return o.join(' ');};
+ sessions.forEach(({slug,url,shot,times},i)=>{
   const c=k=>copy[`home.replay.${slug}.${k}`], host=new URL(url).host;
   const panel=hero.match(new RegExp(`<div class="rp-session" id="rp-session-${slug}" role="tabpanel" aria-labelledby="rp-tab-${slug}" data-slug="${slug}"( hidden)?>([\\s\\S]*?)</div>\\s*</div>\\s*</div>`));
   assert.ok(panel,slug); assert.equal(!!panel[1],i>0,`${slug}: only the first open`);
   const p=panel[2];
-  assert.equal(plain(p.match(/class="rp-you rp-s1">[\s\S]*?<p>([\s\S]*?)<\/p>/)[1]),copy['home.replay.you.1']);
+  assert.equal(quoted(p.match(/class="rp-you rp-s1">[\s\S]*?<p>([\s\S]*?)<\/p>/)[1]),copy['home.replay.you.1']);
   assert.equal(plain(p.match(/class="rp-agent rp-s2">[\s\S]*?<p>([\s\S]*?)<\/p>/)[1]),c('agent.1'));
   assert.deepEqual([...p.match(/<ol class="rp-qs">([\s\S]*?)<\/ol>/)[1].matchAll(/<li>([^<]+)<\/li>/g)].map(m=>plain(m[1])),['q1','q2','q3'].map(c).filter(Boolean));
-  assert.equal(plain(p.match(/class="rp-you rp-s3">[\s\S]*?<p>([\s\S]*?)<\/p>/)[1]),c('you.2'));
-  assert.deepEqual([...p.matchAll(/class="rp-agent rp-s(\d)"[\s\S]*?<p>([\s\S]*?)<\/p>/g)].slice(1).map(m=>[m[1],plain(m[2]).trim()]),[['4',c('plan')],['5',c('p1')],['6',c('p2')],['7',c('p3')],['8',`${c('p4')} ${host}`]]);
+  assert.equal(quoted(p.match(/class="rp-you rp-s3">[\s\S]*?<p>([\s\S]*?)<\/p>/)[1]),c('you.2'));
+  assert.deepEqual([...p.matchAll(/class="rp-agent rp-s(\d)"[\s\S]*?<p>([\s\S]*?)<\/p>/g)].slice(1).map(m=>[m[1],quoted(m[2])]),[['4',c('plan')],['5',c('p1')],['6',c('p2')],['7',c('p3')],['8',`${c('p4')} ${host}`]]);
   // the live line: the permanent example app, in a new tab, never the expired demo address
   assert.ok(p.includes(`<a class="rp-url" href="${url}" target="_blank" rel="noopener noreferrer">${host} <svg`),slug);
   assert.doesNotMatch(p,/trycarlos\.com/);
+  // the agent's real working time at each line (sessions.json), seen as m:ss and read in words; the live line says when
+  assert.equal(times.length,8);
+  assert.deepEqual([...p.matchAll(/<span class="rp-time" aria-hidden="true">([^<]+)<\/span>/g)].map(m=>m[1]),times.slice(0,7).map(mss),slug);
+  assert.deepEqual([...p.matchAll(/<span class="rp-sr"> ([^<]+)<\/span>/g)].map(m=>m[1]),[...times.slice(0,7).map(x=>copy['home.replay.time.at'].replace('{time}',words(x))),copy['home.replay.time.live'].replace('{time}',words(times[7]))],slug);
+  assert.ok(p.includes(`<span class="rp-live" aria-hidden="true">${copy['home.replay.time.live'].replace('{time}',mss(times[7]))}</span>`),slug);
   assert.ok(p.includes(`<div class="rp-app-bar" aria-hidden="true"><span></span>${host}</div>`),slug);
   assert.ok(p.includes(`<img src="/home/replays/${slug}-390.jpg" width="${shot[0]}" height="${shot[1]}" alt="${escapeHTML(c('shot.alt'))}" decoding="async"${i?' loading="lazy"':''}>`),slug);
  });
@@ -121,10 +137,10 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
 test('enabled homepage has the apps carousel under the hero',()=>pages(async(home)=>{
  const sources=JSON.parse(await read('src/home/apps/sources.json'));
  const appsPage=await read('src/apps/index.html');
- const heroEnd=home.indexOf('</figure>\n</div></section>');
+ const heroEnd=home.indexOf('</div></section>',home.indexOf('class="rp-dotrow"'));
  const section=home.match(/<section class="rw-apps"[\s\S]*?<\/div><\/section>/)[0];
  assert.ok(heroEnd>0 && home.indexOf('<section class="rw-apps"')>heroEnd);
- assert.match(home.slice(heroEnd),/^<\/figure>\n<\/div><\/section>\s*<div class="rw">\s*<section class="rw-apps"/,'the first section after the hero');
+ assert.match(home.slice(heroEnd),/^<\/div><\/section>\s*<div class="rw">\s*<section class="rw-apps"/,'the first section after the hero');
  assert.match(section,/^<section class="rw-apps" aria-roledescription="carousel" aria-labelledby="rw-apps-title" data-carousel>/);
  assert.ok(section.includes(`<!-- 👨 Paul's words, verbatim --><h2 id="rw-apps-title">What kinds of apps can be built using CARLOS?</h2>\n    <p class="ap-sub">CARLOS excels at producing fast, accessible websites and apps that can be deployed easily, locally, on-prem, or on-cloud, as well as providing APIs, CLIs, MCPs, and backends for native apps.</p><!-- /👨 -->`));
  assert.equal(copy['home.apps.heading'],'What kinds of apps can be built using CARLOS?');

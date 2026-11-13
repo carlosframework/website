@@ -8,32 +8,36 @@
 {{ heroPaste | safe }}
 <details class="hv-cloud"><summary>{{ t('hero.cloud.summary') }}</summary>{{ hosts | safe }}</details>
 </div>
+{#- The replay with its dots underneath, as one pane of the hero (hero.js aligns panes). #}
+<div class="rp-col">
 <figure class="rp" aria-label="{{ t('replay.figure.aria') }}" data-thinking="{{ t('replay.thinking') }}">
   <div class="rp-bar"><span class="rp-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="rp-title">{{ t('replay.title') }}</span>
     <span class="rp-steps" hidden><button type="button" class="rp-back" aria-label="{{ t('replay.back') }}" title="{{ t('replay.back') }}"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M2.5 2.5v7"/><path class="fill" d="M9.5 2.6v6.8L4.6 6z"/></svg></button><button type="button" class="rp-fwd" aria-label="{{ t('replay.fwd') }}" title="{{ t('replay.fwd') }}"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M9.5 2.5v7"/><path class="fill" d="M2.5 2.6v6.8L7.4 6z"/></svg></button></span>
     <span class="rp-speed" role="group" aria-label="{{ t('replay.speed') }}" hidden><button type="button" class="rp-slower" aria-label="{{ t('replay.slower') }}" title="{{ t('replay.slower') }}"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M2.5 6h7"/></svg></button><output class="rp-rate" aria-live="polite" data-format="{{ t('replay.rate') }}">{{ t('replay.rate') | replace('{rate}', '1.5') }}</output><button type="button" class="rp-faster" aria-label="{{ t('replay.faster') }}" title="{{ t('replay.faster') }}"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M2.5 6h7M6 2.5v7"/></svg></button></span>
     <label class="rp-pause"><input type="checkbox"><svg class="rp-ic-pause" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5.5 3.5v9M10.5 3.5v9"/></svg><svg class="rp-ic-play" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5 3.2v9.6L12.6 8z"/></svg><span class="rp-pause-off">{{ t('replay.pause') }}</span><span class="rp-pause-on">{{ t('replay.play') }}</span></label></div>
-  {#- Real sessions to choose from (home/replays/sessions.json, words in home.replay.<slug>.*). Without JavaScript only the
-      first is shown, playing the CSS loop; home/replay.js shows the tabs and plays the chosen one as a chat. #}
-  <div class="rp-tabs" role="tablist" aria-label="{{ t('replay.tabs') }}" hidden>
-{%- for s in replays %}<button type="button" role="tab" class="rp-tab" id="rp-tab-{{ s.slug }}" aria-controls="rp-session-{{ s.slug }}" aria-selected="{{ 'true' if s.first else 'false' }}" tabindex="{{ '0' if s.first else '-1' }}">{{ s.tab }}</button>{% endfor -%}
-  </div>
+  {#- The session showing: its name and where it is among them (home/replay.js updates both). The dots under the panel
+      choose; without JavaScript the first session plays and the dots stay hidden. #}
+  <div class="rp-now"><span class="rp-now-name">{{ replays[0].tab }}</span> <span class="rp-now-count" data-format="{{ t('apps.position') }}">{{ t('apps.position') | replace('{n}', '1') | replace('{total}', replays.length ~ '') }}</span></div>
   <div class="rp-stage">
+{#- Each line's stamp: the agent's real working time at that point, seen as m:ss (aria-hidden) and read in words at
+    the end of the line. The replay itself is sped up; the stamps tell the real time. #}
+{%- macro stamp(st) %}<span class="rp-time" aria-hidden="true">{{ st.shown }}</span>{% endmacro -%}
+{%- macro said(st) %}<span class="rp-sr"> {{ st.at }}</span>{% endmacro -%}
 {%- for s in replays %}
     <div class="rp-session" id="rp-session-{{ s.slug }}" role="tabpanel" aria-labelledby="rp-tab-{{ s.slug }}" data-slug="{{ s.slug }}"{% if not s.first %} hidden{% endif %}>
     <ol class="rp-log rp-scene1" role="list">
-      <li class="rp-you rp-s1"><span class="rp-who">{{ t('replay.who.you') }}</span><p>{{ t('replay.you.1') }}</p></li>
-      <li class="rp-agent rp-s2"><span class="rp-who">{{ t('replay.who.agent') }}</span><div><p>{{ s.agent1 }}</p>
-        <ol class="rp-qs">{% for q in s.questions %}<li>{{ q }}</li>{% endfor %}</ol></div></li>
-      <li class="rp-you rp-s3"><span class="rp-who">{{ t('replay.who.you') }}</span><p>{{ s.you2 }}</p></li>
+      <li class="rp-you rp-s1"><span class="rp-who">{{ t('replay.who.you') }}</span><p>{{ stamp(s.stamps[0]) }}{{ t('replay.you.1') }}{{ said(s.stamps[0]) }}</p></li>
+      <li class="rp-agent rp-s2"><span class="rp-who">{{ t('replay.who.agent') }}</span><div>{{ stamp(s.stamps[1]) }}<p>{{ s.agent1 }}</p>
+        <ol class="rp-qs">{% for q in s.questions %}<li>{{ q }}</li>{% endfor %}</ol>{{ said(s.stamps[1]) }}</div></li>
+      <li class="rp-you rp-s3"><span class="rp-who">{{ t('replay.who.you') }}</span><p>{{ stamp(s.stamps[2]) }}{{ s.you2 }}{{ said(s.stamps[2]) }}</p></li>
     </ol>
     <div class="rp-scene2">
       <ol class="rp-log" role="list">
-        <li class="rp-agent rp-s4"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ s.plan }}</p></li>
-        <li class="rp-agent rp-s5"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ s.p1 }}</p></li>
-        <li class="rp-agent rp-s6"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ s.p2 }}</p></li>
-        <li class="rp-agent rp-s7"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ s.p3 }}</p></li>
-        <li class="rp-agent rp-s8"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ s.p4 }} <a class="rp-url" href="{{ s.url }}" target="_blank" rel="noopener noreferrer">{{ s.host }} <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 3h6v6M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg></a></p></li>
+        <li class="rp-agent rp-s4"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ stamp(s.stamps[3]) }}{{ s.plan }}{{ said(s.stamps[3]) }}</p></li>
+        <li class="rp-agent rp-s5"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ stamp(s.stamps[4]) }}{{ s.p1 }}{{ said(s.stamps[4]) }}</p></li>
+        <li class="rp-agent rp-s6"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ stamp(s.stamps[5]) }}{{ s.p2 }}{{ said(s.stamps[5]) }}</p></li>
+        <li class="rp-agent rp-s7"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ stamp(s.stamps[6]) }}{{ s.p3 }}{{ said(s.stamps[6]) }}</p></li>
+        <li class="rp-agent rp-s8"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ s.p4 }} <a class="rp-url" href="{{ s.url }}" target="_blank" rel="noopener noreferrer">{{ s.host }} <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 3h6v6M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg></a> <span class="rp-live" aria-hidden="true">{{ s.live.shown }}</span><span class="rp-sr"> {{ s.live.spoken }}</span></p></li>
       </ol>
       <div class="rp-app rp-s9">
         <div class="rp-app-bar" aria-hidden="true"><span></span>{{ s.host }}</div>
@@ -45,4 +49,9 @@
   </div>
   <figcaption class="rp-cap">{{ t('replay.caption') }}</figcaption>
 </figure>
+  {#- One dot per session: the active one long, like the apps carousel's; each named and titled with its session. #}
+  <div class="rp-dotrow" role="tablist" aria-label="{{ t('replay.tabs') }}" hidden>
+{%- for s in replays %}<button type="button" role="tab" class="rp-dot" id="rp-tab-{{ s.slug }}" aria-controls="rp-session-{{ s.slug }}" aria-selected="{{ 'true' if s.first else 'false' }}" tabindex="{{ '0' if s.first else '-1' }}" aria-label="{{ s.tab }}" title="{{ s.tab }}"></button>{% endfor -%}
+  </div>
+</div>
 </div></section>

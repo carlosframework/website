@@ -1,0 +1,440 @@
+{
+  "action": "approve",
+  "guidance": null,
+  "strings": [
+    {
+      "id": "home.replay.book-club.agent.1",
+      "text": "I’ve read the page. … Before I write any code, it asks me to check a few things with you.",
+      "original": "I’ve read the page. … Before I write any code, it asks me to check a few things with you.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.book-club.p1",
+      "text": "The starter is downloaded and checked. Now I’m writing the voting page.",
+      "original": "The starter is downloaded and checked. Now I’m writing the voting page.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.book-club.p2",
+      "text": "The page works when I run it on this machine. …",
+      "original": "The page works when I run it on this machine. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.book-club.p3",
+      "text": "Your page is live. I’m checking it with a test vote.",
+      "original": "Your page is live. I’m checking it with a test vote.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.book-club.p4",
+      "text": "The Hazel Street Book Club voting page is live:",
+      "original": "The Hazel Street Book Club voting page is live:",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.book-club.plan",
+      "text": "Lovely idea. Here’s what I’m planning. … The look: a cosy second-hand bookshop corner. Warm parchment background, dark ink-brown text, a deep burgundy accent with a touch of moss green, old-fashioned serif headings …",
+      "original": "Lovely idea. Here’s what I’m planning. … The look: a cosy second-hand bookshop corner. Warm parchment background, dark ink-brown text, a deep burgundy accent with a touch of moss green, old-fashioned serif headings …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.book-club.q1",
+      "text": "What do you want to make?",
+      "original": "What do you want to make?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.book-club.q2",
+      "text": "How should it feel?",
+      "original": "How should it feel?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.book-club.q3",
+      "text": "Have you built web apps before?",
+      "original": "Have you built web apps before?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.book-club.shot.alt",
+      "text": "The live voting page: a drawn stack of books with a hazel sprig, the heading “What shall we read next?” and a short invitation to vote, on warm parchment.",
+      "original": "The live voting page: a drawn stack of books with a hazel sprig, the heading “What shall we read next?” and a short invitation to vote, on warm parchment.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.book-club.tab",
+      "text": "Book club",
+      "original": "Book club",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.book-club.you.2",
+      "text": "I run a little neighbourhood book club, the Hazel Street Book Club. We can never agree on what to read next, so I’d like a page where members vote for the next book. … I want it to feel cosy and bookish, like a corner of a second-hand bookshop. …",
+      "original": "I run a little neighbourhood book club, the Hazel Street Book Club. We can never agree on what to read next, so I’d like a page where members vote for the next book. … I want it to feel cosy and bookish, like a corner of a second-hand bookshop. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.intake-queue.agent.1",
+      "text": "I’ve read the directions on that page. … The first step says to ask you a few things and wait for your answers before I build anything:",
+      "original": "I’ve read the directions on that page. … The first step says to ask you a few things and wait for your answers before I build anything:",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.intake-queue.p1",
+      "text": "Now writing the app code.",
+      "original": "Now writing the app code.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.intake-queue.p2",
+      "text": "Ordering, validation and status changes all work. …",
+      "original": "Ordering, validation and status changes all work. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.intake-queue.p3",
+      "text": "Both widths look right now. …",
+      "original": "Both widths look right now. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.intake-queue.p4",
+      "text": "Your client intake queue is live:",
+      "original": "Your client intake queue is live:",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.intake-queue.plan",
+      "text": "That works well for this kind of app. … The look: quiet and businesslike. It’ll be warm off-white and white with dark ink and a single deep navy accent, serif headings over a clean body font, a small “M&H” monogram in the header …",
+      "original": "That works well for this kind of app. … The look: quiet and businesslike. It’ll be warm off-white and white with dark ink and a single deep navy accent, serif headings over a clean body font, a small “M&H” monogram in the header …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.intake-queue.q1",
+      "text": "What do you want to make?",
+      "original": "What do you want to make?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.intake-queue.q2",
+      "text": "How should it feel?",
+      "original": "How should it feel?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.intake-queue.q3",
+      "text": "Have you built web apps before?",
+      "original": "Have you built web apps before?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.intake-queue.shot.alt",
+      "text": "The live intake queue: a navy Merrow & Hale header with its monogram, counts of open, urgent and new matters, and a “Log a new matter” form.",
+      "original": "The live intake queue: a navy Merrow & Hale header with its monogram, counts of open, urgent and new matters, and a “Log a new matter” form.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.intake-queue.tab",
+      "text": "Intake queue",
+      "original": "Intake queue",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.intake-queue.you.2",
+      "text": "I’m the practice manager at Merrow & Hale, a small accounting firm. I’d like a client intake queue … The queue shows new matters with the most urgent first, and we can mark each one as triaged, assigned or declined. It should feel professional and discreet. I’m not technical, so keep it simple for me.",
+      "original": "I’m the practice manager at Merrow & Hale, a small accounting firm. I’d like a client intake queue … The queue shows new matters with the most urgent first, and we can mark each one as triaged, assigned or declined. It should feel professional and discreet. I’m not technical, so keep it simple for me.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.shipment-exceptions.agent.1",
+      "text": "I read the directions. … The first step is to ask you a few things before I build anything.",
+      "original": "I read the directions. … The first step is to ask you a few things before I build anything.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.shipment-exceptions.p1",
+      "text": "I have what I need. … Writing the app now.",
+      "original": "I have what I need. … Writing the app now.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.shipment-exceptions.p2",
+      "text": "The build succeeded. … test it end to end: logging exceptions, sort order, status changes, bad input and a restart.",
+      "original": "The build succeeded. … test it end to end: logging exceptions, sort order, status changes, bad input and a restart.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.shipment-exceptions.p3",
+      "text": "Both layouts look right now. …",
+      "original": "Both layouts look right now. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.shipment-exceptions.p4",
+      "text": "Your shipment exceptions log is live:",
+      "original": "Your shipment exceptions log is live:",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.shipment-exceptions.plan",
+      "text": "That’s a clear brief, and it fits a first version well. Here’s the plan. … The look: restrained and businesslike. It has a pale grey page and white table, dark slate text, and one deep navy brand colour. …",
+      "original": "That’s a clear brief, and it fits a first version well. Here’s the plan. … The look: restrained and businesslike. It has a pale grey page and white table, dark slate text, and one deep navy brand colour. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.shipment-exceptions.q1",
+      "text": "What do you want to make?",
+      "original": "What do you want to make?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.shipment-exceptions.q2",
+      "text": "How should it look and feel?",
+      "original": "How should it look and feel?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.shipment-exceptions.q3",
+      "text": "Have you built web apps before?",
+      "original": "Have you built web apps before?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.shipment-exceptions.shot.alt",
+      "text": "The live exceptions log: a navy Kestrel Lane Logistics header, counts of open exceptions by severity, and a “Log an exception” form.",
+      "original": "The live exceptions log: a navy Kestrel Lane Logistics header, counts of open exceptions by severity, and a “Log an exception” form.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.shipment-exceptions.tab",
+      "text": "Shipments",
+      "original": "Shipments",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.shipment-exceptions.you.2",
+      "text": "I’m the operations lead at Kestrel Lane Logistics, a small freight firm. I’d like a shipment exceptions log for the team. … Open items should be easy to scan, worst first. It should feel clean, serious and scannable, like a proper ops tool. I’m not technical, so keep it simple for me.",
+      "original": "I’m the operations lead at Kestrel Lane Logistics, a small freight firm. I’d like a shipment exceptions log for the team. … Open items should be easy to scan, worst first. It should feel clean, serious and scannable, like a proper ops tool. I’m not technical, so keep it simple for me.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.wedding-rsvp.agent.1",
+      "text": "I’ve read the CARLOS start page … It says to ask you a few things before building anything.",
+      "original": "I’ve read the CARLOS start page … It says to ask you a few things before building anything.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.wedding-rsvp.p1",
+      "text": "I’ll keep the guest list off the public page. Replies will go to a separate private page that needs a password …",
+      "original": "I’ll keep the guest list off the public page. Replies will go to a separate private page that needs a password …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.wedding-rsvp.p2",
+      "text": "Now the styling: colours, lettering, the wave band and the stamp.",
+      "original": "Now the styling: colours, lettering, the wave band and the stamp.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.wedding-rsvp.p3",
+      "text": "It looks right on phones and wide screens, and nothing scrolls sideways. …",
+      "original": "It looks right on phones and wide screens, and nothing scrolls sideways. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.wedding-rsvp.p4",
+      "text": "Your RSVP page is live:",
+      "original": "Your RSVP page is live:",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.wedding-rsvp.plan",
+      "text": "Lovely, congratulations! Here’s my plan. … The look: soft seaside romance with a playful edge. It uses sea-glass teal and warm sand colours with a coral-pink highlight …",
+      "original": "Lovely, congratulations! Here’s my plan. … The look: soft seaside romance with a playful edge. It uses sea-glass teal and warm sand colours with a coral-pink highlight …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.wedding-rsvp.q1",
+      "text": "What do you want to make?",
+      "original": "What do you want to make?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.wedding-rsvp.q2",
+      "text": "How should it look and feel?",
+      "original": "How should it look and feel?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.wedding-rsvp.q3",
+      "text": "How much have you built before?",
+      "original": "How much have you built before?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.wedding-rsvp.shot.alt",
+      "text": "The live RSVP page: “Róisín & Dara” in serif lettering, “Come dance with us by the sea.”, a drawing of a little hall by the waves, and an RSVP card with a stamp.",
+      "original": "The live RSVP page: “Róisín & Dara” in serif lettering, “Come dance with us by the sea.”, a drawing of a little hall by the waves, and an RSVP card with a stamp.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.wedding-rsvp.tab",
+      "text": "Wedding RSVP",
+      "original": "Wedding RSVP",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.wedding-rsvp.you.2",
+      "text": "We’re getting married in Galway next summer … and I’d love a page where guests can RSVP. … Put a line on it like “Come dance with us by the sea.” I want it to feel romantic, but a bit playful too, not stuffy. …",
+      "original": "We’re getting married in Galway next summer … and I’d love a page where guests can RSVP. … Put a line on it like “Come dance with us by the sea.” I want it to feel romantic, but a bit playful too, not stuffy. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    }
+  ],
+  "review": "onuvsjsbeky4a6odbnzeuzo2ye",
+  "generation": 1
+}

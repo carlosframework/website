@@ -121,12 +121,22 @@ export function homeApps(appsPage,sources) {
 // The hero replay's sessions, in tab order: each one's words from the copy (home.replay.<slug>.*, excerpts of a real
 // run), its permanent example app and that app's screenshot. A missing line fails the build.
 export function homeReplays(copy,{sessions}) {
- return sessions.map(({slug,url,shot},i)=>{
+ // Each line's stamp: the agent's real working time at that point (sessions.json), as m:ss and, for screen readers, in words.
+ const word=key=>{if(typeof copy[`home.replay.time.${key}`]!=='string') throw configError(`home.replay.time.${key} is missing`);return copy[`home.replay.time.${key}`];};
+ const shown=x=>`${Math.floor(x/60)}:${String(x%60).padStart(2,'0')}`;
+ const spoken=x=>{const m=Math.floor(x/60),s=x%60,out=[];
+  if(m) out.push(word(m===1?'minute':'minutes').replace('{n}',m));
+  if(s||!m) out.push(word(s===1?'second':'seconds').replace('{n}',s));
+  return out.join(' ');};
+ return sessions.map(({slug,url,shot,times},i)=>{
+  if(!Array.isArray(times)||times.length!==8||times.some((x,k)=>!Number.isInteger(x)||x<0||(k&&x<times[k-1]))) throw configError(`replay ${slug}: times must be eight whole seconds, in order`);
+  const stamps=times.map(x=>({shown:shown(x),at:word('at').replace('{time}',spoken(x))}));
+  const live={shown:word('live').replace('{time}',shown(times[7])),spoken:word('live').replace('{time}',spoken(times[7]))};
   const t=key=>{const v=copy[`home.replay.${slug}.${key}`];if(typeof v!=='string') throw configError(`replay ${slug}: home.replay.${slug}.${key} is missing`);return v;};
   const questions=['q1','q2','q3','q4'].map(q=>copy[`home.replay.${slug}.${q}`]).filter(q=>typeof q==='string');
   if(questions.length<2) throw configError(`replay ${slug}: it needs at least two questions`);
   return {slug,first:i===0,url,host:new URL(url).host,shot:`/home/replays/${slug}-390.jpg`,width:shot[0],height:shot[1],
-   tab:t('tab'),agent1:t('agent.1'),questions,you2:t('you.2'),plan:t('plan'),p1:t('p1'),p2:t('p2'),p3:t('p3'),p4:t('p4'),alt:t('shot.alt')};
+   stamps,live,tab:t('tab'),agent1:t('agent.1'),questions,you2:t('you.2'),plan:t('plan'),p1:t('p1'),p2:t('p2'),p3:t('p3'),p4:t('p4'),alt:t('shot.alt')};
  });
 }
 const balloonTints=['#dcbcb2','#dccba8','#c3c6d6','#d2bcd9','#e3bf9f','#cfcac1','#dbaeb0','#c6bcd4','#cbb9a4']; // soft, no greens
