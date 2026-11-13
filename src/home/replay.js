@@ -126,7 +126,7 @@
   // ---- drawing a moment: only what changed since the last one
   const was = items.map(() => ({ phase: '', count: -1 }));
   let last = {};
-  const draw = t => {
+  const draw = (t, { fadeOut = false } = {}) => {
     const s = stateAt(tl, t);
     if (s.loading !== last.loading) loading.hidden = !s.loading;
     if (s.scene2 !== last.scene2) scene1.classList.toggle('is-off', s.scene2);
@@ -138,6 +138,7 @@
       const it = items[i], w = was[i];
       if (st.phase === 'thinking' && w.phase !== 'thinking') it.li.before(think);
       if (st.phase !== w.phase) it.li.classList.toggle('is-on', st.phase === 'arriving' || st.phase === 'shown');
+      if (fadeOut && st.phase === 'hidden' && w.phase !== 'hidden') return; // its row fades first; draw() again clears it
       if (st.count !== w.count) {
         const lo = Math.min(st.count, Math.max(w.count, 0)), hi = Math.max(st.count, w.count);
         for (let k = lo; k < hi; k++) it.units[k].classList.toggle('on', k < st.count);
@@ -159,6 +160,7 @@
   const tick = now => {
     frame = 0;
     if (!playing()) { prev = 0; return; }
+    if (ff) settleStep();
     if (prev) t += Math.min(100, now - prev) * RATES[r];
     prev = now;
     if (t >= tl.total) t = 0;
@@ -167,17 +169,35 @@
   };
   const wake = () => { if (playing() && !frame) frame = requestAnimationFrame(tick); };
 
-  // ---- steps: a whole turn back or forward, with a short slide, and the replay paused
+  // ---- steps: a turn at a time, and the replay paused. Forward plays just the next turn in place, quickly (it types
+  // or streams as usual, about six times as fast); back fades out just the last turn. Nothing else moves.
   const at = tl.turns.length && stops(tl);
+  let ff = 0, ffTo = 0, cleared = 0;
+  const settleStep = () => { if (ff) { cancelAnimationFrame(ff); ff = 0; t = ffTo; draw(t); } };
   const jump = dir => {
-    const to = dir > 0 ? at.find(x => x > t + 1) : [...at].reverse().find(x => x < t - 1);
-    t = to === undefined ? (dir > 0 ? at[0] : 0) : to;
+    settleStep();
+    clearTimeout(cleared);
     if (pause && !pause.checked) { pause.checked = true; pause.dispatchEvent(new Event('change', { bubbles: true })); }
     tip();
-    draw(t);
-    stage.classList.remove('rp-go-fwd', 'rp-go-back');
-    void stage.offsetWidth; // restart the slide
-    stage.classList.add(dir > 0 ? 'rp-go-fwd' : 'rp-go-back');
+    const to = dir > 0 ? at.find(x => x > t + 1) : [...at].reverse().find(x => x < t - 1);
+    if (dir < 0 || to === undefined) {
+      t = to === undefined ? (dir > 0 ? at[0] : 0) : to;
+      draw(t, { fadeOut: true });
+      cleared = setTimeout(() => draw(t), 220); // the faded row's text, cleared once it has gone
+      return;
+    }
+    // from where the coming turn begins (no thinking pause on a step) to where it is whole
+    const turn = tl.turns.find(x => x.shown === to);
+    const from = Math.max(t, turn ? turn.from : t), span = to - from, ms = Math.min(900, Math.max(350, span / 6));
+    t = from; draw(t); ffTo = to;
+    let t0 = 0;
+    const run = now => {
+      if (!t0) t0 = now;
+      const x = Math.min(1, (now - t0) / ms);
+      t = from + span * x; draw(t);
+      ff = x < 1 ? requestAnimationFrame(run) : 0;
+    };
+    ff = requestAnimationFrame(run);
   };
   back.addEventListener('click', () => jump(-1));
   fwd.addEventListener('click', () => jump(1));

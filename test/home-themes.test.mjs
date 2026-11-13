@@ -209,12 +209,16 @@ test('the replay bar never moves a control, and the apps ring starts without scr
       const page = await browser.newPage({ viewport: { width, height: 900 } });
       await page.goto(url, { waitUntil: 'networkidle' });
       // measured from the bar's own edge: the whole panel floats a little with the hero (its own gentle motion)
-      const where = () => page.evaluate(() => { const bar = document.querySelector('.rp-bar').getBoundingClientRect(); return [...document.querySelectorAll('.rp-bar :is(button, .rp-pause, output)')].filter(e => e.offsetParent).map(e => { const r = e.getBoundingClientRect(); return `${e.className || e.tagName}:${(r.left - bar.left).toFixed(1)}+${r.width.toFixed(1)}`; }); });
+      const where = () => page.evaluate(() => { const bar = document.querySelector('.rp-bar').getBoundingClientRect(); return [...document.querySelectorAll('.rp-bar :is(button, .rp-pause, output)')].filter(e => e.offsetParent).map(e => { const r = e.getBoundingClientRect(); return [e.className || e.tagName, r.left - bar.left, r.width]; }); });
+      // within half a pixel: the floating panel's sub-pixel transform can tip a rounding, never a visible jump
+      const same = (a, b) => a.length === b.length && a.every(([n, x, w], i) => n === b[i][0] && Math.abs(x - b[i][1]) < 0.5 && Math.abs(w - b[i][2]) < 0.5);
       const start = await where();
       assert.ok(start.length >= 6, `${width}: ${start}`);
       for (const sel of ['.rp-fwd', '.rp-fwd', '.rp-back', '.rp-slower', '.rp-slower', '.rp-slower', '.rp-faster', '.rp-faster', '.rp-faster', '.rp-faster', '.rp-pause', '.rp-pause']) {
         await page.click(sel, { force: true });
-        assert.deepEqual(await where(), start, `${width}: ${sel} moved a control`);
+        await page.waitForTimeout(220); // the press-down's release (a transform, which moves nothing else)
+        const now = await where();
+        assert.ok(same(now, start), `${width}: ${sel} moved a control: ${JSON.stringify(start)} -> ${JSON.stringify(now)}`);
       }
       await page.close();
     }

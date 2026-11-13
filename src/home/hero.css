@@ -159,13 +159,7 @@ body.site-home .c-hero, .rp { touch-action: manipulation; }
 .rp-pulse { width: 8px; height: 8px; border-radius: 50%; background: light-dark(#1a5f4f, #7fd0b6); animation: rp-pulse 1s ease-in-out infinite; }
 @keyframes rp-shimmer { to { background-position: -150% 0; } }
 @keyframes rp-pulse { 50% { opacity: 0.3; transform: scale(0.8); } }
-/* A step back or forward slides the panel's content a little. */
-.rp-stage.rp-go-fwd { animation: rp-go-fwd 0.15s ease-out; }
-.rp-stage.rp-go-back { animation: rp-go-back 0.15s ease-out; }
-@keyframes rp-go-fwd { from { transform: translateY(8px); opacity: 0.55; } }
-@keyframes rp-go-back { from { transform: translateY(-8px); opacity: 0.55; } }
-/* Stepping pauses the replay; the step's own slide still has to finish, or the panel would sit half faded. */
-.rp:has(.rp-pause input:checked) .rp-stage:is(.rp-go-fwd, .rp-go-back) { animation-play-state: running !important; }
+/* A step forward plays just the next turn in place; a step back fades just the last turn out (home/replay.js). */
 /* Back and forward: as small and quiet as the speed control. */
 .rp-steps { margin-left: auto; display: inline-flex; align-items: center; flex: none; border: 1px solid light-dark(rgba(27, 31, 36, 0.2), rgba(255, 255, 255, 0.18)); border-radius: 99px; color: light-dark(#2b3036, #dfe6ee); }
 .rp-steps[hidden] { display: none; }
@@ -176,10 +170,20 @@ body.site-home .c-hero, .rp { touch-action: manipulation; }
 .rp-steps svg .fill { fill: currentColor; stroke-width: 1; }
 @media (pointer: coarse) { .rp-steps button { width: 34px; min-height: 40px; } }
 
+/* Hover and press on the panel's controls, as on the rest of the page: a soft tint (pointers only), a quick
+   press-down; the speed control's spent end takes neither. Colour alone under reduced motion. */
+.rp-steps button, .rp-speed button, .rp-pause { transition: background-color 0.15s, transform 0.16s cubic-bezier(0.16, 1, 0.3, 1); }
+@media (hover: hover) {
+  .rp-steps button:hover, .rp-speed button:not([aria-disabled="true"]):hover, .rp-pause:hover { background: color-mix(in srgb, currentColor 10%, transparent); }
+}
+.rp-steps button:active, .rp-speed button:not([aria-disabled="true"]):active, .rp-pause:active { transform: scale(0.94); transition-duration: 0.08s; background: color-mix(in srgb, currentColor 17%, transparent); }
+.rp-speed button[aria-disabled="true"] { background: none; }
+
 @media (prefers-reduced-motion: reduce) {
   .rp *, .rp { animation: none !important; }
   body.landing .rp .rp-scene1 { display: none; }
   .rp-pause, .rp-speed, .rp-steps, .rp-loading, .rp-think, .rp-caret { display: none !important; }
+  .rp-steps button:active, .rp-speed button:active, .rp-pause:active { transform: none; }
 }
 .rp-title, .rp-pause { white-space: nowrap; flex: none; }
 @media (max-width: 30rem) { .rp-dots { display: none; } .rp-bar { gap: 0.45rem; } }

@@ -70,7 +70,6 @@
 .rw .ap-ctrl { grid-column: 2; display: flex; align-items: center; gap: 0.25rem; }
 .rw .ap-ctrl[hidden], .rw .ap-dots[hidden] { display: none; }
 .rw .ap-ctrl > button { display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--rw-line); border-radius: 99px; background: var(--rw-card); color: var(--rw-ink); cursor: pointer; transition: border-color 0.15s; }
-.rw .ap-ctrl > button:hover { border-color: var(--rw-acc); }
 .rw .ap-ctrl button:focus-visible { outline: 2px solid var(--rw-acc); outline-offset: 2px; }
 .rw .ap-ctrl svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .rw .ap-ctrl .ap-next svg { transform: scaleX(-1); }
@@ -79,14 +78,12 @@
 .rw .ap-dots { display: flex; }
 .rw .ap-play { position: absolute; right: 0; top: 50%; translate: 0 -50%; display: grid; place-items: center; width: 40px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: none; color: var(--rw-muted); cursor: pointer; }
 .rw .ap-play[hidden] { display: none; }
-.rw .ap-play:hover { color: var(--rw-ink); }
 .rw .ap-play svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; fill: none; }
 .rw .ap-play .ap-ic-play { fill: currentColor; stroke-width: 1.2; }
 .rw .ap-play .ap-ic-play, .rw .ap-play.is-stopped .ap-ic-pause { display: none; }
 .rw .ap-play.is-stopped .ap-ic-play { display: block; }
 .rw .ap-dots button { display: grid; place-items: center; width: 26px; height: 32px; padding: 0; border: 0; border-radius: 6px; background: none; cursor: pointer; }
-.rw .ap-dots button::before { content: ""; width: 8px; height: 8px; border-radius: 99px; background: var(--rw-line); transition: width 0.2s var(--ease-out), background-color 0.2s; }
-.rw .ap-dots button:hover::before { background: var(--rw-muted); }
+.rw .ap-dots button::before { content: ""; width: 8px; height: 8px; border-radius: 99px; background: var(--rw-line); transition: width 0.2s var(--ease-out), background-color 0.2s, transform 0.16s var(--ease-out); }
 .rw .ap-dots button[aria-current="true"]::before { width: 20px; background: var(--rw-acc); }
 @media (pointer: coarse) { .rw .ap-dots button { width: 22px; height: 44px; } }
 @media (max-width: 420px) { .rw .ap-ctrl > button { width: 40px; height: 40px; } .rw .ap-dotrow { padding-inline: 36px; } .rw .ap-play { width: 36px; } }
@@ -96,3 +93,18 @@
   .rw .ap-foot { grid-template-columns: minmax(0, 1fr); justify-items: center; }
   .rw .ap-ctrl, .rw .ap-foot .rw-more { grid-column: 1; justify-self: center; }
 }
+
+/* Hover and press, the same feel on every control of the page: a soft tint (pointers only), a quick press-down,
+   colour alone under reduced motion. Transform and colour only, so nothing beside a control moves; focus keeps
+   its own ring. */
+.rw .ap-ctrl > button, .rw .ap-play { transition: background-color 0.15s, border-color 0.15s, color 0.15s, transform 0.16s var(--ease-out); }
+@media (hover: hover) {
+  .rw .ap-ctrl > button:hover { background: color-mix(in srgb, var(--rw-ink) 7%, var(--rw-card)); border-color: color-mix(in srgb, var(--rw-ink) 32%, transparent); }
+  .rw .ap-play:hover { background: color-mix(in srgb, var(--rw-ink) 8%, transparent); color: var(--rw-ink); }
+  .rw .ap-dots button:hover::before { background: var(--rw-muted); transform: scale(1.3); }
+  .rw .ap-dots button[aria-current="true"]:hover::before { background: var(--rw-acc); transform: scaleY(1.25); }
+}
+.rw .ap-ctrl > button:active, .rw .ap-play:active { transform: scale(0.94); transition-duration: 0.08s; background: color-mix(in srgb, var(--rw-ink) 13%, var(--rw-card)); }
+.rw .ap-play:active { background: color-mix(in srgb, var(--rw-ink) 14%, transparent); }
+.rw .ap-dots button:active::before { transform: scale(0.85); transition-duration: 0.08s; }
+@media (prefers-reduced-motion: reduce) { .rw .ap-ctrl > button:active, .rw .ap-play:active, .rw .ap-dots button::before, .rw .ap-dots button:hover::before, .rw .ap-dots button:active::before { transform: none; } }
