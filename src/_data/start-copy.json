@@ -107,7 +107,7 @@
   "home.what.version": "v0.1, draft for comment",
   "home.what.props.title": "A typical CARLOS app is",
   "home.what.prop1.title": "One file",
-  "home.what.prop1.body": "Web server, database, background jobs and interface, compiled into a single binary.",
+  "home.what.prop1.body": "Web server, database engine, background jobs and interface, compiled into a single binary.",
   "home.what.prop1.ref": "spec §6",
   "home.what.prop2.title": "A database per customer",
   "home.what.prop2.body": "Every customer gets their own instance and their own data. Nothing shared, nothing to leak across.",
