@@ -2,13 +2,15 @@
     paste box, with a looping picture of one real run beside it. t('x.y') reads "home.x.y"
     from src/_data/start-copy.json, the id from the 2026-11-12 copy review. -#}
 <!-- /👨 --><section class="c-hero hv hv-b"><div class="hero-bg-wrap" aria-hidden="true"><canvas class="hero-bg"></canvas></div><div class="c-hero-inner">
+{#- One glass pane: the text on the left, the agent window on the right (stacked on a phone). #}
+<div class="hv-pane">
 <div class="hv-col">
 {{ human | safe }}<h1>{{ html.heading | safe }}</h1><p class="sub">{{ html.sub | safe }}</p><!-- /👨 -->
 <p class="ask hv-ask">{{ human | safe }}<span>{{ c('home.hero.answer') }}</span><!-- /👨 --> <span class="hv-gloss"><span class="hv-sr">{{ t('hero.gloss') }}</span><span class="hv-rot-line" aria-hidden="true">{{ gloss.before }}<span class="hv-rot" data-words="{{ gloss.words }}"><span class="hv-rot-word">{{ gloss.word }}</span></span>{{ gloss.after }}</span></span> {{ human | safe }}<span>{{ html.ask | safe }}</span><!-- /👨 --></p>
 {{ heroPaste | safe }}
 <details class="hv-cloud"><summary>{{ t('hero.cloud.summary') }}</summary>{{ hosts | safe }}</details>
 </div>
-{#- The replay with its dots underneath, as one pane of the hero (hero.js aligns panes). #}
+{#- The replay with its dots underneath, the right-hand column of the pane (hero.js holds both columns). #}
 <div class="rp-col">
 <figure class="rp" aria-label="{{ t('replay.figure.aria') }}" data-thinking="{{ t('replay.thinking') }}">
   <div class="rp-bar"><span class="rp-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="rp-title">{{ t('replay.title') }}</span>
@@ -53,5 +55,6 @@
   <div class="rp-dotrow" role="tablist" aria-label="{{ t('replay.tabs') }}" hidden>
 {%- for s in replays %}<button type="button" role="tab" class="rp-dot" id="rp-tab-{{ s.slug }}" aria-controls="rp-session-{{ s.slug }}" aria-selected="{{ 'true' if s.first else 'false' }}" tabindex="{{ '0' if s.first else '-1' }}" aria-label="{{ s.tab }}" title="{{ s.tab }}"></button>{% endfor -%}
   </div>
+</div>
 </div>
 </div></section>

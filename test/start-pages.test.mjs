@@ -30,6 +30,9 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.match(hero,/<div class="paste v-soft hv-paste">/);
  // One drawn background behind the hero only, hidden from assistive technology.
  assert.match(home,/<section class="c-hero hv hv-b"><div class="hero-bg-wrap" aria-hidden="true"><canvas class="hero-bg"><\/canvas><\/div><div class="c-hero-inner">/);
+ // One glass pane holds both columns: the text, then the replay with its dots.
+ assert.match(home,/<div class="c-hero-inner">\s*<div class="hv-pane">\s*<div class="hv-col">/);
+ assert.match(home,/<\/figure>[\s\S]*?<div class="rp-dotrow"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>\s*<\/div><\/section>/);
  assert.equal((home.match(/<canvas/g)||[]).length,1);
  assert.ok(hero.includes(escapeHTML(copy['home.paste.label'])));
  assert.doesNotMatch(hero,/pb-works/);

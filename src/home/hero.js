@@ -15,18 +15,20 @@
   const hero = document.querySelector('.c-hero');
   if (hero) {
     let width = 0;
-    // Side by side (64rem and wider), the two panes are centred against each other at rest; each is then held at that
-    // resting place, so the text pane growing below does not slide the replay down (or the text pane's own top up).
-    const inner = hero.querySelector('.c-hero-inner'), panes = inner ? [...inner.children] : [], replay = hero.querySelector('.rp');
-    // The replay is sized from the screen's height (small-viewport units, which a phone's toolbars do not change), so a
-    // window made taller or shorter changes the hero's content: measure again then too. Copy's note and the hosts line
-    // never change the replay's height, so they still grow only the pane.
+    // Side by side (64rem and wider), the text is centred in its half of the pane and the replay fills the other at
+    // rest; each column is then held where and as tall as it rests, so the text growing below neither slides the
+    // replay down, stretches it, nor moves the text's own top.
+    const pane = hero.querySelector('.hv-pane'), cols = pane ? [...pane.children] : [], replay = hero.querySelector('.rp');
+    // The replay's least height comes from the screen's height (small-viewport units, which a phone's toolbars do not
+    // change), so a window made taller or shorter changes the hero's content: measure again then too. Copy's note and
+    // the hosts line never change it, so they still grow only the pane.
+    const least = () => replay ? parseFloat(getComputedStyle(replay).minHeight) || 0 : 0;
     let replayH = 0;
     const pin = () => {
-      panes.forEach(c => { c.style.removeProperty('align-self'); c.style.removeProperty('margin-top'); });
-      if (!inner || getComputedStyle(inner).gridTemplateColumns.trim().split(/\s+/).length < 2) return;
-      const tops = panes.map(c => c.offsetTop), first = Math.min(...tops);   // offsetTop ignores the glass panes' drift
-      panes.forEach((c, i) => { c.style.alignSelf = 'start'; c.style.marginTop = (tops[i] - first) + 'px'; });
+      cols.forEach(c => ['align-self', 'margin-top', 'min-height'].forEach(k => c.style.removeProperty(k)));
+      if (!pane || getComputedStyle(pane).gridTemplateColumns.trim().split(/\s+/).length < 2) return;
+      const tops = cols.map(c => c.offsetTop), hs = cols.map(c => c.getBoundingClientRect().height), first = Math.min(...tops);   // offsetTop ignores the pane's drift
+      cols.forEach((c, i) => { c.style.alignSelf = 'start'; c.style.marginTop = (tops[i] - first) + 'px'; c.style.minHeight = hs[i] + 'px'; });
     };
     const lock = force => {
       if (!force && hero.clientWidth === width) return;
@@ -35,10 +37,10 @@
       pin();
       const room = parseFloat(getComputedStyle(document.documentElement).fontSize) * 2.1;
       hero.style.height = Math.ceil(hero.getBoundingClientRect().height + room) + 'px';
-      replayH = replay ? replay.offsetHeight : 0;
+      replayH = least();
     };
     if (document.readyState === 'complete') lock(true); else addEventListener('load', () => lock(true), { once: true });
-    addEventListener('resize', () => { if (document.readyState === 'complete') lock(replay ? replay.offsetHeight !== replayH : false); });
+    addEventListener('resize', () => { if (document.readyState === 'complete') lock(least() !== replayH); });
   }
   // -ize where the reader's first language is US or Canadian English; -ise everywhere else.
   const first = (navigator.languages && navigator.languages[0]) || navigator.language || '';

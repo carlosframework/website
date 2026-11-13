@@ -48,9 +48,10 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
       assert.deepEqual(violations, [], `${width} ${theme} (system ${scheme})`);
       await ctx.close();
     }
-    // The glass panes over the drawn background: axe cannot see through backdrop-filter, so measure it. For
-    // several moments of the background, the panes are captured with their text made transparent, and each
-    // piece of text is compared with the worst of the pixels under its own line boxes.
+    // The glass pane over the drawn background: axe cannot see through backdrop-filter, so measure it. For
+    // several moments of the background, the pane is captured with its text made transparent, and each piece of
+    // text is compared with the worst of the pixels under its own line boxes (text only screen readers get is skipped:
+    // its line boxes are measured where it is clipped away).
     for (const width of [390, 1280]) for (const theme of ['light', 'dark']) {
       const ctx = await browser.newContext({ viewport: { width, height: width === 390 ? 844 : 900 } });
       await ctx.addInitScript(t => localStorage.setItem('carlos-theme', t), theme);
@@ -68,7 +69,7 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
           document.body.classList.remove('scene-a', 'scene-b'); document.body.classList.add(scene); window.__heroBg.set(t);
           document.querySelectorAll('.is-sheen').forEach(e => e.classList.remove('is-sheen'));
           return [...document.querySelectorAll('.c-hero .hv-col *, .c-hero .rp-bar *, .c-hero .rp-log *, .c-hero .rp-cap')]
-            .filter(el => !el.closest('.rp-app, .pb-copy, svg') && !el.closest('details:not([open]) > :not(summary)') && getComputedStyle(el).visibility !== 'hidden')
+            .filter(el => !el.closest('.rp-app, .pb-copy, svg, .rp-sr, .hv-sr') && !el.closest('details:not([open]) > :not(summary)') && getComputedStyle(el).visibility !== 'hidden')
             .flatMap(el => [...el.childNodes].filter(n => n.nodeType === 3 && n.textContent.trim()).map(n => {
               const cs = getComputedStyle(el), r = document.createRange(); r.selectNodeContents(n);
               return { text: n.textContent.trim().slice(0, 40), color: cs.color, large: parseFloat(cs.fontSize) >= 24 || (parseFloat(cs.fontSize) >= 18.66 && +cs.fontWeight >= 700),
@@ -127,9 +128,9 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
       const page = await ctx.newPage();
       if (!copies) await page.addInitScript(() => Object.defineProperty(navigator, 'clipboard', { value: { writeText: () => Promise.reject(new Error('denied')) } }));
       await page.goto(url, { waitUntil: 'networkidle' });
-      // side by side, the replay pane and the top of the text pane are held too
+      // side by side, the replay (where it is and how tall) and the top of the text are held too
       const where = () => page.evaluate(wide => { const c = document.querySelector('.hero-bg'); return { next: document.querySelector('.rw-what').getBoundingClientRect().top + scrollY, hero: document.querySelector('.c-hero').getBoundingClientRect().height, canvas: [c.clientWidth, c.clientHeight],
-        ...(wide ? { replay: document.querySelector('.c-hero .rp').offsetTop, text: document.querySelector('.c-hero .hv-col').offsetTop } : {}) }; }, width >= 1024);
+        ...(wide ? { replay: document.querySelector('.c-hero .rp').offsetTop, replayH: document.querySelector('.c-hero .rp').offsetHeight, text: document.querySelector('.c-hero .hv-col').offsetTop } : {}) }; }, width >= 1024);
       const before = await where();
       await page.locator('.c-hero .pb-copy').click(); await page.waitForTimeout(600);
       assert.ok(await page.locator('.c-hero .paste').evaluate(el => el.classList.contains('is-copied') || el.classList.contains('copy-failed')), 'the copy note shows');
@@ -154,14 +155,23 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
       await page.setViewportSize({ width: w, height: h0 }); await page.waitForTimeout(300); await fits(`back to ${w}x${h0}`);
       await ctx.close();
     }
-    // At rest the side-by-side panes sit exactly as centred (the hold changes nothing until something grows).
-    for (const width of [1280, 1440]) {
-      const ctx = await browser.newContext({ viewport: { width, height: 900 } });
+    // At rest the pane's two columns sit exactly as laid out (the hold changes nothing until something grows), and
+    // the pane is one card: the replay and the paste line have no frame or shadow of their own, and the columns are
+    // as tall as each other side by side.
+    for (const [width, height] of [[1280, 900], [1440, 900], [1728, 1117], [1280, 640]]) {
+      const ctx = await browser.newContext({ viewport: { width, height } });
       const page = await ctx.newPage();
       await page.goto(url, { waitUntil: 'load' });
-      const held = await page.evaluate(() => [...document.querySelectorAll('.c-hero-inner > *')].map(c => c.offsetTop));
-      const centred = await page.evaluate(() => { const inner = document.querySelector('.c-hero-inner'); [...inner.children].forEach(c => { c.style.alignSelf = ''; c.style.marginTop = ''; }); return [...inner.children].map(c => c.offsetTop); });
-      assert.deepEqual(held, centred, `${width}: resting layout unchanged`);
+      const held = await page.evaluate(() => [...document.querySelectorAll('.hv-pane > *')].map(c => [c.offsetTop, c.offsetHeight]));
+      const free = await page.evaluate(() => [...document.querySelectorAll('.hv-pane > *')].map(c => { c.style.alignSelf = ''; c.style.marginTop = ''; c.style.minHeight = ''; return c; }).map(c => [c.offsetTop, c.offsetHeight]));
+      assert.deepEqual(held, free, `${width}x${height}: resting layout unchanged`);
+      const look = await page.evaluate(() => { const cs = s => getComputedStyle(document.querySelector(s)), pane = document.querySelector('.hv-pane').getBoundingClientRect();
+        return { rp: [cs('.c-hero .rp').borderTopWidth, cs('.c-hero .rp').boxShadow, cs('.c-hero .rp').backgroundImage], paste: [cs('.c-hero .paste').borderTopColor, cs('.c-hero .paste').boxShadow],
+          col: document.querySelector('.rp-col').getBoundingClientRect().height, pane: document.querySelector('.hv-pane').clientHeight, dots: document.querySelector('.rp-dotrow').getBoundingClientRect().bottom - pane.bottom }; });
+      assert.deepEqual(look.rp, ['0px', 'none', 'none'], `${width}: the replay is no card of its own`);
+      assert.deepEqual(look.paste, ['rgba(0, 0, 0, 0)', 'none'], `${width}: the paste line has no border or shadow`);
+      assert.ok(Math.abs(look.col - look.pane) <= 1, `${width}x${height}: the replay column fills the pane inside its frame (${look.col} of ${look.pane})`);
+      assert.ok(look.dots <= 0.5, `${width}x${height}: the dots are inside the pane`);
       await ctx.close();
     }
     // The switch: visible, pressed state follows, the page changes at once and remembers.
