@@ -230,9 +230,40 @@
       cur = S;
     }
     S.el.hidden = false;
-    tabs.forEach((tab, k) => { const on = sessions[k] === S; tab.setAttribute('aria-selected', String(on)); tab.tabIndex = on ? 0 : -1; if (on && focus) tab.focus(); });
+    tabs.forEach((tab, k) => { const on = sessions[k] === S; tab.setAttribute('aria-selected', String(on)); tab.tabIndex = on ? 0 : -1; if (on) { if (focus) tab.focus({ preventScroll: true }); reveal(tab); } });
     t = 0;
     if (live) { S.last = {}; draw(0); } else plain(S);
+  }
+  // The strip of tabs scrolls sideways when they do not all fit (swipe, trackpad, a mouse drag; a vertical swipe or
+  // wheel stays the page's). The chosen tab is brought into view by scrolling the strip only, never the page, and a
+  // soft fade shows at either end while more tabs lie beyond it.
+  const edges = () => {
+    if (!tabsBox) return;
+    tabsBox.classList.toggle('more-left', tabsBox.scrollLeft > 2);
+    tabsBox.classList.toggle('more-right', tabsBox.scrollLeft + tabsBox.clientWidth < tabsBox.scrollWidth - 2);
+  };
+  function reveal(tab, smooth = true) {
+    if (!tabsBox || tabsBox.hidden) return;
+    const pad = 32, l = tab.offsetLeft, r = l + tab.offsetWidth, view = tabsBox.scrollLeft, w = tabsBox.clientWidth;
+    const to = l < view + pad ? l - pad : r > view + w - pad ? r - w + pad : null;
+    if (to !== null) tabsBox.scrollTo({ left: Math.max(0, to), behavior: smooth && !reduce.matches ? 'smooth' : 'auto' });
+    edges();
+  }
+  let stripDrag = null, stripDragged = false;
+  if (tabsBox) {
+    tabsBox.addEventListener('scroll', edges, { passive: true });
+    addEventListener('resize', edges);
+    tabsBox.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse' && e.button === 0) stripDrag = { x: e.clientX, left: tabsBox.scrollLeft, moved: false }; });
+    tabsBox.addEventListener('pointermove', e => {
+      if (!stripDrag) return;
+      const dx = e.clientX - stripDrag.x;
+      if (!stripDrag.moved && Math.abs(dx) < 5) return;
+      if (!stripDrag.moved) { stripDrag.moved = true; tabsBox.classList.add('is-dragging'); }
+      tabsBox.scrollLeft = stripDrag.left - dx;
+    });
+    const letGo = () => { if (stripDrag && stripDrag.moved) { stripDragged = true; setTimeout(() => { stripDragged = false; }, 0); } stripDrag = null; tabsBox.classList.remove('is-dragging'); };
+    addEventListener('pointerup', letGo); addEventListener('pointercancel', letGo);
+    tabsBox.addEventListener('click', e => { if (stripDragged) { e.preventDefault(); e.stopPropagation(); } }, true); // a drag is not a choice
   }
   tabs.forEach((tab, k) => {
     tab.addEventListener('click', () => {
@@ -262,5 +293,8 @@
   };
   if (reduce.addEventListener) reduce.addEventListener('change', start);
   tip();
+  // a random session to start each visit (without JavaScript it is the first, playing the CSS loop)
+  show(sessions[Math.floor(Math.random() * sessions.length)]);
   start();
+  if (tabsBox) { const on = tabs[sessions.indexOf(cur)]; if (on) reveal(on, false); }
 })();

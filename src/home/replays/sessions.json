@@ -1,10 +1,14 @@
 {
-  "//": "🤖 The hero replay's sessions, in tab order (src/_includes/home-hero.njk, src/home/replay.js). Each is a real /start run recorded on 2026-11-13 (~/.cache/start-recording/examples/<slug>: replay.json, SUMMARY.md). The words are excerpts from it in src/_data/start-copy.json under home.replay.<slug>.*; the last line links to the app's permanent example copy (on the flagship demo account) instead of the 24-hour demo address the run printed. The screenshot is that permanent copy at 390 px (permanent/perm-390.png), the top 2400 px at 2x, as JPEG.",
+  "//": "🤖 The hero replay's sessions, in tab order (src/_includes/home-hero.njk, src/home/replay.js). Each is a real /start run recorded on 2026-11-13 (~/.cache/start-recording/examples/<slug>: replay.json, SUMMARY.md). The words are excerpts from it in src/_data/start-copy.json under home.replay.<slug>.*; the last line links to the app's permanent example copy (on the flagship demo account) instead of the 24-hour demo address the run printed. The screenshot is that permanent copy at 390 px, with its example-app banner, retaken 2026-11-13: the top 2400 px at 2x, as JPEG. Tab order alternates work and personal apps; the first is also what plays without JavaScript, so the CSS-only loop in home/hero.css is timed from it. With JavaScript a visit starts on a random one. Wedding RSVP and book club are the v2 reruns; shipment-exceptions is the exceptions-log run.",
   "sessions": [
     { "slug": "status-page", "url": "https://status-page-example.bdf.oncarlos.com/", "shot": [780, 2400] },
-    { "slug": "defect-log", "url": "https://defect-log-example.bdf.oncarlos.com/", "shot": [780, 2400] },
-    { "slug": "project-board", "url": "https://project-board-example.bdf.oncarlos.com/", "shot": [780, 2400] },
     { "slug": "band-gigs", "url": "https://band-gigs-example.bdf.oncarlos.com/", "shot": [780, 2400] },
-    { "slug": "climbing-gym", "url": "https://climbing-gym-example.bdf.oncarlos.com/", "shot": [780, 2400] }
+    { "slug": "defect-log", "url": "https://defect-log-example.bdf.oncarlos.com/", "shot": [780, 2400] },
+    { "slug": "wedding-rsvp", "url": "https://wedding-rsvp-example.bdf.oncarlos.com/", "shot": [780, 2400] },
+    { "slug": "project-board", "url": "https://project-board-example.bdf.oncarlos.com/", "shot": [780, 2400] },
+    { "slug": "climbing-gym", "url": "https://climbing-gym-example.bdf.oncarlos.com/", "shot": [780, 2400] },
+    { "slug": "shipment-exceptions", "url": "https://shipment-exceptions-example.bdf.oncarlos.com/", "shot": [780, 2400] },
+    { "slug": "book-club", "url": "https://book-club-example.bdf.oncarlos.com/", "shot": [780, 2400] },
+    { "slug": "intake-queue", "url": "https://intake-queue-example.bdf.oncarlos.com/", "shot": [780, 2400] }
   ]
 }

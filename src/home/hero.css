@@ -78,7 +78,15 @@ a.rp-url svg { width: 0.8em; height: 0.8em; vertical-align: -0.05em; fill: none;
 .rp-session[hidden] { display: none; }
 .rp-session > * { grid-area: 1 / 1; min-width: 0; min-height: 0; }
 /* The sessions' tabs: quiet pills under the title bar, scrolling sideways if they do not fit. */
-.rp-tabs { flex: none; display: flex; gap: 4px; padding: 0.4rem 0.6rem; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid light-dark(rgba(27, 31, 36, 0.08), rgba(255, 255, 255, 0.08)); }
+.rp-tabs { flex: none; position: relative; display: flex; gap: 4px; padding: 0.4rem 0.6rem; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scroll-padding-inline: 0.6rem; scrollbar-width: none; border-bottom: 1px solid light-dark(rgba(27, 31, 36, 0.08), rgba(255, 255, 255, 0.08));
+  /* a soft fade at an end while more tabs lie beyond it (home/replay.js sets more-left and more-right) */
+  --rp-fl: 0px; --rp-fr: 0px;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--rp-fl), #000 calc(100% - var(--rp-fr)), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 var(--rp-fl), #000 calc(100% - var(--rp-fr)), transparent); }
+.rp-tabs.more-left { --rp-fl: 32px; }
+.rp-tabs.more-right { --rp-fr: 32px; }
+.rp-tabs.is-dragging { scroll-snap-type: none; cursor: grabbing; user-select: none; -webkit-user-select: none; }
+.rp-tab { scroll-snap-align: start; }
 .rp-tabs::-webkit-scrollbar { display: none; }
 .rp-tabs[hidden] { display: none; }
 .rp-tab { flex: none; min-height: 28px; padding: 0 0.7rem; border: 1px solid light-dark(rgba(27, 31, 36, 0.16), rgba(255, 255, 255, 0.16)); border-radius: 99px; background: none; color: light-dark(#464b52, #c9d2de); font: 600 0.72rem/1 var(--site-sans, inherit); white-space: nowrap; cursor: pointer; transition: background-color 0.15s, color 0.15s, border-color 0.15s, transform 0.16s cubic-bezier(0.16, 1, 0.3, 1); }

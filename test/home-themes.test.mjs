@@ -268,11 +268,18 @@ test('the replay bar never moves a control; the apps ring lets go smoothly and s
       await page.clock.install(); await page.goto(url, { waitUntil: 'load' });
       const st = () => page.evaluate(() => ({ open: [...document.querySelectorAll('.rp-session')].filter(s => !s.hidden).map(s => s.dataset.slug).join(), sel: [...document.querySelectorAll('.rp-tab')].map(t => (t.getAttribute('aria-selected') === 'true' ? 1 : 0)).join(''), tabindex: [...document.querySelectorAll('.rp-tab')].map(t => t.tabIndex).join(), focus: document.activeElement && document.activeElement.id }));
       const slugs = await page.evaluate(() => [...document.querySelectorAll('.rp-session')].map(s => s.dataset.slug));
-      assert.equal((await st()).open, slugs[0]);
+      assert.ok(slugs.includes((await st()).open), 'one session open to start');
+      // a random one each visit (the first only without JavaScript)
+      const firsts = new Set();
+      for (let k = 0; k < 12; k++) { await page.reload({ waitUntil: 'load' }); firsts.add((await st()).open); }
+      assert.ok(firsts.size > 1, `a random first session: ${[...firsts]}`);
+      // the strip: the chosen tab scrolled into view, a fade at an end while more tabs lie beyond it
+      const strip = () => page.evaluate(() => { const t = document.querySelector('.rp-tabs'), a = t.querySelector('[aria-selected="true"]').getBoundingClientRect(), b = t.getBoundingClientRect(); return { inView: a.left >= b.left - 1 && a.right <= b.right + 1, left: t.classList.contains('more-left'), right: t.classList.contains('more-right'), overflows: t.scrollWidth > t.clientWidth }; });
       await page.click('.rp-tab:nth-child(2)');
       assert.deepEqual(await st(), { open: slugs[1], sel: slugs.map((_, k) => (k === 1 ? 1 : 0)).join(''), tabindex: slugs.map((_, k) => (k === 1 ? 0 : -1)).join(), focus: `rp-tab-${slugs[1]}` });
       await page.keyboard.press('ArrowRight'); assert.equal((await st()).open, slugs[2]); assert.equal((await st()).focus, `rp-tab-${slugs[2]}`);
       await page.keyboard.press('End'); assert.equal((await st()).open, slugs[slugs.length - 1]);
+      await page.waitForTimeout(600); { const s = await strip(); assert.ok(s.inView, 'the last tab scrolled into view'); if (s.overflows) assert.deepEqual([s.left, s.right], [true, false]); }
       await page.keyboard.press('ArrowRight'); assert.equal((await st()).open, slugs[0], 'wraps round');
       await page.keyboard.press('Home'); assert.equal((await st()).open, slugs[0]);
       await page.click('.rp-faster'); // 2x: the status page is about 44 s of replay time (the clock still runs every frame)
@@ -280,11 +287,16 @@ test('the replay bar never moves a control; the apps ring lets go smoothly and s
       await page.click('.rp-pause'); await page.clock.runFor(120000); assert.equal((await st()).open, slugs[1], 'Pause holds it');
       await ctx.close();
       const rctx = await browser.newContext({ viewport: { width: 390, height: 900 }, reducedMotion: 'reduce' }); const still = await rctx.newPage();
-      await still.clock.install(); await still.goto(url, { waitUntil: 'load' }); await still.clock.runFor(120000);
+      await still.clock.install(); await still.goto(url, { waitUntil: 'load' });
       const shown = () => still.evaluate(() => [...document.querySelectorAll('.rp-session')].filter(s => !s.hidden).map(s => s.dataset.slug).join());
-      assert.equal(await shown(), slugs[0], 'reduced motion: nothing moves on by itself');
+      const startedOn = await shown(); await still.clock.runFor(120000);
+      assert.equal(await shown(), startedOn, 'reduced motion: nothing moves on by itself');
       assert.equal(await still.evaluate(() => document.querySelector('.rp-tabs').hidden), false);
       await still.click('.rp-tab:nth-child(3)'); assert.equal(await shown(), slugs[2], 'and the tabs still choose');
+      // at 390 the nine tabs overflow: a vertical wheel over the strip still scrolls the page
+      const box = await still.locator('.rp-tabs').boundingBox(); await still.mouse.move(box.x + 100, box.y + 12);
+      const y0 = await still.evaluate(() => scrollY); await still.mouse.wheel(0, 150); await still.waitForTimeout(300);
+      assert.ok((await still.evaluate(() => scrollY)) > y0, 'vertical scrolling stays the page’s');
       await rctx.close();
     }
     // the ring in a browser whose scroll-behavior is only 'auto' or 'smooth'
