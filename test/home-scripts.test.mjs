@@ -405,8 +405,11 @@ function appsWorld({ reduce = false, count = 4, random = 0, broken = false } = {
     IntersectionObserver: class { constructor(cb) { this.cb = cb; observers.push(this); } observe() {} },
     addEventListener: (t, f) => (win[t] ||= []).push(f),
   };
+  root.contains = el => !!el && (el === root || el === track || el === prev || el === next || el === play || el === ctrl || dots.includes(el) || order.includes(el) || order.some(s => s.link === el));
   let error = null;
-  try { runInContext(appsJS, createContext(g)); } catch (e) { error = e; }
+  const ctx = createContext(g);
+  runInContext('delete Array.prototype.at;', ctx); // as older Safari (before 15.4) and Firefox (before 90)
+  try { runInContext(appsJS, ctx); } catch (e) { error = e; }
   const see = on => observers.forEach(o => o.cb([{ isIntersecting: on }]));
   const run = ms => { const due = [...timeouts.entries()].filter(([, t]) => t.ms === ms); due.forEach(([id]) => timeouts.delete(id)); due.forEach(([, t]) => t.f()); return due.length; };
   // run animation frames 16 ms apart until none are left (or a frame budget runs out); scroll events fire as the row moves
@@ -475,9 +478,9 @@ test('apps: the app at rest pops forward, eases back before the row moves, and t
   const d = appsWorld({ random: 0 }); d.see(true);
   d.track.fire('pointerdown', { pointerType: 'mouse', button: 0, clientX: 600, clientY: 300, pointerId: 1 });
   assert.equal(d.upAt(), 4, 'a press that has not moved is still a click');
-  d.track.fire('pointermove', { clientX: 540, clientY: 300, pointerId: 1 }); assert.equal(d.upAt(), -1);
+  d.track.fire('pointermove', { clientX: 390, clientY: 300, pointerId: 1 }); assert.equal(d.upAt(), -1);
   d.settle(); assert.equal(d.upAt(), -1, 'not while held');
-  d.track.fire('pointerup', { clientX: 540, clientY: 300, pointerId: 1 }); d.frames_(); d.settle(); assert.equal(d.upAt(), 5);
+  d.track.fire('pointerup', { clientX: 390, clientY: 300, pointerId: 1 }); d.frames_(); d.settle(); assert.equal(d.upAt(), 5);
   // a touch, and a trackpad moving the row: back at once
   const t = appsWorld({ random: 0 }); t.track.fire('pointerdown', { pointerType: 'touch', clientX: 500, clientY: 300, pointerId: 2 });
   assert.equal(t.upAt(), 4, 'a tap is not a drag'); t.track.fire('pointermove', { pointerType: 'touch', clientX: 470, clientY: 302, pointerId: 2 }); assert.equal(t.upAt(), -1, 'a swipe takes it back');
@@ -527,9 +530,10 @@ test('apps: hover, focus, off screen and a hidden tab hold it; the quiet pause, 
   w.track.fire('pointerenter', { pointerType: 'mouse' });
   assert.equal(w.advance(), 0); assert.equal(w.status.getAttribute('aria-live'), 'polite');
   w.track.fire('pointerleave', { pointerType: 'mouse' }); assert.equal(w.advance(), 1); w.frames_(); w.settle();
-  w.track.fire('focusin', {}); assert.equal(w.advance(), 0);
-  w.track.fire('focusout', { relatedTarget: w.real[2] }); assert.equal(w.advance(), 0, 'focus still inside');
-  w.track.fire('focusout', { relatedTarget: null }); assert.equal(w.advance(), 1); w.frames_(); w.settle();
+  // focus coming in stops it until Play (the APG carousel pattern; more in the focus test below)
+  w.root.fire('focusin', { target: w.real[0].link }); assert.equal(w.advance(), 0); assert.equal(w.play.getAttribute('aria-label'), 'Play');
+  w.root.fire('focusout', { relatedTarget: null }); assert.equal(w.advance(), 0, 'still stopped');
+  w.root.fire('focusin', { target: w.play }); w.play.fire('click'); assert.equal(w.advance(), 1); w.frames_(); w.settle();
   w.see(false); assert.equal(w.advance(), 0, 'scrolled away: it waits'); w.see(true);
   w.doc.hidden = true; w.doc.l.visibilitychange.forEach(f => f()); assert.equal(w.advance(), 0, 'hidden tab: it waits'); w.doc.hidden = false; w.doc.l.visibilitychange.forEach(f => f());
   w.play.fire('click');
@@ -543,11 +547,11 @@ test('apps: hover, focus, off screen and a hidden tab hold it; the quiet pause, 
   const d = appsWorld(); d.see(true);
   d.track.fire('pointerdown', { pointerType: 'mouse', button: 0, clientX: 600, clientY: 300, pointerId: 1 });
   d.track.fire('pointermove', { clientX: 597, clientY: 300, pointerId: 1 }); assert.ok(!d.track.classList.contains('is-dragging'), 'a wobble is still a click');
-  d.track.fire('pointermove', { clientX: 540, clientY: 300, pointerId: 1 });
-  assert.ok(d.track.classList.contains('is-dragging')); assert.equal(d.track.scrollLeft, 700 * 4 - 130 + 60); assert.equal(d.play.getAttribute('aria-label'), 'Play');
-  d.settle(); assert.equal(d.track.scrollLeft, 700 * 4 - 130 + 60, 'no snapping back mid-drag');
-  d.track.fire('pointerup', { clientX: 540, clientY: 300, pointerId: 1 }); d.frames_();
-  assert.ok(!d.track.classList.contains('is-dragging')); assert.equal(d.current(), 1, 'a deliberate short drag moves one app'); assert.equal(d.at(), 5);
+  d.track.fire('pointermove', { clientX: 390, clientY: 300, pointerId: 1 });
+  assert.ok(d.track.classList.contains('is-dragging')); assert.equal(d.track.scrollLeft, 700 * 4 - 130 + 210); assert.equal(d.play.getAttribute('aria-label'), 'Play');
+  d.settle(); assert.equal(d.track.scrollLeft, 700 * 4 - 130 + 210, 'no snapping back mid-drag');
+  d.track.fire('pointerup', { clientX: 390, clientY: 300, pointerId: 1 }); d.frames_();
+  assert.ok(!d.track.classList.contains('is-dragging')); assert.equal(d.current(), 1, 'past a quarter of an app: on to the next'); assert.equal(d.at(), 5);
   let blocked = false; d.track.fire('click', { preventDefault() { blocked = true; }, stopPropagation() {} }); assert.ok(blocked);
 });
 
@@ -573,6 +577,82 @@ test('apps: only the address is a link; a click on a card beside the middle turn
   assert.equal(f.current(), 3); assert.equal(f.at(), 3, 'one step back, not three forward'); f.settle(); assert.equal(f.order[f.at()], f.real[3]);
   // nothing listens to the wheel, so a vertical wheel always scrolls the page
   assert.equal(w.track.l.wheel, undefined);
+});
+
+test('apps: letting go settles once, straight on from where the row is: back under a quarter of an app, on past it or when flicked', () => {
+  // a drag with times, ending at x; every frame of the settle recorded
+  const letGo = (w, path) => {
+    w.track.fire('pointerdown', { pointerType: 'mouse', button: 0, clientX: path[0][1], clientY: 300, pointerId: 1, timeStamp: path[0][0] });
+    for (const [t, x] of path.slice(1)) w.track.fire('pointermove', { clientX: x, clientY: 300, pointerId: 1, timeStamp: t });
+    const [t, x] = path[path.length - 1], at = w.track.scrollLeft;
+    const classes = []; const was = w.track.classList.remove.bind(w.track.classList);
+    w.track.classList.remove = (...c) => { classes.push([...c, w.track.classList.contains('is-gliding')]); was(...c); };
+    w.track.fire('pointerup', { clientX: x, clientY: 300, pointerId: 1, timeStamp: t });
+    const trace = [at]; while (w.frames.size) { w.frames_(1); trace.push(w.track.scrollLeft); }
+    return { at, trace, classes };
+  };
+  const steady = trace => { const dir = Math.sign(trace[trace.length - 1] - trace[0]); return trace.every((v, i) => !i || Math.sign(v - trace[i - 1]) * dir >= 0); };
+  const centreOf = p => 700 * p - 130;
+  // a small drag (100 px of 700, slowly): back to the same app, from where it was let go
+  const a = appsWorld({ random: 0 }); a.see(true);
+  const s = letGo(a, [[0, 600], [100, 560], [300, 520], [500, 500]]);
+  assert.equal(a.current(), 0); assert.equal(s.trace[s.trace.length - 1], centreOf(4));
+  assert.ok(steady(s.trace), 'one way, no jump: ' + s.trace.slice(0, 6).map(Math.round));
+  assert.ok(Math.abs(s.trace[1] - s.at) < 40, 'the first frame starts where it was let go');
+  assert.deepEqual(s.classes[0], ['is-dragging', true], 'snapping stays off: the glide holds it before the drag lets go');
+  // half an app, slowly: on to the next
+  const b = appsWorld({ random: 0 }); b.see(true);
+  const h = letGo(b, [[0, 600], [200, 450], [600, 250], [900, 250]]);
+  assert.equal(b.current(), 1); assert.equal(h.trace[h.trace.length - 1], centreOf(5)); assert.ok(steady(h.trace));
+  // a flick (80 px in 60 ms): on, with its speed, though it is short
+  const c = appsWorld({ random: 0 }); c.see(true);
+  const f = letGo(c, [[0, 600], [30, 560], [60, 520]]);
+  assert.equal(c.current(), 1); assert.ok(steady(f.trace));
+  // (the glide's first frame only notes the time; the second is its first step)
+  assert.ok(Math.abs(f.trace[2] - f.trace[1]) > Math.abs(s.trace[2] - s.trace[1]), 'it carries on at the speed it was going');
+  // a hard flick goes further, never past three apps
+  const d = appsWorld({ random: 0 }); d.see(true); letGo(d, [[0, 900], [30, 700], [60, 400]]);
+  assert.ok(d.current() >= 2 && d.current() <= 3, `${d.current()}`);
+  // nothing pops until it has come to rest
+  assert.equal(c.upAt(), -1); c.settle(); assert.equal(c.upAt(), 5);
+});
+
+test('apps: Pause, hover, focus or scrolling away stop the row’s own turn, waiting or under way (Astra, 9174009)', () => {
+  // waiting for the card to ease back: dropped, the card comes forward again
+  const a = appsWorld({ random: 0 }); a.see(true);
+  a.run(10000); assert.equal(a.upAt(), -1, 'the card eased back for the turn');
+  a.play.fire('click');
+  a.run(200); a.frames_(); a.settle();
+  assert.equal(a.current(), 0, 'no turn after Pause'); assert.equal(a.at(), 4); assert.equal(a.upAt(), 4);
+  // under way: it settles on the nearest app instead of finishing the turn
+  const b = appsWorld({ random: 0 }); b.see(true);
+  b.run(10000); b.run(200); b.frames_(20);   // a little way into the slow turn
+  const mid = b.track.scrollLeft; assert.ok(mid > 700 * 4 - 130 && mid < 700 * 5 - 130);
+  b.play.fire('click'); b.frames_(); b.settle();
+  assert.equal(b.at(), 4, 'back to the nearest, not on to the next'); assert.equal(b.current(), 0);
+  // the same when the row scrolls out of sight, the tab is hidden, or the pointer comes over it
+  for (const why of ['away', 'hidden', 'hover']) {
+    const w = appsWorld({ random: 0 }); w.see(true); w.run(10000);
+    if (why === 'away') w.see(false); else if (why === 'hidden') { w.doc.hidden = true; w.doc.l.visibilitychange.forEach(f => f()); } else w.track.fire('pointerenter', { pointerType: 'mouse' });
+    w.run(200); w.frames_(); w.settle(); assert.equal(w.current(), 0, why);
+  }
+  // a person's own move during the row's turn replaces it
+  const c = appsWorld({ random: 0 }); c.see(true); c.run(10000); c.run(200); c.frames_(10);
+  c.press(c.prev); c.frames_(); c.settle(); assert.equal(c.current(), 3, 'one back from where it was, not from where it was going');
+});
+
+test('apps: focus anywhere in the carousel holds it, and stops the row until Play (Astra, 9174009)', () => {
+  const w = appsWorld({ random: 0 }); w.see(true);
+  // an address, then Previous: still held, still stopped
+  w.root.fire('focusin', { target: w.real[0].link }); assert.equal(w.play.getAttribute('aria-label'), 'Play');
+  w.root.fire('focusout', { relatedTarget: w.prev }); w.root.fire('focusin', { target: w.prev });
+  assert.equal(w.advance(), 0, 'Previous is inside the carousel');
+  w.root.fire('focusout', { relatedTarget: w.dots[2] }); w.root.fire('focusin', { target: w.dots[2] }); assert.equal(w.advance(), 0, 'a dot too');
+  // leaving the carousel: still stopped until Play
+  w.root.fire('focusout', { relatedTarget: null }); assert.equal(w.advance(), 0, 'stopped until Play');
+  // Play takes focus and starts the row; focus on Play holds nothing
+  w.root.fire('focusin', { target: w.play }); w.play.fire('click');
+  assert.equal(w.play.getAttribute('aria-label'), 'Pause'); assert.equal(w.advance(), 1, 'turning again with focus on Play');
 });
 
 test('apps: a browser that cannot start the ring keeps the plain row, not a half-drawn one', () => {
@@ -604,7 +684,7 @@ test('apps: reduced motion never moves by itself, hides the pause, jumps instead
 // 🤖 The hero replay as a chat (home/replay.js): the timeline it plays, worked out from the lines. The page-level
 // behaviour (typing spans, caret, thinking dots, steps, speed) is checked in a browser before each release.
 const replayJS = await read('src/home/replay.js');
-const rpTimeline = () => { const g = { document: { querySelector: () => null }, matchMedia: () => media(false), Math, Number, String, Infinity }; g.globalThis = g; runInContext(replayJS, createContext(g)); return g.__rpTimeline; };
+const rpTimeline = () => { const g = { document: { querySelector: () => null }, matchMedia: () => media(false), Math, Number, String, Infinity }; g.globalThis = g; const ctx = createContext(g); runInContext('delete Array.prototype.at;', ctx); runInContext(replayJS, ctx); return g.__rpTimeline; }; // as older Safari and Firefox: no Array.at
 test('replay: a loading screen, typed lines, thinking before each agent message, then streamed words, at reading pace', () => {
   const T = rpTimeline();
   const words = n => Array.from({ length: n }, (_, k) => `w${k}`).join(' ');
@@ -643,6 +723,6 @@ test('replay: a loading screen, typed lines, thinking before each agent message,
   const stops = T.stops(tl);
   assert.equal(JSON.stringify(stops), JSON.stringify([...stops].sort((a, b) => a - b)));
   assert.equal(JSON.stringify(stops.slice(0, 3)), JSON.stringify([you.shown, agent.shown, tl.turns[3].shown]));
-  assert.equal(stops.at(-1), app.panEnd);
+  assert.equal(stops[stops.length - 1], app.panEnd);
   for (const st of stops.slice(0, 3)) assert.ok(at(st).turns.every(x => x.phase !== 'arriving' && x.phase !== 'thinking'), 'a step shows whole lines');
 });

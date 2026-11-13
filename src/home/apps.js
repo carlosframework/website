@@ -33,7 +33,7 @@
   const DELAY = 10000, TURN_MS = 1600, STEP_MS = 520, SINK_MS = 200, n = real.length;
   let index = -1, pos = n, timer = 0, settle = 0, resized = 0, stopped = false, hover = false, focus = false, seen = false;
   let drag = null, dragged = false, frame = 0, glider = 0, geo = [], half = 0, stepW = 1;
-  let up = null, waiting = 0, owed = 0, owedMs = STEP_MS, off = false; // off: it could not start, the plain row stays
+  let up = null, waiting = 0, owed = 0, owedMs = STEP_MS, off = false, auto = false; // auto: the move under way is the row's own // off: it could not start, the plain row stays
 
   const copy = slide => {
     const c = slide.cloneNode(true);
@@ -109,20 +109,22 @@
 
   // The glide: scrollLeft eased over a set time, snapping off while it runs, so the turn is as calm as we choose
   // (slow for the row's own move, brisk for a press) and the depth above follows it frame by frame.
-  const ease = x => (x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2);
-  const halt = () => { if (glider) { cancelAnimationFrame(glider); glider = 0; track.classList.remove('is-gliding'); } };
-  const glide = (to, ms) => {
+  // In and out for a turn from rest; out only when a drag lets go, so it carries on at the speed it was going.
+  const EASE = { inOut: x => (x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2), out: x => 1 - (1 - x) ** 3 };
+  const halt = () => { if (glider) { cancelAnimationFrame(glider); glider = 0; auto = false; track.classList.remove('is-gliding'); } };
+  const glide = (to, ms, curve = 'inOut') => {
     halt();
     if (reduce.matches || ms <= 0) return jump(to);
-    const from = track.scrollLeft;
-    let t0 = 0;
+    // snapping off before the start is read, so the row is never pulled back to a snap point first
     track.classList.add('is-gliding');
+    const from = track.scrollLeft, ease = EASE[curve];
+    let t0 = 0;
     const tick = now => {
       if (!t0) t0 = now;
       const x = Math.min(1, (now - t0) / ms);
       track.scrollLeft = from + (to - from) * ease(x);
       if (x < 1) glider = requestAnimationFrame(tick);
-      else { glider = 0; track.classList.remove('is-gliding'); }
+      else { glider = 0; auto = false; track.classList.remove('is-gliding'); }
     };
     glider = requestAnimationFrame(tick);
   };
@@ -141,8 +143,9 @@
     dots.forEach((d, k) => d.setAttribute('aria-current', String(k === i)));
     status.textContent = status.dataset.format.replace('{app}', real[i].dataset.name).replace('{n}', i + 1).replace('{total}', n);
   };
-  const arm = () => { clearTimeout(timer); timer = !off && moving() ? setTimeout(() => go(1, TURN_MS), DELAY) : 0; };
+  const arm = () => { clearTimeout(timer); timer = !off && moving() ? setTimeout(() => go(1, TURN_MS, true), DELAY) : 0; };
   const sync = () => {
+    if (!moving()) cancel();
     status.setAttribute('aria-live', moving() ? 'off' : 'polite');
     play.hidden = reduce.matches;
     const word = stopped ? play.dataset.play : play.dataset.pause;
@@ -151,24 +154,33 @@
     play.classList.toggle('is-stopped', stopped);
     arm();
   };
-  const move = (p, ms = STEP_MS) => {
+  const move = (p, ms = STEP_MS, curve = 'inOut', own = false) => {
     pos = p;
-    mark(p % n);
-    glide(centre(p), ms);
+    mark(((p % n) + n) % n);
+    glide(centre(p), ms, curve);
+    auto = own && !!glider;
     arm();
   };
   // Move d apps on: a glide still under way is finished where it was going, then the row goes on from there.
-  const step = (d, ms) => { if (glider) { halt(); jump(centre(pos)); } recentre(); move(pos + d, ms); };
+  const step = (d, ms, own) => { if (glider) { halt(); jump(centre(pos)); } recentre(); move(pos + d, ms, 'inOut', own); };
   // Every move we start: the popped screenshot eases back first; presses while it does add up.
-  const go = (d, ms = STEP_MS) => {
+  const go = (d, ms = STEP_MS, own = false) => {
     if (off) return;
-    owed += d; owedMs = ms;
+    if (!own && auto) cancel(); // someone's own move replaces the row's
+    owed += d; owedMs = ms; owedOwn = own && (!waiting || owedOwn);
     if (waiting) return;
-    const flush = () => { waiting = 0; const k = owed; owed = 0; if (k) step(k, owedMs); };
+    const flush = () => { waiting = 0; const k = owed; owed = 0; if (k) step(k, owedMs, owedOwn); };
     if (!up || reduce.matches) return flush();
     sink();
     waiting = setTimeout(flush, SINK_MS);
   };
+  let owedOwn = false;
+  // The row's own movement stops the moment it may not run (Pause, hover, focus, off screen, a hidden tab): a turn
+  // still waiting is dropped and the card comes forward again; a turn under way settles on the nearest app.
+  function cancel() {
+    if (waiting && owedOwn) { clearTimeout(waiting); waiting = 0; owed = 0; owedOwn = false; rise(pos); }
+    if (glider && auto) { halt(); const p = nearest(); move(p, 260, 'out'); }
+  }
   const ahead = () => (((pos + owed) % n) + n) % n; // the app the row is on, or is about to go to
   const stop = () => { stopped = true; sync(); };
 
@@ -207,33 +219,40 @@
       if (Math.abs(dx) <= HOLD && Math.abs(dy) <= HOLD) return;
       if (Math.abs(dy) > Math.abs(dx)) { drag = null; return; } // up or down: the page's, not ours
       drag.moved = true;
-      if (glider || waiting) { clearTimeout(waiting); waiting = 0; owed = 0; halt(); }
+      if (glider || waiting) { clearTimeout(waiting); waiting = 0; owed = 0; owedOwn = false; halt(); }
       const was = track.scrollLeft; pos = nearest(); recentre(); drag.left += track.scrollLeft - was; drag.from = pos; // the same picture, one set over
       sink();
       track.classList.add('is-dragging');
-      if (track.setPointerCapture) track.setPointerCapture(e.pointerId);
+      try { track.setPointerCapture(e.pointerId); } catch { /* the drag still works without capture */ }
       stop();
     }
     track.scrollLeft = drag.left - (e.clientX - drag.x);
     drag.seen.push([e.timeStamp || 0, e.clientX]);
-    if (drag.seen.length > 6) drag.seen.shift();
+    if (drag.seen.length > 12) drag.seen.shift();
   });
+  // Letting go: one settle, straight on from exactly where the row is, at the speed it was going. Past about a
+  // quarter of an app, or flicked, it goes on to the next (a hard flick further, up to three); otherwise back.
+  const PAST = 0.28, FLICK = 0.45; // of an app's width; px per ms
   const release = e => {
     if (!drag || e.pointerId !== drag.id) return;
     const d = drag; drag = null;
     if (!d.moved) return;
     dragged = true; setTimeout(() => { dragged = false; }, 0);
-    track.classList.remove('is-dragging');
-    // the speed it was let go at (px per ms over the last few moves) carries it on, up to three apps
-    const [t0, x0] = d.seen[0], [t1, x1] = d.seen[d.seen.length - 1];
-    const speed = t1 > t0 ? (x1 - x0) / (t1 - t0) : 0;
-    const aim = track.scrollLeft - speed * 260;
-    let p = nearest(), best = Infinity;
-    for (let q = 0; q < all.length; q++) { const gap = Math.abs(centre(q) - aim); if (gap < best) { best = gap; p = q; } }
-    p = Math.max(d.from - 3, Math.min(d.from + 3, p));
-    const dx = (e.clientX ?? x1) - d.x;
-    if (p === d.from && Math.abs(dx) > 40) p += dx < 0 ? 1 : -1; // a short, deliberate drag still moves one app
-    move(p, Math.min(900, STEP_MS + 120 * Math.abs(p - nearest())));
+    // the row's own speed when let go, px per ms (+ towards the next app): only the last 100 ms of movement counts, over
+    // at least a frame, so holding still before letting go is no flick, however fast it moved before
+    const end = e.timeStamp || 0, recent = d.seen.filter(([t]) => end - t <= 100);
+    const [t0, x0] = recent[0] || [0, 0], [t1, x1] = recent[recent.length - 1] || [0, 0];
+    const speed = end && recent.length > 1 ? -(x1 - x0) / Math.max(16, t1 - t0) : 0; // no times, no speed
+    const now = track.scrollLeft, past = (now - centre(d.from)) / stepW;
+    let k;
+    if (Math.abs(speed) > FLICK) { const ahead = past + speed * 260 / stepW; k = Math.sign(speed) * Math.max(1, Math.round(Math.abs(ahead))); }
+    else k = Math.sign(past) * Math.floor(Math.abs(past) + 1 - PAST);
+    const p = d.from + Math.max(-3, Math.min(3, k)), dist = Math.abs(centre(p) - now);
+    // an ease-out starts at three times its average speed: matched to the speed it was let go at, when heading on
+    const heading = Math.sign(centre(p) - now) === Math.sign(speed) && Math.abs(speed) > 0.05;
+    const ms = heading ? Math.max(220, Math.min(700, 3 * dist / Math.abs(speed))) : Math.max(240, Math.min(480, 240 + dist * 0.6));
+    move(p, ms, 'out');
+    track.classList.remove('is-dragging'); // only now: the glide already holds snapping off
   };
   track.addEventListener('pointerup', release);
   track.addEventListener('pointercancel', release);
@@ -262,16 +281,22 @@
   });
   track.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') { hover = true; sync(); } });
   track.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { hover = false; sync(); } });
+  // Focus anywhere in the carousel (an address, Previous, Next, a dot) holds it, and having come in, the row's own
+  // movement stays stopped until Play is pressed (the APG carousel pattern). Focus on Play itself holds nothing, so
+  // pressing it can start the row again.
+  root.addEventListener('focusin', e => {
+    if (off || e.target === play) { focus = false; sync(); return; }
+    focus = true; stop();
+  });
+  root.addEventListener('focusout', e => { if (!root.contains(e.relatedTarget) || e.relatedTarget === play) { focus = false; sync(); } });
   // Tab reaches the addresses; the app whose address has focus turns to the middle.
   track.addEventListener('focusin', e => {
     if (off) return;
-    focus = true; sync();
     const p = e.target && e.target.closest ? all.indexOf(e.target.closest('.ap-slide')) : -1;
     if (p < n || p >= 2 * n) return;
     const by = ((p - n - ahead()) % n + n) % n;
     if (by) go(by > n / 2 ? by - n : by);
   });
-  track.addEventListener('focusout', e => { if (!track.contains(e.relatedTarget)) { focus = false; sync(); } });
   play.addEventListener('click', () => { stopped = !stopped; sync(); });
   prev.addEventListener('click', () => { stop(); go(-1); });
   next.addEventListener('click', () => { stop(); go(1); });
