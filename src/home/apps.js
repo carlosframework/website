@@ -33,7 +33,8 @@
   const DELAY = 10000, TURN_MS = 1600, STEP_MS = 520, SINK_MS = 200, n = real.length;
   let index = -1, pos = n, timer = 0, settle = 0, resized = 0, stopped = false, hover = false, focus = false, seen = false;
   let drag = null, dragged = false, frame = 0, glider = 0, geo = [], half = 0, stepW = 1;
-  let up = null, waiting = 0, owed = 0, owedMs = STEP_MS, off = false, auto = false; // auto: the move under way is the row's own // off: it could not start, the plain row stays
+  let up = null, waiting = 0, owed = 0, owedMs = STEP_MS, auto = false; // auto: the move under way is the row's own
+  let off = true; // until the ring has started (and for good if this browser cannot run it): the plain row stays
 
   const copy = slide => {
     const c = slide.cloneNode(true);
@@ -42,10 +43,9 @@
     c.querySelectorAll('a').forEach(a => a.setAttribute('tabindex', '-1'));
     return c;
   };
-  const before = real.map(copy), after = real.map(copy);
-  track.prepend(...before);
-  track.append(...after);
-  const all = [...before, ...real, ...after]; // positions n to 2n - 1 are the real apps
+  // The copies go in only when the ring starts (positions n to 2n - 1 are then the real apps), so a page where it
+  // never starts keeps the plain row exactly as it was.
+  let before = [], after = [], all = real;
 
   const centre = p => all[p].offsetLeft + all[p].offsetWidth / 2 - track.clientWidth / 2;
   const nearest = () => {
@@ -64,7 +64,7 @@
     half = track.clientWidth / 2;
     stepW = geo[1] - geo[0] || 1;
   };
-  const drawn = all.map(() => ''); // each slide's last drawing, so a frame writes only what changed
+  let drawn = all.map(() => ''); // each slide's last drawing, so a frame writes only what changed
   const put = (p, transform, opacity) => {
     const key = transform + '|' + opacity;
     if (drawn[p] === key) return;
@@ -195,6 +195,8 @@
       if ((drag && drag.moved) || glider || waiting) return;
       pos = nearest();
       recentre();
+      // the live row does not snap (home/apps.css): a trackpad or wheel that stopped between apps eases on to the nearest
+      if (Math.abs(track.scrollLeft - centre(pos)) > 1) return move(pos, 320, 'out');
       mark(pos % n);
       rise(pos);
       arm();
@@ -312,28 +314,67 @@
   document.addEventListener('visibilitychange', sync);
   if (reduce.addEventListener) reduce.addEventListener('change', () => { halt(); if (reduce.matches) sink(); else rise(pos); sync(); draw(); });
   // A new width moves every slide: measure again and put the current one back in the middle.
-  addEventListener('resize', () => { clearTimeout(resized); resized = setTimeout(() => { halt(); measure(); jump(centre(pos)); draw(); }, 100); });
+  addEventListener('resize', () => { clearTimeout(resized); resized = setTimeout(() => { if (off) return start(); halt(); measure(); jump(centre(pos)); draw(); }, 100); });
 
-  // A random app to start, in the middle of the row, popped forward; the controls show only once it is drawn.
-  try {
-    root.classList.add('is-live');
-    pos = n + Math.floor(Math.random() * n);
-    measure();
-    jump(centre(pos));
-    paint();
-    mark(pos % n);
-    rise(pos);
-    status.textContent = ''; // nothing to announce on arrival
-    ctrl.hidden = dotsBox.hidden = false;
-    sync();
-  } catch (err) {
-    // A browser that cannot run the ring keeps the plain row: no copies, no controls, nothing half drawn.
-    off = true; clearTimeout(timer); halt();
+  // ---- Starting. Only once the row is really laid out (the slides side by side at their width, the row wider than
+  // the screen): measuring earlier, before the stylesheet has arrived on a quick or cached reload, gave nonsense
+  // geometry and a flat ring. Until then, and if the layout never comes, it is simply the plain row. It checks now,
+  // on the next frames, after load and fonts, and whenever the row changes size. It gives up for good only for a
+  // capability this browser lacks, and says why (console.info, and data-ring on the section).
+  const say = state => { root.dataset.ring = state; };
+  const lacks = [typeof requestAnimationFrame === 'function' ? '' : 'requestAnimationFrame', typeof PointerEvent === 'function' ? '' : 'PointerEvent', typeof track.closest === 'function' ? '' : 'Element.closest'].filter(Boolean);
+  let gaveUp = false;
+  const giveUp = why => {
+    gaveUp = true; off = true; clearTimeout(timer); halt();
     root.classList.remove('is-live');
-    [...before, ...after].forEach(c => c.remove());
+    before.concat(after).forEach(c => c.remove()); before = []; after = []; all = real;
     real.forEach(s => { s.style.transform = ''; s.style.opacity = ''; s.classList.remove('is-up', 'is-sinking'); });
     track.scrollLeft = 0;
     ctrl.hidden = dotsBox.hidden = true;
-    throw err; // still reported
+    say(`off: ${why}`);
+    if (typeof console === 'object') console.info(`CARLOS apps carousel: showing the plain row (${why})`);
+  };
+  const laidOut = () => {
+    const w = real[0].offsetWidth, d = real[1].offsetLeft - real[0].offsetLeft;
+    return w > 40 && d >= w && track.scrollWidth > track.clientWidth + 10 && track.clientWidth > 0;
+  };
+  let tries = 0;
+  const start = () => {
+    if (!off || gaveUp) return;
+    try {
+      if (!laidOut()) { say(`waiting (${++tries})`); return; }
+      before = real.map(copy); after = real.map(copy);
+      track.prepend(...before);
+      track.append(...after);
+      all = before.concat(real, after);
+      drawn = all.map(() => '');
+      root.classList.add('is-live');
+      off = false;
+      // a random app to start, in the middle of the row, popped forward; the controls show only once it is drawn
+      pos = n + Math.floor(Math.random() * n);
+      measure();
+      jump(centre(pos));
+      paint();
+      mark(pos % n);
+      rise(pos);
+      status.textContent = ''; // nothing to announce on arrival
+      ctrl.hidden = dotsBox.hidden = false;
+      sync();
+      say('live');
+    } catch (err) {
+      giveUp(`${err && err.name}: ${err && err.message}`);
+    }
+  };
+  if (lacks.length) giveUp(`this browser lacks ${lacks.join(', ')}`); // for good: nothing retries a give-up
+  else {
+    say('waiting');
+    start();
+    if (off) {
+      requestAnimationFrame(() => requestAnimationFrame(start));
+      addEventListener('load', start);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(start, () => {});
+    }
+    // a new size for the row (the stylesheet arriving, fonts, a new window width): start, or measure again
+    if (typeof ResizeObserver === 'function') new ResizeObserver(() => { if (off) start(); else { measure(); jump(centre(pos)); draw(); } }).observe(track);
   }
 })();

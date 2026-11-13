@@ -140,8 +140,9 @@ test('enabled homepage has the apps carousel under the hero',()=>pages(async(hom
  const css=await read('src/home/apps.css');
  assert.match(css,/\.rw \.ap-track \{[^}]*overflow-x: auto;[^}]*scroll-snap-type: x mandatory;/);
  assert.match(css,/\.rw \.ap-slide \{[^}]*scroll-snap-align: start;/);
- // With the script the current app snaps to the middle; a drag turns snapping off until it ends.
- assert.match(css,/\.rw \.rw-apps\.is-live \.ap-slide \{ scroll-snap-align: center; \}/);
+ // With the script the current app comes to rest in the middle (the script, not the browser, settles it); a drag turns snapping off until it ends.
+ // live, the script brings the row to rest itself (the browser's snap points are off by a pixel or more)
+ assert.match(css,/\.rw \.rw-apps\.is-live \.ap-track \{ will-change: scroll-position; scroll-behavior: auto; scroll-snap-type: none; \}/);
  assert.match(css,/\.rw \.ap-track\.is-dragging \{ scroll-snap-type: none;/);
  // the stage turns under a drag; a vertical wheel or a finger moving up and down stays the page's
  assert.match(css,/\.rw \.ap-track \{[^}]*overflow-x: auto; overflow-y: hidden;/);

@@ -367,7 +367,7 @@ test('hero: a height-only resize measures again when it changed the replay (a ta
 // quiet pause, a touch, a drag or a chosen app, and never runs under reduced motion (which also keeps the row
 // flat and nothing popped). The status line names the real app.
 const appsJS = await read('src/home/apps.js');
-function appsWorld({ reduce = false, count = 4, random = 0, broken = false } = {}) {
+function appsWorld({ reduce = false, count = 4, random = 0, broken = false, laidOut = () => true, lacks = [] } = {}) {
   const mq = media(reduce), root = new El('rw-apps'), track = new El('ap-track'), ctrl = new El('ap-ctrl'), dotsBox = new El('ap-dots');
   const play = new El('ap-play'), prev = new El('ap-prev'), next = new El('ap-next'), status = new El('ap-status');
   ctrl.hidden = dotsBox.hidden = true; play.dataset.pause = 'Pause'; play.dataset.play = 'Play';
@@ -387,6 +387,7 @@ function appsWorld({ reduce = false, count = 4, random = 0, broken = false } = {
   const real = names.map(slide); order.push(...real);
   const dots = names.map(() => new El(''));
   Object.defineProperty(track, 'clientWidth', { get: () => { if (broken) throw new TypeError('cannot measure'); return 1000; } });
+  Object.defineProperty(track, 'scrollWidth', { get: () => (laidOut() ? order.length * 700 + 100 : 1000) }); // before the stylesheet: no overflow
   track.scrollLeft = 0; track.scrolls = [];
   // as older Safari: ScrollBehavior is only 'auto' or 'smooth', anything else throws (and once left the ring flat)
   track.scrollTo = ({ left, behavior }) => { if (behavior !== undefined && behavior !== 'auto' && behavior !== 'smooth') throw new TypeError('Type error'); track.scrollLeft = left; track.scrolls.push(behavior); };
@@ -395,7 +396,7 @@ function appsWorld({ reduce = false, count = 4, random = 0, broken = false } = {
   track.contains = el => order.includes(el);
   track.qs['.ap-slide'] = real; dotsBox.qs.button = dots;
   Object.assign(root.qs, { '.ap-track': [track], '.ap-ctrl': [ctrl], '.ap-play': [play], '.ap-prev': [prev], '.ap-next': [next], '.ap-dots': [dotsBox], '.ap-status': [status] });
-  const timeouts = new Map(), frames = new Map(), observers = [], doc = { hidden: false, l: {} }, win = {};
+  const timeouts = new Map(), frames = new Map(), observers = [], doc = { hidden: false, l: {} }, win = {}, logged = [];
   let n = 0, clock = 0;
   Object.assign(doc, { querySelector: s => (s === '.rw-apps[data-carousel]' ? root : null), addEventListener: (t, f) => (doc.l[t] ||= []).push(f) });
   const g = {
@@ -403,12 +404,14 @@ function appsWorld({ reduce = false, count = 4, random = 0, broken = false } = {
     setTimeout: (f, ms) => { timeouts.set(++n, { f, ms }); return n; }, clearTimeout: id => timeouts.delete(id),
     requestAnimationFrame: f => { frames.set(++n, f); return n; }, cancelAnimationFrame: id => frames.delete(id),
     IntersectionObserver: class { constructor(cb) { this.cb = cb; observers.push(this); } observe() {} },
-    addEventListener: (t, f) => (win[t] ||= []).push(f),
+    addEventListener: (t, f) => (win[t] ||= []).push(f), PointerEvent: function PointerEvent() {},
+    console: { info: (...a) => logged.push(a.join(' ')) },
   };
+  for (const k of lacks) delete g[k];
   root.contains = el => !!el && (el === root || el === track || el === prev || el === next || el === play || el === ctrl || dots.includes(el) || order.includes(el) || order.some(s => s.link === el));
   let error = null;
   const ctx = createContext(g);
-  runInContext('delete Array.prototype.at;', ctx); // as older Safari (before 15.4) and Firefox (before 90)
+  runInContext('delete Array.prototype.at; delete globalThis.structuredClone;', ctx); // as older Safari (before 15.4) and Firefox (before 90)
   try { runInContext(appsJS, ctx); } catch (e) { error = e; }
   const see = on => observers.forEach(o => o.cb([{ isIntersecting: on }]));
   const run = ms => { const due = [...timeouts.entries()].filter(([, t]) => t.ms === ms); due.forEach(([id]) => timeouts.delete(id)); due.forEach(([, t]) => t.f()); return due.length; };
@@ -420,7 +423,7 @@ function appsWorld({ reduce = false, count = 4, random = 0, broken = false } = {
   const current = () => dots.findIndex(d => d.getAttribute('aria-current') === 'true');
   const at = () => order.indexOf(order.find(s => Math.abs(s.offsetLeft + 320 - 500 - track.scrollLeft) < 1)); // the slide in the middle
   const upAt = () => order.findIndex(s => s.classList.contains('is-up'));
-  return { error, mq, root, track, ctrl, dotsBox, play, prev, next, status, real, order, dots, doc, win, timeouts, frames, see, run, advance, press, settle, frames_: play_, current, at, upAt };
+  return { logged, win, error, mq, root, track, ctrl, dotsBox, play, prev, next, status, real, order, dots, doc, win, timeouts, frames, see, run, advance, press, settle, frames_: play_, current, at, upAt };
 }
 
 test('apps: a copy of every app on each side, hidden and out of the tab order, and a random start in the middle', () => {
@@ -655,9 +658,34 @@ test('apps: focus anywhere in the carousel holds it, and stops the row until Pla
   assert.equal(w.play.getAttribute('aria-label'), 'Pause'); assert.equal(w.advance(), 1, 'turning again with focus on Play');
 });
 
+test('apps: it starts only once the row is laid out, and never gives up over a measurement taken too early (Paul: "every other refresh")', () => {
+  // the stylesheet not there yet: the plain row, no copies, no controls, waiting
+  let ready = false;
+  const w = appsWorld({ laidOut: () => ready });
+  assert.ok(!w.error); assert.match(w.root.dataset.ring, /^waiting/);
+  assert.ok(!w.root.classList.contains('is-live')); assert.deepEqual(w.order, w.real); assert.equal(w.ctrl.hidden, true);
+  for (const s of w.real) assert.equal(s.style.transform || '', '');
+  w.frames_(); assert.match(w.root.dataset.ring, /^waiting/, 'still waiting on the next frames');
+  // it arrives: started on the next look (load here), copies in, drawn, controls shown
+  ready = true; w.win.load.forEach(f => f());
+  assert.equal(w.root.dataset.ring, 'live'); assert.ok(w.root.classList.contains('is-live')); assert.equal(w.order.length, 12); assert.equal(w.ctrl.hidden, false);
+  assert.equal(w.upAt(), w.at(), 'the middle app popped');
+  assert.deepEqual(w.logged, [], 'nothing to report');
+  // a later look changes nothing once live
+  w.win.load.forEach(f => f()); assert.equal(w.order.length, 12);
+});
+
+test('apps: a browser without what the ring needs keeps the plain row for good, and says why', () => {
+  const w = appsWorld({ lacks: ['PointerEvent'] });
+  assert.equal(w.root.dataset.ring, 'off: this browser lacks PointerEvent');
+  assert.match(w.logged[0], /CARLOS apps carousel: showing the plain row \(this browser lacks PointerEvent\)/);
+  assert.ok(!w.root.classList.contains('is-live')); assert.deepEqual(w.order, w.real); assert.equal(w.ctrl.hidden, true);
+  w.frames_(); (w.win.load || []).forEach(f => f()); assert.deepEqual(w.order, w.real, 'nothing retries it');
+});
+
 test('apps: a browser that cannot start the ring keeps the plain row, not a half-drawn one', () => {
   const w = appsWorld({ broken: true });
-  assert.ok(w.error, 'the error is still reported');
+  assert.match(w.root.dataset.ring, /^off: TypeError: cannot measure/, 'the reason, for whoever looks');
   assert.ok(!w.root.classList.contains('is-live'), 'flat row styles, not the live ones');
   assert.equal(w.ctrl.hidden, true); assert.equal(w.dotsBox.hidden, true, 'no controls for a ring that is not there');
   assert.deepEqual(w.order, w.real, 'the copies are gone again'); assert.equal(w.track.scrollLeft, 0);

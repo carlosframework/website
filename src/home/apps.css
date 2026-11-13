@@ -23,8 +23,9 @@
 .rw .ap-track { --ap-bleed: calc((100vw - 100cqi) / 2); position: relative; list-style: none; display: flex; gap: var(--ap-gap); margin: clamp(1.5rem, 3vw, 2.25rem) calc(-1 * var(--ap-bleed)) 0; padding: 6px var(--ap-bleed) 0.9rem; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--ap-bleed); scrollbar-width: thin; scrollbar-color: var(--rw-line) transparent; }
 .rw .rw-apps.is-live .ap-track { scrollbar-width: none; }
 .rw .rw-apps.is-live .ap-track::-webkit-scrollbar { display: none; }
-.rw .rw-apps.is-live .ap-track { will-change: scroll-position; scroll-behavior: auto; } /* home/apps.js eases its own glides */
-.rw .rw-apps.is-live .ap-slide { scroll-snap-align: center; }
+/* Live, home/apps.js brings the row to rest itself, eased, on the exact middle of an app: the browser's own snap
+   points differ by a pixel or more (WebKit's sometimes by far more), and re-snapping after a glide nudged the row. */
+.rw .rw-apps.is-live .ap-track { will-change: scroll-position; scroll-behavior: auto; scroll-snap-type: none; }
 /* The depth is decoration: under reduced motion the row stays flat whatever the script last wrote. */
 @media (prefers-reduced-motion: reduce) { .rw .ap-slide { transform: none !important; opacity: 1 !important; } .rw .ap-slide.is-up .ap-shot { transform: none; } .rw .rw-apps.is-live .ap-slide.is-up, .rw .rw-apps.is-live .ap-slide.is-sinking { transition: none; } }
 .rw .ap-track.is-dragging { scroll-snap-type: none; scroll-behavior: auto; }
