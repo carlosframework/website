@@ -670,7 +670,10 @@ test('apps: it starts only once the row is laid out, and never gives up over a m
   ready = true; w.win.load.forEach(f => f());
   assert.equal(w.root.dataset.ring, 'live'); assert.ok(w.root.classList.contains('is-live')); assert.equal(w.order.length, 12); assert.equal(w.ctrl.hidden, false);
   assert.equal(w.upAt(), w.at(), 'the middle app popped');
-  assert.deepEqual(w.logged, [], 'nothing to report');
+  // the console tells the story, with what was measured
+  assert.equal(w.logged.length, 2);
+  assert.match(w.logged[0], /^CARLOS apps carousel: waiting for the row's layout \(slide 640px, 700px apart, row 1000px in 1000px\)$/);
+  assert.match(w.logged[1], /^CARLOS apps carousel: started after waiting .* for the row's layout \(slide 640px, 700px apart, row \d+px in 1000px\)$/);
   // a later look changes nothing once live
   w.win.load.forEach(f => f()); assert.equal(w.order.length, 12);
 });
@@ -685,7 +688,11 @@ test('apps: a browser without what the ring needs keeps the plain row for good, 
 
 test('apps: a browser that cannot start the ring keeps the plain row, not a half-drawn one', () => {
   const w = appsWorld({ broken: true });
+  // something failing part-way is tried again a few times (each said in the console), then left for good
+  assert.match(w.root.dataset.ring, /^retrying: TypeError: cannot measure/);
+  for (let k = 0; k < 6; k++) { w.frames_(); (w.win.load || []).forEach(f => f()); }
   assert.match(w.root.dataset.ring, /^off: TypeError: cannot measure/, 'the reason, for whoever looks');
+  assert.ok(w.logged.length >= 5 && /trying again/.test(w.logged[0]) && /showing the plain row/.test(w.logged[w.logged.length - 1]));
   assert.ok(!w.root.classList.contains('is-live'), 'flat row styles, not the live ones');
   assert.equal(w.ctrl.hidden, true); assert.equal(w.dotsBox.hidden, true, 'no controls for a ring that is not there');
   assert.deepEqual(w.order, w.real, 'the copies are gone again'); assert.equal(w.track.scrollLeft, 0);

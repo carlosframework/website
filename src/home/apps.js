@@ -334,15 +334,21 @@
     say(`off: ${why}`);
     if (typeof console === 'object') console.info(`CARLOS apps carousel: showing the plain row (${why})`);
   };
+  const info = msg => { if (typeof console === 'object' && console.info) console.info(`CARLOS apps carousel: ${msg}`); };
+  let seenAs = '';
   const laidOut = () => {
-    const w = real[0].offsetWidth, d = real[1].offsetLeft - real[0].offsetLeft;
-    return w > 40 && d >= w && track.scrollWidth > track.clientWidth + 10 && track.clientWidth > 0;
+    const w = real[0].offsetWidth, d = real[1].offsetLeft - real[0].offsetLeft, sw = track.scrollWidth, cw = track.clientWidth;
+    seenAs = `slide ${w}px, ${d}px apart, row ${sw}px in ${cw}px`;
+    return w > 40 && d >= w && sw > cw + 10 && cw > 0;
   };
-  let tries = 0;
+  let tries = 0, failures = 0;
+  const t0 = typeof performance === 'object' ? performance.now() : 0;
+  const since = () => (typeof performance === 'object' ? `${Math.round(performance.now() - t0)} ms` : `${tries} checks`);
   const start = () => {
     if (!off || gaveUp) return;
     try {
-      if (!laidOut()) { say(`waiting (${++tries})`); return; }
+      // not laid out yet (the stylesheet still on its way): the plain row, and look again
+      if (!laidOut()) { if (!tries++) info(`waiting for the row's layout (${seenAs})`); say(`waiting: ${seenAs}`); return; }
       before = real.map(copy); after = real.map(copy);
       track.prepend(...before);
       track.append(...after);
@@ -361,8 +367,16 @@
       ctrl.hidden = dotsBox.hidden = false;
       sync();
       say('live');
+      if (tries) info(`started after waiting ${since()} for the row's layout (${seenAs})`);
     } catch (err) {
-      giveUp(`${err && err.name}: ${err && err.message}`);
+      // something failed part-way: back to the plain row, and try again on the next look, a few times
+      const why = `${err && err.name}: ${err && err.message}`;
+      if (++failures >= 5) return giveUp(why);
+      off = true; clearTimeout(timer); halt(); root.classList.remove('is-live');
+      before.concat(after).forEach(c => c.remove()); before = []; after = []; all = real;
+      real.forEach(s => { s.style.transform = ''; s.style.opacity = ''; s.classList.remove('is-up', 'is-sinking'); });
+      ctrl.hidden = dotsBox.hidden = true;
+      say(`retrying: ${why}`); info(`could not start (${why}; ${seenAs}), trying again`);
     }
   };
   if (lacks.length) giveUp(`this browser lacks ${lacks.join(', ')}`); // for good: nothing retries a give-up
