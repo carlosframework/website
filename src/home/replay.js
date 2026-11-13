@@ -173,6 +173,7 @@
     const to = dir > 0 ? at.find(x => x > t + 1) : [...at].reverse().find(x => x < t - 1);
     t = to === undefined ? (dir > 0 ? at[0] : 0) : to;
     if (pause && !pause.checked) { pause.checked = true; pause.dispatchEvent(new Event('change', { bubbles: true })); }
+    tip();
     draw(t);
     stage.classList.remove('rp-go-fwd', 'rp-go-back');
     void stage.offsetWidth; // restart the slide
@@ -185,7 +186,9 @@
     e.preventDefault();
     jump(e.key === 'ArrowLeft' ? -1 : 1);
   });
-  if (pause) pause.addEventListener('change', wake);
+  // the icon's tooltip says what a press will do, as its hidden words do for screen readers
+  const tip = () => { if (pause) pause.parentNode.title = (pause.checked ? rp.querySelector('.rp-pause-on') : rp.querySelector('.rp-pause-off')).textContent; };
+  if (pause) pause.addEventListener('change', () => { tip(); wake(); });
   document.addEventListener('visibilitychange', wake);
   if (typeof IntersectionObserver === 'function') new IntersectionObserver(es => { seen = es[es.length - 1].isIntersecting; wake(); }).observe(rp);
 
@@ -200,5 +203,6 @@
     if (shot) { shot.style.top = ''; shot.style.transform = ''; }
   };
   if (reduce.addEventListener) reduce.addEventListener('change', start);
+  tip();
   start();
 })();

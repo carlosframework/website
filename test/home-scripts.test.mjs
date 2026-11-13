@@ -367,7 +367,7 @@ test('hero: a height-only resize measures again when it changed the replay (a ta
 // quiet pause, a touch, a drag or a chosen app, and never runs under reduced motion (which also keeps the row
 // flat and nothing popped). The status line names the real app.
 const appsJS = await read('src/home/apps.js');
-function appsWorld({ reduce = false, count = 4, random = 0 } = {}) {
+function appsWorld({ reduce = false, count = 4, random = 0, broken = false } = {}) {
   const mq = media(reduce), root = new El('rw-apps'), track = new El('ap-track'), ctrl = new El('ap-ctrl'), dotsBox = new El('ap-dots');
   const play = new El('ap-play'), prev = new El('ap-prev'), next = new El('ap-next'), status = new El('ap-status');
   ctrl.hidden = dotsBox.hidden = true; play.dataset.pause = 'Pause'; play.dataset.play = 'Play';
@@ -381,14 +381,17 @@ function appsWorld({ reduce = false, count = 4, random = 0 } = {}) {
     Object.defineProperty(s, 'offsetLeft', { get: () => 50 + order.indexOf(s) * 700 });
     Object.defineProperty(s, 'offsetWidth', { get: () => 640 });
     s.cloneNode = () => slide(name);
+    s.remove = () => { const i = order.indexOf(s); if (i >= 0) order.splice(i, 1); };
     return s;
   };
   const real = names.map(slide); order.push(...real);
   const dots = names.map(() => new El(''));
-  Object.defineProperty(track, 'clientWidth', { get: () => 1000 });
+  Object.defineProperty(track, 'clientWidth', { get: () => { if (broken) throw new TypeError('cannot measure'); return 1000; } });
   track.scrollLeft = 0; track.scrolls = [];
-  track.scrollTo = ({ left, behavior }) => { track.scrollLeft = left; track.scrolls.push(behavior); };
+  // as older Safari: ScrollBehavior is only 'auto' or 'smooth', anything else throws (and once left the ring flat)
+  track.scrollTo = ({ left, behavior }) => { if (behavior !== undefined && behavior !== 'auto' && behavior !== 'smooth') throw new TypeError('Type error'); track.scrollLeft = left; track.scrolls.push(behavior); };
   track.prepend = (...k) => order.unshift(...k); track.append = (...k) => order.push(...k);
+  track.remove = el => { const i = order.indexOf(el); if (i >= 0) order.splice(i, 1); };
   track.contains = el => order.includes(el);
   track.qs['.ap-slide'] = real; dotsBox.qs.button = dots;
   Object.assign(root.qs, { '.ap-track': [track], '.ap-ctrl': [ctrl], '.ap-play': [play], '.ap-prev': [prev], '.ap-next': [next], '.ap-dots': [dotsBox], '.ap-status': [status] });
@@ -402,7 +405,8 @@ function appsWorld({ reduce = false, count = 4, random = 0 } = {}) {
     IntersectionObserver: class { constructor(cb) { this.cb = cb; observers.push(this); } observe() {} },
     addEventListener: (t, f) => (win[t] ||= []).push(f),
   };
-  runInContext(appsJS, createContext(g));
+  let error = null;
+  try { runInContext(appsJS, createContext(g)); } catch (e) { error = e; }
   const see = on => observers.forEach(o => o.cb([{ isIntersecting: on }]));
   const run = ms => { const due = [...timeouts.entries()].filter(([, t]) => t.ms === ms); due.forEach(([id]) => timeouts.delete(id)); due.forEach(([, t]) => t.f()); return due.length; };
   // run animation frames 16 ms apart until none are left (or a frame budget runs out); scroll events fire as the row moves
@@ -413,7 +417,7 @@ function appsWorld({ reduce = false, count = 4, random = 0 } = {}) {
   const current = () => dots.findIndex(d => d.getAttribute('aria-current') === 'true');
   const at = () => order.indexOf(order.find(s => Math.abs(s.offsetLeft + 320 - 500 - track.scrollLeft) < 1)); // the slide in the middle
   const upAt = () => order.findIndex(s => s.classList.contains('is-up'));
-  return { mq, root, track, ctrl, dotsBox, play, prev, next, status, real, order, dots, doc, win, timeouts, frames, see, run, advance, press, settle, frames_: play_, current, at, upAt };
+  return { error, mq, root, track, ctrl, dotsBox, play, prev, next, status, real, order, dots, doc, win, timeouts, frames, see, run, advance, press, settle, frames_: play_, current, at, upAt };
 }
 
 test('apps: a copy of every app on each side, hidden and out of the tab order, and a random start in the middle', () => {
@@ -425,7 +429,6 @@ test('apps: a copy of every app on each side, hidden and out of the tab order, a
   for (const r of w.real) { assert.equal(r.getAttribute('aria-hidden'), null); assert.equal(r.link.getAttribute('tabindex'), null); }
   assert.equal(w.current(), 2, 'Math.random 0.6 of four apps: the third'); assert.equal(w.at(), 6, 'the real one, centred');
   assert.equal(w.upAt(), 6, 'and popped forward');
-  assert.equal(w.track.scrolls[0], 'instant');
   assert.equal(w.status.textContent, '', 'nothing announced on arrival');
   assert.equal(w.ctrl.hidden, false); assert.equal(w.dotsBox.hidden, false); assert.ok(w.root.classList.contains('is-live'));
   assert.equal(appsWorld({ random: 0 }).current(), 0); assert.equal(appsWorld({ random: 0.99 }).current(), 3);
@@ -496,7 +499,7 @@ test('apps: it loops both ways with eased glides, and the dots and status give t
   w.frames_(); assert.ok(!w.track.classList.contains('is-gliding'));
   assert.equal(w.at(), 8, 'on into the copy after the last, not back across the row');
   w.settle();
-  assert.equal(w.at(), 4, 'at rest on a copy: quietly onto the real first app'); assert.equal(w.track.scrolls.at(-1), 'instant'); assert.equal(w.current(), 0);
+  assert.equal(w.at(), 4, 'at rest on a copy: quietly onto the real first app'); assert.equal(w.current(), 0);
   assert.equal(w.upAt(), 4, 'the real one pops, not the copy');
   // a press glides briskly; backwards from the first goes into the copy before it, then onto the real last
   w.press(w.prev); const kp = w.frames_(); assert.ok(kp < 45, `brisk: ${kp} frames`);
@@ -572,10 +575,23 @@ test('apps: only the address is a link; a click on a card beside the middle turn
   assert.equal(w.track.l.wheel, undefined);
 });
 
+test('apps: a browser that cannot start the ring keeps the plain row, not a half-drawn one', () => {
+  const w = appsWorld({ broken: true });
+  assert.ok(w.error, 'the error is still reported');
+  assert.ok(!w.root.classList.contains('is-live'), 'flat row styles, not the live ones');
+  assert.equal(w.ctrl.hidden, true); assert.equal(w.dotsBox.hidden, true, 'no controls for a ring that is not there');
+  assert.deepEqual(w.order, w.real, 'the copies are gone again'); assert.equal(w.track.scrollLeft, 0);
+  for (const s of w.real) { assert.equal(s.style.transform || '', ''); assert.ok(!s.classList.contains('is-up')); }
+  // and nothing it left listening wakes it: a scroll, a click, a key, the timer
+  w.track.scrollLeft = 300; w.track.fire('scroll'); w.run(150); w.track.fire('keydown', { key: 'ArrowRight', preventDefault() {} }); w.run(200); w.run(10000); w.frames_();
+  for (const s of w.real) assert.equal(s.style.transform || '', '');
+  assert.equal(w.track.scrollLeft, 300);
+});
+
 test('apps: reduced motion never moves by itself, hides the pause, jumps instead of gliding and still loops', () => {
   const r = appsWorld({ reduce: true, random: 0.99 }); r.see(true);
   assert.equal(r.play.hidden, true); assert.equal(r.advance(), 0); assert.equal(r.status.getAttribute('aria-live'), 'polite');
-  r.next.fire('click'); assert.equal(r.track.scrolls.at(-1), 'instant'); assert.equal(r.frames.size, 0, 'no glide'); assert.equal(r.current(), 0);
+  r.next.fire('click'); assert.equal(r.frames.size, 0, 'no glide, a jump'); assert.equal(r.current(), 0);
   r.settle(); assert.equal(r.at(), 4);
   // switched on mid-wait: the pending move is dropped, and the popped screenshot goes back
   const w = appsWorld(); w.see(true); assert.equal([...w.timeouts.values()].filter(t => t.ms === 10000).length, 1);

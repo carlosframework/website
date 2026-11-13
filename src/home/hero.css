@@ -42,7 +42,15 @@
 .rp-dots { display: inline-flex; gap: 5px; }
 .rp-dots i { width: 8px; height: 8px; border-radius: 50%; background: light-dark(rgba(27, 31, 36, 0.16), rgba(255, 255, 255, 0.16)); }
 .rp-title { font-weight: 600; color: light-dark(#2b3036, #c9d2de); }
-.rp-pause { margin-left: auto; display: inline-flex; align-items: center; min-height: 32px; padding: 0 0.7rem; border: 1px solid light-dark(rgba(27, 31, 36, 0.2), rgba(255, 255, 255, 0.18)); border-radius: 99px; color: light-dark(#2b3036, #dfe6ee); cursor: pointer; font-weight: 600; position: relative; }
+/* Pause and Play: one round icon of a fixed size, like the gallery's quiet pause, so nothing beside it moves when
+   it changes. The words stay as its name for screen readers (visually hidden, one shown at a time). */
+.rp-pause { margin-left: auto; display: inline-grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 1px solid light-dark(rgba(27, 31, 36, 0.2), rgba(255, 255, 255, 0.18)); border-radius: 99px; color: light-dark(#2b3036, #dfe6ee); cursor: pointer; position: relative; }
+.rp-pause svg { grid-area: 1 / 1; width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.rp-pause .rp-ic-play { fill: currentColor; stroke-width: 1.2; display: none; }
+.rp:has(.rp-pause input:checked) .rp-ic-play { display: block; }
+.rp:has(.rp-pause input:checked) .rp-ic-pause { display: none; }
+.rp-pause-off, .rp-pause-on { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (pointer: coarse) { .rp-pause { width: 40px; height: 40px; } }
 .rp-pause input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
 .rp-pause:has(input:focus-visible) { outline: 3px solid light-dark(#1a5f4f, #2fd4ac); outline-offset: 2px; }
 .rp-pause-on { display: none; }
@@ -115,7 +123,8 @@ body.site-home .c-hero, .rp { touch-action: manipulation; }
 .rp-speed button[aria-disabled="true"] { opacity: 0.35; cursor: default; }
 .rp-speed button:focus-visible { outline: 3px solid light-dark(#1a5f4f, #2fd4ac); outline-offset: 1px; }
 .rp-speed svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
-.rp-speed output { min-width: 2.4em; text-align: center; font: 600 0.74rem/1 ui-monospace, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+/* A fixed width with tabular figures: 0.5x, 1x, 1.5x and 2x all take the same room. */
+.rp-speed output { width: 3.4em; flex: none; white-space: nowrap; text-align: center; font: 600 0.74rem/1 ui-monospace, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
 @media (pointer: coarse) { .rp-speed button { width: 36px; min-height: 40px; } }
 
 /* The replay played as a chat by home/replay.js (.is-live): the CSS loop above stands down, and the script shows

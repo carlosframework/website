@@ -33,7 +33,7 @@
   const DELAY = 10000, TURN_MS = 1600, STEP_MS = 520, SINK_MS = 200, n = real.length;
   let index = -1, pos = n, timer = 0, settle = 0, resized = 0, stopped = false, hover = false, focus = false, seen = false;
   let drag = null, dragged = false, frame = 0, glider = 0, geo = [], half = 0, stepW = 1;
-  let up = null, waiting = 0, owed = 0, owedMs = STEP_MS;
+  let up = null, waiting = 0, owed = 0, owedMs = STEP_MS, off = false; // off: it could not start, the plain row stays
 
   const copy = slide => {
     const c = slide.cloneNode(true);
@@ -53,7 +53,9 @@
     for (let p = 0; p < all.length; p++) { const d = Math.abs(centre(p) - track.scrollLeft); if (d < gap) { gap = d; best = p; } }
     return best;
   };
-  const jump = left => track.scrollTo({ left, behavior: 'instant' });
+  // Straight there. Not scrollTo({ behavior: 'instant' }): older Safari knows only 'auto' and 'smooth' and throws on
+  // it, which left the ring flat; the live row has scroll-behavior: auto (home/apps.css), so this is instant.
+  const jump = left => { track.scrollLeft = left; };
 
   // Depth. Slide centres are measured once (and again on resize), so a frame reads only scrollLeft.
   const TURN = 30, SHRINK = 0.1, DIM = 0.42, PULL = 0.15, REST = 1 / 1.13; // REST: every card's size until it pops
@@ -71,6 +73,7 @@
   };
   const paint = () => {
     frame = 0;
+    if (off) return;
     if (reduce.matches) return all.forEach((s, p) => put(p, '', ''));
     const mid = track.scrollLeft + half, depth = Math.round(stepW * 2.4);
     for (let p = 0; p < all.length; p++) {
@@ -83,13 +86,13 @@
       put(p, `translateX(${(-side * PULL * stepW * far).toFixed(1)}px) perspective(${depth}px) rotateY(${(-side * a * TURN).toFixed(2)}deg) scale(${((1 - SHRINK * a) * REST).toFixed(4)})`, (1 - DIM * a).toFixed(3));
     }
   };
-  const draw = () => { if (!frame) frame = requestAnimationFrame(paint); };
+  const draw = () => { if (!frame && !off) frame = requestAnimationFrame(paint); };
 
   // The pop: forward when an app has settled in the middle, back before the row moves on. The classes carry the
   // transitions (home/apps.css), so they ease only then and never lag behind the row as it turns.
   const sunk = new Map();
   const rise = p => {
-    if (up === all[p]) return;
+    if (off || up === all[p]) return;
     sink();
     if (reduce.matches) return;
     up = all[p];
@@ -138,7 +141,7 @@
     dots.forEach((d, k) => d.setAttribute('aria-current', String(k === i)));
     status.textContent = status.dataset.format.replace('{app}', real[i].dataset.name).replace('{n}', i + 1).replace('{total}', n);
   };
-  const arm = () => { clearTimeout(timer); timer = moving() ? setTimeout(() => go(1, TURN_MS), DELAY) : 0; };
+  const arm = () => { clearTimeout(timer); timer = !off && moving() ? setTimeout(() => go(1, TURN_MS), DELAY) : 0; };
   const sync = () => {
     status.setAttribute('aria-live', moving() ? 'off' : 'polite');
     play.hidden = reduce.matches;
@@ -158,6 +161,7 @@
   const step = (d, ms) => { if (glider) { halt(); jump(centre(pos)); } recentre(); move(pos + d, ms); };
   // Every move we start: the popped screenshot eases back first; presses while it does add up.
   const go = (d, ms = STEP_MS) => {
+    if (off) return;
     owed += d; owedMs = ms;
     if (waiting) return;
     const flush = () => { waiting = 0; const k = owed; owed = 0; if (k) step(k, owedMs); };
@@ -170,6 +174,7 @@
 
   // Where the row comes to rest (a swipe, a trackpad, the end of a glide) is the current app, and it pops.
   track.addEventListener('scroll', () => {
+    if (off) return;
     draw();
     // the row moving under someone's own hand (a trackpad, a wheel): the screenshot goes back at once
     if (up && !glider && !waiting && Math.abs(track.scrollLeft - centre(pos)) > 2) sink();
@@ -189,6 +194,7 @@
   // the row carries on with the speed it was let go at and settles on the nearest app. A drag is never a click.
   const HOLD = 5;
   track.addEventListener('pointerdown', e => {
+    if (off) return;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     halt();
     if (e.pointerType !== 'mouse') stop(); // a touch stops the row's own movement for good
@@ -246,6 +252,7 @@
 
   // Left and right with focus in the row: move one app, and focus goes with it.
   track.addEventListener('keydown', e => {
+    if (off) return;
     if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
     e.preventDefault();
     stop();
@@ -257,6 +264,7 @@
   track.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { hover = false; sync(); } });
   // Tab reaches the addresses; the app whose address has focus turns to the middle.
   track.addEventListener('focusin', e => {
+    if (off) return;
     focus = true; sync();
     const p = e.target && e.target.closest ? all.indexOf(e.target.closest('.ap-slide')) : -1;
     if (p < n || p >= 2 * n) return;
@@ -281,15 +289,26 @@
   // A new width moves every slide: measure again and put the current one back in the middle.
   addEventListener('resize', () => { clearTimeout(resized); resized = setTimeout(() => { halt(); measure(); jump(centre(pos)); draw(); }, 100); });
 
-  ctrl.hidden = dotsBox.hidden = false;
-  root.classList.add('is-live');
-  // A random app to start, in the middle of the row, popped forward.
-  pos = n + Math.floor(Math.random() * n);
-  measure();
-  jump(centre(pos));
-  paint();
-  mark(pos % n);
-  rise(pos);
-  status.textContent = ''; // nothing to announce on arrival
-  sync();
+  // A random app to start, in the middle of the row, popped forward; the controls show only once it is drawn.
+  try {
+    root.classList.add('is-live');
+    pos = n + Math.floor(Math.random() * n);
+    measure();
+    jump(centre(pos));
+    paint();
+    mark(pos % n);
+    rise(pos);
+    status.textContent = ''; // nothing to announce on arrival
+    ctrl.hidden = dotsBox.hidden = false;
+    sync();
+  } catch (err) {
+    // A browser that cannot run the ring keeps the plain row: no copies, no controls, nothing half drawn.
+    off = true; clearTimeout(timer); halt();
+    root.classList.remove('is-live');
+    [...before, ...after].forEach(c => c.remove());
+    real.forEach(s => { s.style.transform = ''; s.style.opacity = ''; s.classList.remove('is-up', 'is-sinking'); });
+    track.scrollLeft = 0;
+    ctrl.hidden = dotsBox.hidden = true;
+    throw err; // still reported
+  }
 })();

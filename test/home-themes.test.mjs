@@ -183,3 +183,50 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
     await browser.close(); server.close(); await rm(dir, { recursive: true, force: true });
   }
 });
+
+// 🤖 The replay's top bar holds still (Paul, 2026-11-13: "the buttons jump to the right when I click them"): every
+// press of back, forward, slower, faster, Pause and Play leaves every control exactly where it was, at 390 and 1280.
+// The carousel starts in a browser whose scroll-behavior has no 'instant' (older Safari), so it is never left flat.
+// Needs only Playwright and a Chromium (HOME_THEMES_PLAYWRIGHT, HOME_THEMES_CHROME; HOME_THEMES_CHROME_ARGS optional).
+const skipBar = !(pw && chrome) && 'set HOME_THEMES_PLAYWRIGHT and HOME_THEMES_CHROME to run';
+test('the replay bar never moves a control, and the apps ring starts without scroll-behavior "instant"', { skip: skipBar, timeout: 240000 }, async () => {
+  const base = process.env.STARTER_SCRATCH || tmpdir(); assert.ok(!/^\/tmp(?:\/|$)/.test(resolve(base)), 'use disk scratch');
+  await mkdir(base, { recursive: true });
+  const dir = await mkdtemp(join(base, 'home-bar-'));
+  const { chromium } = await import(pw);
+  const env = { ...process.env, CARLOS_START_DEMO: '1', CARLOS_START_SITE_ORIGIN: 'https://carlosframework.com', CARLOS_START_CONSOLE_ORIGIN: 'https://console.carloku.com', CARLOS_START_ACCOUNT_URL: 'https://console.carloku.com/', CARLOS_START_CLAIM: 'off' };
+  execFileSync(process.execPath, ['node_modules/@11ty/eleventy/cmd.cjs', `--output=${dir}`, '--quiet'], { env, stdio: 'pipe' });
+  const server = createServer(async (req, res) => {
+    let file = join(dir, normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname)).replace(/^(\.\.[/\\])+/, ''));
+    try { if ((await stat(file)).isDirectory()) file = join(file, 'index.html'); res.writeHead(200, { 'content-type': types[extname(file)] || 'application/octet-stream' }); res.end(await readFile(file)); }
+    catch { res.writeHead(404); res.end(); }
+  });
+  await new Promise(r => server.listen(0, '127.0.0.1', r));
+  const url = `http://127.0.0.1:${server.address().port}/`;
+  const browser = await chromium.launch({ executablePath: chrome, args: (process.env.HOME_THEMES_CHROME_ARGS || '').split(' ').filter(Boolean) });
+  try {
+    for (const width of [390, 1280]) {
+      const page = await browser.newPage({ viewport: { width, height: 900 } });
+      await page.goto(url, { waitUntil: 'networkidle' });
+      // measured from the bar's own edge: the whole panel floats a little with the hero (its own gentle motion)
+      const where = () => page.evaluate(() => { const bar = document.querySelector('.rp-bar').getBoundingClientRect(); return [...document.querySelectorAll('.rp-bar :is(button, .rp-pause, output)')].filter(e => e.offsetParent).map(e => { const r = e.getBoundingClientRect(); return `${e.className || e.tagName}:${(r.left - bar.left).toFixed(1)}+${r.width.toFixed(1)}`; }); });
+      const start = await where();
+      assert.ok(start.length >= 6, `${width}: ${start}`);
+      for (const sel of ['.rp-fwd', '.rp-fwd', '.rp-back', '.rp-slower', '.rp-slower', '.rp-slower', '.rp-faster', '.rp-faster', '.rp-faster', '.rp-faster', '.rp-pause', '.rp-pause']) {
+        await page.click(sel, { force: true });
+        assert.deepEqual(await where(), start, `${width}: ${sel} moved a control`);
+      }
+      await page.close();
+    }
+    // the ring in a browser whose scroll-behavior is only 'auto' or 'smooth'
+    const page = await browser.newPage({ viewport: { width: 1257, height: 800 } });
+    await page.addInitScript(() => { const o = Element.prototype.scrollTo; Element.prototype.scrollTo = function (a, ...r) { if (a && typeof a === 'object' && a.behavior && !['auto', 'smooth'].includes(a.behavior)) throw new TypeError('Type error'); return o.call(this, a, ...r); }; });
+    const errors = []; page.on('pageerror', e => errors.push(e.message));
+    await page.goto(url, { waitUntil: 'networkidle' });
+    const ring = await page.evaluate(() => { const t = document.querySelector('.ap-track'); return { live: document.querySelector('.rw-apps').classList.contains('is-live'), popped: !!t.querySelector('.is-up'), turned: [...t.querySelectorAll('.ap-slide')].some(s => /rotateY/.test(s.style.transform)) }; });
+    assert.deepEqual(errors, []); assert.deepEqual(ring, { live: true, popped: true, turned: true });
+    await page.close();
+  } finally {
+    await browser.close(); server.close(); await rm(dir, { recursive: true, force: true });
+  }
+});
