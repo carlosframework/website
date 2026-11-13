@@ -116,7 +116,7 @@ test('enabled homepage has the apps carousel under the hero',()=>pages(async(hom
   const card=appsPage.match(new RegExp(`<li class="app-card">(?:(?!</li>)[\\s\\S])*?<h2>([^<]+)</h2>(?:</div>)?<p>([^<]+)</p>(?:(?!</li>)[\\s\\S])*?href="${url.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')}"`))
   assert.ok(card,app);
   const [,pageName,about]=card;
-  assert.equal(pageName.toLowerCase(),app);
+  assert.ok(card[0].includes(`<img src="/apps/logos/${app}.`),`${app}: matched by its logo's file name`);
   const name=gallery.name??pageName, href=gallery.url??url;
   assert.ok(slide.includes(`role="group" aria-roledescription="slide" aria-label="${i+1} of ${slides.length}" data-name="${escapeHTML(name)}"`),app);
   // a real screenshot, sized, with alt text, 360 and 720 wide for 1x and 2x screens, in AVIF and WebP with a JPEG fallback
@@ -140,8 +140,9 @@ test('enabled homepage has the apps carousel under the hero',()=>pages(async(hom
  const css=await read('src/home/apps.css');
  assert.match(css,/\.rw \.ap-track \{[^}]*overflow-x: auto;[^}]*scroll-snap-type: x mandatory;/);
  assert.match(css,/\.rw \.ap-slide \{[^}]*scroll-snap-align: start;/);
- // With the script the current app snaps to the middle; a drag turns snapping off until it ends.
- assert.match(css,/\.rw \.rw-apps\.is-live \.ap-slide \{ scroll-snap-align: center; \}/);
+ // With the script the current app comes to rest in the middle (the script, not the browser, settles it); a drag turns snapping off until it ends.
+ // live, the script brings the row to rest itself (the browser's snap points are off by a pixel or more)
+ assert.match(css,/\.rw \.rw-apps\.is-live \.ap-track \{ will-change: scroll-position; scroll-behavior: auto; scroll-snap-type: none; \}/);
  assert.match(css,/\.rw \.ap-track\.is-dragging \{ scroll-snap-type: none;/);
  // the stage turns under a drag; a vertical wheel or a finger moving up and down stays the page's
  assert.match(css,/\.rw \.ap-track \{[^}]*overflow-x: auto; overflow-y: hidden;/);
@@ -212,10 +213,10 @@ test('apps carousel overrides are explicit and checked against the Apps page',()
  const appsPage=await read('src/apps/index.html'), base=JSON.parse(await read('src/home/apps/sources.json'));
  const tweak=(app,patch)=>({...base,apps:base.apps.map(a=>a.app===app?patch(structuredClone(a)):a)});
  for(const [why,sources,message] of [
-  ['an override that repeats the Apps page is stale',tweak('amadan',a=>({...a,gallery:{name:'amadan',why:'x'}})),/matches the Apps page/],
+  ['an override that repeats the Apps page is stale',tweak('amadan',a=>({...a,gallery:{name:'Amadan',why:'x'}})),/matches the Apps page/],
   ['an override needs a reason',tweak('amadan',a=>({...a,gallery:{name:'Amadan'}})),/without a reason/],
   ['only names and urls can be overridden',tweak('amadan',a=>({...a,gallery:{name:'Amadan',about:'x',why:'x'}})),/unknown keys about/],
-  ['the base url must still be the Apps page link',tweak('tito',a=>({...a,url:'https://go.tito.io/home'})),/links tito to https:\/\/ti\.to/],
+  ['the base url must still be the Apps page link',tweak('tito',a=>({...a,url:'https://ti.to'})),/links tito to https:\/\/go\.tito\.io\/home/],
   ['a wordmark must spell part of the name',tweak('tito',a=>({...a,logoSpells:'Titto'})),/does not contain "Titto"/],
   ['only a wordmark can spell the name',tweak('eleven',a=>({...a,logoSpells:'Eleven'})),/not a wordmark/],
   ['no unknown keys',tweak('eleven',a=>({...a,nmae:'x'})),/unknown keys nmae/],

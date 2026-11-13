@@ -137,9 +137,11 @@ body.site-home .c-hero, .rp { touch-action: manipulation; }
 .rp.is-live .rp-s9:not(.is-on) { transform: translateY(14px); }
 .rp.is-live .rp-c:not(.on), .rp.is-live .rp-w:not(.on) { opacity: 0; }
 .rp.is-live .rp-w { transition: opacity 0.18s ease-out; }
-.rp.is-live .rp-qs li:not(.on) { visibility: hidden; }
+/* Hidden only to the eye (opacity): the whole conversation stays in the page for screen readers, read once, in
+   order, however far the replay has played. */
+.rp.is-live .rp-qs li:not(.on) { opacity: 0; }
 .rp.is-live .rp-scene1 { transition: opacity 0.45s ease-out; }
-.rp.is-live .rp-scene1.is-off { opacity: 0; visibility: hidden; transition: opacity 0.45s ease-out, visibility 0s 0.45s; }
+.rp.is-live .rp-scene1.is-off { opacity: 0; pointer-events: none; transition: opacity 0.45s ease-out; }
 .rp.is-live .rp-stage.is-ending { opacity: 0; transition: opacity 0.5s ease-in; }
 /* Typing: a caret after the last character typed. */
 .rp-caret { display: inline-block; width: 2px; height: 1.05em; margin-left: 1px; vertical-align: -0.15em; border-radius: 1px; background: light-dark(#1a5f4f, #7fd0b6); animation: rp-caret 1s steps(1) infinite; }
@@ -190,7 +192,8 @@ body.site-home .c-hero, .rp { touch-action: manipulation; }
 
 @media (prefers-reduced-motion: reduce) {
   .rp *, .rp { animation: none !important; }
-  body.landing .rp .rp-scene1 { display: none; }
+  /* the still picture shows scene two; scene one stays readable to screen readers, before it, as in the conversation */
+  body.landing .rp .rp-scene1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .rp-pause, .rp-speed, .rp-steps, .rp-loading, .rp-think, .rp-caret { display: none !important; }
   .rp-pause:active { transform: none; }
 }

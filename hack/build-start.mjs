@@ -96,7 +96,7 @@ export function homeApps(appsPage,sources) {
   url:card.match(/<div class="app-links"><a href="([^"]+)"/)?.[1],
  }));
  return sources.apps.map(({app,url,gallery={},logoSpells,...rest},i)=>{
-  const card=cards.find(c=>c.name?.toLowerCase()===app);
+  const card=cards.find(c=>c.logo?.split('/').pop().replace(/\.\w+$/,'')===app);
   if(!card || !card.about || !card.logo) throw configError(`apps carousel: ${app} is not on the Apps page with a description and logo`);
   if(card.url!==url) throw configError(`apps carousel: the Apps page links ${app} to ${card.url}, not ${url}`);
   if(Object.keys(rest).length) throw configError(`apps carousel: ${app} has unknown keys ${Object.keys(rest).join(', ')}`);

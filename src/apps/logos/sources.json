@@ -41,14 +41,14 @@
   },
   {
     "app": "tito",
-    "source": "https://ti.to/home",
+    "source": "https://go.tito.io/home",
     "file": "tito.svg",
-    "note": "Official inline header wordmark, extracted without geometry changes."
+    "note": "Official inline header wordmark. Checked 2026-11-13 against go.tito.io/home: the same mark as the earlier ti.to file, which is unchanged."
   },
   {
     "app": "jelly",
-    "source": "https://letsjelly.com",
+    "source": "https://letsjelly.dev",
     "file": "jelly.svg",
-    "note": "Official inline header wordmark, extracted without geometry changes."
+    "note": "Official header mascot and wordmark. Checked 2026-11-13 against letsjelly.dev, whose header shows the same lockup; the file is unchanged."
   }
 ]

@@ -97,7 +97,9 @@ person marker.**
   no transform and sharp text) and easing back before the row moves, a random start; previous/next, dots, drag, arrow keys
   and a slow 10 s advance with a quiet pause beside the dots; only each app's address is a link:
   the stage is for turning (grab cursor, drag with momentum, a click on a side card brings it to the
-  middle, a vertical wheel or swipe stays the page's), held on hover, focus and off screen,
+  middle, a vertical wheel or swipe stays the page's), held on hover and off screen, and stopped
+  until Play once focus comes into the carousel (the APG pattern); letting go of a drag settles
+  once from where it is, with its speed,
   never under reduced motion, which also keeps the row flat; without it the apps are a flat
   sideways row that snaps. Names,
   lines, logos and links are read from the Apps page at build time; screenshots and their capture

@@ -189,7 +189,7 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
 // The carousel starts in a browser whose scroll-behavior has no 'instant' (older Safari), so it is never left flat.
 // Needs only Playwright and a Chromium (HOME_THEMES_PLAYWRIGHT, HOME_THEMES_CHROME; HOME_THEMES_CHROME_ARGS optional).
 const skipBar = !(pw && chrome) && 'set HOME_THEMES_PLAYWRIGHT and HOME_THEMES_CHROME to run';
-test('the replay bar never moves a control, and the apps ring starts without scroll-behavior "instant"', { skip: skipBar, timeout: 240000 }, async () => {
+test('the replay bar never moves a control; the apps ring lets go smoothly and starts without scroll-behavior "instant"', { skip: skipBar, timeout: 240000 }, async () => {
   const base = process.env.STARTER_SCRATCH || tmpdir(); assert.ok(!/^\/tmp(?:\/|$)/.test(resolve(base)), 'use disk scratch');
   await mkdir(base, { recursive: true });
   const dir = await mkdtemp(join(base, 'home-bar-'));
@@ -219,6 +219,44 @@ test('the replay bar never moves a control, and the apps ring starts without scr
         await page.waitForTimeout(220); // the press-down's release (a transform, which moves nothing else)
         const now = await where();
         assert.ok(same(now, start), `${width}: ${sel} moved a control: ${JSON.stringify(start)} -> ${JSON.stringify(now)}`);
+      }
+      await page.close();
+    }
+    // Letting go (Paul, 2026-11-13: "it snaps back then animates in"): real pointer events a frame apart, the row's
+    // offset recorded every frame from release to rest. One settle, one way, from where it was let go, nothing popped
+    // until it has come to rest. A small drag held still goes back; half an app goes on; a quick flick goes on.
+    {
+      const page = await browser.newPage({ viewport: { width: 1280, height: 1000 } });
+      await page.goto(url, { waitUntil: 'networkidle' });
+      await page.click('.ap-play'); await page.mouse.move(1, 1);
+      await page.evaluate(() => scrollTo({ top: document.querySelector('.rw-apps').getBoundingClientRect().top + scrollY - 40 })); await page.waitForTimeout(500);
+      for (const [label, per, moves, hold, on] of [['small drag, held still', 15, 6, 160, 0], ['half an app', 27, 10, 160, 1], ['a flick', 30, 4, 0, 1]]) {
+        const r = await page.evaluate(async ([per, moves, hold]) => {
+          const t = document.querySelector('.ap-track'), box = t.getBoundingClientRect(), x = box.left + box.width / 2, y = box.top + 200;
+          const frame = () => new Promise(f => requestAnimationFrame(f)), slides = [...t.querySelectorAll('.ap-slide')], before = slides.indexOf(t.querySelector('.is-up'));
+          const fire = (type, cx) => t.dispatchEvent(new PointerEvent(type, { bubbles: true, pointerId: 7, pointerType: 'mouse', isPrimary: true, button: 0, buttons: type === 'pointerup' ? 0 : 1, clientX: cx, clientY: y }));
+          fire('pointerdown', x); for (let k = 1; k <= moves; k++) { await frame(); fire('pointermove', x - per * k); }
+          if (hold) await new Promise(f => setTimeout(f, hold));
+          fire('pointerup', x - per * moves);
+          const trace = [t.scrollLeft], popped = [];
+          for (let k = 0; k < 90; k++) { await frame(); trace.push(t.scrollLeft); popped.push(!!t.querySelector('.is-up')); }
+          await new Promise(f => setTimeout(f, 400));
+          const step = slides[1].offsetLeft - slides[0].offsetLeft, set = 8 * step, real = [trace[0]];
+          for (let k = 1; k < trace.length; k++) { const d = trace[k] - trace[k - 1]; real.push(real[k - 1] + (Math.abs(Math.abs(d) - set) < 3 ? 0 : d)); } // the copy-to-real swap is no movement
+          const dir = Math.sign(real[real.length - 1] - real[0]);
+          const upNow = t.querySelector('.is-up');
+          return { moved: ((slides.indexOf(upNow) - before) % 8 + 8) % 8, oneWay: real.every((v, k) => !k || (v - real[k - 1]) * dir >= -0.5),
+            firstStep: Math.abs(real[2] - real[1]), poppedEarly: popped.some((p, k) => p && Math.abs(real[k + 1] - real[real.length - 1]) > 1) };
+        }, [per, moves, hold]);
+        assert.equal(r.moved, on, `${label}: ${JSON.stringify(r)}`);
+        assert.ok(r.oneWay, `${label}: one way from where it was let go, no jump`);
+        assert.ok(!r.poppedEarly, `${label}: nothing pops until it has settled`);
+      }
+      // the replay keeps its whole conversation for screen readers at every point of the loop (Astra, 9174009)
+      for (const ms of [0, 3000, 9000, 26000]) {
+        await page.evaluate(() => document.querySelector('.rp-pause input').checked = false);
+        const hidden = await page.evaluate(async ms => { await new Promise(f => setTimeout(f, ms ? 300 : 0)); return [...document.querySelectorAll('.rp-log li, .rp-scene1, .rp-qs li')].filter(e => getComputedStyle(e).visibility === 'hidden' || getComputedStyle(e).display === 'none').length; }, ms);
+        assert.equal(hidden, 0, `nothing in the replay is hidden from screen readers (${ms})`);
       }
       await page.close();
     }

@@ -21,8 +21,9 @@
       if (turn.kind === 'scene') { out.push({ ...turn, at: t }); t += SCENE; return; }
       if (turn.kind === 'app') { const on = t; out.push({ ...turn, at: on, pan: on + HOLD, panEnd: on + HOLD + PAN }); t = on + HOLD + PAN + REST; return; }
       const think = turn.kind === 'agent' ? THINK : 0, start = t + (i ? GAP : 0), from = start + think;
-      const marks = turn.kind === 'you' ? typing(turn.text).reduce((acc, d) => (acc.push((acc.at(-1) || 0) + d), acc), []) : turn.units.map((_, k) => (k + 1) * WORD);
-      const shown = from + (marks.at(-1) || 0), words = turn.text.split(/\s+/).filter(Boolean).length;
+      // no Array.at here or anywhere in this file: older Safari (before 15.4) and Firefox (before 90) lack it
+      const marks = turn.kind === 'you' ? typing(turn.text).reduce((acc, d) => (acc.push((acc.length ? acc[acc.length - 1] : 0) + d), acc), []) : turn.units.map((_, k) => (k + 1) * WORD);
+      const shown = from + (marks.length ? marks[marks.length - 1] : 0), words = turn.text.split(/\s+/).filter(Boolean).length;
       // left alone long enough to read at about 200 words a minute, counting what was read as it arrived
       const done = shown + Math.max(700, words * READ - (shown - from) * (turn.kind === 'you' ? 0.6 : 0.3));
       out.push({ ...turn, at: start, from, marks, shown, done });
