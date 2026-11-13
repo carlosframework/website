@@ -120,7 +120,7 @@ test('enabled homepage has the apps carousel under the hero',()=>pages(async(hom
   const name=gallery.name??pageName, href=gallery.url??url;
   assert.ok(slide.includes(`role="group" aria-roledescription="slide" aria-label="${i+1} of ${slides.length}" data-name="${escapeHTML(name)}"`),app);
   // a real screenshot, sized, with alt text, 360 and 720 wide for 1x and 2x screens, in AVIF and WebP with a JPEG fallback
-  const sizes='(min-width: 1000px) 30vw, (min-width: 640px) 44vw, 78vw', set=type=>`/home/apps/${app}-360.${type} 360w, /home/apps/${app}-720.${type} 720w`;
+  const sizes='(min-width: 1000px) 36vw, (min-width: 640px) 52vw, 78vw', set=type=>`/home/apps/${app}-360.${type} 360w, /home/apps/${app}-720.${type} 720w, /home/apps/${app}-960.${type} 960w`;
   assert.ok(slide.includes(`<source type="image/avif" srcset="${set('avif')}" sizes="${sizes}"><source type="image/webp" srcset="${set('webp')}" sizes="${sizes}"><img src="/home/apps/${app}-360.jpg" srcset="${set('jpg')}" sizes="${sizes}" width="360" height="225" alt="${escapeHTML(copy['home.apps.shot.alt'].replace('{app}',name))}" loading="lazy" decoding="async">`),app);
   if(logoSpells) {
    // the wordmark stands in for its letters: the name is never printed beside a logo that already spells it

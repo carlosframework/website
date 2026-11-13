@@ -9,8 +9,8 @@
 // section is off screen and while the tab is hidden, and stops for good when someone presses the quiet pause
 // beside the dots (WCAG 2.2.2), touches or drags the row, or picks an app; play starts it again. The status line
 // names the real app and is announced only while nothing moves by itself.
-// Depth: the apps beside the middle one turn away in perspective, drawn in a little, smaller and dimmer, and turn
-// to face you as they reach the middle. It follows the scroll position itself (a glide, a swipe, a drag), one
+// Depth: the apps stand round a drum seen from outside, turning away along its curve and coming round to face you
+// as they reach the middle. It follows the scroll position itself (a glide, a swipe, a drag), one
 // frame at a time, writing only transform and opacity; the middle app has no transform at all, so its text stays
 // sharp. Under reduced motion the row stays flat, never moves by itself (no pause shown) and every move jumps
 // instead of gliding (it still loops).
@@ -48,25 +48,51 @@
   };
   const jump = left => track.scrollTo({ left, behavior: 'instant' });
 
-  // Depth. Slide centres are measured once (and again on resize), so a frame reads only scrollLeft.
-  const TURN = 30, SHRINK = 0.1, DIM = 0.42, PULL = 0.15;
+  // Depth: the apps stand round a drum seen from outside, like a merry-go-round. Each app sits 28 degrees further
+  // round than the one before, 2.15 slide widths from the drum's axis, turned to follow the curve: its far edge
+  // recedes, it gets smaller with distance and dimmer, and beyond the second neighbour (2.6 apps round) it is
+  // hidden, so a nearly edge-on third never paints over the second. That radius is what spaces them: the first neighbour's near edge stays clear of the
+  // middle app. The row's own perspective keeps one vanishing point at the middle while it scrolls. The angle
+  // follows the scroll position continuously, so a glide, a swipe or a drag turns the drum.
+  // ?ring=inside keeps round 3's view from inside the ring (each app turned the other way) for comparison.
+  const inside = typeof location === 'object' && /[?&]ring=inside\b/.test(location.search);
+  const STEP = 28 * Math.PI / 180, RADIUS = 2.15, DEPTH = 3, FADE = 0.24, SHOWN = 2.6;  // outside: angle per app, radius and perspective in slide widths
+  const TURN = 30, SHRINK = 0.1, DIM = 0.42, PULL = 0.15;                // inside
+  let slideW = 1;
   const measure = () => {
     geo = all.map(s => s.offsetLeft + s.offsetWidth / 2);
     half = track.clientWidth / 2;
     stepW = geo[1] - geo[0] || 1;
+    slideW = all[n].offsetWidth || stepW;
+    track.style.perspective = reduce.matches || inside ? '' : `${Math.round(DEPTH * slideW)}px`;
   };
-  const still = s => { if (s.style.transform) { s.style.transform = ''; s.style.opacity = ''; } };
+  // Each slide's last drawing, so a frame writes only what changed.
+  const drawn = all.map(() => '');
+  const put = (p, transform, opacity, hidden) => {
+    const key = transform + '|' + opacity + '|' + hidden;
+    if (drawn[p] === key) return;
+    drawn[p] = key;
+    const st = all[p].style;
+    st.transform = transform; st.opacity = opacity; st.visibility = hidden ? 'hidden' : '';
+  };
   const paint = () => {
     frame = 0;
-    if (reduce.matches) return all.forEach(still);
-    const mid = track.scrollLeft + half, depth = Math.round(stepW * 2.4);
+    if (reduce.matches) { track.style.perspective = ''; return all.forEach((s, p) => put(p, '', '', false)); }
+    const mid = track.scrollLeft + half, R = RADIUS * slideW, depth = Math.round(stepW * 2.4);
     for (let p = 0; p < all.length; p++) {
-      const s = all[p], o = (geo[p] - mid) / stepW, far = Math.min(2.5, Math.abs(o)), a = Math.min(1, far);
-      if (Math.abs(o) > 3 || a < 0.002) { still(s); continue; } // out of sight, or facing you
-      const side = o < 0 ? -1 : 1;
-      // drawn in towards the middle so two neighbours show on each side, turned away, smaller and dimmer
-      s.style.transform = `translateX(${(-side * PULL * stepW * far).toFixed(1)}px) perspective(${depth}px) rotateY(${(-side * a * TURN).toFixed(2)}deg) scale(${(1 - SHRINK * a).toFixed(4)})`;
-      s.style.opacity = (1 - DIM * a).toFixed(3);
+      const o = (geo[p] - mid) / stepW;
+      if (Math.abs(o) < 0.002) { put(p, '', '', false); continue; } // facing you: untransformed, so its text stays sharp
+      if (inside) {
+        const far = Math.min(2.5, Math.abs(o)), a = Math.min(1, far), side = o < 0 ? -1 : 1;
+        if (Math.abs(o) > 3) { put(p, '', '', false); continue; }
+        put(p, `translateX(${(-side * PULL * stepW * far).toFixed(1)}px) perspective(${depth}px) rotateY(${(-side * a * TURN).toFixed(2)}deg) scale(${(1 - SHRINK * a).toFixed(4)})`, (1 - DIM * a).toFixed(3), false);
+        continue;
+      }
+      const th = o * STEP;
+      if (Math.abs(o) >= SHOWN) { put(p, '', '', true); continue; } // round the back of the drum
+      // from where the row has put it to its place on the drum, then turned to follow the curve
+      const dx = R * Math.sin(th) - o * stepW, dz = R * Math.cos(th) - R;
+      put(p, `translate3d(${dx.toFixed(1)}px, 0, ${dz.toFixed(1)}px) rotateY(${(th * 180 / Math.PI).toFixed(2)}deg)`, Math.max(0.3, 1 - FADE * Math.abs(o)).toFixed(3), false);
     }
   };
   const draw = () => { if (!frame) frame = requestAnimationFrame(paint); };
@@ -200,7 +226,7 @@
     new IntersectionObserver(es => { seen = es[es.length - 1].isIntersecting; sync(); }, { threshold: 0.4 }).observe(track);
   } else seen = true;
   document.addEventListener('visibilitychange', sync);
-  if (reduce.addEventListener) reduce.addEventListener('change', () => { halt(); sync(); draw(); });
+  if (reduce.addEventListener) reduce.addEventListener('change', () => { halt(); measure(); sync(); draw(); });
   // A new width moves every slide: measure again and put the current one back in the middle.
   addEventListener('resize', () => { clearTimeout(resized); resized = setTimeout(() => { halt(); measure(); jump(centre(pos)); draw(); }, 100); });
 

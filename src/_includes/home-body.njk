@@ -15,7 +15,7 @@
     to each app; the script reveals previous, next, the dots and a quiet pause. Names, descriptions, logos and links are the
     Apps page's own (build-start.mjs reads src/apps/index.html); the screenshots are listed in src/home/apps/sources.json. -#}
 {#- How wide a slide is drawn (home/apps.css --ap-w), so the browser picks the 360 or 720 picture. -#}
-{%- set shotSizes = '(min-width: 1000px) 30vw, (min-width: 640px) 44vw, 78vw' -%}
+{%- set shotSizes = '(min-width: 1000px) 36vw, (min-width: 640px) 52vw, 78vw' -%}
 {%- set chevron = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg>' -%}
 <section class="rw-apps" aria-roledescription="{{ t('apps.carousel') }}" aria-labelledby="rw-apps-title" data-carousel><div class="rw-wrap">
   <div class="ap-head">
@@ -25,7 +25,7 @@
   <ul class="ap-track" role="list">
 {%- for a in apps %}
     <li class="ap-slide" role="group" aria-roledescription="{{ t('apps.slide') }}" aria-label="{{ t('apps.position') | replace('{n}', a.n ~ '') | replace('{total}', apps.length ~ '') }}" data-name="{{ a.name }}">
-      <picture class="ap-shot">{% for type in ['avif', 'webp'] %}<source type="image/{{ type }}" srcset="{{ a.shot }}-360.{{ type }} 360w, {{ a.shot }}-720.{{ type }} 720w" sizes="{{ shotSizes }}">{% endfor %}<img src="{{ a.shot }}-360.jpg" srcset="{{ a.shot }}-360.jpg 360w, {{ a.shot }}-720.jpg 720w" sizes="{{ shotSizes }}" width="{{ a.width }}" height="{{ a.height }}" alt="{{ t('apps.shot.alt') | replace('{app}', a.name) }}" loading="lazy" decoding="async"></picture>
+      <picture class="ap-shot">{% for type in ['avif', 'webp'] %}<source type="image/{{ type }}" srcset="{{ a.shot }}-360.{{ type }} 360w, {{ a.shot }}-720.{{ type }} 720w, {{ a.shot }}-960.{{ type }} 960w" sizes="{{ shotSizes }}">{% endfor %}<img src="{{ a.shot }}-360.jpg" srcset="{{ a.shot }}-360.jpg 360w, {{ a.shot }}-720.jpg 720w, {{ a.shot }}-960.jpg 960w" sizes="{{ shotSizes }}" width="{{ a.width }}" height="{{ a.height }}" alt="{{ t('apps.shot.alt') | replace('{app}', a.name) }}" loading="lazy" decoding="async"></picture>
 {%- if a.spelled %}
       {#- The wordmark already spells this part of the name: it is shown once, as the logo, and read as its alt text. #}
       <div class="ap-name"><h3 class="ap-spelled">{% if a.spelled.before %}<span>{{ a.spelled.before }}</span> {% endif %}<span class="ap-logo is-wordmark"><img src="{{ a.logo }}" alt="{{ a.spelled.word }}" width="60" height="20" loading="lazy" decoding="async"></span>{% if a.spelled.after %} <span>{{ a.spelled.after }}</span>{% endif %}</h3></div>

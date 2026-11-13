@@ -4,12 +4,12 @@
    with depth (it writes each slide's transform and opacity as the row scrolls). Scoped under .rw like
    sections.css, and coloured with its light-dark() tokens. Glanceable: the screenshot first, then the name,
    then one line. */
-/* Widths are fractions of the content column (cqi): on desktop the middle app is about a third of it, with two
-   neighbours on each side; on phones about three quarters of the screen. */
+/* Widths are fractions of the content column (cqi): on desktop the middle app is about two fifths of it, with
+   two neighbours on each side round the drum; on phones about three quarters of the screen. */
 .rw .rw-apps { --ap-w: 80cqi; --ap-gap: clamp(1rem, 2.6vw, 1.75rem); background: var(--rw-bg-2); overflow-x: clip; }
 .rw .rw-apps .rw-wrap { container-type: inline-size; }
-@media (min-width: 640px) { .rw .rw-apps { --ap-w: 44cqi; } }
-@media (min-width: 1000px) { .rw .rw-apps { --ap-w: 30cqi; } }
+@media (min-width: 640px) { .rw .rw-apps { --ap-w: 56cqi; } }
+@media (min-width: 1000px) { .rw .rw-apps { --ap-w: 39cqi; } }
 
 .rw .ap-intro { max-width: 46rem; }
 .rw .ap-intro h2 { max-width: 26ch; }
@@ -25,7 +25,7 @@
 .rw .rw-apps.is-live .ap-track { will-change: scroll-position; }
 .rw .rw-apps.is-live .ap-slide { scroll-snap-align: center; }
 /* The depth is decoration: under reduced motion the row stays flat whatever the script last wrote. */
-@media (prefers-reduced-motion: reduce) { .rw .ap-slide { transform: none !important; opacity: 1 !important; } }
+@media (prefers-reduced-motion: reduce) { .rw .ap-track { perspective: none !important; } .rw .ap-slide { transform: none !important; opacity: 1 !important; visibility: visible !important; } }
 .rw .ap-track.is-dragging { scroll-snap-type: none; scroll-behavior: auto; cursor: grabbing; user-select: none; }
 /* home/apps.js eases the glide itself; snapping waits until it lands on the next app. */
 .rw .ap-track.is-gliding { scroll-snap-type: none; scroll-behavior: auto; }

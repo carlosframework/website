@@ -366,7 +366,7 @@ test('hero: a height-only resize measures again when it changed the replay (a ta
 // hover, focus, off screen and a hidden tab, stops for good on the quiet pause, a touch, a drag or a chosen app,
 // and never runs under reduced motion (which also keeps the row flat). The status line names the real app.
 const appsJS = await read('src/home/apps.js');
-function appsWorld({ reduce = false, count = 4, random = 0 } = {}) {
+function appsWorld({ reduce = false, count = 4, random = 0, search = '' } = {}) {
   const mq = media(reduce), root = new El('rw-apps'), track = new El('ap-track'), ctrl = new El('ap-ctrl'), dotsBox = new El('ap-dots');
   const play = new El('ap-play'), prev = new El('ap-prev'), next = new El('ap-next'), status = new El('ap-status');
   ctrl.hidden = dotsBox.hidden = true; play.dataset.pause = 'Pause'; play.dataset.play = 'Play';
@@ -399,7 +399,7 @@ function appsWorld({ reduce = false, count = 4, random = 0 } = {}) {
     setTimeout: (f, ms) => { timeouts.set(++n, { f, ms }); return n; }, clearTimeout: id => timeouts.delete(id),
     requestAnimationFrame: f => { frames.set(++n, f); return n; }, cancelAnimationFrame: id => frames.delete(id),
     IntersectionObserver: class { constructor(cb) { this.cb = cb; observers.push(this); } observe() {} },
-    addEventListener: (t, f) => (win[t] ||= []).push(f),
+    addEventListener: (t, f) => (win[t] ||= []).push(f), location: { search },
   };
   runInContext(appsJS, createContext(g));
   const see = on => observers.forEach(o => o.cb([{ isIntersecting: on }]));
@@ -427,21 +427,41 @@ test('apps: a copy of every app on each side, hidden and out of the tab order, a
   assert.equal(appsWorld({ random: 0 }).current(), 0); assert.equal(appsWorld({ random: 0.99 }).current(), 3);
 });
 
-test('apps: depth follows the scroll position; the middle app is left untransformed', () => {
-  const w = appsWorld({ random: 0.6 });   // slide 6 centred
+test('apps: a drum seen from outside, turned by the scroll position; the middle app is left untransformed', () => {
+  const w = appsWorld({ random: 0.6 });   // slide 6 centred; slides 640 wide, 700 apart
   const t = p => w.order[p].style.transform || '', turn = p => Number(/rotateY\((-?[\d.]+)deg\)/.exec(t(p))?.[1] ?? 0);
+  const at3d = p => /translate3d\((-?[\d.]+)px, 0, (-?[\d.]+)px\)/.exec(t(p)).slice(1).map(Number);
+  assert.equal(w.track.style.perspective, '1920px', 'one vanishing point for the row: three slide widths');
   assert.equal(t(6), '', 'facing you: no transform, so its text stays sharp'); assert.equal(w.order[6].style.opacity || '', '');
-  assert.ok(turn(5) > 0 && turn(7) < 0, 'neighbours turned away on opposite sides');
-  assert.equal(Math.abs(turn(5)), Math.abs(turn(7)));
-  assert.ok(Number(w.order[7].style.opacity) < 1 && /scale\(0\.9/.test(t(7)));
-  assert.equal(t(10), '', 'out of sight: left alone');
-  // half way to the next app, both are part turned; the drawing waits for the next frame
+  // round the drum: 28 degrees per app, far edges receding (left turns one way, right the other), further back with distance
+  assert.equal(turn(7), 28); assert.equal(turn(5), -28); assert.equal(turn(8), 56); assert.equal(turn(4), -56);
+  const [x7, z7] = at3d(7), [x8, z8] = at3d(8);
+  const R = 2.15 * 640;
+  assert.ok(Math.abs(x7 - (R * Math.sin(28 * Math.PI / 180) - 700)) < 0.1 && Math.abs(z7 - (R * Math.cos(28 * Math.PI / 180) - R)) < 0.1);
+  assert.ok(z8 < z7 && z7 < 0, 'further round is further back');
+  assert.ok(Number(w.order[8].style.opacity) < Number(w.order[7].style.opacity) && Number(w.order[7].style.opacity) < 1, 'and dimmer');
+  // the first neighbour's near edge stays clear of the middle app (a flat slide 640 wide: its edge at 320)
+  const th = 28 * Math.PI / 180, nearX = R * Math.sin(th) - 320 * Math.cos(th), nearZ = R * Math.cos(th) + 320 * Math.sin(th) - R;
+  assert.ok(nearX * 1920 / (1920 - nearZ) > 320 + 20, 'a clear gap beside the middle app');
+  // beyond the second neighbour: round the back, hidden
+  assert.equal(w.order[9].style.visibility, 'hidden'); assert.equal(w.order[3].style.visibility, 'hidden'); assert.equal(w.order[8].style.visibility, '');
+  // half way to the next app the drum is half way round; the drawing waits for the next frame
   w.track.scrollLeft += 350; w.track.fire('scroll'); assert.equal(t(6), '');
   w.frames_();
-  assert.ok(turn(6) > 0 && turn(6) < 30 && turn(7) < 0 && turn(7) > -30, `${turn(6)} ${turn(7)}`);
-  // reduced motion: flat
+  assert.equal(turn(6), -14); assert.equal(turn(7), 14);
+  // reduced motion: flat, nothing hidden, no perspective
   w.mq.set(true); w.frames_();
-  for (const s of w.order) assert.equal(s.style.transform || '', '');
+  for (const s of w.order) { assert.equal(s.style.transform || '', ''); assert.equal(s.style.visibility || '', ''); }
+  assert.equal(w.track.style.perspective, '');
+});
+
+test('apps: ?ring=inside keeps the view from inside the ring for comparison', () => {
+  const w = appsWorld({ random: 0.6, search: '?ring=inside' });
+  const t = p => w.order[p].style.transform || '', turn = p => Number(/rotateY\((-?[\d.]+)deg\)/.exec(t(p))?.[1] ?? 0);
+  assert.equal(w.track.style.perspective || '', '', 'each slide carries its own perspective instead');
+  assert.equal(t(6), '');
+  assert.ok(turn(5) > 0 && turn(7) < 0, 'turned the other way');
+  assert.match(t(7), /^translateX\(-[\d.]+px\) perspective\(\d+px\) rotateY/);
 });
 
 test('apps: it loops both ways with eased glides, and the dots and status give the real app', () => {
