@@ -189,7 +189,7 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
 // The carousel starts in a browser whose scroll-behavior has no 'instant' (older Safari), so it is never left flat.
 // Needs only Playwright and a Chromium (HOME_THEMES_PLAYWRIGHT, HOME_THEMES_CHROME; HOME_THEMES_CHROME_ARGS optional).
 const skipBar = !(pw && chrome) && 'set HOME_THEMES_PLAYWRIGHT and HOME_THEMES_CHROME to run';
-test('the replay bar never moves a control; the apps ring lets go smoothly and starts without scroll-behavior "instant"', { skip: skipBar, timeout: 240000 }, async () => {
+test('the replay bar never moves a control; the apps ring lets go smoothly and starts without scroll-behavior "instant"', { skip: skipBar, timeout: 360000 }, async () => {
   const base = process.env.STARTER_SCRATCH || tmpdir(); assert.ok(!/^\/tmp(?:\/|$)/.test(resolve(base)), 'use disk scratch');
   await mkdir(base, { recursive: true });
   const dir = await mkdtemp(join(base, 'home-bar-'));
@@ -259,6 +259,33 @@ test('the replay bar never moves a control; the apps ring lets go smoothly and s
         assert.equal(hidden, 0, `nothing in the replay is hidden from screen readers (${ms})`);
       }
       await page.close();
+    }
+    // The replay's sessions (2026-11-13): tabs by click and keyboard (APG tablist), the next session at the end of one,
+    // held by Pause; under reduced motion nothing moves on, and the tabs still choose the picture. Replay time is run on
+    // Playwright's clock, so a whole session takes no real time.
+    {
+      const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } }); const page = await ctx.newPage();
+      await page.clock.install(); await page.goto(url, { waitUntil: 'load' });
+      const st = () => page.evaluate(() => ({ open: [...document.querySelectorAll('.rp-session')].filter(s => !s.hidden).map(s => s.dataset.slug).join(), sel: [...document.querySelectorAll('.rp-tab')].map(t => (t.getAttribute('aria-selected') === 'true' ? 1 : 0)).join(''), tabindex: [...document.querySelectorAll('.rp-tab')].map(t => t.tabIndex).join(), focus: document.activeElement && document.activeElement.id }));
+      const slugs = await page.evaluate(() => [...document.querySelectorAll('.rp-session')].map(s => s.dataset.slug));
+      assert.equal((await st()).open, slugs[0]);
+      await page.click('.rp-tab:nth-child(2)');
+      assert.deepEqual(await st(), { open: slugs[1], sel: slugs.map((_, k) => (k === 1 ? 1 : 0)).join(''), tabindex: slugs.map((_, k) => (k === 1 ? 0 : -1)).join(), focus: `rp-tab-${slugs[1]}` });
+      await page.keyboard.press('ArrowRight'); assert.equal((await st()).open, slugs[2]); assert.equal((await st()).focus, `rp-tab-${slugs[2]}`);
+      await page.keyboard.press('End'); assert.equal((await st()).open, slugs[slugs.length - 1]);
+      await page.keyboard.press('ArrowRight'); assert.equal((await st()).open, slugs[0], 'wraps round');
+      await page.keyboard.press('Home'); assert.equal((await st()).open, slugs[0]);
+      await page.click('.rp-faster'); // 2x: the status page is about 44 s of replay time (the clock still runs every frame)
+      await page.clock.runFor(50000); assert.equal((await st()).open, slugs[1], 'the next session at the end of one');
+      await page.click('.rp-pause'); await page.clock.runFor(120000); assert.equal((await st()).open, slugs[1], 'Pause holds it');
+      await ctx.close();
+      const rctx = await browser.newContext({ viewport: { width: 390, height: 900 }, reducedMotion: 'reduce' }); const still = await rctx.newPage();
+      await still.clock.install(); await still.goto(url, { waitUntil: 'load' }); await still.clock.runFor(120000);
+      const shown = () => still.evaluate(() => [...document.querySelectorAll('.rp-session')].filter(s => !s.hidden).map(s => s.dataset.slug).join());
+      assert.equal(await shown(), slugs[0], 'reduced motion: nothing moves on by itself');
+      assert.equal(await still.evaluate(() => document.querySelector('.rp-tabs').hidden), false);
+      await still.click('.rp-tab:nth-child(3)'); assert.equal(await shown(), slugs[2], 'and the tabs still choose');
+      await rctx.close();
     }
     // the ring in a browser whose scroll-behavior is only 'auto' or 'smooth'
     const page = await browser.newPage({ viewport: { width: 1257, height: 800 } });

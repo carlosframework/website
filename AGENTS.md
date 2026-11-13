@@ -85,7 +85,8 @@ person marker.**
   0.4 resolution, DPR capped at 1.5, 30 fps, a slow device gets half the
   blades then a smaller picture; stopped off screen, in a hidden tab, by the
   replay's Pause and under reduced motion, where it draws one still frame;
-  without WebGL2 the CSS gradient stays), `src/home/replay.js` (the replay played as a chat: a loading
+  without WebGL2 the CSS gradient stays), `src/home/replay.js` (real /start sessions in tabs, each played as a chat
+  (`src/home/replays/sessions.json`, words in `home.replay.<slug>.*`; the next plays at the end of one): a loading
   screen, the person's lines typed with a caret, thinking dots, then the agent's words streamed; a
   timeline worked out from the copy, at reading pace; slower/faster 0.5x to 2x, 1.5x by default,
   remembered for the visit; back/forward a turn, pausing it; the text stays whole in the page for

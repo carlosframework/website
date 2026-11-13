@@ -1,13 +1,15 @@
-// 🤖 The hero replay ("Your agent"), played as a chat (Paul, 2026-11-13). Without this script, or under reduced
-// motion, the panel is the CSS loop in home/hero.css (or its still picture) and every line is plain text. With it:
-// each loop opens on a short loading screen; the person's lines type in a character at a time with a caret and a
-// slightly uneven rhythm; before each agent message three dots think, then the message streams in a word at a
-// time; scene two follows, then the app's page pans down, and it starts again. The lines keep their whole text in
-// the page (the hidden characters are only transparent), so screen readers read them as before.
+// 🤖 The hero replay ("Your agent"): real /start sessions played as chats, one per tab (Paul, 2026-11-13). Without
+// this script the panel shows the first session as the CSS loop in home/hero.css (under reduced motion, its still
+// picture) and every line is plain text. With it: tabs choose a session, which plays from the start; at the end of
+// one the next begins (only while it plays: Pause, scrolling away or a hidden tab hold it, and reduced motion never
+// moves on by itself, though the tabs still switch the picture). Each loop opens on a short loading screen; the
+// person's lines type in a character at a time with a caret and a slightly uneven rhythm; before each agent
+// message three dots think, then the message streams in a word at a time; scene two follows, then the app's page
+// pans down. The lines keep their whole text in the page (unarrived text is only transparent), so screen readers
+// read the session in the open tab as a whole.
 // Speed: slower and faster around a readout, 0.5x to 2x, 1.5x unless this visit chose otherwise (sessionStorage).
-// Steps: back and forward jump a whole turn at a time with a short slide, and pause the replay (Play resumes);
-// Left and Right do the same while the panel's controls have focus. Time only passes while it plays, is on screen
-// and the tab is showing.
+// Steps: back and forward a turn at a time, pausing the replay (Play resumes); Left and Right do the same while the
+// panel's controls have focus. The tabs follow the APG tablist pattern (arrows, Home and End move and choose).
 (() => {
   // ---- the timeline, in ms at 1x: worked out once from the lines themselves
   const LOAD = 1100, GAP = 500, THINK = 1000, WORD = 65, READ = 300, SCENE = 450, HOLD = 1500, PAN = 5000, REST = 900, FADE = 600;
@@ -52,11 +54,11 @@
   if (!stage) return;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const pause = rp.querySelector('.rp-pause input');
-  const speedBox = rp.querySelector('.rp-speed'), steps = rp.querySelector('.rp-steps');
+  const speedBox = rp.querySelector('.rp-speed'), steps = rp.querySelector('.rp-steps'), tabsBox = rp.querySelector('.rp-tabs');
   const slower = rp.querySelector('.rp-slower'), faster = rp.querySelector('.rp-faster'), out = rp.querySelector('.rp-rate');
   const back = rp.querySelector('.rp-back'), fwd = rp.querySelector('.rp-fwd');
-  const scene1 = rp.querySelector('.rp-scene1'), app = rp.querySelector('.rp-s9'), shot = rp.querySelector('.rp-shot img');
-
+  const panels = [...rp.querySelectorAll('.rp-session')], tabs = tabsBox ? [...tabsBox.querySelectorAll('[role="tab"]')] : [];
+  if (!panels.length) return;
 
   // ---- the speed, as before: 0.5x to 2x, 1.5x unless this visit chose otherwise
   const RATES = [0.5, 1, 1.5, 2], KEY = 'carlos.replay.speed';
@@ -96,18 +98,24 @@
     walk(el);
     return spans;
   };
-  const turns = [];
-  for (let k = 1; k <= 8; k++) {
-    const li = rp.querySelector(`.rp-s${k}`);
-    if (!li) return;
-    const kind = li.classList.contains('rp-you') ? 'you' : 'agent';
-    const text = [...li.childNodes].filter(c => !(c.classList && c.classList.contains('rp-who'))).map(c => c.textContent).join(' ').replace(/\s+/g, ' ').trim();
-    turns.push({ li, kind, text, units: wrap(li, kind === 'you' ? 'char' : 'word') });
-    if (k === 3) turns.push({ kind: 'scene' });
-  }
-  turns.push({ kind: 'app' });
-  const tl = plan(turns);
-  const items = turns.filter(t => t.li).map(t => ({ ...t, lis: [...t.li.querySelectorAll('.rp-qs li')] }));
+  // ---- each session: its lines wrapped, its timeline, and how far it was last drawn
+  const sessions = panels.map(el => {
+    const turns = [];
+    for (let k = 1; k <= 8; k++) {
+      const li = el.querySelector(`.rp-s${k}`);
+      if (!li) return null;
+      const kind = li.classList.contains('rp-you') ? 'you' : 'agent';
+      const text = [...li.childNodes].filter(c => !(c.classList && c.classList.contains('rp-who'))).map(c => c.textContent).join(' ').replace(/\s+/g, ' ').trim();
+      turns.push({ li, kind, text, units: wrap(li, kind === 'you' ? 'char' : 'word') });
+      if (k === 3) turns.push({ kind: 'scene' });
+    }
+    turns.push({ kind: 'app' });
+    const tl = plan(turns), items = turns.filter(x => x.li).map(x => ({ ...x, lis: [...x.li.querySelectorAll('.rp-qs li')] }));
+    return { el, tl, items, at: stops(tl), was: items.map(() => ({ phase: '', count: -1 })), last: {},
+      scene1: el.querySelector('.rp-scene1'), app: el.querySelector('.rp-s9'), shot: el.querySelector('.rp-shot img') };
+  });
+  if (sessions.some(x => !x)) return;
+  let cur = sessions[0];
 
   // the thinking dots, a row of their own in front of the agent message that is coming
   const think = document.createElement('li');
@@ -124,19 +132,17 @@
   loading.hidden = true;
   stage.prepend(loading);
 
-  // ---- drawing a moment: only what changed since the last one
-  const was = items.map(() => ({ phase: '', count: -1 }));
-  let last = {};
-  const draw = (t, { fadeOut = false } = {}) => {
-    const s = stateAt(tl, t);
-    if (s.loading !== last.loading) loading.hidden = !s.loading;
-    if (s.scene2 !== last.scene2) scene1.classList.toggle('is-off', s.scene2);
-    if (s.appOn !== last.appOn) app.classList.toggle('is-on', s.appOn);
-    if (s.ending !== last.ending) stage.classList.toggle('is-ending', s.ending);
-    if (s.pan !== last.pan && shot) { const p = s.pan < 0.5 ? 2 * s.pan * s.pan : 1 - (-2 * s.pan + 2) ** 2 / 2; shot.style.top = `${(p * 100).toFixed(2)}%`; shot.style.transform = `translateY(${(-p * 100).toFixed(2)}%)`; }
+  // ---- drawing a moment of the current session: only what changed since the last one
+  const draw = (t, { fadeOut = false, of = cur } = {}) => {
+    const S = of, s = stateAt(S.tl, t), last = S.last;
+    if (S === cur && s.loading !== last.loading) loading.hidden = !s.loading;
+    if (s.scene2 !== last.scene2) S.scene1.classList.toggle('is-off', s.scene2);
+    if (s.appOn !== last.appOn) S.app.classList.toggle('is-on', s.appOn);
+    if (S === cur && s.ending !== last.ending) stage.classList.toggle('is-ending', s.ending);
+    if (s.pan !== last.pan && S.shot) { const p = s.pan < 0.5 ? 2 * s.pan * s.pan : 1 - (-2 * s.pan + 2) ** 2 / 2; S.shot.style.top = `${(p * 100).toFixed(2)}%`; S.shot.style.transform = `translateY(${(-p * 100).toFixed(2)}%)`; }
     let typingAt = null;
     s.turns.forEach((st, i) => {
-      const it = items[i], w = was[i];
+      const it = S.items[i], w = S.was[i];
       if (st.phase === 'thinking' && w.phase !== 'thinking') it.li.before(think);
       if (st.phase !== w.phase) it.li.classList.toggle('is-on', st.phase === 'arriving' || st.phase === 'shown');
       if (fadeOut && st.phase === 'hidden' && w.phase !== 'hidden') return; // its row fades first; draw() again clears it
@@ -146,13 +152,13 @@
         it.lis.forEach(li => li.classList.toggle('on', !!li.querySelector('.on')));
       }
       if (it.kind === 'you' && st.phase === 'arriving') typingAt = st.count ? ['after', it.units[st.count - 1]] : ['before', it.units[0]];
-      was[i] = st;
+      S.was[i] = st;
     });
     const thinking = s.turns.some(st => st.phase === 'thinking');
-    if (!thinking && think.parentNode) think.remove();
+    if (!thinking && think.parentNode && (S === cur || S.el.contains(think))) think.remove();
     if (typingAt) { const [where, unit] = typingAt; if ((where === 'after' ? caret.previousSibling : caret.nextSibling) !== unit) unit[where](caret); }
-    else if (caret.parentNode) caret.remove();
-    last = s;
+    else if (caret.parentNode && (S === cur || S.el.contains(caret))) caret.remove();
+    S.last = s;
   };
 
   // ---- the clock
@@ -164,7 +170,7 @@
     if (ff) settleStep();
     if (prev) t += Math.min(100, now - prev) * RATES[r];
     prev = now;
-    if (t >= tl.total) t = 0;
+    if (t >= cur.tl.total) { show(sessions[(sessions.indexOf(cur) + 1) % sessions.length]); return wake(); } // the next session
     draw(t);
     frame = requestAnimationFrame(tick);
   };
@@ -172,15 +178,15 @@
 
   // ---- steps: a turn at a time, and the replay paused. Forward plays just the next turn in place, quickly (it types
   // or streams as usual, about six times as fast); back fades out just the last turn. Nothing else moves.
-  const at = tl.turns.length && stops(tl);
   let ff = 0, ffTo = 0, cleared = 0;
   const settleStep = () => { if (ff) { cancelAnimationFrame(ff); ff = 0; t = ffTo; draw(t); } };
+  const stopSteps = () => { if (ff) { cancelAnimationFrame(ff); ff = 0; } clearTimeout(cleared); };
   const jump = dir => {
     settleStep();
     clearTimeout(cleared);
     if (pause && !pause.checked) { pause.checked = true; pause.dispatchEvent(new Event('change', { bubbles: true })); }
     tip();
-    const to = dir > 0 ? at.find(x => x > t + 1) : [...at].reverse().find(x => x < t - 1);
+    const at = cur.at, to = dir > 0 ? at.find(x => x > t + 1) : [...at].reverse().find(x => x < t - 1);
     if (dir < 0 || to === undefined) {
       t = to === undefined ? (dir > 0 ? at[0] : 0) : to;
       draw(t, { fadeOut: true });
@@ -188,7 +194,7 @@
       return;
     }
     // from where the coming turn begins (no thinking pause on a step) to where it is whole
-    const turn = tl.turns.find(x => x.shown === to);
+    const turn = cur.tl.turns.find(x => x.shown === to);
     const from = Math.max(t, turn ? turn.from : t), span = to - from, ms = Math.min(900, Math.max(350, span / 6));
     t = from; draw(t); ffTo = to;
     let t0 = 0;
@@ -213,15 +219,46 @@
   document.addEventListener('visibilitychange', wake);
   if (typeof IntersectionObserver === 'function') new IntersectionObserver(es => { seen = es[es.length - 1].isIntersecting; wake(); }).observe(rp);
 
-  // ---- on, or back to the plain picture under reduced motion
+  // ---- the sessions' tabs: one open at a time; the one left is put back to its start, the one chosen plays from it
+  const plain = S => { S.shot && (S.shot.style.top = '', S.shot.style.transform = ''); };
+  function show(S, { focus = false } = {}) {
+    if (S !== cur) {
+      stopSteps();
+      draw(0, { of: cur }); cur.last = {}; plain(cur);
+      think.remove(); caret.remove();
+      cur.el.hidden = true;
+      cur = S;
+    }
+    S.el.hidden = false;
+    tabs.forEach((tab, k) => { const on = sessions[k] === S; tab.setAttribute('aria-selected', String(on)); tab.tabIndex = on ? 0 : -1; if (on && focus) tab.focus(); });
+    t = 0;
+    if (live) { S.last = {}; draw(0); } else plain(S);
+  }
+  tabs.forEach((tab, k) => {
+    tab.addEventListener('click', () => {
+      // choosing a session plays it, from the start
+      if (pause && pause.checked) { pause.checked = false; pause.dispatchEvent(new Event('change', { bubbles: true })); tip(); }
+      show(sessions[k]); wake();
+    });
+  });
+  if (tabsBox) tabsBox.addEventListener('keydown', e => {
+    const k = sessions.indexOf(cur), n = sessions.length;
+    const to = { ArrowRight: (k + 1) % n, ArrowLeft: (k - 1 + n) % n, Home: 0, End: n - 1 }[e.key];
+    if (to === undefined) return;
+    e.preventDefault();
+    show(sessions[to], { focus: true }); wake();
+  });
+
+  // ---- on, or back to the plain picture under reduced motion (the tabs still choose which)
   const start = () => {
     live = !reduce.matches;
     rp.classList.toggle('is-live', live);
     speedBox.hidden = steps.hidden = !live;
-    if (live) { last = {}; showRate(); draw(t); wake(); return; }
+    if (tabsBox) tabsBox.hidden = sessions.length < 2;
+    if (live) { cur.last = {}; showRate(); draw(t); wake(); return; }
     // the plain picture: nothing half-typed, no dots, no loading screen, the pan back to the CSS
     loading.hidden = true; think.remove(); caret.remove();
-    if (shot) { shot.style.top = ''; shot.style.transform = ''; }
+    plain(cur);
   };
   if (reduce.addEventListener) reduce.addEventListener('change', start);
   tip();
