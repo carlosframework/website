@@ -53,7 +53,10 @@
 .rw .ap-name { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.85rem; }
 /* Logos sit on white, as on the Apps page, so every brand colour reads in both themes. */
 .rw .ap-logo { flex: none; display: grid; place-items: center; width: 30px; height: 30px; padding: 4px; border: 1px solid var(--rw-line-soft); border-radius: 8px; background: #ffffff; }
-.rw .ap-logo.is-wordmark { width: 70px; padding: 5px 7px; }
+.rw .ap-logo.is-wordmark { width: 70px; padding: 0; border: 0; border-radius: 0; background: none; }
+/* Without their white tile, dark-ink wordmarks need a light rendering on the dark theme. */
+:root[data-theme="dark"] .rw .ap-logo.is-wordmark img { filter: brightness(0) invert(0.92); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .rw .ap-logo.is-wordmark img { filter: brightness(0) invert(0.92); } }
 .rw .ap-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .rw .ap-slide h3 { font-size: 1.15rem; }
 /* A wordmark that spells the name (or part of it) sits in the heading in place of those letters. */
