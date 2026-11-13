@@ -20,7 +20,7 @@
    that brings it back also keeps the focus ring inside the scroller's clip. Without JavaScript the apps snap to the
    content column's left edge. With it (.is-live) the current app snaps to the middle, its neighbours peeking in on
    both sides, and home/apps.js adds copies at each end so the row never runs out. */
-.rw .ap-track { --ap-bleed: calc((100vw - 100cqi) / 2); position: relative; list-style: none; display: flex; gap: var(--ap-gap); margin: clamp(1.5rem, 3vw, 2.25rem) calc(-1 * var(--ap-bleed)) 0; padding: 6px var(--ap-bleed) 0.9rem; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--ap-bleed); scrollbar-width: thin; scrollbar-color: var(--rw-line) transparent; }
+.rw .ap-track { --ap-bleed: calc((100vw - 100cqi) / 2); position: relative; display: flex; gap: var(--ap-gap); margin: clamp(1.5rem, 3vw, 2.25rem) calc(-1 * var(--ap-bleed)) 0; padding: 6px var(--ap-bleed) 0.9rem; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--ap-bleed); scrollbar-width: thin; scrollbar-color: var(--rw-line) transparent; }
 .rw .rw-apps.is-live .ap-track { scrollbar-width: none; }
 .rw .rw-apps.is-live .ap-track::-webkit-scrollbar { display: none; }
 /* Live, home/apps.js brings the row to rest itself, eased, on the exact middle of an app: the browser's own snap

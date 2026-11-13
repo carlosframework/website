@@ -22,9 +22,10 @@
     <div class="ap-intro"><!-- 👨 Paul's words, verbatim --><h2 id="rw-apps-title">{{ t('apps.heading') }}</h2>
     <p class="ap-sub">{{ t('apps.sub') }}</p><!-- /👨 --></div>
   </div>
-  <ul class="ap-track" role="list">
+  {#- The APG carousel pattern: the slides are groups (each "slide, n of N") in a plain container, not a list. #}
+  <div class="ap-track">
 {%- for a in apps %}
-    <li class="ap-slide" role="group" aria-roledescription="{{ t('apps.slide') }}" aria-label="{{ t('apps.position') | replace('{n}', a.n ~ '') | replace('{total}', apps.length ~ '') }}" data-name="{{ a.name }}">
+    <div class="ap-slide" role="group" aria-roledescription="{{ t('apps.slide') }}" aria-label="{{ t('apps.position') | replace('{n}', a.n ~ '') | replace('{total}', apps.length ~ '') }}" data-name="{{ a.name }}">
       <picture class="ap-shot">{% for type in ['avif', 'webp'] %}<source type="image/{{ type }}" srcset="{{ a.shot }}-360.{{ type }} 360w, {{ a.shot }}-720.{{ type }} 720w, {{ a.shot }}-960.{{ type }} 960w" sizes="{{ shotSizes }}">{% endfor %}<img src="{{ a.shot }}-360.jpg" srcset="{{ a.shot }}-360.jpg 360w, {{ a.shot }}-720.jpg 720w, {{ a.shot }}-960.jpg 960w" sizes="{{ shotSizes }}" width="{{ a.width }}" height="{{ a.height }}" alt="{{ t('apps.shot.alt') | replace('{app}', a.name) }}" loading="lazy" decoding="async" draggable="false"></picture>
 {%- if a.spelled %}
       {#- The wordmark already spells this part of the name: it is shown once, as the logo, and read as its alt text. #}
@@ -34,9 +35,9 @@
 {%- endif %}
       <p class="ap-about">{{ a.about }}</p>
       <a class="ap-link" href="{{ a.url }}" {{ blank | safe }}>{{ a.host }} {{ ext | safe }}</a>
-    </li>
+    </div>
 {%- endfor %}
-  </ul>
+  </div>
   <div class="ap-foot">
     <div class="ap-ctrl" hidden>
       <button type="button" class="ap-prev" aria-label="{{ t('apps.prev') }}" title="{{ t('apps.prev') }}">{{ chevron | safe }}</button>

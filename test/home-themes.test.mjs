@@ -2,7 +2,7 @@
 // nothing at 390 and 1280 px in Light, Dark and Auto, and the switch changes the theme live.
 // Needs a local Chromium, playwright-core and axe-core, which this repo does not install:
 //   HOME_THEMES_PLAYWRIGHT=/path/to/node_modules/playwright-core/index.mjs
-//   HOME_THEMES_AXE=/path/to/node_modules/axe-core/axe.min.js
+//   HOME_THEMES_AXE=/path/to/node_modules/axe-core/axe.min.js   (axe-core 4.14.0: the test checks the version)
 //   HOME_THEMES_CHROME=/path/to/chrome
 // Without all three it is skipped.
 import assert from 'node:assert/strict';
@@ -22,6 +22,10 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
   const dir = await mkdtemp(join(base, 'home-themes-'));
   const { chromium } = await import(pw);
   const axe = await readFile(axePath, 'utf8');
+  // Pinned: a newer axe can add rules (4.14 is the one that caught a list of carousel groups), so a different
+  // version is a failure to update this line on purpose, not a quiet change in what is checked.
+  const axeVersion = axe.match(/axe v([\d.]+)/)?.[1];
+  assert.equal(axeVersion, '4.14.0', `HOME_THEMES_AXE is axe-core ${axeVersion}; this test is pinned to 4.14.0`);
   const env = { ...process.env, CARLOS_START_DEMO: '1', CARLOS_START_SITE_ORIGIN: 'https://carlosframework.com', CARLOS_START_CONSOLE_ORIGIN: 'https://console.carloku.com', CARLOS_START_ACCOUNT_URL: 'https://console.carloku.com/', CARLOS_START_CLAIM: 'off' };
   execFileSync(process.execPath, ['node_modules/@11ty/eleventy/cmd.cjs', `--output=${dir}`, '--quiet'], { env, stdio: 'pipe' });
   const server = createServer(async (req, res) => {
@@ -48,9 +52,10 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
       assert.deepEqual(violations, [], `${width} ${theme} (system ${scheme})`);
       await ctx.close();
     }
-    // The glass panes over the drawn background: axe cannot see through backdrop-filter, so measure it. For
-    // several moments of the background, the panes are captured with their text made transparent, and each
-    // piece of text is compared with the worst of the pixels under its own line boxes.
+    // The glass pane over the drawn background: axe cannot see through backdrop-filter, so measure it. For
+    // several moments of the background, the pane is captured with its text made transparent, and each piece of
+    // text is compared with the worst of the pixels under its own line boxes (text only screen readers get is skipped:
+    // its line boxes are measured where it is clipped away).
     for (const width of [390, 1280]) for (const theme of ['light', 'dark']) {
       const ctx = await browser.newContext({ viewport: { width, height: width === 390 ? 844 : 900 } });
       await ctx.addInitScript(t => localStorage.setItem('carlos-theme', t), theme);
@@ -59,7 +64,8 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
       const drawn = await page.evaluate(() => !document.querySelector('.c-hero').classList.contains('nogl'));
       if (!drawn) { await ctx.close(); continue; }   // no WebGL in this browser: the CSS gradient is covered by axe above
       await page.locator('.rp-pause').click();
-      await page.addStyleTag({ content: `.rp-log li, .rp-app, .rp-scene1 { animation: none !important; opacity: 1 !important; transform: none !important; }
+      // (every line shown at once, so the "loading" placeholder, which only ever stands in for lines not yet shown, goes)
+      await page.addStyleTag({ content: `.rp-log li, .rp-app, .rp-scene1 { animation: none !important; opacity: 1 !important; transform: none !important; } .rp-loading { display: none !important; }
         .hide-text, .hide-text * { color: transparent !important; -webkit-text-fill-color: transparent !important; text-decoration-color: transparent !important; }
         .hide-text svg, .hide-text .pb-caret, .hide-text .rp-dots, .hide-text .rp-app, .hide-text .pb-copy { visibility: hidden !important; } .hide-text .hv-rot-word { background: none !important; }
         .scene-a .rp-scene2, .scene-b .rp-scene1 { display: none !important; }` });
@@ -68,10 +74,10 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
           document.body.classList.remove('scene-a', 'scene-b'); document.body.classList.add(scene); window.__heroBg.set(t);
           document.querySelectorAll('.is-sheen').forEach(e => e.classList.remove('is-sheen'));
           return [...document.querySelectorAll('.c-hero .hv-col *, .c-hero .rp-bar *, .c-hero .rp-log *, .c-hero .rp-cap')]
-            .filter(el => !el.closest('.rp-app, .pb-copy, svg') && !el.closest('details:not([open]) > :not(summary)') && getComputedStyle(el).visibility !== 'hidden')
+            .filter(el => !el.closest('.rp-app, .pb-copy, svg, .rp-sr, .hv-sr') && getComputedStyle(el).opacity !== '0' && !el.closest('details:not([open]) > :not(summary)') && getComputedStyle(el).visibility !== 'hidden')
             .flatMap(el => [...el.childNodes].filter(n => n.nodeType === 3 && n.textContent.trim()).map(n => {
               const cs = getComputedStyle(el), r = document.createRange(); r.selectNodeContents(n);
-              return { text: n.textContent.trim().slice(0, 40), color: cs.color, large: parseFloat(cs.fontSize) >= 24 || (parseFloat(cs.fontSize) >= 18.66 && +cs.fontWeight >= 700),
+              return { text: `${el.className}: ${n.textContent.trim().slice(0, 40)}`, color: cs.color, large: parseFloat(cs.fontSize) >= 24 || (parseFloat(cs.fontSize) >= 18.66 && +cs.fontWeight >= 700),
                 rects: [...r.getClientRects()].filter(q => q.width > 2 && q.height > 2).map(q => [q.left, q.top + scrollY, q.width, q.height]) };
             })).filter(i => i.rects.length);
         }, [scene, t]);
@@ -100,16 +106,16 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
       }
       await ctx.close();
     }
-    // The hero's held height is its content plus one line, never more, at any size and pixel density, before and
+    // The hero's held height is its content, never more, at any size and pixel density, before and
     // after resizes (a hero locked while stylesheets were still loading once stood ten screens tall in Safari).
     for (const [w, h] of [[1440, 900], [1728, 1117], [390, 844]]) for (const dpr of [1, 2]) {
       const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: dpr });
       const page = await ctx.newPage();
       await page.goto(url, { waitUntil: 'load' });
       const sane = async label => {
-        const m = await page.evaluate(() => { const hero = document.querySelector('.c-hero'), inner = hero.querySelector('.c-hero-inner'), room = parseFloat(getComputedStyle(document.documentElement).fontSize) * 2.1;
-          return { hero: hero.getBoundingClientRect().height, inner: inner.getBoundingClientRect().height, room }; });
-        assert.ok(m.hero <= Math.ceil(m.inner + m.room) + 1, `${label}: hero ${m.hero} against content ${m.inner} + ${m.room}`);
+        const m = await page.evaluate(() => { const hero = document.querySelector('.c-hero'), inner = hero.querySelector('.c-hero-inner');
+          return { hero: hero.getBoundingClientRect().height, inner: inner.getBoundingClientRect().height }; });
+        assert.ok(m.hero <= Math.ceil(m.inner) + 1, `${label}: hero ${m.hero} against content ${m.inner}`);
         return m.hero;
       };
       const first = await sane(`${w}x${h} @${dpr}`);
@@ -119,7 +125,7 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
       assert.equal(await sane('back'), first, 'back to where it started');
       await ctx.close();
     }
-    // Copy's note, a failed copy and the opened hosts line grow the glass pane, never the hero: the background
+    // A failed copy's message and the opened hosts line grow the glass pane, never the hero: the background
     // keeps its size on the page (the slow-device guard may still change its drawing resolution) and the next section
     // does not move.
     for (const width of [390, 1280]) for (const copies of [true, false]) {
@@ -127,15 +133,39 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
       const page = await ctx.newPage();
       if (!copies) await page.addInitScript(() => Object.defineProperty(navigator, 'clipboard', { value: { writeText: () => Promise.reject(new Error('denied')) } }));
       await page.goto(url, { waitUntil: 'networkidle' });
-      // side by side, the replay pane and the top of the text pane are held too
+      // side by side, the replay (where it is and how tall) and the top of the text are held too
       const where = () => page.evaluate(wide => { const c = document.querySelector('.hero-bg'); return { next: document.querySelector('.rw-what').getBoundingClientRect().top + scrollY, hero: document.querySelector('.c-hero').getBoundingClientRect().height, canvas: [c.clientWidth, c.clientHeight],
-        ...(wide ? { replay: document.querySelector('.c-hero .rp').offsetTop, text: document.querySelector('.c-hero .hv-col').offsetTop } : {}) }; }, width >= 1024);
+        ...(wide ? { replay: document.querySelector('.c-hero .rp').offsetTop, replayH: document.querySelector('.c-hero .rp').offsetHeight, text: document.querySelector('.c-hero .hv-col').offsetTop } : {}) }; }, width >= 1024);
       const before = await where();
       await page.locator('.c-hero .pb-copy').click(); await page.waitForTimeout(600);
-      assert.ok(await page.locator('.c-hero .paste').evaluate(el => el.classList.contains('is-copied') || el.classList.contains('copy-failed')), 'the copy note shows');
+      assert.ok(await page.locator('.c-hero .paste').evaluate(el => el.classList.contains('is-copied') || el.classList.contains('copy-failed')), 'the copy state shows');
       assert.deepEqual(await where(), before, `${width} after Copy (${copies ? 'copied' : 'failed'})`);
       await page.locator('.hv-cloud summary').click(); await page.waitForTimeout(400);
       assert.deepEqual(await where(), before, `${width} with the hosts line open`);
+      await ctx.close();
+    }
+    // A successful copy moves nothing, in the hero or the closing box: the button says "Copied" at the same size, and
+    // the sentence after it is for screen readers only (it is in the polite status, visually hidden). Every element
+    // keeps its place and size on the page and the pane keeps its height. (Reduced motion keeps the replay and the
+    // rotating word still, and the pane from drifting, so only Copy can move anything.)
+    for (const width of [390, 1280]) {
+      const ctx = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: 'reduce', permissions: ['clipboard-read', 'clipboard-write'] });
+      const page = await ctx.newPage();
+      await page.goto(url, { waitUntil: 'networkidle' });
+      const layout = () => page.evaluate(() => ({ pane: document.querySelector('.hv-pane').getBoundingClientRect().height,
+        boxes: [...document.querySelectorAll('.c-hero *, .rw-end .paste, .rw-end .paste *')].filter(el => !el.closest('.pb-copy > *, .pb-done, .hero-bg-wrap') && el.getClientRects().length)
+          .map(el => { const r = el.getBoundingClientRect(); return [el.tagName, r.left + scrollX, r.top + scrollY, r.width, r.height].map(v => typeof v === 'number' ? Math.round(v * 2) / 2 : v).join(' '); }) }));
+      for (const box of ['.c-hero .paste', '.rw-end .paste']) {
+        const before = await layout();
+        await page.locator(`${box} .pb-copy`).click(); await page.waitForTimeout(600);
+        const after = await layout();
+        assert.ok(await page.locator(box).evaluate(el => el.classList.contains('is-copied')), `${width} ${box}: copied`);
+        assert.equal(await page.locator(`${box} .pb-copy span`).textContent(), 'Copied');
+        assert.equal(await page.locator(`${box} .pb-done`).textContent(), 'Copied. Paste it into your agent.', `${width} ${box}: screen readers still hear it`);
+        assert.ok(await page.locator(`${box} .pb-done`).evaluate(el => el.getBoundingClientRect().width <= 1 && getComputedStyle(el).clipPath === 'inset(50%)'), `${width} ${box}: not shown`);
+        assert.equal(after.pane, before.pane, `${width} ${box}: pane height`);
+        assert.deepEqual(after.boxes.filter((b, i) => b !== before.boxes[i]), [], `${width} ${box}: nothing moved`);
+      }
       await ctx.close();
     }
     // A window made taller at the same width grows the replay (it is sized from the screen's height): the held
@@ -154,14 +184,23 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
       await page.setViewportSize({ width: w, height: h0 }); await page.waitForTimeout(300); await fits(`back to ${w}x${h0}`);
       await ctx.close();
     }
-    // At rest the side-by-side panes sit exactly as centred (the hold changes nothing until something grows).
-    for (const width of [1280, 1440]) {
-      const ctx = await browser.newContext({ viewport: { width, height: 900 } });
+    // At rest the pane's two columns sit exactly as laid out (the hold changes nothing until something grows), and
+    // the pane is one card: the replay and the paste line have no frame or shadow of their own, and the columns are
+    // as tall as each other side by side.
+    for (const [width, height] of [[1280, 900], [1440, 900], [1728, 1117], [1280, 640]]) {
+      const ctx = await browser.newContext({ viewport: { width, height } });
       const page = await ctx.newPage();
       await page.goto(url, { waitUntil: 'load' });
-      const held = await page.evaluate(() => [...document.querySelectorAll('.c-hero-inner > *')].map(c => c.offsetTop));
-      const centred = await page.evaluate(() => { const inner = document.querySelector('.c-hero-inner'); [...inner.children].forEach(c => { c.style.alignSelf = ''; c.style.marginTop = ''; }); return [...inner.children].map(c => c.offsetTop); });
-      assert.deepEqual(held, centred, `${width}: resting layout unchanged`);
+      const held = await page.evaluate(() => [...document.querySelectorAll('.hv-pane > *')].map(c => [c.offsetTop, c.offsetHeight]));
+      const free = await page.evaluate(() => [...document.querySelectorAll('.hv-pane > *')].map(c => { c.style.alignSelf = ''; c.style.marginTop = ''; c.style.minHeight = ''; return c; }).map(c => [c.offsetTop, c.offsetHeight]));
+      assert.deepEqual(held, free, `${width}x${height}: resting layout unchanged`);
+      const look = await page.evaluate(() => { const cs = s => getComputedStyle(document.querySelector(s)), pane = document.querySelector('.hv-pane').getBoundingClientRect();
+        return { rp: [cs('.c-hero .rp').borderTopWidth, cs('.c-hero .rp').boxShadow, cs('.c-hero .rp').backgroundImage], paste: [cs('.c-hero .paste').borderTopColor, cs('.c-hero .paste').boxShadow],
+          col: document.querySelector('.rp-col').getBoundingClientRect().height, pane: document.querySelector('.hv-pane').clientHeight, dots: document.querySelector('.rp-dotrow').getBoundingClientRect().bottom - pane.bottom }; });
+      assert.deepEqual(look.rp, ['0px', 'none', 'none'], `${width}: the replay is no card of its own`);
+      assert.deepEqual(look.paste, ['rgba(0, 0, 0, 0)', 'none'], `${width}: the paste line has no border or shadow`);
+      assert.ok(Math.abs(look.col - look.pane) <= 1, `${width}x${height}: the replay column fills the pane inside its frame (${look.col} of ${look.pane})`);
+      assert.ok(look.dots <= 0.5, `${width}x${height}: the dots are inside the pane`);
       await ctx.close();
     }
     // The switch: visible, pressed state follows, the page changes at once and remembers.

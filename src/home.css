@@ -1172,7 +1172,9 @@ a.hero-tool:hover h2, .hero-tool :is(h2, h3) a:hover { text-decoration: underlin
 .paste.is-copied .ic-copy { display: none; }
 .paste.is-copied .ic-ok { display: block; animation: draw 0.4s var(--ease-out) forwards; }
 .paste .pb-done { margin: 0; max-height: 0; overflow: hidden; opacity: 0; font: 600 0.95rem/1.4 var(--site-sans); color: #7fe9cf; transition: max-height 0.35s var(--ease-out), opacity 0.3s, margin 0.35s; }
-.paste.is-copied .pb-done { max-height: 3rem; opacity: 1; margin-top: 0.7rem; }
+/* A successful copy shows only on the button ("Copied"): its sentence is for screen readers, so nothing moves. A
+   failed copy's instruction shows, since the reader needs it. */
+.paste:not(.copy-failed) .pb-done { position: absolute; width: 1px; height: 1px; padding: 0; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .paste .pb-works { margin: 0; font: 400 0.8rem/1.35 var(--site-sans); color: #8e9aab; }
 .paste .pb-copy[hidden] { display: none; }
 .paste.copy-failed .pb-done { max-height: 8rem; opacity: 1; margin-top: 0.7rem; }

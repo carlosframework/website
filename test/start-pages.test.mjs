@@ -30,6 +30,9 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.match(hero,/<div class="paste v-soft hv-paste">/);
  // One drawn background behind the hero only, hidden from assistive technology.
  assert.match(home,/<section class="c-hero hv hv-b"><div class="hero-bg-wrap" aria-hidden="true"><canvas class="hero-bg"><\/canvas><\/div><div class="c-hero-inner">/);
+ // One glass pane holds both columns: the text, then the replay with its dots.
+ assert.match(home,/<div class="c-hero-inner">\s*<div class="hv-pane">\s*<div class="hv-col">/);
+ assert.match(home,/<\/figure>[\s\S]*?<div class="rp-dotrow"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>\s*<\/div><\/section>/);
  assert.equal((home.match(/<canvas/g)||[]).length,1);
  assert.ok(hero.includes(escapeHTML(copy['home.paste.label'])));
  assert.doesNotMatch(hero,/pb-works/);
@@ -144,7 +147,9 @@ test('enabled homepage has the apps carousel under the hero',()=>pages(async(hom
  assert.match(section,/^<section class="rw-apps" aria-roledescription="carousel" aria-labelledby="rw-apps-title" data-carousel>/);
  assert.ok(section.includes(`<!-- 👨 Paul's words, verbatim --><h2 id="rw-apps-title">What kinds of apps can be built using CARLOS?</h2>\n    <p class="ap-sub">CARLOS excels at producing fast, accessible websites and apps that can be deployed easily, locally, on-prem, or on-cloud, as well as providing APIs, CLIs, MCPs, and backends for native apps.</p><!-- /👨 -->`));
  assert.equal(copy['home.apps.heading'],'What kinds of apps can be built using CARLOS?');
- const slides=[...section.matchAll(/<li class="ap-slide"[\s\S]*?<\/li>/g)].map(m=>m[0]);
+ // The APG carousel pattern: groups in a plain container (a list of groups fails axe's aria-required-children).
+ assert.match(section,/<div class="ap-track">/); assert.doesNotMatch(section,/<ul class="ap-track"|<li class="ap-slide"/);
+ const slides=[...section.matchAll(/<div class="ap-slide"[\s\S]*?<a class="ap-link"[\s\S]*?<\/a>\s*<\/div>/g)].map(m=>m[0]);
  assert.equal(slides.length,sources.apps.length);
  assert.ok(slides.length>=6);
  slides.forEach((slide,i)=>{
@@ -197,7 +202,7 @@ test('enabled homepage has the apps carousel under the hero',()=>pages(async(hom
  assert.ok(ctrl.startsWith('<div class="ap-ctrl" hidden>'));
  assert.ok(ctrl.indexOf('class="ap-prev"')<ctrl.indexOf('class="ap-dots"') && ctrl.indexOf('class="ap-dots"')<ctrl.indexOf('class="ap-play"') && ctrl.indexOf('class="ap-play"')<ctrl.indexOf('class="ap-next"'));
  assert.match(section,/<div class="ap-dotrow"><div class="ap-dots" role="group" aria-label="Choose an app" hidden>/);
- assert.doesNotMatch(section.match(/<div class="ap-head">[\s\S]*?<\/div>\s*<ul/)[0],/<button/,'no controls beside the heading');
+ assert.doesNotMatch(section.match(/<div class="ap-head">[\s\S]*?<div class="ap-track">/)[0],/<button/,'no controls beside the heading');
  // The pause is an icon with the replay's approved words as its name and tooltip; the status line is the only live region.
  assert.ok(section.includes(`<button type="button" class="ap-play" data-pause="${copy['home.replay.pause']}" data-play="${copy['home.replay.play']}" aria-label="${copy['home.replay.pause']}" title="${copy['home.replay.pause']}"><svg class="ap-ic-pause" viewBox="0 0 16 16" aria-hidden="true" focusable="false">`));
  for(const k of ['prev','next']) assert.ok(section.includes(`<button type="button" class="ap-${k}" aria-label="${copy['home.apps.'+k]}" title="${copy['home.apps.'+k]}">`),k);
@@ -237,7 +242,7 @@ test('enabled homepage replay has a speed control, and reading-pace timing in it
 }));
 test('apps carousel overrides are explicit and checked against the Apps page',()=>pages(async(home)=>{
  const section=home.match(/<section class="rw-apps"[\s\S]*?<\/div><\/section>/)[0];
- const slide=name=>section.match(new RegExp(`<li class="ap-slide"[^>]*data-name="${name}">[\\s\\S]*?</li>`))?.[0];
+ const slide=name=>section.match(new RegExp(`<div class="ap-slide"[^>]*data-name="${name}">[\\s\\S]*?<a class="ap-link"[\\s\\S]*?</a>\\s*</div>`))?.[0];
  assert.match(slide('The new Tito'),/<h3 class="ap-spelled"><span>The new<\/span> <span class="ap-logo is-wordmark"><img src="\/apps\/logos\/tito.svg" alt="Tito"/);
  assert.match(slide('The new Tito'),/href="https:\/\/go\.tito\.io\/home"[^>]*>go\.tito\.io /);
  assert.match(slide('The new Tito'),/alt="The new Tito’s website"/);

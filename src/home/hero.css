@@ -2,14 +2,26 @@
    looping picture of a real run. home.css (.c-hero and .paste) still applies;
    this file only adds. Ported from the approved 2026-11-12 rework, hero B. */
 
-.c-hero.hv .hv-ask { max-width: 36rem; margin-bottom: 1.1rem; }
+/* Three tiers of type: the headline (the one heavy thing), the subheading (regular, muted, emphasis by italics
+   alone), then one body size for the three lines under them: "You want CARLOS." a touch heavier, the rotating word
+   marked only by the accent. The last line is muted, with "Read on" in bold and the main ink: a link told apart by
+   its weight, not colour alone, underlined on hover and focus. Weights: 700, 500, 400. The gaps: a tight pair for the
+   headline and subheading, then the same step between each tier below. */
+.c-hero.hv .sub { font-weight: 400; font-size: clamp(1.15rem, 4.6vw, 1.5rem); line-height: 1.3; letter-spacing: -0.01em; margin-bottom: 1.5rem; }
+.c-hero.hv .sub em { font-weight: 400; }
+.c-hero.hv .hv-ask { max-width: 36rem; margin-bottom: 1.5rem; font-size: clamp(1.06rem, 3.6vw, 1.2rem); font-weight: 400; line-height: 1.5; }
 .c-hero.hv .hv-ask > span { display: block; }
-.c-hero.hv .hv-ask > span:first-child { font-weight: 650; color: light-dark(#14181d, #f1f5ef); }
-.c-hero.hv .hv-ask .hv-gloss { color: light-dark(#464b52, #9fdcc8); font-size: 0.92em; margin: 0.1rem 0 0.75rem; }
+.c-hero.hv .hv-ask > span:first-child { font-weight: 500; }
+.c-hero.hv .hv-ask .hv-gloss { margin: 0 0 0.5rem; }
+.c-hero.hv .hv-ask > span:last-child { color: var(--hv-muted); }
+.c-hero.hv .ask a { font-weight: 700; text-decoration: none; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+.c-hero.hv .ask a:hover, .c-hero.hv .ask a:focus-visible { text-decoration: underline; }
+.c-hero.hv .ask a:focus-visible { outline: 2px solid var(--hv-accent); outline-offset: 3px; border-radius: 3px; }
 
 /* One calm box: a small label, then the line and the button on one row. */
 .hv .hv-paste { padding: 0.8rem 0.8rem 0.8rem 1.15rem; }
-.hv .hv-paste .pb-to { font-weight: 400; font-size: 0.78rem; color: light-dark(#5b6067, #a9b4c2); margin-bottom: 0.35rem; }
+.hv .hv-paste .pb-to { font-weight: 400; font-size: 0.78rem; color: var(--hv-muted); margin-bottom: 0.35rem; }
+.hv .hv-paste .pb-line { font-weight: 400; font-size: 1.06rem; }
 .hv .hv-row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
 .hv .hv-row .pb-line { margin: 0; min-width: 0; }
 /* Copy stays at the right of the line when both fit; otherwise it wraps under the line and fills the row
@@ -19,29 +31,35 @@
 .hv .hv-row .pb-copy { flex: 1 0 auto; justify-content: center; min-height: 40px; }
 
 /* The hosts line, folded away under a quiet disclosure. */
-.c-hero.hv .hv-cloud { margin: 0.65rem auto 0; max-width: 34rem; font-size: 0.9rem; color: light-dark(#5b6067, #a9b4c2); }
+.c-hero.hv .hv-cloud { margin: 0.75rem auto 0; max-width: 34rem; font-size: 0.9rem; color: var(--hv-muted); }
 .c-hero.hv .hv-cloud summary { display: inline-flex; align-items: center; gap: 0.35rem; min-height: 44px; cursor: pointer; list-style: none; text-decoration: underline; text-decoration-color: light-dark(rgba(91, 96, 103, 0.5), rgba(154, 165, 181, 0.5)); text-underline-offset: 0.2em; }
 .c-hero.hv .hv-cloud summary::-webkit-details-marker { display: none; }
 .c-hero.hv .hv-cloud summary::before { content: "+"; font-family: ui-monospace, Menlo, Consolas, monospace; text-decoration: none; display: inline-block; width: 0.8em; }
 .c-hero.hv .hv-cloud[open] summary::before { content: "\2212"; }
 .c-hero.hv .hv-cloud .start-hosts { margin-top: 0.1rem; }
 
-/* Two columns from 64rem, the picture on the right; below on a phone. */
-.hv-b .c-hero-inner { max-width: 74rem; display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.25rem; }
+/* One pane, two columns from 64rem: the text on the left, the agent window on the right, a hairline between them.
+   The pane is as tall as the taller column; the text is centred in its half and the replay fills its own. On a phone
+   the two stack, the hairline across. */
+.hv-b .c-hero-inner { max-width: 74rem; }
+.hv-pane { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 64rem) {
-  .hv-b .c-hero-inner { grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr); gap: clamp(2rem, 5vw, 4.5rem); align-items: center; text-align: left; padding-block: clamp(3rem, 8vw, 5.5rem); }
+  .hv-b .c-hero-inner { text-align: left; padding-block: clamp(3rem, 8vw, 5.5rem); }
+  .hv-pane { --split: 54%; grid-template-columns: var(--split) minmax(0, 1fr); align-items: stretch; }
+  .hv-pane > .hv-col { align-self: center; }
+  .hv-pane::before { content: ""; position: absolute; top: 0; bottom: 0; left: var(--split); width: 1px; background: var(--g-rule); pointer-events: none; }
   .c-hero.hv-b h1 { font-size: clamp(2.2rem, 4.1vw, 3.2rem); margin-inline: 0; }
-  .c-hero.hv-b .sub { font-size: clamp(1.3rem, 2.4vw, 1.9rem); margin-inline: 0; max-width: 26ch; }
+  .c-hero.hv-b .sub { font-size: clamp(1.25rem, 1.9vw, 1.6rem); margin-inline: 0; max-width: 30ch; }
   .c-hero.hv-b .hv-ask, .c-hero.hv-b .hv-cloud, .c-hero.hv-b .paste { margin-inline: 0; }
   .c-hero.hv-b .start-hosts { margin-inline: 0; }
 }
 
 /* The picture: a scripted loop, CSS only. Paused by the checkbox; still under reduced motion. */
-.rp { margin: 0 auto; width: 100%; max-width: 30rem; text-align: left; border-radius: 16px; background: linear-gradient(180deg, light-dark(#ffffff, #1f2a2e), light-dark(#f7f5f1, #182024)); border: 1px solid light-dark(rgba(27, 31, 36, 0.14), rgba(127, 208, 182, 0.28)); box-shadow: 0 24px 48px -28px light-dark(rgba(40, 30, 10, 0.3), rgba(0, 0, 0, 0.8)), inset 0 1px 0 rgba(255, 255, 255, 0.06); overflow: hidden; font: 400 0.9rem/1.45 var(--site-sans); color: light-dark(#2b3036, #dfe6ee); }
+.rp { margin: 0; width: 100%; text-align: left; border-radius: 16px; background: linear-gradient(180deg, light-dark(#ffffff, #1f2a2e), light-dark(#f7f5f1, #182024)); border: 1px solid light-dark(rgba(27, 31, 36, 0.14), rgba(127, 208, 182, 0.28)); box-shadow: 0 24px 48px -28px light-dark(rgba(40, 30, 10, 0.3), rgba(0, 0, 0, 0.8)), inset 0 1px 0 rgba(255, 255, 255, 0.06); overflow: hidden; font: 400 0.9rem/1.45 var(--site-sans); color: light-dark(#2b3036, #dfe6ee); }
 .rp-bar { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.6rem 0.55rem 0.9rem; border-bottom: 1px solid light-dark(rgba(27, 31, 36, 0.08), rgba(255, 255, 255, 0.08)); font-size: 0.78rem; color: light-dark(#5b6067, #a9b4c2); }
 .rp-dots { display: inline-flex; gap: 5px; }
 .rp-dots i { width: 8px; height: 8px; border-radius: 50%; background: light-dark(rgba(27, 31, 36, 0.16), rgba(255, 255, 255, 0.16)); }
-.rp-title { font-weight: 600; color: light-dark(#2b3036, #c9d2de); }
+.rp-title { font-weight: 500; color: light-dark(#2b3036, #c9d2de); }
 /* Pause and Play: one round icon of a fixed size, like the gallery's quiet pause, so nothing beside it moves when
    it changes. The words stay as its name for screen readers (visually hidden, one shown at a time). */
 .rp-pause { margin-left: auto; display: inline-grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 1px solid light-dark(rgba(27, 31, 36, 0.2), rgba(255, 255, 255, 0.18)); border-radius: 99px; color: light-dark(#2b3036, #dfe6ee); cursor: pointer; position: relative; }
@@ -65,7 +83,8 @@ body.landing .rp-log { list-style: none; margin: 0; padding: 0.85rem 0.9rem 0.25
 .rp-agent .rp-who { color: light-dark(#1a5f4f, #7fd0b6); }
 /* Agent lines in the panel's own ink, not a grey that reads as disabled; the green AGENT label tells the speakers apart. */
 .rp-agent p { color: light-dark(#2b3036, #dfe6ee); }
-.rp-url { color: light-dark(#1a5f4f, #7fe9cf); font-weight: 650; }
+/* The page's own link colour follows the system, not the chosen theme: the app's address follows the theme. */
+.rp-url, body.landing a.rp-url { color: light-dark(#1a5f4f, #7fe9cf); font-weight: 500; }
 /* The last line links to the app's permanent example copy, in a new tab. */
 a.rp-url { text-decoration: none; overflow-wrap: anywhere; }
 a.rp-url:hover { text-decoration: underline; text-underline-offset: 0.18em; }
@@ -73,8 +92,8 @@ a.rp-url:focus-visible { outline: 2px solid light-dark(#1a5f4f, #2fd4ac); outlin
 a.rp-url svg { width: 0.8em; height: 0.8em; vertical-align: -0.05em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 /* Each line's stamp: the agent's real working time at that point, quiet, at the top right of the line; the live line
    ends with a slightly stronger "Live at m:ss". The replay is sped up; the stamps are real time. */
-.rp-time { float: right; margin: 0 0 0 0.6rem; font: 400 0.64rem/1.7 ui-monospace, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; letter-spacing: 0.02em; color: light-dark(#6b7076, #93a0ae); }
-.rp-live { display: inline-block; margin-left: 0.25rem; padding: 0 0.4rem; border-radius: 99px; background: light-dark(rgba(26, 95, 79, 0.1), rgba(127, 208, 182, 0.14)); color: light-dark(#1a5f4f, #7fe9cf); font: 650 0.66rem/1.6 ui-monospace, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rp-time { float: right; margin: 0 0 0 0.6rem; font: 400 0.64rem/1.7 ui-monospace, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; letter-spacing: 0.02em; color: light-dark(#575c63, #a3aebb); }
+.rp-live { display: inline-block; margin-left: 0.25rem; padding: 0 0.4rem; border-radius: 99px; background: light-dark(rgba(26, 95, 79, 0.1), rgba(127, 208, 182, 0.14)); color: light-dark(#1a5f4f, #7fe9cf); font: 500 0.66rem/1.6 ui-monospace, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .rp-stage { display: grid; }
 .rp-stage > * { grid-area: 1 / 1; min-width: 0; }
 /* One session per tab, stacked in the stage; inside each, the two scenes stack the same way. */
@@ -84,13 +103,14 @@ a.rp-url svg { width: 0.8em; height: 0.8em; vertical-align: -0.05em; fill: none;
 /* The session showing, under the title bar: its name and a quiet "n of N", crossfading when it changes. */
 .rp-now { flex: none; display: flex; align-items: baseline; gap: 0.5rem; padding: 0.45rem 0.9rem; border-bottom: 1px solid light-dark(rgba(27, 31, 36, 0.08), rgba(255, 255, 255, 0.08)); transition: opacity 0.12s ease-out; }
 .rp-now.is-swapping { opacity: 0; }
-.rp-now-name { font: 650 0.8rem/1.3 var(--site-sans, inherit); color: light-dark(#181c21, #eef2f6); }
+.rp-now-name { font: 500 0.8rem/1.3 var(--site-sans, inherit); color: light-dark(#181c21, #eef2f6); }
 .rp-now-count { font: 400 0.68rem/1.3 ui-monospace, Menlo, Consolas, monospace; letter-spacing: 0.04em; color: light-dark(#5b6067, #a9b4c2); }
 /* The replay and its dots, one pane of the hero. */
-.rp-col { display: flex; flex-direction: column; align-items: center; width: 100%; min-width: 0; }
+.rp-col { display: flex; flex-direction: column; align-items: stretch; width: 100%; min-width: 0; }
+@media (max-width: 63.99rem) { .rp-col { border-top: 1px solid var(--g-rule); } }
 /* The dots under the window: one per session, the active one long, like the apps carousel's dots. They choose a
    session at any time; each is named and titled with it. */
-.rp-dotrow { display: flex; justify-content: center; margin-top: 0.35rem; }
+.rp-dotrow { flex: none; display: flex; justify-content: center; padding: 0.15rem 0 0.4rem; }
 .rp-dotrow[hidden] { display: none; }
 .rp-dot { display: grid; place-items: center; width: 26px; height: 32px; padding: 0; border: 0; border-radius: 6px; background: none; cursor: pointer; }
 .rp-dot::before { content: ""; width: 8px; height: 8px; border-radius: 99px; background: light-dark(rgba(27, 31, 36, 0.2), rgba(255, 255, 255, 0.24)); transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s, transform 0.16s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -159,7 +179,7 @@ body.site-home .c-hero, .rp { touch-action: manipulation; }
 .rp-speed button:focus-visible { outline: 3px solid light-dark(#1a5f4f, #2fd4ac); outline-offset: 1px; }
 .rp-speed svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
 /* A fixed width with tabular figures: 0.5x, 1x, 1.5x and 2x all take the same room. */
-.rp-speed output { align-self: stretch; display: grid; place-items: center; box-shadow: inset 1px 0 0 var(--rp-seg-line), inset -1px 0 0 var(--rp-seg-line); width: 3.4em; flex: none; white-space: nowrap; text-align: center; font: 600 0.74rem/1 ui-monospace, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+.rp-speed output { align-self: stretch; display: grid; place-items: center; box-shadow: inset 1px 0 0 var(--rp-seg-line), inset -1px 0 0 var(--rp-seg-line); width: 3.4em; flex: none; white-space: nowrap; text-align: center; font: 500 0.74rem/1 ui-monospace, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
 @media (pointer: coarse) { .rp-speed button { width: 36px; min-height: 40px; } }
 
 /* The replay played as a chat by home/replay.js (.is-live): the CSS loop above stands down, and the script shows
@@ -240,24 +260,24 @@ body.site-home .c-hero, .rp { touch-action: manipulation; }
 .c-hero.hv .hv-ask .hv-gloss > span { display: inline; }
 .hv .hv-rot-line { white-space: nowrap; }
 .hv .hv-rot { display: inline-block; overflow: hidden; vertical-align: bottom; line-height: inherit; transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
-.hv .hv-rot-word { display: inline-block; color: light-dark(#14181d, #f1f5ef); font-weight: 650; transition: transform 0.22s ease-out, opacity 0.22s ease-out; }
+.hv .hv-rot-word { display: inline-block; color: var(--hv-accent); transition: transform 0.22s ease-out, opacity 0.22s ease-out; }
 .hv .hv-rot-word.is-out { transform: translateY(-0.5em); opacity: 0; }
 .hv .hv-rot-word.is-in { transform: translateY(0.5em); opacity: 0; transition: none; }
-@media (max-width: 24rem) { .c-hero.hv .hv-ask .hv-gloss { font-size: 0.86em; } }
+@media (max-width: 24rem) { .c-hero.hv .hv-ask .hv-gloss { font-size: 0.94em; } }
 @media (prefers-reduced-motion: reduce) { .hv .hv-rot, .hv .hv-rot-word { transition: none; } }
 
 /* Sheen on arrival: a broad, soft diagonal highlight glides once across the word, like light on satin.
-   It moves only between tints close to the text colour, so the word stays readable in either theme. */
+   It starts and ends on the accent and moves only between tints close to it, so the word stays readable in either theme. */
 @media (prefers-reduced-motion: no-preference) {
   @supports ((-webkit-background-clip: text) or (background-clip: text)) {
-    .hv .hv-rot-word.is-sheen { background: linear-gradient(112deg, light-dark(#14181d, #f1f5ef) 0 28%, light-dark(#2f5d52, #c3eddf) 39%, light-dark(#6a7078, #ffffff) 50%, light-dark(#34507a, #d2e7fa) 61%, light-dark(#14181d, #f1f5ef) 72% 100%) 100% 0 / 340% 100% no-repeat; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: hv-sheen 1.6s cubic-bezier(0.45, 0, 0.2, 1) 0.1s both; }
+    .hv .hv-rot-word.is-sheen { background: linear-gradient(112deg, light-dark(#1a5f4f, #2fd4ac) 0 28%, light-dark(#24705e, #7fe9cf) 39%, light-dark(#2f6f8a, #c3f3e4) 50%, light-dark(#24705e, #7fe9cf) 61%, light-dark(#1a5f4f, #2fd4ac) 72% 100%) 100% 0 / 340% 100% no-repeat; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: hv-sheen 1.6s cubic-bezier(0.45, 0, 0.2, 1) 0.1s both; }
   }
 }
 @keyframes hv-sheen { from { background-position: 100% 0; } to { background-position: 0% 0; } }
 
-/* The replay panel is a fixed, compact height so it always fits on screen beside the hero text; the two scenes
-   swap inside it. Nothing scrolls. */
-.rp { display: flex; flex-direction: column; height: min(30rem, max(21rem, calc(100svh - 12.5rem))); font-size: 0.8rem; line-height: 1.36; }
+/* The replay is at least a fixed, compact height so it always fits on screen beside the hero text, and fills its
+   column when the text is taller; the two scenes swap inside it. Nothing scrolls. */
+.rp { display: flex; flex-direction: column; flex: 1 1 0; min-height: min(30rem, max(21rem, calc(100svh - 12.5rem))); font-size: 0.8rem; line-height: 1.36; }
 .rp-bar { flex: none; padding-block: 0.4rem; }
 .rp-stage { flex: 1; min-height: 0; overflow: hidden; }
 .rp-stage > * { min-height: 0; }
@@ -277,7 +297,7 @@ body.landing .rp-qs { gap: 0; }
 .rp-shot img { position: absolute; left: 0; top: 0; }
 .rp-cap { flex: none; padding: 0.35rem 0.8rem 0.4rem; font-size: 0.68rem; }
 @media (min-width: 64rem) { .hv-b .c-hero-inner { padding-block: clamp(2rem, 5vw, 4rem); } }
-@media (max-width: 63.99rem) { .rp { height: min(30rem, calc(100svh - 4.5rem)); } }
+@media (max-width: 63.99rem) { .rp { min-height: min(30rem, calc(100svh - 4.5rem)); } }
 
 /* The drawn background (home/hero-bg.js) sits behind the hero only. Without WebGL the CSS gradient stays. */
 /* No clipping: hero.js holds the hero's height, and a pane that grows past it overlaps the next section, on top. */
@@ -289,9 +309,9 @@ body.site-home .c-hero { position: relative; z-index: 1; isolation: isolate; }
 .c-hero .hero-bg { position: sticky; top: 0; display: block; width: 100%; height: min(100vh, 100%); height: min(100lvh, 100%); }
 .c-hero.nogl .hero-bg-wrap { display: none; }
 
-/* Frosted glass: the text column and the replay are two panes over the picture. They turn solid where the
-   browser cannot blur or the reader asks for less transparency, and stay put under reduced motion. */
-.c-hero .hv-col, .c-hero .rp {
+/* Frosted glass: one pane over the picture, holding the text and the replay. It turns solid where the browser
+   cannot blur or the reader asks for less transparency, and stays put under reduced motion. */
+.c-hero .hv-pane {
   --g-tint: light-dark(rgba(255, 255, 255, 0.68), rgba(9, 14, 30, 0.56)); --g-solid: light-dark(#fbfaf7, #121a24);
   --g-edge: light-dark(rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.16)); --g-shadow: light-dark(rgba(50, 35, 90, 0.35), rgba(0, 0, 0, 0.7));
   --g-rule: light-dark(rgba(27, 31, 36, 0.14), rgba(255, 255, 255, 0.16));
@@ -300,20 +320,24 @@ body.site-home .c-hero { position: relative; z-index: 1; isolation: isolate; }
   box-shadow: 0 30px 60px -32px var(--g-shadow), inset 0 1px 0 var(--g-edge);
   transform: translate3d(calc(var(--gx, 0) * 1px), calc(var(--gy, 0) * 1px), 0);
 }
-:root[data-theme="dark"] .c-hero .hv-col, :root[data-theme="dark"] .c-hero .rp { --g-sat: 1.4; --g-dim: 0.8; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .c-hero .hv-col, :root:not([data-theme="light"]) .c-hero .rp { --g-sat: 1.4; --g-dim: 0.8; } }
-.c-hero .hv-col { border-radius: 28px; padding: clamp(1.25rem, 3vw, 2.25rem); }
-.c-hero .rp { border-radius: 22px; }
+:root[data-theme="dark"] .c-hero .hv-pane { --g-sat: 1.4; --g-dim: 0.8; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .c-hero .hv-pane { --g-sat: 1.4; --g-dim: 0.8; } }
+.c-hero .hv-pane { border-radius: 28px; }
+.c-hero .hv-col { padding: clamp(1.25rem, 3vw, 2.25rem); }
+/* The replay is the right-hand column, not a card: no fill, frame or shadow of its own. */
+.c-hero .rp { background: none; border: 0; border-radius: 0; box-shadow: none; }
+.c-hero .rp-bar { padding-inline: 1rem 1.1rem; }
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .c-hero .hv-col, .c-hero .rp { background: var(--g-tint); -webkit-backdrop-filter: blur(20px) saturate(var(--g-sat)) brightness(var(--g-dim)); backdrop-filter: blur(20px) saturate(var(--g-sat)) brightness(var(--g-dim)); }
+  .c-hero .hv-pane { background: var(--g-tint); -webkit-backdrop-filter: blur(20px) saturate(var(--g-sat)) brightness(var(--g-dim)); backdrop-filter: blur(20px) saturate(var(--g-sat)) brightness(var(--g-dim)); }
 }
-@media (prefers-reduced-transparency: reduce) { .c-hero .hv-col, .c-hero .rp { background: var(--g-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } }
-@media (prefers-reduced-motion: reduce) { .c-hero .hv-col, .c-hero .rp { transform: none; } }
+@media (prefers-reduced-transparency: reduce) { .c-hero .hv-pane { background: var(--g-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; } }
+@media (prefers-reduced-motion: reduce) { .c-hero .hv-pane { transform: none; } }
 
-/* Inside a pane nothing is a card of its own: the paste box, the replay's caption and its app preview are
-   sections marked by a hairline, with no fill and no shadow. */
-body.site-home .c-hero .v-soft { background: transparent; border: 1px solid var(--g-rule); border-radius: 14px; box-shadow: none; }
-body.site-home .c-hero .v-soft:focus-within, body.site-home .c-hero .v-soft.is-copied { border-color: light-dark(rgba(26, 95, 79, 0.55), rgba(47, 212, 172, 0.6)); box-shadow: none; }
+/* Inside the pane nothing is a box of its own. The paste line is a softly tinted band, like a field without a
+   border (a little greener while it has focus or has just copied); the replay's caption is marked by a hairline;
+   only its app preview keeps a thin window frame, since it shows a browser. */
+body.site-home .c-hero .v-soft { background: light-dark(rgba(27, 31, 36, 0.05), rgba(255, 255, 255, 0.06)); border-color: transparent; border-radius: 14px; box-shadow: none; }
+body.site-home .c-hero .v-soft:focus-within, body.site-home .c-hero .v-soft.is-copied { background: light-dark(rgba(26, 95, 79, 0.09), rgba(47, 212, 172, 0.11)); border-color: transparent; box-shadow: none; }
 .c-hero .rp-bar { border-bottom-color: var(--g-rule); }
 .c-hero .rp-cap { background: transparent; border-top: 1px solid var(--g-rule); }
 .c-hero .rp-app { box-shadow: none; border: 1px solid var(--g-rule); border-bottom: 0; }

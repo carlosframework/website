@@ -11,7 +11,6 @@
     { "app": "woodstar", "url": "https://woodstar.app/" },
     { "app": "slopbox", "url": "https://slopbox.cloud/" },
     { "app": "amadan", "url": "https://amadan.net/" },
-    { "app": "cribado", "url": "https://cribado.report/" },
     { "app": "oficina", "url": "https://oficina.works/" }
   ],
   "skipped": {
