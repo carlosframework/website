@@ -62,6 +62,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/docs-nav.js": "docs-nav.js" });
   eleventyConfig.addPassthroughCopy({ "src/docs-search.js": "docs-search.js" });
   eleventyConfig.addPassthroughCopy({ "src/favicon.svg": "favicon.svg" });
+  eleventyConfig.addPassthroughCopy({ "src/og-image.png": "og-image.png" });
 
   // The agent-skills tree (vendored by hack/sync-skills.mjs) ships
   // byte-for-byte at /.well-known/agent-skills/ — the discovery index
