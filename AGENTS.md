@@ -85,7 +85,24 @@ person marker.**
   0.4 resolution, DPR capped at 1.5, 30 fps, a slow device gets half the
   blades then a smaller picture; stopped off screen, in a hidden tab, by the
   replay's Pause and under reduced motion, where it draws one still frame;
-  without WebGL2 the CSS gradient stays), `src/home/figures.js` (the "What you get" figures
+  without WebGL2 the CSS gradient stays), `src/home/replay.js` (the replay played as a chat: a loading
+  screen, the person's lines typed with a caret, thinking dots, then the agent's words streamed; a
+  timeline worked out from the copy, at reading pace; slower/faster 0.5x to 2x, 1.5x by default,
+  remembered for the visit; back/forward a turn, pausing it; the text stays whole in the page for
+  screen readers; without it, or under reduced motion, the CSS loop or its still picture), `src/home/apps.js` (the apps carousel under the
+  hero: an endless ring, a copy of every app on each side hidden from screen readers and the tab
+  order, the current app centred with the others turned away as if seen from inside the ring
+  (transform and opacity only, driven by the scroll position), the app at rest popping forward as a
+  whole card (cards laid out at the popped size and drawn smaller at rest, so the popped one has
+  no transform and sharp text) and easing back before the row moves, a random start; previous/next, dots, drag, arrow keys
+  and a slow 10 s advance with a quiet pause beside the dots; only each app's address is a link:
+  the stage is for turning (grab cursor, drag with momentum, a click on a side card brings it to the
+  middle, a vertical wheel or swipe stays the page's), held on hover, focus and off screen,
+  never under reduced motion, which also keeps the row flat; without it the apps are a flat
+  sideways row that snaps. Names,
+  lines, logos and links are read from the Apps page at build time; screenshots and their capture
+  date, and the carousel's explicit name/url overrides and wordmark flags, live in
+  `src/home/apps/sources.json`), `src/home/figures.js` (the "What you get" figures
   count up once in view, over the real text, which is all that screen readers,
   no-JS and reduced motion get)
   and `src/home/stacks.js` (the interactive stacks, with a Pause control; they

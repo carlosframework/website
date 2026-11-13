@@ -1,5 +1,5 @@
 // 🤖 Build-time only. HTML and Markdown share exactly one rendered instruction source.
-import { readFile, writeFile, mkdir, readdir, rm, copyFile } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, readdir, rm, copyFile, cp } from 'node:fs/promises';
 import { join } from 'node:path';
 import markdownIt from 'markdown-it';
 import nunjucks from 'nunjucks';
@@ -82,6 +82,42 @@ export function balloonSVG(label) {
  });
  return `<svg viewBox="-50 -50 100 100" aria-hidden="true" focusable="false">${out.join('')}</svg>`;
 }
+// The apps carousel under the hero: names, one-line descriptions, logos and links come straight from the
+// Apps page, so the two pages never disagree; src/home/apps/sources.json picks the apps that have a screenshot.
+const unescapeHTML=text=>text.replace(/&(amp|lt|gt|quot|#39);/g,(_,e)=>({amp:'&',lt:'<',gt:'>',quot:'"','#39':"'"}[e]));
+// The homepage keeps curly quotes; the Apps page's lines are approved copy, so only the apostrophes change.
+const curl=text=>text.replace(/(?<=\w)'(?=\w)/g,'’');
+export function homeApps(appsPage,sources) {
+ const cards=[...appsPage.matchAll(/<li class="app-card">([\s\S]*?)<\/li>/g)].map(([,card])=>({
+  name:card.match(/<h2>([^<]+)<\/h2>/)?.[1],
+  about:card.match(/<\/h2>(?:<\/div>)?<p>([^<]+)<\/p>/)?.[1],
+  logo:card.match(/<img src="([^"]+)"/)?.[1],
+  wordmark:card.includes('wordmark-logo'),
+  url:card.match(/<div class="app-links"><a href="([^"]+)"/)?.[1],
+ }));
+ return sources.apps.map(({app,url,gallery={},logoSpells,...rest},i)=>{
+  const card=cards.find(c=>c.name?.toLowerCase()===app);
+  if(!card || !card.about || !card.logo) throw configError(`apps carousel: ${app} is not on the Apps page with a description and logo`);
+  if(card.url!==url) throw configError(`apps carousel: the Apps page links ${app} to ${card.url}, not ${url}`);
+  if(Object.keys(rest).length) throw configError(`apps carousel: ${app} has unknown keys ${Object.keys(rest).join(', ')}`);
+  // The carousel's own exceptions to the Apps page: explicit, with a reason, and never a copy of what the Apps page already says.
+  const {name:nameOverride,url:urlOverride,why,...unknown}=gallery;
+  if(Object.keys(unknown).length) throw configError(`apps carousel: ${app} overrides unknown keys ${Object.keys(unknown).join(', ')}`);
+  if((nameOverride||urlOverride) && !why) throw configError(`apps carousel: ${app} overrides the Apps page without a reason`);
+  if(nameOverride===unescapeHTML(card.name) || urlOverride===card.url) throw configError(`apps carousel: ${app}'s override matches the Apps page; remove it`);
+  const name=nameOverride||unescapeHTML(card.name), href=urlOverride||url;
+  // A wordmark that already spells (part of) the name stands in for that part: shown once, as the logo, with the words as its alt.
+  let spelled;
+  if(logoSpells!==undefined) {
+   if(!card.wordmark) throw configError(`apps carousel: ${app}'s logo is not a wordmark on the Apps page`);
+   const at=name.indexOf(logoSpells);
+   if(at<0) throw configError(`apps carousel: ${app}'s name "${name}" does not contain "${logoSpells}"`);
+   spelled={before:name.slice(0,at).trimEnd(),word:logoSpells,after:name.slice(at+logoSpells.length).trimStart()};
+  }
+  return {slug:app,name,about:curl(unescapeHTML(card.about)),logo:card.logo,wordmark:card.wordmark,spelled,url:href,
+   host:new URL(href).host.replace(/^www\./,''),shot:`/home/apps/${app}`,width:sources.size[0],height:sources.size[1],n:i+1};
+ });
+}
 const balloonTints=['#dcbcb2','#dccba8','#c3c6d6','#d2bcd9','#e3bf9f','#cfcac1','#dbaeb0','#c6bcd4','#cbb9a4']; // soft, no greens
 async function homeHTML(config,copy,original) {
  const t=id=>{if(typeof copy[`home.${id}`]!=='string') throw configError(`homepage copy home.${id} is missing`);return copy[`home.${id}`];};
@@ -101,7 +137,8 @@ async function homeHTML(config,copy,original) {
   whatFollow:wrap(t('what.follow'),'open specification','<a href="https://spec.carlosframework.com" target="_blank" rel="noopener noreferrer">','</a>'),
   toolsFoot:`${human}${foot.replace('architecture-inspiration','rw-foot')}<!-- /👨 -->`,
  };
- const context={t,c,html,human,figures:homeFigures,balloons,hosts:hostsHTML(config,copy),
+ const apps=homeApps(await read('src/apps/index.html'),JSON.parse(await read('src/home/apps/sources.json')));
+ const context={t,c,html,human,figures:homeFigures,balloons,apps,hosts:hostsHTML(config,copy),
   questions:Object.keys(copy).filter(key=>/^home\.replay\.agent\.q\d+$/.test(key)).map(key=>copy[key]),
   gloss:{before:gloss.slice(0,at),word:words[0],after:gloss.slice(at+words[0].length),words:words.join(' ')},
   heroPaste:homePromptHTML(config,copy,'home-prompt'),endPaste:homePromptHTML(config,copy,'end-prompt',t('end.paste.works'))};
@@ -109,8 +146,8 @@ async function homeHTML(config,copy,original) {
  return {hero:await render('home-hero.njk'),body:await render('home-body.njk')};
 }
 // theme.js runs first and without defer, so a remembered Light or Dark is set before the first paint.
-const homeHead=['<script src="/home/theme.js?v=0"></script>'].concat(['/start/start.css','/home/hero.css','/home/sections.css','/home/stacks.css','/home/theme.css'].map(href=>`<link rel="stylesheet" href="${href}?v=0">`))
- .concat(['/start/start-tabs.js','/home/hero.js','/home/hero-bg.js','/home/figures.js','/home/stacks.js'].map(src=>`<script src="${src}?v=0" defer></script>`)).join('\n');
+const homeHead=['<script src="/home/theme.js?v=0"></script>'].concat(['/start/start.css','/home/hero.css','/home/sections.css','/home/apps.css','/home/stacks.css','/home/theme.css'].map(href=>`<link rel="stylesheet" href="${href}?v=0">`))
+ .concat(['/start/start-tabs.js','/home/hero.js','/home/hero-bg.js','/home/replay.js','/home/apps.js','/home/figures.js','/home/stacks.js'].map(src=>`<script src="${src}?v=0" defer></script>`)).join('\n');
 // Auto, Light or Dark: three quiet icons at the end of the footer's meta row (hack/add-footer.mjs places them),
 // hidden until theme.js wires them. The labels are the accessible names and the tooltips.
 const themeIcons={
@@ -167,7 +204,7 @@ export async function buildStart(outputDir,config) {
  await copyFile(config.enabled?'src/start/start-tabs.js':'src/_includes/start-account-tabs.js',join(dir,'start-tabs.js'));
  // The homepage's own assets ship only with the page that uses them.
  const assets=join(outputDir,'home');await rm(assets,{recursive:true,force:true});
- if(config.enabled) {await mkdir(assets,{recursive:true});for(const name of await readdir('src/home')) await copyFile(join('src/home',name),join(assets,name));}
+ if(config.enabled) await cp('src/home',assets,{recursive:true});
  if(!config.enabled) return;
  await writeFile(join(dir,'index.md'),agent);
  const downloads=join(dir,'starter',config.starterVersion);await mkdir(downloads,{recursive:true});

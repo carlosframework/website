@@ -1,0 +1,145 @@
+[
+ {
+  "id": "apps.all",
+  "section": "Apps gallery",
+  "label": "Link under the gallery",
+  "text": "See all apps",
+  "context": "Link below the apps carousel on the homepage, to the full Apps page."
+ },
+ {
+  "id": "apps.prev",
+  "section": "Apps gallery",
+  "label": "Previous button",
+  "text": "Previous app",
+  "context": "Arrow button left of the dots under the carousel; also its tooltip. Turns the ring back one app."
+ },
+ {
+  "id": "apps.next",
+  "section": "Apps gallery",
+  "label": "Next button",
+  "text": "Next app",
+  "context": "Arrow button right of the dots; also its tooltip."
+ },
+ {
+  "id": "apps.dots",
+  "section": "Apps gallery",
+  "label": "Dots label",
+  "text": "Choose an app",
+  "context": "Not shown. What screen readers call the row of dots under the carousel."
+ },
+ {
+  "id": "apps.carousel",
+  "section": "Apps gallery",
+  "label": "Region role",
+  "text": "carousel",
+  "context": "Not shown. Screen readers announce the gallery as a carousel.",
+  "notes": "lower case; read after the heading"
+ },
+ {
+  "id": "apps.slide",
+  "section": "Apps gallery",
+  "label": "Slide role",
+  "text": "slide",
+  "context": "Not shown. Screen readers announce each app card as a slide."
+ },
+ {
+  "id": "apps.position",
+  "section": "Apps gallery",
+  "label": "Slide position",
+  "text": "{n} of {total}",
+  "context": "Not shown. Screen readers read e.g. '3 of 8' for each card.",
+  "notes": "{n} and {total} are numbers"
+ },
+ {
+  "id": "apps.status",
+  "section": "Apps gallery",
+  "label": "Change announcement",
+  "text": "{app}, {n} of {total}",
+  "context": "Not shown. Read out when someone moves to another app, e.g. 'Eleven, 3 of 8'."
+ },
+ {
+  "id": "apps.shot.alt",
+  "section": "Apps gallery",
+  "label": "Screenshot description",
+  "text": "{app}’s website",
+  "context": "Not shown. Describes each screenshot to screen readers, e.g. 'Eleven’s website'."
+ },
+ {
+  "id": "replay.back",
+  "section": "Demo box controls",
+  "label": "Step back",
+  "text": "Previous step",
+  "context": "Small icon button in the 'Your agent' demo box's top bar; tooltip and screen-reader name. Jumps back one turn of the conversation."
+ },
+ {
+  "id": "replay.fwd",
+  "section": "Demo box controls",
+  "label": "Step forward",
+  "text": "Next step",
+  "context": "Icon button beside it; jumps forward one turn."
+ },
+ {
+  "id": "replay.slower",
+  "section": "Demo box controls",
+  "label": "Slower",
+  "text": "Slower",
+  "context": "The '−' button of the speed control; tooltip and screen-reader name."
+ },
+ {
+  "id": "replay.faster",
+  "section": "Demo box controls",
+  "label": "Faster",
+  "text": "Faster",
+  "context": "The '+' button of the speed control."
+ },
+ {
+  "id": "replay.rate",
+  "section": "Demo box controls",
+  "label": "Speed readout",
+  "text": "{rate}×",
+  "context": "Shown between − and +, e.g. '1.5×'.",
+  "notes": "{rate} is 0.5, 1, 1.5 or 2"
+ },
+ {
+  "id": "replay.speed",
+  "section": "Demo box controls",
+  "label": "Speed control name",
+  "text": "Replay speed",
+  "context": "Not shown. What screen readers call the speed control."
+ },
+ {
+  "id": "replay.thinking",
+  "section": "Demo box controls",
+  "label": "Thinking dots",
+  "text": "Thinking",
+  "context": "Not shown. Screen-reader label for the three animated dots before each agent reply."
+ },
+ {
+  "id": "theme.label",
+  "section": "Theme switch (footer)",
+  "label": "Switch name",
+  "text": "Theme",
+  "context": "Not shown. Screen-reader name for the three small icons in the footer."
+ },
+ {
+  "id": "theme.auto",
+  "section": "Theme switch (footer)",
+  "label": "Auto",
+  "text": "Auto",
+  "context": "Tooltip and screen-reader name of the half-circle icon: follow the device's light or dark setting."
+ },
+ {
+  "id": "theme.light",
+  "section": "Theme switch (footer)",
+  "label": "Light",
+  "text": "Light",
+  "context": "Tooltip and name of the sun icon."
+ },
+ {
+  "id": "theme.dark",
+  "section": "Theme switch (footer)",
+  "label": "Dark",
+  "text": "Dark",
+  "context": "Tooltip and name of the moon icon."
+ }
+]

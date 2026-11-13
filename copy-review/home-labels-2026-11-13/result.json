@@ -1,0 +1,188 @@
+{
+  "action": "approve",
+  "guidance": null,
+  "strings": [
+    {
+      "id": "apps.all",
+      "text": "See all apps",
+      "original": "See all apps",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "apps.prev",
+      "text": "Previous app",
+      "original": "Previous app",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "apps.next",
+      "text": "Next app",
+      "original": "Next app",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "apps.dots",
+      "text": "Choose an app",
+      "original": "Choose an app",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "apps.carousel",
+      "text": "carousel",
+      "original": "carousel",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "apps.slide",
+      "text": "slide",
+      "original": "slide",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "apps.position",
+      "text": "{n} of {total}",
+      "original": "{n} of {total}",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "apps.status",
+      "text": "{app}, {n} of {total}",
+      "original": "{app}, {n} of {total}",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "apps.shot.alt",
+      "text": "{app}’s website",
+      "original": "{app}’s website",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.back",
+      "text": "Previous step",
+      "original": "Previous step",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.fwd",
+      "text": "Next step",
+      "original": "Next step",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.slower",
+      "text": "Slower",
+      "original": "Slower",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.faster",
+      "text": "Faster",
+      "original": "Faster",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.rate",
+      "text": "{rate}×",
+      "original": "{rate}×",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.speed",
+      "text": "Replay speed",
+      "original": "Replay speed",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.thinking",
+      "text": "Thinking",
+      "original": "Thinking",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "theme.label",
+      "text": "Theme",
+      "original": "Theme",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "theme.auto",
+      "text": "Auto",
+      "original": "Auto",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "theme.light",
+      "text": "Light",
+      "original": "Light",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "theme.dark",
+      "text": "Dark",
+      "original": "Dark",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    }
+  ],
+  "review": "wdwcc3wlvj3fmnohyvdc5ekhii",
+  "generation": 1
+}

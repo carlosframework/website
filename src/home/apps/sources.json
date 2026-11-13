@@ -1,0 +1,27 @@
+{
+  "//": "🤖 Screenshots for the homepage apps carousel (src/_includes/home-body.njk, src/home/apps.js). Each is the app's public landing page, captured with headless Chromium at a 1280x800 light viewport, saved 360, 720 and 960 pixels wide (360x225; 720x450 and 960x600 for sharp 2x screens) as AVIF, WebP and a JPEG fallback (<app>-360.*, <app>-720.*). Names, descriptions, logos and links come from the Apps page (src/apps/index.html): `app` is the Apps page name, lowercased, and `url` must be the Apps page's own link, or the build fails. `gallery` is the explicit exception: a name or url the carousel shows instead, each with the reason; an override that matches the Apps page is stale and also fails the build. `logoSpells` is the text a wordmark logo already spells: that part of the name is shown by the logo alone (and stays the logo's alt text), so it is not printed twice. Listed in the Apps page order.",
+  "captured": "2026-11-13",
+  "viewport": "1280x800",
+  "size": [360, 225],
+  "widths": [360, 720, 960],
+  "apps": [
+    { "app": "tito", "url": "https://ti.to", "logoSpells": "Tito",
+      "gallery": { "name": "The new Tito", "url": "https://go.tito.io/home", "why": "Paul, 2026-11-13: show the new Tito; screenshot from go.tito.io/home" } },
+    { "app": "jelly", "url": "https://letsjelly.com", "logoSpells": "Jelly",
+      "gallery": { "url": "https://letsjelly.dev", "why": "Paul, 2026-11-13: link letsjelly.dev; screenshot from there" } },
+    { "app": "eleven", "url": "https://elevenmessenger.com/" },
+    { "app": "woodstar", "url": "https://woodstar.app/" },
+    { "app": "slopbox", "url": "https://slopbox.cloud/" },
+    { "app": "amadan", "url": "https://amadan.net/",
+      "gallery": { "name": "Amadan", "why": "Paul, 2026-11-13: Amadan with a capital A" } },
+    { "app": "cribado", "url": "https://cribado.report/" },
+    { "app": "oficina", "url": "https://oficina.works/" }
+  ],
+  "skipped": {
+    "keymail": "the public page at keymail.dev is only a sign-in screen",
+    "kass": "the public page at home.kass.training is only a sign-in screen",
+    "ocho": "the public page at ocho.chat is only a sign-in screen",
+    "oficina apps": "one slide, not six: docs, sheets, slides, calendar, calls and memoria.oficina.works all go straight to the shared sign-in, and oficina.works/<app> is 404; oficina.works is the only public page and lists all six (checked 2026-11-13)"
+  },
+  "recaptured": { "tito": "2026-11-13 from https://go.tito.io/home", "jelly": "2026-11-13 from https://letsjelly.dev" }
+}
