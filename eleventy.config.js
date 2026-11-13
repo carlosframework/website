@@ -1,8 +1,9 @@
 // 🤖 Build-time rendering. Browser scripts only enhance pages that already work (PRODUCT.md).
 import markdownIt from "markdown-it";
 import { createDocsMarkdown, slugify } from "./hack/docs-markdown.mjs";
-import { addDisclaimer } from "./hack/add-disclaimer.mjs";
 import { addFooter } from "./hack/add-footer.mjs";
+import { buildStart } from "./hack/build-start.mjs";
+import { loadStartConfig } from "./src/_data/start-config.mjs";
 
 // slugify lives in hack/docs-markdown.mjs with the rest of the docs
 // renderer; it is re-exported here because hack/check-docs.mjs checks it
@@ -29,9 +30,10 @@ function sameFence(closing, opening) {
 }
 
 export default function (eleventyConfig) {
-  eleventyConfig.on("eleventy.after", async ({ dir }) => {
-    await addFooter(dir.output);
-    await addDisclaimer(dir.output);
+  eleventyConfig.addGlobalData("startConfig", () => loadStartConfig());
+  eleventyConfig.on("eleventy.after", async ({ directories }) => {
+    await buildStart(directories.output, loadStartConfig());
+    await addFooter(directories.output);
   });
   eleventyConfig.addPassthroughCopy({ "src/index.html": "index.html" });
   eleventyConfig.addPassthroughCopy({ "src/platform": "platform" });
@@ -41,16 +43,20 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/case-studies": "case-studies" });
   eleventyConfig.addPassthroughCopy({ "src/attributes": "attributes" });
   eleventyConfig.addPassthroughCopy({ "src/trust": "trust" });
-  eleventyConfig.addPassthroughCopy({ "src/start": "start" });
+  // Only generated twins and the three versioned downloads are published.
+  eleventyConfig.ignores.add("src/start/**");
+  eleventyConfig.addPassthroughCopy({ "src/start/start.css": "start/start.css" });
+  eleventyConfig.addPassthroughCopy({ "src/start/start-tabs.js": "start/start-tabs.js" });
   eleventyConfig.addPassthroughCopy({ "src/site.css": "site.css" });
   eleventyConfig.addPassthroughCopy({ "src/home.css": "home.css" });
   eleventyConfig.addPassthroughCopy({ "src/tool-icons": "tool-icons" });
   eleventyConfig.addPassthroughCopy({ "src/inner.css": "inner.css" });
   eleventyConfig.addPassthroughCopy({ "src/home-textures": "home-textures" });
+  // 🤖 src/home (the enabled-demo homepage's styles, scripts, replay image and
+  // Matter.js) is copied by hack/build-start.mjs, only into enabled builds.
+  eleventyConfig.ignores.add("src/home/**");
   eleventyConfig.addPassthroughCopy({ "src/header.css": "header.css" });
   eleventyConfig.addPassthroughCopy({ "src/footer.css": "footer.css" });
-  eleventyConfig.addPassthroughCopy({ "src/ai-disclaimer.css": "ai-disclaimer.css" });
-  eleventyConfig.addPassthroughCopy({ "src/ai-disclaimer.js": "ai-disclaimer.js" });
   eleventyConfig.addPassthroughCopy({ "src/docs.css": "docs.css" });
   eleventyConfig.addPassthroughCopy({ "src/docs-stepper.js": "docs-stepper.js" });
   eleventyConfig.addPassthroughCopy({ "src/docs-nav.js": "docs-nav.js" });
@@ -241,7 +247,7 @@ export default function (eleventyConfig) {
 
   return {
     // "html" is deliberately excluded: index.html and platform/index.html
-    // are hand-written, with the disclaimer added after build. If html stayed a
+    // are hand-written, with the shared footer added after build. If html stayed a
     // template format, Eleventy's default html engine (liquid) would
     // render them as templates in addition to the passthrough copies
     // above, and any literal "{{" in their inline SVG/script would break.

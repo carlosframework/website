@@ -1,0 +1,282 @@
+package main
+
+import (
+	"bytes"
+	"context"
+	"fmt"
+	"html"
+	"io"
+	"net"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+	"sync"
+	"syscall"
+	"testing"
+	"time"
+
+	"amadan.net/rastrillo/rastrillo"
+)
+
+func TestStarterFlagsAndPersistence(t *testing.T) {
+	t.Run("flags", func(t *testing.T) {
+		t.Setenv("CARLOS_SOCKET", "/ignored.sock")
+		t.Setenv("CARLOS_DB", "/ignored.db")
+		for _, args := range [][]string{nil, {"--socket", "/s"}, {"--db", "/d"}, {"--socket", "relative", "--db", "/d"}, {"--socket", "/s", "--db", "relative"}, {"--socket", "/s", "--db", "/d", "extra"}} {
+			if _, _, err := parseFlags(args); err == nil {
+				t.Fatalf("accepted %q", args)
+			}
+		}
+		s, d, err := parseFlags([]string{"--socket", "/s", "--db", "/d"})
+		if err != nil || s != "/s" || d != "/d" {
+			t.Fatalf("flags: %q %q %v", s, d, err)
+		}
+	})
+	t.Run("runtime", func(t *testing.T) {
+		binary := os.Getenv("STARTER_BINARY")
+		if binary == "" {
+			t.Fatal("STARTER_BINARY required")
+		}
+		for _, withEnv := range []bool{false, true} {
+			ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+			cmd := exec.CommandContext(ctx, binary)
+			cmd.Env = cleanRuntimeEnv()
+			if withEnv {
+				cmd.Env = append(cmd.Env, "CARLOS_SOCKET="+filepath.Join(t.TempDir(), "unused.sock"), "CARLOS_DB="+filepath.Join(t.TempDir(), "unused.db"))
+			}
+			err := cmd.Run()
+			cancel()
+			if err == nil || cmd.ProcessState == nil || cmd.ProcessState.ExitCode() != 2 {
+				t.Fatalf("missing flags did not exit before listening: %v", err)
+			}
+		}
+		dir, err := os.MkdirTemp(os.Getenv("STARTER_RUNTIME_DIR"), "r-")
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer os.RemoveAll(dir)
+		// 🤖 Keep the absolute socket path below the Unix socket length limit.
+		socket := filepath.Join(dir, "s")
+		dbPath := filepath.Join(dir, "shop.db")
+		client := &http.Client{Timeout: 3 * time.Second, Transport: &http.Transport{DialContext: func(ctx context.Context, _, _ string) (net.Conn, error) {
+			return (&net.Dialer{}).DialContext(ctx, "unix", socket)
+		}}, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
+		defer client.CloseIdleConnections()
+		request := func(method, path, body, origin string) (int, string, http.Header) {
+			t.Helper()
+			req, err := http.NewRequest(method, "http://example.com"+path, strings.NewReader(body))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if method == "POST" {
+				req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+			}
+			if origin != "" {
+				req.Header.Set("Origin", origin)
+			}
+			resp, err := client.Do(req)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer resp.Body.Close()
+			b, err := io.ReadAll(resp.Body)
+			if err != nil {
+				t.Fatal(err)
+			}
+			return resp.StatusCode, string(b), resp.Header
+		}
+		start := func(bin string) func() {
+			t.Helper()
+			cmd := exec.Command(bin, "--socket", socket, "--db", dbPath)
+			cmd.Env = cleanRuntimeEnv()
+			var logs bytes.Buffer
+			cmd.Stdout = &logs
+			cmd.Stderr = &logs
+			if err := cmd.Start(); err != nil {
+				t.Fatal(err)
+			}
+			done := make(chan error, 1)
+			go func() { done <- cmd.Wait() }()
+			var once sync.Once
+			stop := func() {
+				once.Do(func() {
+					_ = cmd.Process.Signal(syscall.SIGTERM)
+					select {
+					case <-done:
+					case <-time.After(5 * time.Second):
+						_ = cmd.Process.Kill()
+						<-done
+					}
+					client.CloseIdleConnections()
+				})
+			}
+			t.Cleanup(stop)
+			deadline := time.Now().Add(10 * time.Second)
+			for time.Now().Before(deadline) {
+				select {
+				case err := <-done:
+					done <- err
+					t.Fatalf("starter exited: %v\n%s", err, logs.String())
+				default:
+				}
+				resp, err := client.Get("http://example.com/")
+				if err == nil {
+					resp.Body.Close()
+					if resp.StatusCode == 200 {
+						return stop
+					}
+				}
+				time.Sleep(25 * time.Millisecond)
+			}
+			stop()
+			t.Fatalf("starter failed to listen: %s", logs.String())
+			return nil
+		}
+		stop := start(binary)
+		if status, body, _ := request("GET", "/", "", ""); status != 200 || !strings.Contains(body, starterCopy["starter.empty"]) {
+			t.Fatalf("GET %d: %s", status, body)
+		}
+		hostile := `<script>alert("shop")</script>`
+		if status, _, h := request("POST", "/items", url.Values{"name": {hostile}}.Encode(), "https://example.com"); status != 303 || h.Get("Location") != "/" {
+			t.Fatalf("POST: %d %v", status, h)
+		}
+		for _, origin := range []string{"", "null", "https://other.example.com", "https://example.com.evil", "https://example.com/path", "https://example.com:444"} {
+			if status, _, _ := request("POST", "/items", "name=forbidden", origin); status != 403 {
+				t.Fatalf("origin %q: %d", origin, status)
+			}
+		}
+		if status, _, _ := request("GET", "/static/missing.css", "", ""); status != 404 {
+			t.Fatalf("unknown asset %d", status)
+		}
+		for _, file := range []string{"fiesta.css", "fiesta-plain.css", "fiesta-signal.css"} {
+			if status, body, h := request("GET", "/static/"+file, "", ""); status != 200 || len(body) == 0 || !strings.HasPrefix(h.Get("Content-Type"), "text/css") {
+				t.Fatalf("asset %s: %d", file, status)
+			}
+		}
+		verify := func() {
+			t.Helper()
+			status, body, _ := request("GET", "/", "", "")
+			if status != 200 || strings.Contains(body, hostile) || !strings.Contains(body, html.EscapeString(hostile)) {
+				t.Fatalf("escaped persistent row missing: %d %s", status, body)
+			}
+		}
+		verify()
+		stop()
+		stop = start(binary)
+		verify()
+		stop()
+		templatePath := "templates/index.html"
+		original, err := os.ReadFile(templatePath)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer os.WriteFile(templatePath, original, 0644)
+		if err := os.WriteFile(templatePath, bytes.Replace(original, []byte("<main>"), []byte(`<main data-update="yes">`), 1), 0644); err != nil {
+			t.Fatal(err)
+		}
+		updated := filepath.Join(dir, "updated")
+		cmd := exec.Command("nice", "-n", "10", "go", "build", "-mod=readonly", "-trimpath", "-buildvcs=false", "-o", updated, ".")
+		if output, err := cmd.CombinedOutput(); err != nil {
+			t.Fatalf("rebuild: %v\n%s", err, output)
+		}
+		stat, err := os.Stat(updated)
+		if err != nil || stat.Size() > 33_554_432 {
+			t.Fatalf("updated binary cap: %v", err)
+		}
+		stop = start(updated)
+		verify()
+		if _, body, _ := request("GET", "/", "", ""); !strings.Contains(body, `data-update="yes"`) {
+			t.Fatal("update not served")
+		}
+		stop()
+	})
+	t.Run("input-and-row-bounds", func(t *testing.T) {
+		db, err := rastrillo.OpenDB(filepath.Join(t.TempDir(), "shop.db"), []string{itemsMigration})
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer db.Close()
+		mux, err := newRouter(db)
+		if err != nil {
+			t.Fatal(err)
+		}
+		post := func(body string) int {
+			r := httptest.NewRequest("POST", "https://example.com/items", strings.NewReader(body))
+			r.Header.Set("Origin", "https://example.com")
+			r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+			w := httptest.NewRecorder()
+			mux.ServeHTTP(w, r)
+			return w.Code
+		}
+		// 🤖 Empty form segments add bytes without changing the valid one-rune name.
+		oversized := "name=x" + strings.Repeat("&", 4091)
+		if len(oversized) != 4097 {
+			t.Fatalf("body bytes: %d", len(oversized))
+		}
+		if status := post(oversized); status != 413 {
+			t.Fatalf("4097-byte valid form: got %d, want 413", status)
+		}
+		for _, body := range []string{"name=", "name=+", "name=a&name=b", "other=a", "name=%FF", "name=" + strings.Repeat("a", 121), "name=" + strings.Repeat("a", 4092)} {
+			if status := post(body); status != 400 && status != 413 {
+				t.Fatalf("invalid input accepted: %d", status)
+			}
+		}
+		for _, body := range []string{url.Values{"name": {strings.Repeat("界", 120)}}.Encode(), "name=" + strings.Repeat(" ", 4090) + "x"} {
+			if status := post(body); status != 303 {
+				t.Fatalf("boundary input: %d", status)
+			}
+		}
+		if _, err := db.Exec("DELETE FROM items"); err != nil {
+			t.Fatal(err)
+		}
+		var wg sync.WaitGroup
+		statuses := make(chan int, 110)
+		for i := 0; i < 110; i++ {
+			wg.Add(1)
+			go func(i int) { defer wg.Done(); statuses <- post(fmt.Sprintf("name=item%d", i)) }(i)
+		}
+		wg.Wait()
+		close(statuses)
+		saved, full := 0, 0
+		for status := range statuses {
+			switch status {
+			case 303:
+				saved++
+			case 409:
+				full++
+			default:
+				t.Fatalf("unexpected response: %d", status)
+			}
+		}
+		if saved != 100 || full != 10 {
+			t.Fatalf("saved=%d full=%d", saved, full)
+		}
+		var n int
+		if err := db.QueryRow("SELECT COUNT(*) FROM items").Scan(&n); err != nil || n != 100 {
+			t.Fatalf("rows=%d err=%v", n, err)
+		}
+		if err := db.Close(); err != nil {
+			t.Fatal(err)
+		}
+		r := httptest.NewRequest("GET", "https://example.com/", nil)
+		w := httptest.NewRecorder()
+		mux.ServeHTTP(w, r)
+		if w.Code != 500 || !strings.Contains(w.Body.String(), starterCopy["starter.error"]) {
+			t.Fatalf("database failure: %d %s", w.Code, w.Body.String())
+		}
+	})
+}
+
+func cleanRuntimeEnv() []string {
+	var out []string
+	for _, e := range os.Environ() {
+		if !strings.HasPrefix(e, "CARLOS_SOCKET=") && !strings.HasPrefix(e, "CARLOS_DB=") && !strings.HasPrefix(e, "LISTEN_FDS=") && !strings.HasPrefix(e, "LISTEN_PID=") {
+			out = append(out, e)
+		}
+	}
+	return out
+}

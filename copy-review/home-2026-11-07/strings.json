@@ -1,0 +1,258 @@
+[
+  {
+    "id": "home.meta.description",
+    "section": "Page metadata",
+    "label": "Search result description",
+    "text": "Tell your coding agent what you want to make. Try the app it builds at a public link for 24 hours. No account needed.",
+    "context": "Not on the page. It is the short description that search engines show under the page title in results. It tells someone who has not visited yet what they can do here.",
+    "notes": "List-only (meta description in the page head). Source: src/_data/start-copy.json, key home.meta.description, swapped into the homepage by hack/build-start.mjs when the start demo is on. Replaces the old description."
+  },
+  {
+    "id": "home.og.description",
+    "section": "Page metadata",
+    "label": "Link preview description",
+    "text": "Tell your coding agent what you want to make. Try the app it builds at a public link for 24 hours.",
+    "context": "Not on the page. It is the line that appears under the title when someone pastes the homepage link into a chat app or social post. It is the shorter sibling of the search description.",
+    "notes": "List-only (og:description in the page head). Source: src/_data/start-copy.json, key home.og.description."
+  },
+  {
+    "id": "home.hero.heading",
+    "section": "Hero",
+    "label": "Headline",
+    "text": "Want to ship faster, build better apps with AI, and save on running costs?",
+    "context": "The first thing a visitor reads, centred at the top of the page. It is a question asking whether they want three things, and the line under it answers yes.",
+    "notes": "Paul's wording (approved verbatim). Source: src/_data/start-copy.json, key home.hero.heading; page heading built in hack/build-start.mjs (homeHeroHTML). The build keeps the phrases 'build better apps', 'with AI,' and 'running costs?' from breaking across lines; the preview does not."
+  },
+  {
+    "id": "home.hero.answer",
+    "section": "Hero",
+    "label": "Answer to the headline",
+    "text": "CARLOS does all that and more.",
+    "context": "A short line directly under the headline question. It answers the question and introduces the product by name. It sits on the same line as the invitation that follows it (or wraps beneath it on a phone).",
+    "notes": "Paul's wording (approved verbatim). Source: src/_data/start-copy.json, key home.hero.answer; built in hack/build-start.mjs (homeHeroHTML)."
+  },
+  {
+    "id": "home.hero.ask",
+    "section": "Hero",
+    "label": "Invitation to read on or try it",
+    "text": "Read on, or try it now with your agent",
+    "context": "Follows the answer line. It gives two choices: scroll down and read about CARLOS, or try it straight away by pasting a line into a coding agent in the box below. The words 'Read on' are a link that scrolls to the three-parts section further down.",
+    "notes": "Paul's wording (approved verbatim). Source: src/_data/start-copy.json, key home.hero.ask; built in hack/build-start.mjs (homeHeroHTML). On the real page 'Read on' is wrapped in a link to the three-parts section; the build adds that link, so the words 'Read on' must stay at the start. The preview shows the line as plain text."
+  },
+  {
+    "id": "home.paste.label",
+    "section": "Hero",
+    "label": "Paste box label",
+    "text": "For your agent",
+    "context": "A small label at the top of the box that holds the line to paste. It tells the visitor the line in the box is meant for their coding agent, not for them to read as a sentence.",
+    "notes": "Source: src/_data/start-copy.json, key home.paste.label; built in hack/build-start.mjs (homePromptHTML). The same words are also the heading of the agent section on the start page (separate key start.agent.heading)."
+  },
+  {
+    "id": "start.prompt",
+    "section": "Hero",
+    "label": "The line to paste",
+    "text": "Follow the directions on https://carlosframework.com/start",
+    "context": "The sentence inside the paste box, with a blinking cursor after it. Visitors copy it and paste it into their coding agent, which then reads the start page and walks them through making an app. It is the one thing the visitor is meant to copy.",
+    "notes": "The web address must stay exactly as written. Source: the build makes the line in pasteLine() in hack/build-start.mjs from the configured site address; the same string is listed under key start.prompt in src/_data/start-copy.json. The dev copy of the page shows a temporary test address here; the preview shows the production one. Shared with the start page."
+  },
+  {
+    "id": "home.paste.works",
+    "section": "Hero",
+    "label": "Supported agents line",
+    "text": "Works with Claude Code, Codex and Cursor",
+    "context": "Small print at the bottom left of the paste box, beside the Copy button. It tells the visitor which coding tools the pasted line works with.",
+    "notes": "Source: src/_data/start-copy.json, key home.paste.works; built in hack/build-start.mjs (homePromptHTML). The names are product names; check them against current product spelling."
+  },
+  {
+    "id": "copy.label",
+    "section": "Hero",
+    "label": "Copy button",
+    "text": "Copy",
+    "context": "The label on the button at the bottom right of the paste box. Pressing it copies the pasted line to the visitor's clipboard. It only appears on browsers that can run the page's script.",
+    "notes": "Source: src/_data/start-copy.json, key copy.label; built in hack/build-start.mjs (homePromptHTML). Shared with the start page."
+  },
+  {
+    "id": "copy.aria",
+    "section": "Hero",
+    "label": "Copy button spoken label",
+    "text": "Copy the line for your agent",
+    "context": "Not seen on the page. It is what a screen reader says for the Copy button, which would otherwise be announced as just 'Copy'.",
+    "notes": "Bound in the preview as the button's aria-label (not visible). Source: src/_data/start-copy.json, key copy.aria; built in hack/build-start.mjs (homePromptHTML). Shared with the start page."
+  },
+  {
+    "id": "copy.done",
+    "section": "Hero",
+    "label": "Copy button after copying",
+    "text": "Copied",
+    "context": "Replaces the Copy button's label for about four seconds after the visitor presses it, as a quick confirmation that the copy worked.",
+    "notes": "List-only (appears only after a click). Source: src/_data/start-copy.json, key copy.done, passed to the page as the button's data-copied. Shared with the start page."
+  },
+  {
+    "id": "home.paste.done",
+    "section": "Hero",
+    "label": "Copied confirmation message",
+    "text": "Copied. Paste it into your agent.",
+    "context": "A message shown in the paste box (and read out by screen readers) for about four seconds after the visitor presses Copy. It confirms the copy and tells them what to do next.",
+    "notes": "List-only (appears only after a click). Source: src/_data/start-copy.json, key home.paste.done, passed to the page as the button's data-copy-success. Shared with the start page."
+  },
+  {
+    "id": "copy.fallback",
+    "section": "Hero",
+    "label": "Copy failed message",
+    "text": "Your browser could not copy the line. It is selected. Copy it yourself.",
+    "context": "Shown instead of the confirmation when the browser refuses to copy automatically. The line has just been highlighted, so the message asks the visitor to copy it by hand.",
+    "notes": "List-only (appears only if copying fails). Source: src/_data/start-copy.json, key copy.fallback, passed to the page as data-copy-fallback. Shared with the start page."
+  },
+  {
+    "id": "start.hosts.two",
+    "section": "Hero",
+    "label": "Hosts line",
+    "text": "Make sure your agent has access to carlosframework.com and console.carloku.com",
+    "context": "A line under the paste box. Some coding agents can only visit websites they have been allowed to use, so it tells the visitor which two sites their agent needs to be able to reach for the pasted line to work.",
+    "notes": "Paul's wording (approved verbatim). The two site names are shown in code style on the real page and are filled in by the build, so the sentence must keep them in the same places. Source: src/_data/start-copy.json, key start.hosts.two (a template with {siteHost} and {apiHost}); built in hack/build-start.mjs (hostsHTML). Where both are the same site the build uses key start.hosts.one instead. The dev copy shows temporary test host names; the preview shows the production ones. Shared with the start page."
+  },
+  {
+    "id": "home.parts.intro",
+    "section": "Three parts",
+    "label": "Three parts introduction",
+    "text": "Three parts make it work:",
+    "context": "The last sentence of the paragraph at the top of the section that explains what CARLOS is made of. It follows a sentence about the CARLOS architecture and leads into the three cards below it (the skill, Rastrillo, the platform).",
+    "notes": "Source: src/_data/start-copy.json, key home.parts.intro; built in hack/build-start.mjs (homePartsHTML). The sentence before it in the same paragraph is existing homepage copy and is unchanged."
+  },
+  {
+    "id": "home.parts.skill.title",
+    "section": "Three parts",
+    "label": "Part 1: name",
+    "text": "The skill",
+    "context": "The heading of the first of three cards. This card describes the set of instructions that teaches a coding agent how to build CARLOS apps.",
+    "notes": "Marked as Paul's words in the build template. Source: src/_data/start-copy.json, key home.parts.skill.title."
+  },
+  {
+    "id": "home.parts.skill.is",
+    "section": "Three parts",
+    "label": "Part 1: what it is",
+    "text": "Instructions your coding agent reads before it starts.",
+    "context": "The first of two sentences on the first card. It says in plain terms what the skill is. It is followed by a sentence on why it matters.",
+    "notes": "Source: src/_data/start-copy.json, key home.parts.skill.is."
+  },
+  {
+    "id": "home.parts.skill.why",
+    "section": "Three parts",
+    "label": "Part 1: why it matters",
+    "text": "It teaches your agent to build and ship apps the CARLOS way, so you don’t have to learn how first.",
+    "context": "The second sentence on the first card. It says what the skill does for the visitor: they do not need to learn CARLOS before their agent can use it.",
+    "notes": "Contains a curly apostrophe. Source: src/_data/start-copy.json, key home.parts.skill.why."
+  },
+  {
+    "id": "home.parts.skill.start",
+    "section": "Three parts",
+    "label": "Part 1: first link",
+    "text": "Get started",
+    "context": "A link at the bottom of the first card, with a small arrow showing it opens in a new tab. It goes to the getting-started instructions for the skill.",
+    "notes": "Marked as Paul's words in the build template. Source: src/_data/start-copy.json, key home.parts.skill.start. The arrow is added by the build."
+  },
+  {
+    "id": "home.parts.skill.build",
+    "section": "Three parts",
+    "label": "Part 1: second link",
+    "text": "Build apps",
+    "context": "A second link beside 'Get started' at the bottom of the first card. It opens the instructions the skill uses for building apps.",
+    "notes": "Marked as Paul's words in the build template. Source: src/_data/start-copy.json, key home.parts.skill.build. The arrow is added by the build."
+  },
+  {
+    "id": "home.parts.join.builds",
+    "section": "Three parts",
+    "label": "Connector: skill to Rastrillo",
+    "text": "builds your app with",
+    "context": "A small connecting phrase between the first card and the second, read as a sentence across them: the skill 'builds your app with' Rastrillo. It shows how the parts relate.",
+    "notes": "Source: src/_data/start-copy.json, key home.parts.join.builds. Lower case with no full stop: it joins the cards."
+  },
+  {
+    "id": "home.parts.rastrillo.title",
+    "section": "Three parts",
+    "label": "Part 2: name",
+    "text": "Rastrillo",
+    "context": "The heading of the second card. Rastrillo is the name of the web framework that CARLOS apps are written with.",
+    "notes": "Product name. Marked as Paul's words in the build template. Source: src/_data/start-copy.json, key home.parts.rastrillo.title."
+  },
+  {
+    "id": "home.parts.rastrillo.is",
+    "section": "Three parts",
+    "label": "Part 2: what it is",
+    "text": "The Go web framework your app is built on.",
+    "context": "The first of two sentences on the second card. It says what Rastrillo is: the framework under the visitor's app.",
+    "notes": "Marked as Paul's words in the build template. Source: src/_data/start-copy.json, key home.parts.rastrillo.is."
+  },
+  {
+    "id": "home.parts.rastrillo.why",
+    "section": "Three parts",
+    "label": "Part 2: why it matters",
+    "text": "It gives your agent ready-made parts for many kinds of apps, so it writes less from scratch.",
+    "context": "The second sentence on the second card. It says why a framework helps: the agent starts from finished pieces instead of writing everything.",
+    "notes": "Source: src/_data/start-copy.json, key home.parts.rastrillo.why."
+  },
+  {
+    "id": "home.parts.rastrillo.site",
+    "section": "Three parts",
+    "label": "Part 2: first link",
+    "text": "rastrillo.org",
+    "context": "A link at the bottom of the second card, with a small arrow, to the Rastrillo website. It is written as the site's address.",
+    "notes": "Marked as Paul's words in the build template. Source: src/_data/start-copy.json, key home.parts.rastrillo.site. The arrow is added by the build."
+  },
+  {
+    "id": "home.parts.rastrillo.design",
+    "section": "Three parts",
+    "label": "Part 2: second link",
+    "text": "Fiesta design system",
+    "context": "A second link at the bottom of the second card, to the page for Fiesta, the set of ready-made visual styles that goes with Rastrillo.",
+    "notes": "Product name. Marked as Paul's words in the build template. Source: src/_data/start-copy.json, key home.parts.rastrillo.design. The arrow is added by the build."
+  },
+  {
+    "id": "home.parts.join.runs",
+    "section": "Three parts",
+    "label": "Connector: Rastrillo to platform",
+    "text": "runs on",
+    "context": "A small connecting phrase between the second card and the third: the app built with Rastrillo 'runs on' the CARLOS Platform.",
+    "notes": "Source: src/_data/start-copy.json, key home.parts.join.runs. Lower case with no full stop."
+  },
+  {
+    "id": "home.parts.platform.title",
+    "section": "Three parts",
+    "label": "Part 3: name",
+    "text": "CARLOS Platform",
+    "context": "The heading of the third card. The platform is where a finished app is hosted and kept running.",
+    "notes": "Marked as Paul's words in the build template. Source: src/_data/start-copy.json, key home.parts.platform.title."
+  },
+  {
+    "id": "home.parts.platform.is",
+    "section": "Three parts",
+    "label": "Part 3: what it is",
+    "text": "Where your app runs: hosted on Carloku or on your own hardware.",
+    "context": "The first of two sentences on the third card. It says what the platform is and gives the two ways to use it: the hosted service called Carloku, or the visitor's own machines.",
+    "notes": "Source: src/_data/start-copy.json, key home.parts.platform.is."
+  },
+  {
+    "id": "home.parts.platform.why",
+    "section": "Three parts",
+    "label": "Part 3: why it matters",
+    "text": "It puts your app online with HTTPS, backs up its data as it changes, and puts it to sleep when nobody is using it.",
+    "context": "The second sentence on the third card. It lists three things the platform does so the visitor does not have to: a secure web address, continuous backup, and sleeping when idle to save running costs.",
+    "notes": "Source: src/_data/start-copy.json, key home.parts.platform.why."
+  },
+  {
+    "id": "home.parts.platform.start",
+    "section": "Three parts",
+    "label": "Part 3: first link",
+    "text": "Start with Carloku",
+    "context": "A link at the bottom of the third card, with a small arrow, to the hosted Carloku service. It is for people who want the platform run for them.",
+    "notes": "Marked as Paul's words in the build template. Source: src/_data/start-copy.json, key home.parts.platform.start. The arrow is added by the build."
+  },
+  {
+    "id": "home.parts.platform.self",
+    "section": "Three parts",
+    "label": "Part 3: second link",
+    "text": "or self-host",
+    "context": "A second link beside 'Start with Carloku', to the page about running the platform on your own hardware. It begins with 'or' because it reads as the alternative to the first link.",
+    "notes": "Marked as Paul's words in the build template. Source: src/_data/start-copy.json, key home.parts.platform.self. Lower case with a leading 'or' on purpose. The arrow is added by the build."
+  }
+]

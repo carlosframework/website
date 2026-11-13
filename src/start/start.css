@@ -22,3 +22,33 @@
   .agent-send { justify-self: end; }
   .agent-composer code { font-size: 14px; }
 }
+
+/* 🤖 Shared paste line and the visible agent reference. */
+.start-prompt { display:flex; flex-wrap:wrap; gap:.75rem; align-items:center; width:100%; max-width:40rem; margin-top:1.5rem; }
+.start-prompt pre { flex:1 1 22rem; min-width:0; margin:0; padding:1rem; border:1px solid var(--rule); border-radius:7px; background:var(--page-alt); color:var(--ink); white-space:pre-wrap; overflow-wrap:anywhere; }
+.start-prompt code { font: .95rem/1.6 var(--mono); }
+.start-prompt .start-hosts { flex-basis:100%; margin:0; font-size:.85rem; line-height:1.5; color:var(--muted); }
+.start-prompt .start-hosts code { font-size:inherit; overflow-wrap:anywhere; }
+.inner-hero .start-hosts { color:#c4d5ce; }
+.start-prompt .copy-button { position:static; border:1px solid var(--rule); border-radius:7px; padding:.75rem 1.1rem; background:var(--accent); color:var(--page); font:600 .95rem var(--sans); cursor:pointer; }
+.start-prompt [hidden], .copy-button:not([data-copy-ready]) { display:none!important; }
+.start-prompt .copy-button:focus-visible { outline:3px solid var(--focus); outline-offset:4px; }
+.start-prompt .copy-status { flex-basis:100%; min-height:1.5em; margin:0; font-size:.9rem; line-height:1.5; }
+.inner-hero .start-prompt { --page-alt:#172d32; --ink:#eef5ed; --accent:#82c9b5; --page:#101c23; --rule:#82c9b560; --focus:#c8ef8b; }
+.start-prose, .agent-prose { max-width:72rem; }
+.start-prose p, .start-prose ol, .agent-prose p, .agent-prose ul, .agent-prose ol { max-width:40rem; line-height:1.7; }
+.start-prose ol, .agent-prose ul, .agent-prose ol { padding-left:1.5rem; }
+.start-prose li, .agent-prose li { margin-bottom:.75rem; }
+.start-prose h2 { margin-top:2.5rem; }
+.agent-content { max-width:48rem; overflow-wrap:anywhere; }
+.agent-content h1 { font-size:1.5rem; margin-top:2rem; }
+.agent-content h2 { font-size:1.3rem; margin-top:2.5rem; }
+.agent-content pre { max-width:100%; overflow:auto; background:color-mix(in srgb,var(--accent) 5%,var(--page-alt)); color:var(--ink); border:1px solid color-mix(in srgb,var(--accent) 30%,var(--rule)); border-radius:8px; padding:1rem; margin-block:1.25rem; }
+.agent-content pre code { font: .85rem/1.65 var(--mono); }
+.agent-content a { text-decoration:underline; text-underline-offset:.2em; }
+/* 🤖 Kept-app copy is draft pending Luna and Paul's review. */
+.start-keep { border-top:1px solid var(--rule); margin-top:3rem; padding-top:2rem; scroll-margin-top:1.5rem; }
+.agent-content .start-keep h2 { margin-top:0; font-size:clamp(1.6rem,3vw,2.3rem); }
+.start-keep h3 { margin-top:2rem; }
+.agent-content .start-keep .code-wrap pre { margin:0; padding:3.5rem 1rem 1rem; }
+@media(max-width:26rem) { .start-prompt pre { flex-basis:100%; } .start-prompt .copy-button { width:100%; } }

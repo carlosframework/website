@@ -1,0 +1,170 @@
+[
+  {
+    "id": "start.title",
+    "section": "Top of page",
+    "label": "Page title",
+    "text": "Make an app with your coding agent",
+    "context": "The big heading at the top of the start page. It is also the text in the browser tab. It tells someone arriving from the homepage what this page is for.",
+    "notes": "Source: src/_data/start-copy.json, key start.title; heading in src/_includes/start.njk; the build also uses it as the page title in the browser tab. Replaces the old 'Get started' heading."
+  },
+  {
+    "id": "start.meta.description",
+    "section": "Page metadata",
+    "label": "Search result description",
+    "text": "Tell your coding agent what you want to make and try the app it builds at a public link for 24 hours. No account or install needed.",
+    "context": "Not on the page. It is the short description that search engines show under the page title, and the line shown when the page link is pasted into a chat app or social post.",
+    "notes": "List-only (meta description and og:description in the page head, same text). Source: src/_data/start-copy.json, key start.meta.description, set in hack/build-start.mjs. Replaces 'Build with your agent, or deploy a sample app yourself.'"
+  },
+  {
+    "id": "start.intro",
+    "section": "Top of page",
+    "label": "Introduction for people",
+    "text": "Paste this line into the AI tool you use to write code. It will ask what you want to make and how it should feel, then build a small app with its own database and give you a link to try it.",
+    "context": "The paragraph under the page heading. It tells a person what to do (paste the line below into their coding tool) and what will happen next, before they see the line.",
+    "notes": "Source: src/_data/start-copy.json, key start.intro; src/_includes/start.njk."
+  },
+  {
+    "id": "start.prompt",
+    "section": "Top of page",
+    "label": "The line to paste",
+    "text": "Follow the directions on https://carlosframework.com/start",
+    "context": "The sentence in the box under the introduction. Visitors copy it and paste it into their coding agent, which then reads this page and walks them through making an app. It is the one thing the visitor is meant to copy.",
+    "notes": "The web address must stay exactly as written. Source: the build makes the line in pasteLine() in hack/build-start.mjs from the configured site address; the same string is listed under key start.prompt in src/_data/start-copy.json. The dev copy of the page shows a temporary test address here; the preview shows the production one. Shared with the homepage."
+  },
+  {
+    "id": "copy.label",
+    "section": "Top of page",
+    "label": "Copy button",
+    "text": "Copy",
+    "context": "The label on the button beside the pasted line. Pressing it copies the line to the visitor's clipboard. It only appears on browsers that can run the page's script.",
+    "notes": "Source: src/_data/start-copy.json, key copy.label; built in hack/build-start.mjs (promptHTML). Shared with the homepage. The account section lower on the page has its own existing Copy buttons, which are unchanged."
+  },
+  {
+    "id": "copy.aria",
+    "section": "Top of page",
+    "label": "Copy button spoken label",
+    "text": "Copy the line for your agent",
+    "context": "Not seen on the page. It is what a screen reader says for the Copy button, which would otherwise be announced as just 'Copy'.",
+    "notes": "Bound in the preview as the button's aria-label (not visible). Source: src/_data/start-copy.json, key copy.aria; built in hack/build-start.mjs (promptHTML). Shared with the homepage."
+  },
+  {
+    "id": "copy.done",
+    "section": "Top of page",
+    "label": "Copy button after copying",
+    "text": "Copied",
+    "context": "Replaces the Copy button's label for about four seconds after the visitor presses it, as a quick confirmation that the copy worked.",
+    "notes": "List-only (appears only after a click). Source: src/_data/start-copy.json, key copy.done, passed to the page as the button's data-copied. Shared with the homepage."
+  },
+  {
+    "id": "home.paste.done",
+    "section": "Top of page",
+    "label": "Copied confirmation message",
+    "text": "Copied. Paste it into your agent.",
+    "context": "A message shown under the pasted line (and read out by screen readers) for about four seconds after the visitor presses Copy. It confirms the copy and tells them what to do next.",
+    "notes": "List-only (appears only after a click). The key has a home. prefix because it was written for the homepage; the start page uses the same text. Source: src/_data/start-copy.json, key home.paste.done, passed to the page as data-copy-success. Shared with the homepage."
+  },
+  {
+    "id": "copy.fallback",
+    "section": "Top of page",
+    "label": "Copy failed message",
+    "text": "Your browser could not copy the line. It is selected. Copy it yourself.",
+    "context": "Shown instead of the confirmation when the browser refuses to copy automatically. The line has just been highlighted, so the message asks the visitor to copy it by hand.",
+    "notes": "List-only (appears only if copying fails). Source: src/_data/start-copy.json, key copy.fallback, passed to the page as data-copy-fallback. Shared with the homepage."
+  },
+  {
+    "id": "start.hosts.two",
+    "section": "Top of page",
+    "label": "Hosts line",
+    "text": "Make sure your agent has access to carlosframework.com and console.carloku.com",
+    "context": "A line under the pasted line. Some coding agents can only visit websites they have been allowed to use, so it tells the visitor which two sites their agent needs to be able to reach for the pasted line to work.",
+    "notes": "Paul's wording (approved verbatim). The two site names are shown in code style on the real page and are filled in by the build, so the sentence must keep them in the same places. Source: src/_data/start-copy.json, key start.hosts.two (a template with {siteHost} and {apiHost}); built in hack/build-start.mjs (hostsHTML). Where both are the same site the build uses key start.hosts.one instead. The dev copy shows temporary test host names; the preview shows the production ones. Shared with the homepage."
+  },
+  {
+    "id": "start.steps.0",
+    "section": "What happens",
+    "label": "Step 1",
+    "text": "Paste the line and say what you want to make.",
+    "context": "The first of three numbered steps under the pasted line. It tells the visitor what to do first.",
+    "notes": "Source: src/_data/start-copy.json, key start.steps (list item 1 of 3); numbered list in src/_includes/start.njk."
+  },
+  {
+    "id": "start.steps.1",
+    "section": "What happens",
+    "label": "Step 2",
+    "text": "Answer a few questions about how it should look and feel. If asked, allow it to connect to one website.",
+    "context": "The second numbered step. It prepares the visitor for the agent's questions, and warns that the agent may ask permission to reach one website (the sites named in the hosts line).",
+    "notes": "Source: src/_data/start-copy.json, key start.steps (list item 2 of 3)."
+  },
+  {
+    "id": "start.steps.2",
+    "section": "What happens",
+    "label": "Step 3",
+    "text": "Open the link your agent gives you.",
+    "context": "The third numbered step. It tells the visitor that the agent will hand over a web link to the finished app, and to open it.",
+    "notes": "Source: src/_data/start-copy.json, key start.steps (list item 3 of 3)."
+  },
+  {
+    "id": "start.lifetime",
+    "section": "What happens",
+    "label": "How long the demo lasts",
+    "text": "Your demo is public for 24 hours from when it is made. Anyone with the link can open it. Updates do not extend the 24 hours.",
+    "context": "A paragraph after the steps. It sets expectations: the app disappears after a day, anyone who has the link can see it, and changing it does not buy more time.",
+    "notes": "Source: src/_data/start-copy.json, key start.lifetime; src/_includes/start.njk. Must agree with the 24-hour limit in the agent directions."
+  },
+  {
+    "id": "start.data",
+    "section": "What happens",
+    "label": "No backup warning",
+    "text": "Nothing is backed up. Use made-up data. Do not enter real passwords or personal information.",
+    "context": "A short warning paragraph after the lifetime paragraph. Because the demo is public and temporary, it asks the visitor to use invented data only.",
+    "notes": "Source: src/_data/start-copy.json, key start.data; src/_includes/start.njk."
+  },
+  {
+    "id": "start.claim.0",
+    "section": "Keep it",
+    "label": "Section heading",
+    "text": "Keep it",
+    "context": "The heading of a short section about turning the 24-hour demo into a permanent app. Only shown when keeping a demo is switched on.",
+    "notes": "Source: src/_data/start-copy.json, key start.claim (item 1 of 2); src/_includes/start.njk. Not shown if keeping demos is off."
+  },
+  {
+    "id": "start.claim.1",
+    "section": "Keep it",
+    "label": "How to keep it",
+    "text": "If you like it, enter your email address and the code we send. The app moves to a permanent address in a new or existing account. If you have more than one account, choose where it goes.",
+    "context": "The paragraph under the 'Keep it' heading. It explains the three things that happen when a visitor decides to keep their demo: they prove their email address, the app moves to a permanent address, and they may need to pick which account gets it.",
+    "notes": "Source: src/_data/start-copy.json, key start.claim (item 2 of 2); src/_includes/start.njk. Not shown if keeping demos is off. Must match what the claim flow actually does."
+  },
+  {
+    "id": "start.account.0",
+    "section": "Keep it",
+    "label": "Pointer to accounts",
+    "text": "For a larger project or an app you already have, use an account.",
+    "context": "A line after the 'Keep it' section that points people with bigger needs away from the demo. It is followed by a link that jumps to the account section lower on the page.",
+    "notes": "Source: src/_data/start-copy.json, key start.account (item 1 of 2); src/_includes/start.njk. The sentence and the link that follows it share one line."
+  },
+  {
+    "id": "start.account.1",
+    "section": "Keep it",
+    "label": "Account link",
+    "text": "Set up an account",
+    "context": "The link at the end of the line above. It scrolls down to the account section, where the existing 'With an agent' and 'By hand' options are.",
+    "notes": "Source: src/_data/start-copy.json, key start.account (item 2 of 2); link to #account in src/_includes/start.njk."
+  },
+  {
+    "id": "start.agent.heading",
+    "section": "For your agent",
+    "label": "Agent section heading",
+    "text": "For your agent",
+    "context": "The heading of the section at the bottom of the page that holds the directions written for the coding agent. People can scroll to it to read along, but it is not written for them.",
+    "notes": "Source: src/_data/start-copy.json, key start.agent.heading; src/_includes/start.njk. The directions under it are written for the AI agent and are not part of this review."
+  },
+  {
+    "id": "start.authorship",
+    "section": "For your agent",
+    "label": "Authorship note",
+    "text": "🤖 Written by AI for your agent. You can read along.",
+    "context": "A small note under the agent section heading. It tells a person that what follows was written by AI, for AI, and that they are welcome to read it. The robot symbol is part of the line.",
+    "notes": "Source: src/_data/start-copy.json, key start.authorship; src/_includes/start.njk. Keep the robot symbol, which marks AI-written text throughout the site."
+  }
+]

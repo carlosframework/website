@@ -14,7 +14,7 @@ body.inner-page { --page-gutter:0px; }
 .hero-actions {display:flex;flex-wrap:wrap;align-items:center;gap:1.5rem;margin-top:2rem;}
 .hero-actions a {color:var(--mint);font-weight:600;}
 .hero-actions .primary {background:var(--lime);color:#142823;border-radius:999px;padding:.8rem 1.35rem;text-decoration:none;}
-.love-letter {font-size:1.15rem;line-height:1.8;border-left:3px solid var(--lavender);padding-left:1.5rem;max-width:50rem;}
+.love-letter {font-size:1.15rem;line-height:1.8;border:1px solid color-mix(in srgb,var(--lavender) 35%,transparent);border-radius:8px;background:color-mix(in srgb,var(--lavender) 6%,transparent);padding:1.25rem 1.5rem;max-width:50rem;}
 .trust-table {width:100%;border-collapse:collapse;margin-top:2rem;text-align:left;}
 .trust-table th {font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:500;padding:0 1rem 1rem;}
 .trust-table td {padding:1.25rem 1rem;vertical-align:top;border-top:1px solid var(--rule);}
@@ -52,7 +52,7 @@ body.inner-page { --page-gutter:0px; }
 .tab-buttons button[aria-selected=true] {border-bottom-color:var(--accent);color:var(--ink);}
 [hidden] {display:none!important;}
 .code-wrap {position:relative;margin:1.25rem 0 2rem;}
-.code-wrap pre {padding:1.5rem;padding-right:5rem;border-left:3px solid var(--accent);background:var(--page-alt);white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7;font: .95rem/1.7 var(--mono);color:var(--ink);margin:0;}
+.code-wrap pre {padding:1.5rem;padding-right:5rem;border:1px solid color-mix(in srgb,var(--accent) 30%,var(--rule));border-radius:8px;background:color-mix(in srgb,var(--accent) 5%,var(--page-alt));white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7;font: .95rem/1.7 var(--mono);color:var(--ink);margin:0;}
 .copy-button {position:absolute;right:.75rem;top:.75rem;border:1px solid var(--rule);border-radius:5px;background:var(--page);color:var(--ink);font: .8rem var(--sans);padding:.45rem .65rem;cursor:pointer;}
 .hand-steps {max-width:58rem;}
 .hand-steps h3 {margin-top:2.3rem;}

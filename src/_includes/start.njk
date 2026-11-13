@@ -1,0 +1,25 @@
+<main class="demo-start">
+<section class="inner-hero"><div class="wrap">
+<h1>{{ copy['start.title'] }}</h1>
+<p class="intro">{{ copy['start.intro'] }}</p>
+{{ promptHTML | safe }}
+</div></section>
+<section class="inner-section"><div class="wrap start-prose">
+<ol>{% for step in copy['start.steps'] %}<li>{{ step }}</li>{% endfor %}</ol>
+<p>{{ copy['start.lifetime'] }}</p>
+<p>{{ copy['start.data'] }}</p>
+<p>{{ copy['start.terms_line'] | safe }}</p>
+{% if not config.claimOff %}<h2>{{ copy['start.claim'][0] }}</h2>
+<p>{{ copy['start.claim'][1] }}</p>
+{% endif %}<p>{{ copy['start.account'][0] }} <a href="#account">{{ copy['start.account'][1] }}</a></p>
+</div></section>
+<section class="inner-section" id="account"><div class="wrap">
+{{ accountHTML | safe }}
+</div></section>
+<section class="inner-section" id="for-your-agent"><div class="wrap agent-prose">
+<h2>{{ copy['start.agent.heading'] }}</h2>
+{#- 🤖 For agents, not people: where the Markdown twin of the instructions below is. -#}
+<p class="agent-md">These instructions as Markdown: <a href="/start/index.md">/start/index.md</a></p>
+<div class="agent-content"><!-- agent-content -->{{ agentHTML | safe }}<!-- /agent-content --></div>
+</div></section>
+</main>

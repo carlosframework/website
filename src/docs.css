@@ -300,8 +300,10 @@ html { scrollbar-gutter: stable; }
 .docs-article li + li { margin-top: 0.35rem; }
 .docs-article blockquote {
   margin-top: 1.15rem;
-  padding-left: 1rem;
-  border-left: 2px solid var(--rule);
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--ink) 3%, transparent);
   color: var(--muted);
   max-width: 36rem;
 }

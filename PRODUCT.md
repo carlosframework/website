@@ -20,9 +20,10 @@ Two audiences, one per page (confirmed 2026-08-05):
 
 The site exists to win adoption, and each page has a concrete success action:
 
-- index → the visitor starts building on the model, beginning with the
-  [Claude Code skill](https://github.com/carlosframework/skills). That is the
-  hero's primary action; everything else on the page is subordinate to it.
+- 🤖 index → When the demo journey is enabled, visitors copy one line into
+  their coding agent and try a small public app for 24 hours. Larger projects
+  and existing apps use the account path. Disabled builds keep the existing
+  hero and setup page.
 - /platform/ → the visitor gets started at platform.carlosframework.com, or
   takes the hosted route at carloku.com.
 
@@ -77,8 +78,10 @@ migrate.carlosframework.com and are linked from the hub and every footer.
 
 ## Brand Commitments
 
-- AI authorship is always visibly marked 🤖 (factor X practiced on itself).
-  Person-emoji-marked blocks are certified human and off-limits to LLM edits.
+- Per Paul’s 2026-11-07 ruling, the website has no robot markers, in-page AI
+  authorship lines or footer AI disclaimer. Do not restore them. Repository
+  prose retains authorship markers. Person-emoji-marked blocks remain
+  certified human and off-limits to LLM edits.
 - House style (redesigned 2026-08-19; see AGENTS.md for the full record).
   CARLOS reads exciting, modern and assertive — deliberately NOT the warm
   paper-and-serif world rastrillo.org already owns. Type from Modern Font
@@ -120,4 +123,4 @@ migrate.carlosframework.com and are linked from the hub and every footer.
    worth reading.
 3. Honesty about maturity is a feature, not a caveat ("Extracted, not
    invented").
-4. AI authorship is disclosed, visibly, always.
+4. Follow Paul’s 2026-11-07 authorship ruling above when changing the website.

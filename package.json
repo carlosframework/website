@@ -5,14 +5,20 @@
   "scripts": {
     "build": "eleventy",
     "serve": "eleventy --serve",
-    "check": "node hack/test-docs-markdown.mjs && node hack/test-sync-docs.mjs && eleventy && node hack/check-docs.mjs && node hack/check-skills.mjs",
+    "check": "node hack/test-docs-markdown.mjs && node hack/test-sync-docs.mjs && eleventy && node hack/check-docs.mjs && node hack/check-skills.mjs && npm run check:start",
+    "check:starter": "node hack/check-starter.mjs",
     "sync-docs": "node hack/sync-docs.mjs",
-    "sync-skills": "node hack/sync-skills.mjs"
+    "sync-skills": "node hack/sync-skills.mjs",
+    "check:start": "node --test test/start-protocol.test.mjs test/start-build.test.mjs test/start-pages.test.mjs test/start-live-verifier.test.mjs test/release-start.test.mjs test/starter-pack.test.mjs test/home-scripts.test.mjs test/home-themes.test.mjs",
+    "check:start-live": "node --test test/start-live.test.mjs",
+    "update:start-baselines": "node hack/update-start-baselines.mjs"
   },
   "devDependencies": {
+    "htmlparser2": "^7.2.0",
     "@11ty/eleventy": "^3.0.0",
     "markdown-it": "^14.1.0",
     "markdown-it-anchor": "^9.2.0",
-    "yaml": "^2.9.1"
+    "yaml": "^2.9.1",
+    "nunjucks": "^3.2.4"
   }
 }

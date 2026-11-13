@@ -1,7 +1,6 @@
 /* 🤖 carlosframework.com — one hand-written stylesheet for every page.
-   No dependencies or fetched fonts. The AI disclaimer has its own script
-   and stylesheet. Pages set only
-   their own accent hues in a small inline block. */
+   No dependencies or fetched fonts. Pages set their own accent hues
+   in a small inline block. */
 
 /* ---------------------------------------------------------------- tokens -- */
 
@@ -234,14 +233,6 @@ p + p { margin-top: 1.05rem; }
 .btn.ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
 .btn:active { transform: translateY(0); }
 @media (prefers-reduced-motion: reduce) { .btn, .btn:hover { transform: none; transition: none; } }
-
-.robot {
-  margin-top: 2.75rem; max-width: 44rem;
-  padding: 0.7rem 0.95rem;
-  border: 1px solid var(--rule-soft); border-radius: 8px;
-  background: var(--bg-sunk);
-  font-size: 0.88rem; line-height: 1.55; color: var(--muted);
-}
 
 /* ------------------------------------------------ the week, at real size -- */
 /* Seven days by twenty-four hours. The lit cells are the hours anyone used it;
@@ -592,7 +583,6 @@ main > section.letters-intro .head { margin-bottom: 0; }
 .hero.compact h1 { font-size: clamp(2.1rem, 5vw, 3.6rem); max-width: 20ch; }
 .hero.compact .lede { margin-top: 1.25rem; max-width: 40rem; }
 .hero.compact .actions { margin-top: 1.75rem; }
-.hero.compact .robot { margin-top: 2rem; }
 .hero-context { margin-top: 1.5rem; max-width: 40rem; font-size: 1rem; line-height: 1.65; color: var(--ink-2); }
 .kicker {
   font-family: var(--font-mono); font-size: 0.775rem; letter-spacing: 0.08em;

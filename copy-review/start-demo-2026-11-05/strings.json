@@ -1,0 +1,231 @@
+[
+  {
+    "id": "home.hero.promise",
+    "text": "Better, faster, more secure apps.",
+    "context": "Homepage hero, the one-line promise under the existing subtitle, bold",
+    "status": "source kept against Luna (controller ruling), pending Paul's final review",
+    "luna": "A small app you can try before you keep it.",
+    "ruling": "Kept the source: Luna's \"A small app you can try before you keep it.\" drops Paul's spec §5.2 direction for the hero (\"better, faster, more secure apps\" or similar). The hero promise is about CARLOS, not the demo."
+  },
+  {
+    "id": "home.hero.intro",
+    "text": "Your agent asks what you want to make and how it should feel, then builds a small app with its own database. Try it at a public link for 24 hours. No account or install needed.",
+    "context": "Homepage hero, short paragraph above the line to paste",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Your agent asks what you want to make and how it should feel, then builds a small app with its own database. Try it at a public link for 24 hours. No account or install needed."
+  },
+  {
+    "id": "home.hero.action",
+    "text": "See how it works",
+    "context": "Homepage hero, secondary link to /start beside the copy button",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "See how it works"
+  },
+  {
+    "id": "home.meta.description",
+    "text": "Tell your coding agent what you want to make. Try the app it builds at a public link for 24 hours. No account needed.",
+    "context": "Homepage `<meta name=\"description\">`",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Tell your coding agent what you want to make. Try the app it builds at a public link for 24 hours. No account needed."
+  },
+  {
+    "id": "home.og.description",
+    "text": "Tell your coding agent what you want to make. Try the app it builds at a public link for 24 hours.",
+    "context": "Homepage social preview description",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Tell your coding agent what you want to make. Try the app it builds at a public link for 24 hours."
+  },
+  {
+    "id": "start.prompt",
+    "text": "Follow the directions on https://carlosframework.com/start",
+    "context": "The line to paste, homepage and /start (fixed, review only for context)",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Follow the directions on https://carlosframework.com/start"
+  },
+  {
+    "id": "start.title",
+    "text": "Make an app with your coding agent",
+    "context": "/start page heading and `<title>`",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Make an app with your coding agent"
+  },
+  {
+    "id": "start.meta.description",
+    "text": "Tell your coding agent what you want to make and try the app it builds at a public link for 24 hours. No account or install needed.",
+    "context": "/start `<meta name=\"description\">` and social description",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Tell your coding agent what you want to make and try the app it builds at a public link for 24 hours. No account or install needed."
+  },
+  {
+    "id": "start.intro",
+    "text": "Paste this line into the AI tool you use to write code. It will ask what you want to make and how it should feel, then build a small app with its own database and give you a link to try it.",
+    "context": "/start, paragraph under the heading, above the line to paste",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Paste this line into the AI tool you use to write code. It will ask what you want to make and how it should feel, then build a small app with its own database and give you a link to try it."
+  },
+  {
+    "id": "start.steps",
+    "text": [
+      "Paste the line and say what you want to make.",
+      "Answer a few questions about how it should look and feel. If asked, allow it to connect to one website.",
+      "Open the link your agent gives you."
+    ],
+    "context": "/start, short numbered list after the line; three items",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Paste the line and say what you want to make.; Answer a few questions about how it should look and feel. If asked, allow it to connect to one website.; Open the link your agent gives you."
+  },
+  {
+    "id": "start.lifetime",
+    "text": "Your demo is public for 24 hours from when it is made. Anyone with the link can open it. Updates do not extend the 24 hours.",
+    "context": "/start, notice under the steps",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Your demo is public for 24 hours from when it is made. Anyone with the link can open it. Updates do not extend the 24 hours."
+  },
+  {
+    "id": "start.data",
+    "text": "Nothing is backed up. Use made-up data. Do not enter real passwords or personal information.",
+    "context": "/start, notice under the steps",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Nothing is backed up. Use made-up data. Do not enter real passwords or personal information."
+  },
+  {
+    "id": "start.claim",
+    "text": [
+      "Keep it",
+      "If you like it, enter your email address and the code we send. The app moves to a permanent address in a new or existing account. If you have more than one account, choose where it goes."
+    ],
+    "context": "/start, short section headed \"Keep it\"; heading; body",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Keep it; If you like it, enter your email address and the code we send. The app moves to a permanent address in a new or existing account. If you have more than one account, choose where it goes."
+  },
+  {
+    "id": "start.account",
+    "text": [
+      "For a larger project or an app you already have, use an account.",
+      "Set up an account"
+    ],
+    "context": "/start, line pointing to the account path (the existing setup guide further down the page); lead-in; link text",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "For a larger project or an app you already have, use an account.; Set up an account"
+  },
+  {
+    "id": "start.agent.heading",
+    "text": "For your agent",
+    "context": "/start, visible heading of the full agent instructions",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "For your agent"
+  },
+  {
+    "id": "start.authorship",
+    "text": "🤖 Written by AI for your agent. You can read along.",
+    "context": "/start, one line under that heading",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "🤖 Written by AI for your agent. You can read along."
+  },
+  {
+    "id": "copy.label",
+    "text": "Copy",
+    "context": "Copy button label",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Copy"
+  },
+  {
+    "id": "copy.done",
+    "text": "Copied",
+    "context": "Copy button after success",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Copied"
+  },
+  {
+    "id": "copy.fallback",
+    "text": "Your browser could not copy the line. It is selected. Copy it yourself.",
+    "context": "Shown when the browser refuses to copy; the line is now selected",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Your browser could not copy the line. It is selected. Copy it yourself."
+  },
+  {
+    "id": "copy.aria",
+    "text": "Copy the line for your agent",
+    "context": "Copy button accessible name",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Copy the line for your agent"
+  },
+  {
+    "id": "starter.title",
+    "text": "Shop list",
+    "context": "Starter app page title and heading",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Shop list"
+  },
+  {
+    "id": "starter.empty",
+    "text": "No items yet. Add the first one.",
+    "context": "Starter app, empty list",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "No items yet. Add the first one."
+  },
+  {
+    "id": "starter.name",
+    "text": "Item",
+    "context": "Starter app, text field label",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Item"
+  },
+  {
+    "id": "starter.add",
+    "text": "Add",
+    "context": "Starter app, submit button",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Add"
+  },
+  {
+    "id": "starter.invalid",
+    "text": "Enter a name with 1 to 120 characters.",
+    "context": "Starter app, error when the name is empty or too long",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Enter a name with 1 to 120 characters."
+  },
+  {
+    "id": "starter.full",
+    "text": "This list is full. It can hold up to 100 items.",
+    "context": "Starter app, error when the list already has 100 items",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "This list is full. It can hold up to 100 items."
+  },
+  {
+    "id": "starter.error",
+    "text": "Something went wrong. Try again.",
+    "context": "Starter app, generic database failure",
+    "status": "source kept against Luna (controller ruling), pending Paul's final review",
+    "luna": "Could not save the list. Try again.",
+    "ruling": "Kept the source: the generic database failure also covers reading the list, where Luna's \"Could not save the list.\" would be wrong."
+  },
+  {
+    "id": "starter.aria",
+    "text": "Add an item to the shop list",
+    "context": "Starter app, accessible name of the add form",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "Add an item to the shop list"
+  },
+  {
+    "id": "start.config.error",
+    "text": "The start page could not be built:",
+    "context": "Website build failure prefix, followed by the variable name and the problem",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "The start page could not be built:"
+  },
+  {
+    "id": "start.hosts.two",
+    "text": "If your agent has limited network access, allow {siteHost} and {apiHost} in its network settings before pasting. Most local agents do not need this.",
+    "context": "Under the paste line and copy button, homepage and /start, when the site and API hostnames differ",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "If your agent has limited network access, allow {siteHost} and {apiHost} in its network settings before pasting. Most local agents do not need this."
+  },
+  {
+    "id": "start.hosts.one",
+    "text": "If your agent has limited network access, allow {host} in its network settings before pasting. Most local agents do not need this.",
+    "context": "Under the paste line and copy button, homepage and /start, when the site and API hostnames match",
+    "status": "approved by Luna delegation, pending Paul's final review",
+    "luna": "If your agent has limited network access, allow {host} in its network settings before pasting. Most local agents do not need this."
+  }
+]

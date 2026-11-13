@@ -12,26 +12,32 @@ Keymail, Woodstar, Slopbox and Kass. Tito (always "Tito", never "Tito Go")
 is adopting CARLOS deliberately and is listed on the site as an adopter,
 not an extraction source — it doesn't count toward the "5 systems" stat. The pages are static and the
 stylesheet (`site.css`) is plain: what a visitor downloads is HTML and CSS,
-with local scripts for the AI disclaimer, clipboard controls and Attributes
-sidebar, and no third-party runtime resources.
-The disclaimer is an explicit user-requested exception (2026-09-24): keep the
-disclosure available from the footer. As of 2026-10-22, it opens only when
-requested; never show it automatically or store an acknowledgement. JavaScript
-elsewhere follows PRODUCT.md's rule (2026-11-06): only where it meaningfully
-improves the experience, only as progressive enhancement on a page that works
-and reads without it, as small local files with no dependencies and no
-bundlers. The clipboard controls and the Attributes sidebar enhancement are
-examples; the Get started pathways use native radios.
+with local scripts for clipboard controls and the Attributes sidebar, and no
+third-party runtime resources. JavaScript elsewhere follows PRODUCT.md's rule
+(2026-11-06): only where it meaningfully improves the experience, only as
+progressive enhancement on a page that works and reads without it, as small
+local files with no dependencies and no bundlers. The clipboard controls and
+the Attributes sidebar enhancement are examples; the Get started pathways use
+native radios. (The footer AI disclaimer is gone: see Paul's 2026-11-07 ruling
+below.)
 Durable product context for design tooling lives in
 `PRODUCT.md`.
 
 `index.html`, `platform/index.html` and the 2026-09 pages (`letters/`,
-`apps/`, `trust/`, `start/`, `attributes/`) are written by hand;
-each is an `addPassthroughCopy` entry in `eleventy.config.js`. The build adds
-the shared AI disclaimer to every HTML page, including docs, through
-`hack/add-disclaimer.mjs`. Its human-authored copy lives in
-`src/_data/ai-disclaimer.json`. Every
-user-facing string on those pages passed a copy review (the indexes and
+`apps/`, `trust/`, `attributes/`) are written by hand;
+each is an `addPassthroughCopy` entry in `eleventy.config.js`.
+
+🤖 `hack/build-start.mjs` preserves the homepage and `src/start/index.html` when
+the demo is disabled. When enabled, it replaces the marked homepage hero and
+body (`start-demo:hero`, `start-demo:body`) with the approved 2026-11-12 rework,
+rendered from `src/_includes/home-hero.njk` and `home-body.njk` with copy from
+`src/_data/start-copy.json` (key `home.<review id>`), and it
+generates `/start/index.html` and `/start/index.md` from `src/start/agent.md`.
+It does this before shared footer injection. The build publishes only
+the starter archive, manifest and source listing. Raw starter files, config and
+claim fixtures remain private build inputs.
+
+Every user-facing string on those pages passed a copy review (the indexes and
 results are archived under `copy-review/done/`); rewrite copy only through
 another review. `/docs` does: its pages come from markdown through Eleventy, the
 same pipeline rastrillo.org uses, run here before you ship rather than on
@@ -39,18 +45,21 @@ anyone's browser. A dozen docs pages sharing a sidebar are not something you
 hand-maintain as HTML, and the served site keeps every promise in the paragraph
 above. See "Building the docs" below.
 
-## The one rule: AI authorship is always marked (🤖 / 👨)
+## Authorship in repository prose (🤖 / 👨)
 
-This repo practices factor X on itself. Every piece of prose carries an
-authorship marker so a reader — human or agent — can tell who wrote what, and
-so a human can fence text off from AI rewriting.
+🤖 Paul’s 2026-11-07 ruling: the website has no robot markers, in-page AI
+authorship lines or footer AI disclaimer. Do not re-add the disclaimer, its
+button, fallback, script, styles or build injection. This supersedes the
+2026-09-24 exception and 2026-10-22 footer disclosure rule.
+
+The following markers apply to repository prose. Human-certified blocks
+remain protected wherever they appear.
 
 - **🤖 — written by an LLM.** Always **visible**, immediately before the
   heading, paragraph, or section it applies to. A 🤖 on a heading **cascades**:
   it marks that heading and everything beneath it, down to the next marker of
   the same-or-higher level or a human-certified block. One 🤖 on a document's
-  top heading marks the whole document. On the website, the marker must render
-  visibly on the page — never hide it in a comment.
+  top heading marks the whole document. Do not add these markers to the website.
 - **No marker — ambiguous.** Could be either. Never *assume* AI authorship;
   when you genuinely don't know, leave it unmarked.
 - **A person emoji (👨 / 👤 / 🧑 …) — certified human, off-limits.** The text
@@ -66,11 +75,29 @@ person marker.**
 
 - **JavaScript only as progressive enhancement** (PRODUCT.md, 2026-11-06): where it
   meaningfully improves the experience, on a page that works and reads without it,
-  as small local files. No frameworks, remotely fetched fonts or analytics. The footer button opens the disclosure on request;
-  Continue and Escape dismiss it and return focus. There is no localStorage
-  acknowledgement. With
-  JavaScript disabled, a collapsed disclosure in the footer provides the same
-  copy. The footer links are shared through `src/_includes/footer.html` and
+  as small local files. Today that is the clipboard controls, the Attributes
+  sidebar, the docs navigation, search and stepper (`src/docs-nav.js`,
+  `src/docs-search.js`, `src/docs-stepper.js`) and, on the enabled-demo homepage,
+  `src/home/theme.js` (Auto, Light or
+  Dark, remembered in localStorage; loaded first in `<head>`, without defer, so
+  there is no flash of the wrong theme), `src/home/hero.js` (the rotating word), `src/home/hero-bg.js` (the hero's
+  WebGL2 background: Fable's 3D meadow Q1, day in light and night in dark;
+  0.4 resolution, DPR capped at 1.5, 30 fps, a slow device gets half the
+  blades then a smaller picture; stopped off screen, in a hidden tab, by the
+  replay's Pause and under reduced motion, where it draws one still frame;
+  without WebGL2 the CSS gradient stays), `src/home/figures.js` (the "What you get" figures
+  count up once in view, over the real text, which is all that screen readers,
+  no-JS and reduced motion get)
+  and `src/home/stacks.js` (the interactive stacks, with a Pause control; they
+  move only while the script says so). `src/home/` is copied by
+  `hack/build-start.mjs` into enabled builds only. Homepage colours use
+  `light-dark()`; in light, green is for links and accents only. The stacks load Matter.js
+  0.20 (MIT, served from `/home/` with its license header and
+  `matter-0.20.0.LICENSE.txt`) in idle time once the section nears the
+  viewport, never under reduced motion. Both are decorative: without them the
+  page reads the same. Visible text uses curly quotes in the source strings.
+  No frameworks, remotely fetched fonts or analytics. The footer links are
+  shared through `src/_includes/footer.html` and
   `hack/add-footer.mjs`; page placeholders retain docs source provenance.
   The `/docs` build is a devDependency
   that runs at authoring time; `_site/` is gitignored and never committed.
@@ -196,6 +223,17 @@ resolves, and every carlosframework.com link in `llms.txt` points at a
 built file.
 
 ## Deploying
+
+🤖 `npm run check` includes the start checks. Regenerate test baselines with `npm run update:start-baselines` when the homepage or agent source changes.
+
+🤖 The demo journey defaults off. See README for the explicit origin inputs.
+Before public activation, bind the claim fixture to merged handlers.
+Verify the platform's demo protection and claim-by-email changes in
+`docs/superpowers/plans/2026-11-04-agent-start-demo-2-edge-protections.md` and
+`docs/superpowers/plans/2026-11-04-agent-start-demo-3-claim.md`. Also verify
+the platform's Accept-header negotiation change in
+`docs/superpowers/plans/2026-11-04-static-markdown-twins.md` on the serving
+edges. Website builds do not enable console admission or claim support.
 
 Use the console API and the `carlos` CLI. Do not use bucket-mode credentials,
 AWS commands or on-box operations for website releases. The registered app is
