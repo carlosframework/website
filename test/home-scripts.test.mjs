@@ -362,11 +362,12 @@ test('hero: a height-only resize measures again when it changed the replay (a ta
 });
 
 // 🤖 The apps carousel (home/apps.js): a ring with a copy of every app on each side, the current app centred, a
-// random start, depth that follows the scroll position, eased glides, and a slow move every 10 s that waits for
-// hover, focus, off screen and a hidden tab, stops for good on the quiet pause, a touch, a drag or a chosen app,
-// and never runs under reduced motion (which also keeps the row flat). The status line names the real app.
+// random start, depth that follows the scroll position, eased glides, the pop of the app at rest in the middle,
+// and a slow move every 10 s that waits for hover, focus, off screen and a hidden tab, stops for good on the
+// quiet pause, a touch, a drag or a chosen app, and never runs under reduced motion (which also keeps the row
+// flat and nothing popped). The status line names the real app.
 const appsJS = await read('src/home/apps.js');
-function appsWorld({ reduce = false, count = 4, random = 0, search = '' } = {}) {
+function appsWorld({ reduce = false, count = 4, random = 0 } = {}) {
   const mq = media(reduce), root = new El('rw-apps'), track = new El('ap-track'), ctrl = new El('ap-ctrl'), dotsBox = new El('ap-dots');
   const play = new El('ap-play'), prev = new El('ap-prev'), next = new El('ap-next'), status = new El('ap-status');
   ctrl.hidden = dotsBox.hidden = true; play.dataset.pause = 'Pause'; play.dataset.play = 'Play';
@@ -399,18 +400,20 @@ function appsWorld({ reduce = false, count = 4, random = 0, search = '' } = {}) 
     setTimeout: (f, ms) => { timeouts.set(++n, { f, ms }); return n; }, clearTimeout: id => timeouts.delete(id),
     requestAnimationFrame: f => { frames.set(++n, f); return n; }, cancelAnimationFrame: id => frames.delete(id),
     IntersectionObserver: class { constructor(cb) { this.cb = cb; observers.push(this); } observe() {} },
-    addEventListener: (t, f) => (win[t] ||= []).push(f), location: { search },
+    addEventListener: (t, f) => (win[t] ||= []).push(f),
   };
   runInContext(appsJS, createContext(g));
   const see = on => observers.forEach(o => o.cb([{ isIntersecting: on }]));
   const run = ms => { const due = [...timeouts.entries()].filter(([, t]) => t.ms === ms); due.forEach(([id]) => timeouts.delete(id)); due.forEach(([, t]) => t.f()); return due.length; };
   // run animation frames 16 ms apart until none are left (or a frame budget runs out); scroll events fire as the row moves
   const play_ = (budget = 400) => { let k = 0; while (frames.size && k++ < budget) { const fs = [...frames.entries()]; frames.clear(); clock += 16; const before = track.scrollLeft; fs.forEach(([, f]) => f(clock)); if (track.scrollLeft !== before) track.fire('scroll'); } return k; };
-  const advance = () => run(10000);
+  const advance = () => { const k = run(10000); run(200); return k; };          // the row's own move, after the screenshot sinks
+  const press = (el, e = {}) => { el.fire(e.key ? 'keydown' : 'click', e); run(200); }; // a press, after the screenshot sinks
   const settle = () => { track.fire('scroll'); run(150); };
   const current = () => dots.findIndex(d => d.getAttribute('aria-current') === 'true');
   const at = () => order.indexOf(order.find(s => Math.abs(s.offsetLeft + 320 - 500 - track.scrollLeft) < 1)); // the slide in the middle
-  return { mq, root, track, ctrl, dotsBox, play, prev, next, status, real, order, dots, doc, win, timeouts, frames, see, advance, settle, frames_: play_, current, at };
+  const upAt = () => order.findIndex(s => s.classList.contains('is-up'));
+  return { mq, root, track, ctrl, dotsBox, play, prev, next, status, real, order, dots, doc, win, timeouts, frames, see, run, advance, press, settle, frames_: play_, current, at, upAt };
 }
 
 test('apps: a copy of every app on each side, hidden and out of the tab order, and a random start in the middle', () => {
@@ -421,47 +424,60 @@ test('apps: a copy of every app on each side, hidden and out of the tab order, a
   }
   for (const r of w.real) { assert.equal(r.getAttribute('aria-hidden'), null); assert.equal(r.link.getAttribute('tabindex'), null); }
   assert.equal(w.current(), 2, 'Math.random 0.6 of four apps: the third'); assert.equal(w.at(), 6, 'the real one, centred');
+  assert.equal(w.upAt(), 6, 'and popped forward');
   assert.equal(w.track.scrolls[0], 'instant');
   assert.equal(w.status.textContent, '', 'nothing announced on arrival');
   assert.equal(w.ctrl.hidden, false); assert.equal(w.dotsBox.hidden, false); assert.ok(w.root.classList.contains('is-live'));
   assert.equal(appsWorld({ random: 0 }).current(), 0); assert.equal(appsWorld({ random: 0.99 }).current(), 3);
 });
 
-test('apps: a drum seen from outside, turned by the scroll position; the middle app is left untransformed', () => {
-  const w = appsWorld({ random: 0.6 });   // slide 6 centred; slides 640 wide, 700 apart
+test('apps: seen from inside the ring, depth follows the scroll position; the middle app is left untransformed', () => {
+  const w = appsWorld({ random: 0.6 });   // slide 6 centred
   const t = p => w.order[p].style.transform || '', turn = p => Number(/rotateY\((-?[\d.]+)deg\)/.exec(t(p))?.[1] ?? 0);
-  const at3d = p => /translate3d\((-?[\d.]+)px, 0, (-?[\d.]+)px\)/.exec(t(p)).slice(1).map(Number);
-  assert.equal(w.track.style.perspective, '1920px', 'one vanishing point for the row: three slide widths');
   assert.equal(t(6), '', 'facing you: no transform, so its text stays sharp'); assert.equal(w.order[6].style.opacity || '', '');
-  // round the drum: 28 degrees per app, far edges receding (left turns one way, right the other), further back with distance
-  assert.equal(turn(7), 28); assert.equal(turn(5), -28); assert.equal(turn(8), 56); assert.equal(turn(4), -56);
-  const [x7, z7] = at3d(7), [x8, z8] = at3d(8);
-  const R = 2.15 * 640;
-  assert.ok(Math.abs(x7 - (R * Math.sin(28 * Math.PI / 180) - 700)) < 0.1 && Math.abs(z7 - (R * Math.cos(28 * Math.PI / 180) - R)) < 0.1);
-  assert.ok(z8 < z7 && z7 < 0, 'further round is further back');
-  assert.ok(Number(w.order[8].style.opacity) < Number(w.order[7].style.opacity) && Number(w.order[7].style.opacity) < 1, 'and dimmer');
-  // the first neighbour's near edge stays clear of the middle app (a flat slide 640 wide: its edge at 320)
-  const th = 28 * Math.PI / 180, nearX = R * Math.sin(th) - 320 * Math.cos(th), nearZ = R * Math.cos(th) + 320 * Math.sin(th) - R;
-  assert.ok(nearX * 1920 / (1920 - nearZ) > 320 + 20, 'a clear gap beside the middle app');
-  // beyond the second neighbour: round the back, hidden
-  assert.equal(w.order[9].style.visibility, 'hidden'); assert.equal(w.order[3].style.visibility, 'hidden'); assert.equal(w.order[8].style.visibility, '');
-  // half way to the next app the drum is half way round; the drawing waits for the next frame
+  assert.ok(turn(5) > 0 && turn(7) < 0, 'neighbours turned away on opposite sides'); assert.equal(Math.abs(turn(5)), Math.abs(turn(7)));
+  assert.match(t(7), /^translateX\(-[\d.]+px\) perspective\(\d+px\) rotateY\(-30\.00deg\) scale\(0\.9000\)$/);
+  assert.ok(Number(w.order[7].style.opacity) < 1);
+  assert.equal(t(10), '', 'out of sight: left alone');
+  assert.equal(w.track.style.perspective || '', '', 'no shared perspective: each slide carries its own');
+  // half way to the next app, both are part turned; the drawing waits for the next frame
   w.track.scrollLeft += 350; w.track.fire('scroll'); assert.equal(t(6), '');
   w.frames_();
-  assert.equal(turn(6), -14); assert.equal(turn(7), 14);
-  // reduced motion: flat, nothing hidden, no perspective
+  assert.ok(turn(6) > 0 && turn(6) < 30 && turn(7) < 0 && turn(7) > -30, `${turn(6)} ${turn(7)}`);
+  // reduced motion: flat
   w.mq.set(true); w.frames_();
-  for (const s of w.order) { assert.equal(s.style.transform || '', ''); assert.equal(s.style.visibility || '', ''); }
-  assert.equal(w.track.style.perspective, '');
+  for (const s of w.order) assert.equal(s.style.transform || '', '');
 });
 
-test('apps: ?ring=inside keeps the view from inside the ring for comparison', () => {
-  const w = appsWorld({ random: 0.6, search: '?ring=inside' });
-  const t = p => w.order[p].style.transform || '', turn = p => Number(/rotateY\((-?[\d.]+)deg\)/.exec(t(p))?.[1] ?? 0);
-  assert.equal(w.track.style.perspective || '', '', 'each slide carries its own perspective instead');
-  assert.equal(t(6), '');
-  assert.ok(turn(5) > 0 && turn(7) < 0, 'turned the other way');
-  assert.match(t(7), /^translateX\(-[\d.]+px\) perspective\(\d+px\) rotateY/);
+test('apps: the app at rest pops forward, eases back before the row moves, and the next pops once it settles', () => {
+  const w = appsWorld({ random: 0 }); w.see(true);
+  assert.equal(w.upAt(), 4);
+  // a press: back first, and the row waits the 200 ms before it turns
+  w.next.fire('click');
+  assert.equal(w.upAt(), -1, 'eased back at once'); assert.equal(w.frames.size, 0, 'not moving yet');
+  w.run(200); assert.ok(w.track.classList.contains('is-gliding'), 'then it turns');
+  w.frames_(); assert.equal(w.upAt(), -1, 'nothing pops on the way');
+  w.settle(); assert.equal(w.upAt(), 5, 'the next app pops when it has settled');
+  // presses while it eases back add up to one move
+  w.next.fire('click'); w.next.fire('click'); w.run(200); w.frames_(); w.settle();
+  assert.equal(w.current(), 3); assert.equal(w.upAt(), 7);
+  // the row's own move does the same
+  const a = appsWorld({ random: 0 }); a.see(true);
+  a.run(10000); assert.equal(a.upAt(), -1); assert.equal(a.frames.size, 0);
+  a.run(200); const k = a.frames_(); assert.ok(k > 80, `a slow turn: ${k} frames`); a.settle(); assert.equal(a.upAt(), 5);
+  // a drag: back the moment it starts, nothing pops while held, the settled app pops
+  const d = appsWorld({ random: 0 }); d.see(true);
+  d.track.fire('pointerdown', { pointerType: 'mouse', button: 0, clientX: 600, pointerId: 1 });
+  assert.equal(d.upAt(), 4, 'a press that has not moved is still a click');
+  d.track.fire('pointermove', { clientX: 540, pointerId: 1 }); assert.equal(d.upAt(), -1);
+  d.settle(); assert.equal(d.upAt(), -1, 'not while held');
+  d.track.fire('pointerup', { clientX: 540, pointerId: 1 }); d.frames_(); d.settle(); assert.equal(d.upAt(), 5);
+  // a touch, and a trackpad moving the row: back at once
+  const t = appsWorld({ random: 0 }); t.track.fire('pointerdown', { pointerType: 'touch' }); assert.equal(t.upAt(), -1);
+  const pad = appsWorld({ random: 0 }); pad.track.scrollLeft += 40; pad.track.fire('scroll'); assert.equal(pad.upAt(), -1);
+  // reduced motion: nothing pops, and nothing waits
+  const r = appsWorld({ reduce: true, random: 0 }); assert.equal(r.upAt(), -1);
+  r.next.fire('click'); assert.equal(r.current(), 1, 'straight away'); r.settle(); assert.equal(r.upAt(), -1);
 });
 
 test('apps: it loops both ways with eased glides, and the dots and status give the real app', () => {
@@ -469,28 +485,28 @@ test('apps: it loops both ways with eased glides, and the dots and status give t
   assert.equal(w.status.getAttribute('aria-live'), 'off', 'silent while it moves by itself');
   assert.equal(w.advance(), 1);
   assert.equal(w.current(), 0); assert.ok(w.track.classList.contains('is-gliding'), 'snapping off while it glides');
-  const k = w.frames_(); assert.ok(k > 80, `a slow turn: ${k} frames`);
-  assert.ok(!w.track.classList.contains('is-gliding'));
+  w.frames_(); assert.ok(!w.track.classList.contains('is-gliding'));
   assert.equal(w.at(), 8, 'on into the copy after the last, not back across the row');
   w.settle();
   assert.equal(w.at(), 4, 'at rest on a copy: quietly onto the real first app'); assert.equal(w.track.scrolls.at(-1), 'instant'); assert.equal(w.current(), 0);
+  assert.equal(w.upAt(), 4, 'the real one pops, not the copy');
   // a press glides briskly; backwards from the first goes into the copy before it, then onto the real last
-  w.prev.fire('click'); const kp = w.frames_(); assert.ok(kp < 45, `brisk: ${kp} frames`);
+  w.press(w.prev); const kp = w.frames_(); assert.ok(kp < 45, `brisk: ${kp} frames`);
   assert.equal(w.at(), 3); assert.equal(w.current(), 3); assert.equal(w.status.textContent, 'Woodstar, 4 of 4');
   w.settle(); assert.equal(w.at(), 7);
   // presses during a glide finish it where it was going, then go on
   const v = appsWorld({ random: 0.99 }); v.see(true);
-  for (let i = 0; i < 6; i++) { v.next.fire('click'); v.frames_(3); }
+  for (let i = 0; i < 6; i++) { v.press(v.next); v.frames_(3); }
   v.frames_(); assert.equal(v.current(), 1); v.settle(); assert.equal(v.order[v.at()], v.real[1]);
-  for (let i = 0; i < 9; i++) v.prev.fire('click');
+  for (let i = 0; i < 9; i++) v.press(v.prev);
   v.frames_(); assert.equal(v.current(), 0); v.settle(); assert.equal(v.order[v.at()], v.real[0]);
   // a dot goes the short way round
-  const d = appsWorld({ random: 0 }); d.dots[3].fire('click'); d.frames_(); assert.equal(d.at(), 3); d.settle(); assert.equal(d.at(), 7);
+  const d = appsWorld({ random: 0 }); d.press(d.dots[3]); d.frames_(); assert.equal(d.at(), 3); d.settle(); assert.equal(d.at(), 7);
   // a swipe that comes to rest on a copy is moved to the real app too
   const s = appsWorld({ random: 0 }); s.track.fire('pointerdown', { pointerType: 'touch' });
   s.track.scrollLeft = 700 * 2 - 130; s.settle(); assert.equal(s.current(), 2); assert.equal(s.at(), 6);
   // the arrow keys move one app and focus goes with it
-  const kb = appsWorld({ random: 0 }); kb.track.fire('keydown', { key: 'ArrowRight', preventDefault() {} });
+  const kb = appsWorld({ random: 0 }); kb.press(kb.track, { key: 'ArrowRight', preventDefault() {} });
   assert.equal(kb.current(), 1); assert.ok(kb.real[1].link.focused); assert.equal(kb.play.getAttribute('aria-label'), 'Play');
 });
 
@@ -499,19 +515,19 @@ test('apps: hover, focus, off screen and a hidden tab hold it; the quiet pause, 
   assert.equal(w.play.getAttribute('aria-label'), 'Pause'); assert.equal(w.play.getAttribute('title'), 'Pause'); assert.equal(w.play.hidden, false);
   w.track.fire('pointerenter', { pointerType: 'mouse' });
   assert.equal(w.advance(), 0); assert.equal(w.status.getAttribute('aria-live'), 'polite');
-  w.track.fire('pointerleave', { pointerType: 'mouse' }); assert.equal(w.advance(), 1); w.frames_();
+  w.track.fire('pointerleave', { pointerType: 'mouse' }); assert.equal(w.advance(), 1); w.frames_(); w.settle();
   w.track.fire('focusin', {}); assert.equal(w.advance(), 0);
   w.track.fire('focusout', { relatedTarget: w.real[2] }); assert.equal(w.advance(), 0, 'focus still inside');
-  w.track.fire('focusout', { relatedTarget: null }); assert.equal(w.advance(), 1); w.frames_();
+  w.track.fire('focusout', { relatedTarget: null }); assert.equal(w.advance(), 1); w.frames_(); w.settle();
   w.see(false); assert.equal(w.advance(), 0, 'scrolled away: it waits'); w.see(true);
   w.doc.hidden = true; w.doc.l.visibilitychange.forEach(f => f()); assert.equal(w.advance(), 0, 'hidden tab: it waits'); w.doc.hidden = false; w.doc.l.visibilitychange.forEach(f => f());
   w.play.fire('click');
   assert.equal(w.play.getAttribute('aria-label'), 'Play'); assert.ok(w.play.classList.contains('is-stopped')); assert.equal(w.advance(), 0);
-  w.play.fire('click'); assert.equal(w.play.getAttribute('aria-label'), 'Pause'); assert.equal(w.advance(), 1); w.frames_();
+  w.play.fire('click'); assert.equal(w.play.getAttribute('aria-label'), 'Pause'); assert.equal(w.advance(), 1); w.frames_(); w.settle();
   w.track.fire('pointerdown', { pointerType: 'touch' }); assert.equal(w.play.getAttribute('aria-label'), 'Play'); assert.equal(w.advance(), 0);
   // choosing an app stops it
   const v = appsWorld(); v.see(true);
-  v.next.fire('click'); v.frames_(); assert.equal(v.current(), 1); assert.equal(v.status.textContent, 'Jelly, 2 of 4'); assert.equal(v.play.getAttribute('aria-label'), 'Play'); assert.equal(v.advance(), 0);
+  v.press(v.next); v.frames_(); assert.equal(v.current(), 1); assert.equal(v.status.textContent, 'Jelly, 2 of 4'); assert.equal(v.play.getAttribute('aria-label'), 'Play'); assert.equal(v.advance(), 0);
   // a mouse drag moves the row, settles on an app and is not a click on it
   const d = appsWorld(); d.see(true);
   d.track.fire('pointerdown', { pointerType: 'mouse', button: 0, clientX: 600, pointerId: 1 });
@@ -529,9 +545,9 @@ test('apps: reduced motion never moves by itself, hides the pause, jumps instead
   assert.equal(r.play.hidden, true); assert.equal(r.advance(), 0); assert.equal(r.status.getAttribute('aria-live'), 'polite');
   r.next.fire('click'); assert.equal(r.track.scrolls.at(-1), 'instant'); assert.equal(r.frames.size, 0, 'no glide'); assert.equal(r.current(), 0);
   r.settle(); assert.equal(r.at(), 4);
-  // switched on mid-wait: the pending move is dropped
+  // switched on mid-wait: the pending move is dropped, and the popped screenshot goes back
   const w = appsWorld(); w.see(true); assert.equal([...w.timeouts.values()].filter(t => t.ms === 10000).length, 1);
-  w.mq.set(true); assert.equal(w.advance(), 0); assert.equal(w.play.hidden, true);
+  w.mq.set(true); assert.equal(w.advance(), 0); assert.equal(w.play.hidden, true); assert.equal(w.upAt(), -1);
   // a new width puts the current app back in the middle
   const z = appsWorld({ random: 0.3 }); z.track.scrollLeft = 123; z.win.resize.forEach(f => f()); [...z.timeouts.entries()].filter(([, t]) => t.ms === 100).forEach(([, t]) => t.f());
   assert.equal(z.at(), 5);

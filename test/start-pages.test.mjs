@@ -141,6 +141,10 @@ test('enabled homepage has the apps carousel under the hero',()=>pages(async(hom
  // With the script the current app snaps to the middle; a drag turns snapping off until it ends.
  assert.match(css,/\.rw \.rw-apps\.is-live \.ap-slide \{ scroll-snap-align: center; \}/);
  assert.match(css,/\.rw \.ap-track\.is-dragging \{ scroll-snap-type: none;/);
+ // The pop scales the screenshot only (the name and line under it never scale), and not under reduced motion.
+ assert.match(css,/\.rw \.ap-slide\.is-up \.ap-shot, \.rw \.ap-slide\.is-up:hover \.ap-shot \{ transform: scale\(1\.06\);[^}]*transition-duration: 0\.3s;/);
+ assert.match(css,/\.rw \.ap-shot \{[^}]*transition: transform 0\.2s/);
+ assert.match(css,/@media \(prefers-reduced-motion: reduce\) \{[^\n]*\.rw \.ap-slide\.is-up \.ap-shot \{ transform: none; \}/);
  assert.match(css,/\.rw \.ap-ctrl\[hidden\], \.rw \.ap-dots\[hidden\] \{ display: none; \}/);
  assert.match(css,/@media \(prefers-reduced-motion: no-preference\) \{ \.rw \.ap-track \{ scroll-behavior: smooth; \} \}/);
  // Under the row, centred: previous, the dots with the quiet pause right after the last one, next.

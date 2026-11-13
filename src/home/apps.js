@@ -9,11 +9,15 @@
 // section is off screen and while the tab is hidden, and stops for good when someone presses the quiet pause
 // beside the dots (WCAG 2.2.2), touches or drags the row, or picks an app; play starts it again. The status line
 // names the real app and is announced only while nothing moves by itself.
-// Depth: the apps stand round a drum seen from outside, turning away along its curve and coming round to face you
-// as they reach the middle. It follows the scroll position itself (a glide, a swipe, a drag), one
-// frame at a time, writing only transform and opacity; the middle app has no transform at all, so its text stays
-// sharp. Under reduced motion the row stays flat, never moves by itself (no pause shown) and every move jumps
-// instead of gliding (it still loops).
+// Depth, seen from inside the ring: the apps beside the middle one turn away in perspective, drawn in, smaller
+// and dimmer, and turn to face you as they reach the middle. It follows the scroll position (a glide, a swipe, a
+// drag), one frame at a time, writing only transform and opacity; the middle app has no transform at all.
+// The pop: once an app comes to rest in the middle its screenshot eases forward (.is-up, in home/apps.css; the
+// text under it is never scaled, so it stays sharp). Before the row moves on by itself or for a button, a dot or
+// a key, the screenshot first eases back (200 ms), then the row turns; a touch or a drag takes it back at once,
+// nothing pops while the row is held, and the next app pops when it has settled.
+// Under reduced motion the row stays flat, nothing pops, it never moves by itself (no pause shown) and every move
+// jumps instead of gliding (it still loops).
 (() => {
   const root = document.querySelector('.rw-apps[data-carousel]');
   const track = root && root.querySelector('.ap-track');
@@ -24,9 +28,10 @@
   const dotsBox = root.querySelector('.ap-dots'), dots = [...dotsBox.querySelectorAll('button')];
   const status = root.querySelector('.ap-status');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-  const DELAY = 10000, TURN_MS = 1600, STEP_MS = 520, n = real.length;
+  const DELAY = 10000, TURN_MS = 1600, STEP_MS = 520, SINK_MS = 200, n = real.length;
   let index = -1, pos = n, timer = 0, settle = 0, resized = 0, stopped = false, hover = false, focus = false, seen = false;
   let drag = null, dragged = false, frame = 0, glider = 0, geo = [], half = 0, stepW = 1;
+  let up = null, waiting = 0, owed = 0, owedMs = STEP_MS;
 
   const copy = slide => {
     const c = slide.cloneNode(true);
@@ -48,54 +53,43 @@
   };
   const jump = left => track.scrollTo({ left, behavior: 'instant' });
 
-  // Depth: the apps stand round a drum seen from outside, like a merry-go-round. Each app sits 28 degrees further
-  // round than the one before, 2.15 slide widths from the drum's axis, turned to follow the curve: its far edge
-  // recedes, it gets smaller with distance and dimmer, and beyond the second neighbour (2.6 apps round) it is
-  // hidden, so a nearly edge-on third never paints over the second. That radius is what spaces them: the first neighbour's near edge stays clear of the
-  // middle app. The row's own perspective keeps one vanishing point at the middle while it scrolls. The angle
-  // follows the scroll position continuously, so a glide, a swipe or a drag turns the drum.
-  // ?ring=inside keeps round 3's view from inside the ring (each app turned the other way) for comparison.
-  const inside = typeof location === 'object' && /[?&]ring=inside\b/.test(location.search);
-  const STEP = 28 * Math.PI / 180, RADIUS = 2.15, DEPTH = 3, FADE = 0.24, SHOWN = 2.6;  // outside: angle per app, radius and perspective in slide widths
-  const TURN = 30, SHRINK = 0.1, DIM = 0.42, PULL = 0.15;                // inside
-  let slideW = 1;
+  // Depth. Slide centres are measured once (and again on resize), so a frame reads only scrollLeft.
+  const TURN = 30, SHRINK = 0.1, DIM = 0.42, PULL = 0.15;
   const measure = () => {
     geo = all.map(s => s.offsetLeft + s.offsetWidth / 2);
     half = track.clientWidth / 2;
     stepW = geo[1] - geo[0] || 1;
-    slideW = all[n].offsetWidth || stepW;
-    track.style.perspective = reduce.matches || inside ? '' : `${Math.round(DEPTH * slideW)}px`;
   };
-  // Each slide's last drawing, so a frame writes only what changed.
-  const drawn = all.map(() => '');
-  const put = (p, transform, opacity, hidden) => {
-    const key = transform + '|' + opacity + '|' + hidden;
+  const drawn = all.map(() => ''); // each slide's last drawing, so a frame writes only what changed
+  const put = (p, transform, opacity) => {
+    const key = transform + '|' + opacity;
     if (drawn[p] === key) return;
     drawn[p] = key;
-    const st = all[p].style;
-    st.transform = transform; st.opacity = opacity; st.visibility = hidden ? 'hidden' : '';
+    all[p].style.transform = transform; all[p].style.opacity = opacity;
   };
   const paint = () => {
     frame = 0;
-    if (reduce.matches) { track.style.perspective = ''; return all.forEach((s, p) => put(p, '', '', false)); }
-    const mid = track.scrollLeft + half, R = RADIUS * slideW, depth = Math.round(stepW * 2.4);
+    if (reduce.matches) return all.forEach((s, p) => put(p, '', ''));
+    const mid = track.scrollLeft + half, depth = Math.round(stepW * 2.4);
     for (let p = 0; p < all.length; p++) {
-      const o = (geo[p] - mid) / stepW;
-      if (Math.abs(o) < 0.002) { put(p, '', '', false); continue; } // facing you: untransformed, so its text stays sharp
-      if (inside) {
-        const far = Math.min(2.5, Math.abs(o)), a = Math.min(1, far), side = o < 0 ? -1 : 1;
-        if (Math.abs(o) > 3) { put(p, '', '', false); continue; }
-        put(p, `translateX(${(-side * PULL * stepW * far).toFixed(1)}px) perspective(${depth}px) rotateY(${(-side * a * TURN).toFixed(2)}deg) scale(${(1 - SHRINK * a).toFixed(4)})`, (1 - DIM * a).toFixed(3), false);
-        continue;
-      }
-      const th = o * STEP;
-      if (Math.abs(o) >= SHOWN) { put(p, '', '', true); continue; } // round the back of the drum
-      // from where the row has put it to its place on the drum, then turned to follow the curve
-      const dx = R * Math.sin(th) - o * stepW, dz = R * Math.cos(th) - R;
-      put(p, `translate3d(${dx.toFixed(1)}px, 0, ${dz.toFixed(1)}px) rotateY(${(th * 180 / Math.PI).toFixed(2)}deg)`, Math.max(0.3, 1 - FADE * Math.abs(o)).toFixed(3), false);
+      const o = (geo[p] - mid) / stepW, far = Math.min(2.5, Math.abs(o)), a = Math.min(1, far);
+      if (Math.abs(o) > 3 || a < 0.002) { put(p, '', ''); continue; } // out of sight, or facing you
+      const side = o < 0 ? -1 : 1;
+      // drawn in towards the middle so two neighbours show on each side, turned away, smaller and dimmer
+      put(p, `translateX(${(-side * PULL * stepW * far).toFixed(1)}px) perspective(${depth}px) rotateY(${(-side * a * TURN).toFixed(2)}deg) scale(${(1 - SHRINK * a).toFixed(4)})`, (1 - DIM * a).toFixed(3));
     }
   };
   const draw = () => { if (!frame) frame = requestAnimationFrame(paint); };
+
+  // The pop: forward when an app has settled in the middle, back before the row moves on.
+  const rise = p => {
+    if (up === all[p]) return;
+    sink();
+    if (reduce.matches) return;
+    up = all[p];
+    up.classList.add('is-up');
+  };
+  function sink() { if (up) { up.classList.remove('is-up'); up = null; } }
 
   // The glide: scrollLeft eased over a set time, snapping off while it runs, so the turn is as calm as we choose
   // (slow for the row's own move, brisk for a press) and the depth above follows it frame by frame.
@@ -131,7 +125,7 @@
     dots.forEach((d, k) => d.setAttribute('aria-current', String(k === i)));
     status.textContent = status.dataset.format.replace('{app}', real[i].dataset.name).replace('{n}', i + 1).replace('{total}', n);
   };
-  const arm = () => { clearTimeout(timer); timer = moving() ? setTimeout(() => step(1, TURN_MS), DELAY) : 0; };
+  const arm = () => { clearTimeout(timer); timer = moving() ? setTimeout(() => go(1, TURN_MS), DELAY) : 0; };
   const sync = () => {
     status.setAttribute('aria-live', moving() ? 'off' : 'polite');
     play.hidden = reduce.matches;
@@ -147,19 +141,32 @@
     glide(centre(p), ms);
     arm();
   };
-  // A glide still under way is finished where it was going, then the row goes on from there.
-  function step(d, ms) { if (glider) { halt(); jump(centre(pos)); } recentre(); move(pos + d, ms); }
+  // Move d apps on: a glide still under way is finished where it was going, then the row goes on from there.
+  const step = (d, ms) => { if (glider) { halt(); jump(centre(pos)); } recentre(); move(pos + d, ms); };
+  // Every move we start: the popped screenshot eases back first; presses while it does add up.
+  const go = (d, ms = STEP_MS) => {
+    owed += d; owedMs = ms;
+    if (waiting) return;
+    const flush = () => { waiting = 0; const k = owed; owed = 0; if (k) step(k, owedMs); };
+    if (!up || reduce.matches) return flush();
+    sink();
+    waiting = setTimeout(flush, SINK_MS);
+  };
+  const ahead = () => (((pos + owed) % n) + n) % n; // the app the row is on, or is about to go to
   const stop = () => { stopped = true; sync(); };
 
-  // Where the row comes to rest (a swipe, a trackpad, the end of a glide) is the current app.
+  // Where the row comes to rest (a swipe, a trackpad, the end of a glide) is the current app, and it pops.
   track.addEventListener('scroll', () => {
     draw();
+    // the row moving under someone's own hand (a trackpad, a wheel): the screenshot goes back at once
+    if (up && !glider && !waiting && Math.abs(track.scrollLeft - centre(pos)) > 2) sink();
     clearTimeout(settle);
     settle = setTimeout(() => {
-      if (drag || glider) return;
+      if (drag || glider || waiting) return;
       pos = nearest();
       recentre();
       mark(pos % n);
+      rise(pos);
       arm();
     }, 150);
   }, { passive: true });
@@ -167,7 +174,7 @@
   // Taking hold of the row stops its own movement for good; a mouse can drag it, and a drag is not a click.
   track.addEventListener('pointerdown', e => {
     halt();
-    if (e.pointerType !== 'mouse') return stop();
+    if (e.pointerType !== 'mouse') { sink(); return stop(); }
     if (e.button !== 0) return;
     pos = nearest(); recentre();
     drag = { x: e.clientX, left: track.scrollLeft, from: pos, id: e.pointerId, moved: false };
@@ -178,6 +185,7 @@
     if (!drag.moved) {
       if (Math.abs(dx) < 6) return;
       drag.moved = true;
+      sink();
       track.classList.add('is-dragging');
       if (track.setPointerCapture) track.setPointerCapture(e.pointerId);
       stop();
@@ -205,8 +213,8 @@
     if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
     e.preventDefault();
     stop();
-    step(e.key === 'ArrowLeft' ? -1 : 1);
-    const link = real[pos % n].querySelector('a');
+    go(e.key === 'ArrowLeft' ? -1 : 1);
+    const link = real[ahead()].querySelector('a');
     if (link) link.focus({ preventScroll: true });
   });
   track.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') { hover = true; sync(); } });
@@ -214,30 +222,31 @@
   track.addEventListener('focusin', () => { focus = true; sync(); });
   track.addEventListener('focusout', e => { if (!track.contains(e.relatedTarget)) { focus = false; sync(); } });
   play.addEventListener('click', () => { stopped = !stopped; sync(); });
-  prev.addEventListener('click', () => { stop(); step(-1); });
-  next.addEventListener('click', () => { stop(); step(1); });
+  prev.addEventListener('click', () => { stop(); go(-1); });
+  next.addEventListener('click', () => { stop(); go(1); });
   // A dot goes the short way round the ring.
   dots.forEach((d, k) => d.addEventListener('click', () => {
     stop();
-    const ahead = ((k - pos % n) % n + n) % n;
-    step(ahead > n / 2 ? ahead - n : ahead);
+    const by = ((k - ahead()) % n + n) % n;
+    if (by) go(by > n / 2 ? by - n : by);
   }));
   if (typeof IntersectionObserver === 'function') {
     new IntersectionObserver(es => { seen = es[es.length - 1].isIntersecting; sync(); }, { threshold: 0.4 }).observe(track);
   } else seen = true;
   document.addEventListener('visibilitychange', sync);
-  if (reduce.addEventListener) reduce.addEventListener('change', () => { halt(); measure(); sync(); draw(); });
+  if (reduce.addEventListener) reduce.addEventListener('change', () => { halt(); if (reduce.matches) sink(); else rise(pos); sync(); draw(); });
   // A new width moves every slide: measure again and put the current one back in the middle.
   addEventListener('resize', () => { clearTimeout(resized); resized = setTimeout(() => { halt(); measure(); jump(centre(pos)); draw(); }, 100); });
 
   ctrl.hidden = dotsBox.hidden = false;
   root.classList.add('is-live');
-  // A random app to start, in the middle of the row.
+  // A random app to start, in the middle of the row, popped forward.
   pos = n + Math.floor(Math.random() * n);
   measure();
   jump(centre(pos));
   paint();
   mark(pos % n);
+  rise(pos);
   status.textContent = ''; // nothing to announce on arrival
   sync();
 })();

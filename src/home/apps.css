@@ -5,7 +5,7 @@
    sections.css, and coloured with its light-dark() tokens. Glanceable: the screenshot first, then the name,
    then one line. */
 /* Widths are fractions of the content column (cqi): on desktop the middle app is about two fifths of it, with
-   two neighbours on each side round the drum; on phones about three quarters of the screen. */
+   two neighbours turned away on each side; on phones about three quarters of the screen. */
 .rw .rw-apps { --ap-w: 80cqi; --ap-gap: clamp(1rem, 2.6vw, 1.75rem); background: var(--rw-bg-2); overflow-x: clip; }
 .rw .rw-apps .rw-wrap { container-type: inline-size; }
 @media (min-width: 640px) { .rw .rw-apps { --ap-w: 56cqi; } }
@@ -19,22 +19,27 @@
    that brings it back also keeps the focus ring inside the scroller's clip. Without JavaScript the apps snap to the
    content column's left edge. With it (.is-live) the current app snaps to the middle, its neighbours peeking in on
    both sides, and home/apps.js adds copies at each end so the row never runs out. */
-.rw .ap-track { --ap-bleed: calc((100vw - 100cqi) / 2); position: relative; list-style: none; display: flex; gap: var(--ap-gap); margin: clamp(1.5rem, 3vw, 2.25rem) calc(-1 * var(--ap-bleed)) 0; padding: 6px var(--ap-bleed) 0.9rem; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--ap-bleed); scrollbar-width: thin; scrollbar-color: var(--rw-line) transparent; }
+.rw .ap-track { --ap-bleed: calc((100vw - 100cqi) / 2); position: relative; list-style: none; display: flex; gap: var(--ap-gap); margin: calc(clamp(1.5rem, 3vw, 2.25rem) - 18px) calc(-1 * var(--ap-bleed)) 0; padding: 24px var(--ap-bleed) 0.9rem; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--ap-bleed); scrollbar-width: thin; scrollbar-color: var(--rw-line) transparent; }
 .rw .rw-apps.is-live .ap-track { scrollbar-width: none; }
 .rw .rw-apps.is-live .ap-track::-webkit-scrollbar { display: none; }
 .rw .rw-apps.is-live .ap-track { will-change: scroll-position; }
 .rw .rw-apps.is-live .ap-slide { scroll-snap-align: center; }
 /* The depth is decoration: under reduced motion the row stays flat whatever the script last wrote. */
-@media (prefers-reduced-motion: reduce) { .rw .ap-track { perspective: none !important; } .rw .ap-slide { transform: none !important; opacity: 1 !important; visibility: visible !important; } }
+@media (prefers-reduced-motion: reduce) { .rw .ap-slide { transform: none !important; opacity: 1 !important; } .rw .ap-slide.is-up .ap-shot { transform: none; } }
 .rw .ap-track.is-dragging { scroll-snap-type: none; scroll-behavior: auto; cursor: grabbing; user-select: none; }
 /* home/apps.js eases the glide itself; snapping waits until it lands on the next app. */
 .rw .ap-track.is-gliding { scroll-snap-type: none; scroll-behavior: auto; }
 @media (prefers-reduced-motion: no-preference) { .rw .ap-track { scroll-behavior: smooth; } }
 
 .rw .ap-slide { position: relative; flex: 0 0 var(--ap-w); min-width: 0; scroll-snap-align: start; display: grid; align-content: start; }
-.rw .ap-shot { display: block; aspect-ratio: 8 / 5; overflow: hidden; border: 1px solid var(--rw-line); border-radius: 10px; background: #ffffff; box-shadow: 0 22px 40px -30px light-dark(rgba(40, 30, 10, 0.45), rgba(0, 0, 0, 0.9)); transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out); }
+.rw .ap-shot { display: block; aspect-ratio: 8 / 5; overflow: hidden; border: 1px solid var(--rw-line); border-radius: 10px; background: #ffffff; box-shadow: 0 22px 40px -30px light-dark(rgba(40, 30, 10, 0.45), rgba(0, 0, 0, 0.9)); transform-origin: 50% 60%; transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out); }
 .rw .ap-shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
 .rw .ap-slide:hover .ap-shot { transform: translateY(-2px); box-shadow: 0 26px 44px -28px light-dark(rgba(40, 30, 10, 0.5), rgba(0, 0, 0, 0.95)); }
+/* The pop (home/apps.js): the app at rest in the middle brings its screenshot forward, 6% larger with a deeper
+   shadow, over 0.3 s, and takes it back in 0.2 s before the row moves on. Only the picture scales; the name and
+   line under it never do, so the text stays sharp. It sits above its neighbours while it is forward. */
+.rw .ap-slide.is-up { z-index: 1; }
+.rw .ap-slide.is-up .ap-shot, .rw .ap-slide.is-up:hover .ap-shot { transform: scale(1.06); box-shadow: 0 34px 56px -30px light-dark(rgba(40, 30, 10, 0.55), rgba(0, 0, 0, 1)); transition-duration: 0.3s; transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
 
 .rw .ap-name { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.85rem; }
 /* Logos sit on white, as on the Apps page, so every brand colour reads in both themes. */
