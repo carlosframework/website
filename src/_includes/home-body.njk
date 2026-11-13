@@ -15,7 +15,7 @@
     to each app; the script reveals previous, next, the dots and a quiet pause. Names, descriptions, logos and links are the
     Apps page's own (build-start.mjs reads src/apps/index.html); the screenshots are listed in src/home/apps/sources.json. -#}
 {#- How wide a slide is drawn (home/apps.css --ap-w), so the browser picks the 360 or 720 picture. -#}
-{%- set shotSizes = '(min-width: 1000px) 36vw, (min-width: 640px) 52vw, 78vw' -%}
+{%- set shotSizes = '(min-width: 1000px) 40vw, (min-width: 640px) 58vw, 88vw' -%}
 {%- set chevron = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg>' -%}
 <section class="rw-apps" aria-roledescription="{{ t('apps.carousel') }}" aria-labelledby="rw-apps-title" data-carousel><div class="rw-wrap">
   <div class="ap-head">

@@ -120,7 +120,7 @@ test('enabled homepage has the apps carousel under the hero',()=>pages(async(hom
   const name=gallery.name??pageName, href=gallery.url??url;
   assert.ok(slide.includes(`role="group" aria-roledescription="slide" aria-label="${i+1} of ${slides.length}" data-name="${escapeHTML(name)}"`),app);
   // a real screenshot, sized, with alt text, 360 and 720 wide for 1x and 2x screens, in AVIF and WebP with a JPEG fallback
-  const sizes='(min-width: 1000px) 36vw, (min-width: 640px) 52vw, 78vw', set=type=>`/home/apps/${app}-360.${type} 360w, /home/apps/${app}-720.${type} 720w, /home/apps/${app}-960.${type} 960w`;
+  const sizes='(min-width: 1000px) 40vw, (min-width: 640px) 58vw, 88vw', set=type=>`/home/apps/${app}-360.${type} 360w, /home/apps/${app}-720.${type} 720w, /home/apps/${app}-960.${type} 960w`;
   assert.ok(slide.includes(`<source type="image/avif" srcset="${set('avif')}" sizes="${sizes}"><source type="image/webp" srcset="${set('webp')}" sizes="${sizes}"><img src="/home/apps/${app}-360.jpg" srcset="${set('jpg')}" sizes="${sizes}" width="360" height="225" alt="${escapeHTML(copy['home.apps.shot.alt'].replace('{app}',name))}" loading="lazy" decoding="async">`),app);
   if(logoSpells) {
    // the wordmark stands in for its letters: the name is never printed beside a logo that already spells it
@@ -141,10 +141,11 @@ test('enabled homepage has the apps carousel under the hero',()=>pages(async(hom
  // With the script the current app snaps to the middle; a drag turns snapping off until it ends.
  assert.match(css,/\.rw \.rw-apps\.is-live \.ap-slide \{ scroll-snap-align: center; \}/);
  assert.match(css,/\.rw \.ap-track\.is-dragging \{ scroll-snap-type: none;/);
- // The pop scales the screenshot only (the name and line under it never scale), and not under reduced motion.
- assert.match(css,/\.rw \.ap-slide\.is-up \.ap-shot, \.rw \.ap-slide\.is-up:hover \.ap-shot \{ transform: scale\(1\.06\);[^}]*transition-duration: 0\.3s;/);
- assert.match(css,/\.rw \.ap-shot \{[^}]*transition: transform 0\.2s/);
- assert.match(css,/@media \(prefers-reduced-motion: reduce\) \{[^\n]*\.rw \.ap-slide\.is-up \.ap-shot \{ transform: none; \}/);
+ // The pop brings the whole card forward; only the popping and sinking classes carry a transition (so the
+ // cards never lag the turning row), and none under reduced motion.
+ assert.match(css,/\.rw \.rw-apps\.is-live \.ap-slide\.is-up \{ z-index: 1; transition: transform 0\.32s/);
+ assert.match(css,/\.rw \.rw-apps\.is-live \.ap-slide\.is-sinking \{ transition: transform 0\.2s/);
+ assert.match(css,/@media \(prefers-reduced-motion: reduce\) \{[^\n]*\.rw \.rw-apps\.is-live \.ap-slide\.is-up, \.rw \.rw-apps\.is-live \.ap-slide\.is-sinking \{ transition: none; \}/);
  assert.match(css,/\.rw \.ap-ctrl\[hidden\], \.rw \.ap-dots\[hidden\] \{ display: none; \}/);
  assert.match(css,/@media \(prefers-reduced-motion: no-preference\) \{ \.rw \.ap-track \{ scroll-behavior: smooth; \} \}/);
  // Under the row, centred: previous, the dots with the quiet pause right after the last one, next.

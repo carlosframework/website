@@ -434,14 +434,15 @@ test('apps: a copy of every app on each side, hidden and out of the tab order, a
 test('apps: seen from inside the ring, depth follows the scroll position; the middle app is left untransformed', () => {
   const w = appsWorld({ random: 0.6 });   // slide 6 centred
   const t = p => w.order[p].style.transform || '', turn = p => Number(/rotateY\((-?[\d.]+)deg\)/.exec(t(p))?.[1] ?? 0);
-  assert.equal(t(6), '', 'facing you: no transform, so its text stays sharp'); assert.equal(w.order[6].style.opacity || '', '');
+  assert.equal(t(6), '', 'popped forward: no transform at all, so its text is drawn sharp'); assert.equal(w.order[6].style.opacity || '', '');
   assert.ok(turn(5) > 0 && turn(7) < 0, 'neighbours turned away on opposite sides'); assert.equal(Math.abs(turn(5)), Math.abs(turn(7)));
-  assert.match(t(7), /^translateX\(-[\d.]+px\) perspective\(\d+px\) rotateY\(-30\.00deg\) scale\(0\.9000\)$/);
+  // cards are laid out at the popped size and drawn 1/1.13 smaller until they pop: 0.9 x 0.885 beside the middle
+  assert.match(t(7), /^translateX\(-[\d.]+px\) perspective\(\d+px\) rotateY\(-30\.00deg\) scale\(0\.7965\)$/);
   assert.ok(Number(w.order[7].style.opacity) < 1);
-  assert.equal(t(10), '', 'out of sight: left alone');
+  assert.equal(t(10), 'scale(0.8850)', 'out of sight: just at rest size');
   assert.equal(w.track.style.perspective || '', '', 'no shared perspective: each slide carries its own');
   // half way to the next app, both are part turned; the drawing waits for the next frame
-  w.track.scrollLeft += 350; w.track.fire('scroll'); assert.equal(t(6), '');
+  w.track.scrollLeft += 350; w.track.fire('scroll'); assert.ok(!w.order[6].classList.contains('is-up'), 'moved by hand: back at once');
   w.frames_();
   assert.ok(turn(6) > 0 && turn(6) < 30 && turn(7) < 0 && turn(7) > -30, `${turn(6)} ${turn(7)}`);
   // reduced motion: flat
@@ -451,11 +452,13 @@ test('apps: seen from inside the ring, depth follows the scroll position; the mi
 
 test('apps: the app at rest pops forward, eases back before the row moves, and the next pops once it settles', () => {
   const w = appsWorld({ random: 0 }); w.see(true);
-  assert.equal(w.upAt(), 4);
+  assert.equal(w.upAt(), 4); assert.equal(w.order[4].style.transform, '', 'the whole card forward, untransformed');
   // a press: back first, and the row waits the 200 ms before it turns
   w.next.fire('click');
   assert.equal(w.upAt(), -1, 'eased back at once'); assert.equal(w.frames.size, 0, 'not moving yet');
-  w.run(200); assert.ok(w.track.classList.contains('is-gliding'), 'then it turns');
+  assert.equal(w.order[4].style.transform, 'scale(0.8850)'); assert.ok(w.order[4].classList.contains('is-sinking'), 'easing back, with its own transition');
+  w.run(240); assert.ok(!w.order[4].classList.contains('is-sinking'), 'and then without one, so it never lags the row');
+  w.timeouts.forEach((t, id) => { if (t.ms === 200) { w.timeouts.delete(id); t.f(); } }); assert.ok(w.track.classList.contains('is-gliding'), 'then it turns');
   w.frames_(); assert.equal(w.upAt(), -1, 'nothing pops on the way');
   w.settle(); assert.equal(w.upAt(), 5, 'the next app pops when it has settled');
   // presses while it eases back add up to one move

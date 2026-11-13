@@ -90,8 +90,9 @@ person marker.**
   hidden under reduced motion), `src/home/apps.js` (the apps carousel under the
   hero: an endless ring, a copy of every app on each side hidden from screen readers and the tab
   order, the current app centred with the others turned away as if seen from inside the ring
-  (transform and opacity only, driven by the scroll position), the app at rest popping its
-  screenshot forward and easing it back before the row moves, a random start; previous/next, dots, drag, arrow keys
+  (transform and opacity only, driven by the scroll position), the app at rest popping forward as a
+  whole card (cards laid out at the popped size and drawn smaller at rest, so the popped one has
+  no transform and sharp text) and easing back before the row moves, a random start; previous/next, dots, drag, arrow keys
   and a slow 10 s advance with a quiet pause beside the dots, held on hover, focus and off screen,
   never under reduced motion, which also keeps the row flat; without it the apps are a flat
   sideways row that snaps. Names,

@@ -12,10 +12,11 @@
 // Depth, seen from inside the ring: the apps beside the middle one turn away in perspective, drawn in, smaller
 // and dimmer, and turn to face you as they reach the middle. It follows the scroll position (a glide, a swipe, a
 // drag), one frame at a time, writing only transform and opacity; the middle app has no transform at all.
-// The pop: once an app comes to rest in the middle its screenshot eases forward (.is-up, in home/apps.css; the
-// text under it is never scaled, so it stays sharp). Before the row moves on by itself or for a button, a dot or
-// a key, the screenshot first eases back (200 ms), then the row turns; a touch or a drag takes it back at once,
-// nothing pops while the row is held, and the next app pops when it has settled.
+// The pop: once an app comes to rest in the middle the whole card (screenshot, name, line and link) eases forward
+// by 13%. Slides are laid out at that popped size and drawn at rest 1/1.13 smaller, so the popped card has no
+// transform at all and its text is drawn sharp, never a scaled picture of text. Before the row moves on by itself
+// or for a button, a dot or a key, the card first eases back (0.2 s), then the row turns; a touch or a drag takes
+// it back straight away, nothing pops while the row is held, and the next app pops when it has settled.
 // Under reduced motion the row stays flat, nothing pops, it never moves by itself (no pause shown) and every move
 // jumps instead of gliding (it still loops).
 (() => {
@@ -54,7 +55,7 @@
   const jump = left => track.scrollTo({ left, behavior: 'instant' });
 
   // Depth. Slide centres are measured once (and again on resize), so a frame reads only scrollLeft.
-  const TURN = 30, SHRINK = 0.1, DIM = 0.42, PULL = 0.15;
+  const TURN = 30, SHRINK = 0.1, DIM = 0.42, PULL = 0.15, REST = 1 / 1.13; // REST: every card's size until it pops
   const measure = () => {
     geo = all.map(s => s.offsetLeft + s.offsetWidth / 2);
     half = track.clientWidth / 2;
@@ -72,24 +73,35 @@
     if (reduce.matches) return all.forEach((s, p) => put(p, '', ''));
     const mid = track.scrollLeft + half, depth = Math.round(stepW * 2.4);
     for (let p = 0; p < all.length; p++) {
+      if (all[p] === up) { put(p, '', ''); continue; } // popped: no transform at all, wherever a fraction of a pixel left it
       const o = (geo[p] - mid) / stepW, far = Math.min(2.5, Math.abs(o)), a = Math.min(1, far);
-      if (Math.abs(o) > 3 || a < 0.002) { put(p, '', ''); continue; } // out of sight, or facing you
+      if (Math.abs(o) > 3) { put(p, `scale(${REST.toFixed(4)})`, ''); continue; } // out of sight
+      if (a < 0.002) { put(p, `scale(${REST.toFixed(4)})`, ''); continue; } // facing you, at rest
       const side = o < 0 ? -1 : 1;
       // drawn in towards the middle so two neighbours show on each side, turned away, smaller and dimmer
-      put(p, `translateX(${(-side * PULL * stepW * far).toFixed(1)}px) perspective(${depth}px) rotateY(${(-side * a * TURN).toFixed(2)}deg) scale(${(1 - SHRINK * a).toFixed(4)})`, (1 - DIM * a).toFixed(3));
+      put(p, `translateX(${(-side * PULL * stepW * far).toFixed(1)}px) perspective(${depth}px) rotateY(${(-side * a * TURN).toFixed(2)}deg) scale(${((1 - SHRINK * a) * REST).toFixed(4)})`, (1 - DIM * a).toFixed(3));
     }
   };
   const draw = () => { if (!frame) frame = requestAnimationFrame(paint); };
 
-  // The pop: forward when an app has settled in the middle, back before the row moves on.
+  // The pop: forward when an app has settled in the middle, back before the row moves on. The classes carry the
+  // transitions (home/apps.css), so they ease only then and never lag behind the row as it turns.
+  const sunk = new Map();
   const rise = p => {
     if (up === all[p]) return;
     sink();
     if (reduce.matches) return;
     up = all[p];
     up.classList.add('is-up');
+    paint();
   };
-  function sink() { if (up) { up.classList.remove('is-up'); up = null; } }
+  function sink() {
+    if (!up) return;
+    const s = up; up = null;
+    s.classList.remove('is-up'); s.classList.add('is-sinking');
+    clearTimeout(sunk.get(s)); sunk.set(s, setTimeout(() => s.classList.remove('is-sinking'), SINK_MS + 40));
+    paint();
+  }
 
   // The glide: scrollLeft eased over a set time, snapping off while it runs, so the turn is as calm as we choose
   // (slow for the row's own move, brisk for a press) and the depth above follows it frame by frame.
