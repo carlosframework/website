@@ -4,7 +4,7 @@
    sections.css, and coloured with its light-dark() tokens. Glanceable: the screenshot first, then the name,
    then one line. One large app with the next peeking in; on phones one app with a narrower peek. */
 /* Widths are fractions of the content column (cqi); the row itself runs on to the right edge of the screen. */
-.rw .rw-apps { --ap-w: 84cqi; --ap-gap: clamp(1rem, 2.6vw, 1.75rem); background: var(--rw-bg-2); overflow-x: clip; }
+.rw .rw-apps { --ap-w: 80cqi; --ap-gap: clamp(1rem, 2.6vw, 1.75rem); background: var(--rw-bg-2); overflow-x: clip; }
 .rw .rw-apps .rw-wrap { container-type: inline-size; }
 @media (min-width: 640px) { .rw .rw-apps { --ap-w: 68cqi; } }
 @media (min-width: 1000px) { .rw .rw-apps { --ap-w: 63cqi; } }
@@ -25,12 +25,15 @@
 .rw .ap-ctrl svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .rw .ap-ctrl .ap-next svg { transform: scaleX(-1); }
 
-/* The row. A few pixels of padding (taken back by the margin) keep the focus ring inside the scroller's clip;
-   the spacer at the end lets the last app snap to the start like the others. */
-.rw .ap-track { list-style: none; display: flex; gap: var(--ap-gap); margin: clamp(1.5rem, 3vw, 2.25rem) calc(-6px - (100vw - 100cqi) / 2) 0 -6px; padding: 6px 6px 0.9rem; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-left: 6px; scrollbar-width: thin; scrollbar-color: var(--rw-line) transparent; }
-.rw .ap-track::after { content: ""; flex: 0 0 calc(100% - var(--ap-w) - var(--ap-gap)); }
+/* The row runs from screen edge to screen edge (--ap-bleed is the margin beside the content column); the padding
+   that brings it back also keeps the focus ring inside the scroller's clip. Without JavaScript the apps snap to the
+   content column's left edge. With it (.is-live) the current app snaps to the middle, its neighbours peeking in on
+   both sides, and home/apps.js adds copies at each end so the row never runs out. */
+.rw .ap-track { --ap-bleed: calc((100vw - 100cqi) / 2); position: relative; list-style: none; display: flex; gap: var(--ap-gap); margin: clamp(1.5rem, 3vw, 2.25rem) calc(-1 * var(--ap-bleed)) 0; padding: 6px var(--ap-bleed) 0.9rem; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--ap-bleed); scrollbar-width: thin; scrollbar-color: var(--rw-line) transparent; }
 .rw .rw-apps.is-live .ap-track { scrollbar-width: none; }
 .rw .rw-apps.is-live .ap-track::-webkit-scrollbar { display: none; }
+.rw .rw-apps.is-live .ap-slide { scroll-snap-align: center; }
+.rw .ap-track.is-dragging { scroll-snap-type: none; scroll-behavior: auto; cursor: grabbing; user-select: none; }
 @media (prefers-reduced-motion: no-preference) { .rw .ap-track { scroll-behavior: smooth; } }
 
 .rw .ap-slide { position: relative; flex: 0 0 var(--ap-w); min-width: 0; scroll-snap-align: start; display: grid; align-content: start; }

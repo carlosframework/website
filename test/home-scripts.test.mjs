@@ -361,61 +361,103 @@ test('hero: a height-only resize measures again when it changed the replay (a ta
   assert.equal(hero.style.height, held(952), 'a taller window grew the replay: measured again');
 });
 
-// 🤖 The apps carousel (home/apps.js): the controls appear, the advance waits until the row is on screen, holds for
-// hover and focus, stops for good on Pause, a touch or a chosen app, and never runs under reduced motion. The status
-// line is silent while the row moves by itself.
+// 🤖 The apps carousel (home/apps.js): a ring with a copy of every app on each side, the current app centred,
+// a random start; the advance waits until the row is on screen, holds for hover and focus, stops for good on
+// Pause, a touch, a drag or a chosen app, and never runs under reduced motion. The status line names the real app
+// and is silent while the row moves by itself.
 const appsJS = await read('src/home/apps.js');
-function appsWorld({ reduce = false, count = 4 } = {}) {
+function appsWorld({ reduce = false, count = 4, random = 0 } = {}) {
   const mq = media(reduce), root = new El('rw-apps'), track = new El('ap-track'), ctrl = new El('ap-ctrl'), dotsBox = new El('ap-dots');
   const pause = new El('ap-pause'), prev = new El('ap-prev'), next = new El('ap-next'), status = new El('ap-status');
   ctrl.hidden = dotsBox.hidden = true; pause.dataset.pause = 'Pause'; pause.dataset.play = 'Play'; pause.textContent = 'Pause';
   status.dataset.format = '{app}, {n} of {total}';
   const names = ['Tito', 'Jelly', 'Eleven', 'Woodstar'].slice(0, count);
-  const slides = names.map((name, i) => { const s = new El('ap-slide'); s.dataset.name = name; Object.defineProperty(s, 'offsetLeft', { get: () => 6 + i * 700 }); return s; });
+  // Slides 640 wide, 60 apart, in a 1000-wide row: slide p is centred at scrollLeft 700p - 130.
+  const order = [];
+  const slide = name => {
+    const s = new El('ap-slide'), a = new El('ap-link'); s.dataset.name = name; s.qs.a = [a]; s.link = a;
+    Object.defineProperty(s, 'offsetLeft', { get: () => 50 + order.indexOf(s) * 700 });
+    Object.defineProperty(s, 'offsetWidth', { get: () => 640 });
+    s.cloneNode = () => slide(name);
+    return s;
+  };
+  const real = names.map(slide); order.push(...real);
   const dots = names.map(() => new El(''));
+  Object.defineProperty(track, 'clientWidth', { get: () => 1000 });
   track.scrollLeft = 0; track.scrolls = [];
   track.scrollTo = ({ left, behavior }) => { track.scrollLeft = left; track.scrolls.push(behavior); };
-  track.contains = el => slides.includes(el);
-  track.qs['.ap-slide'] = slides; dotsBox.qs.button = dots;
+  track.prepend = (...k) => order.unshift(...k); track.append = (...k) => order.push(...k);
+  track.contains = el => order.includes(el);
+  track.qs['.ap-slide'] = real; dotsBox.qs.button = dots;
   Object.assign(root.qs, { '.ap-track': [track], '.ap-ctrl': [ctrl], '.ap-pause': [pause], '.ap-prev': [prev], '.ap-next': [next], '.ap-dots': [dotsBox], '.ap-status': [status] });
-  const timeouts = new Map(), observers = [], doc = { hidden: false, l: {} };
+  const timeouts = new Map(), observers = [], doc = { hidden: false, l: {} }, win = {};
   let n = 0;
   Object.assign(doc, { querySelector: s => (s === '.rw-apps[data-carousel]' ? root : null), addEventListener: (t, f) => (doc.l[t] ||= []).push(f) });
   const g = {
-    document: doc, matchMedia: () => mq, Math, String,
+    document: doc, matchMedia: () => mq, Math: Object.assign(Object.create(Math), { random: () => random }), String, Infinity,
     setTimeout: (f, ms) => { timeouts.set(++n, { f, ms }); return n; }, clearTimeout: id => timeouts.delete(id),
     IntersectionObserver: class { constructor(cb) { this.cb = cb; observers.push(this); } observe() {} },
+    addEventListener: (t, f) => (win[t] ||= []).push(f),
   };
   runInContext(appsJS, createContext(g));
   const see = on => observers.forEach(o => o.cb([{ isIntersecting: on }]));
-  const advance = () => { const due = [...timeouts.entries()].filter(([, t]) => t.ms === 6000); due.forEach(([id]) => timeouts.delete(id)); due.forEach(([, t]) => t.f()); return due.length; };
+  const run = ms => { const due = [...timeouts.entries()].filter(([, t]) => t.ms === ms); due.forEach(([id]) => timeouts.delete(id)); due.forEach(([, t]) => t.f()); return due.length; };
+  const advance = () => run(6000);
+  const settle = () => { track.fire('scroll'); run(150); };
   const current = () => dots.findIndex(d => d.getAttribute('aria-current') === 'true');
-  return { mq, root, track, ctrl, dotsBox, pause, prev, next, status, slides, dots, doc, timeouts, see, advance, current };
+  const at = () => order.indexOf(order.find(s => Math.abs(s.offsetLeft + 320 - 500 - track.scrollLeft) < 1)); // the slide in the middle
+  return { mq, root, track, ctrl, dotsBox, pause, prev, next, status, real, order, dots, doc, win, timeouts, see, advance, settle, current, at, names };
 }
 
-test('apps: the controls appear, and the advance waits until the row is seen', () => {
-  const w = appsWorld();
-  assert.equal(w.ctrl.hidden, false); assert.equal(w.dotsBox.hidden, false); assert.ok(w.root.classList.contains('is-live'));
-  assert.equal(w.pause.hidden, false); assert.equal(w.current(), 0);
+test('apps: a copy of every app on each side, hidden and out of the tab order, and a random start in the middle', () => {
+  const w = appsWorld({ random: 0.6 });
+  assert.equal(w.order.length, 12); assert.deepEqual(w.order.slice(4, 8), w.real);
+  for (const c of [...w.order.slice(0, 4), ...w.order.slice(8)]) {
+    assert.equal(c.getAttribute('aria-hidden'), 'true'); assert.equal(c.link.getAttribute('tabindex'), '-1'); assert.ok(c.classList.contains('is-copy'));
+  }
+  for (const r of w.real) { assert.equal(r.getAttribute('aria-hidden'), null); assert.equal(r.link.getAttribute('tabindex'), null); }
+  assert.equal(w.current(), 2, 'Math.random 0.6 of four apps: the third'); assert.equal(w.at(), 6, 'the real one, centred');
+  assert.equal(w.track.scrolls[0], 'instant');
   assert.equal(w.status.textContent, '', 'nothing announced on arrival');
-  assert.equal(w.advance(), 0, 'off screen: no advance');
-  w.see(true);
-  assert.equal(w.status.getAttribute('aria-live'), 'off', 'silent while it moves by itself');
-  assert.equal(w.advance(), 1); assert.equal(w.current(), 1); assert.equal(w.track.scrollLeft, 700);
-  assert.equal(w.track.scrolls.at(-1), 'smooth');
-  w.advance(); w.advance(); w.advance(); assert.equal(w.current(), 0, 'after the last app it starts again');
-  w.see(false); assert.equal(w.advance(), 0, 'scrolled away: it waits');
-  w.see(true); w.doc.hidden = true; w.doc.l.visibilitychange.forEach(f => f()); assert.equal(w.advance(), 0, 'hidden tab: it waits');
+  assert.equal(w.ctrl.hidden, false); assert.equal(w.dotsBox.hidden, false); assert.ok(w.root.classList.contains('is-live'));
+  assert.equal(appsWorld({ random: 0 }).current(), 0); assert.equal(appsWorld({ random: 0.99 }).current(), 3);
 });
 
-test('apps: hover and focus hold it; Pause, a touch or a chosen app stop it until Play', () => {
+test('apps: it loops both ways without a rewind, and the dots and status give the real app', () => {
+  const w = appsWorld({ random: 0.99 }); w.see(true);   // starts on the last app
+  assert.equal(w.status.getAttribute('aria-live'), 'off', 'silent while it moves by itself');
+  assert.equal(w.advance(), 1);
+  assert.equal(w.current(), 0); assert.equal(w.at(), 8, 'on into the copy after the last, not back across the row');
+  assert.equal(w.track.scrolls.at(-1), 'smooth');
+  w.settle();
+  assert.equal(w.at(), 4, 'at rest on a copy: quietly onto the real first app'); assert.equal(w.track.scrolls.at(-1), 'instant'); assert.equal(w.current(), 0);
+  // backwards from the first: into the copy before it, then onto the real last
+  w.prev.fire('click');
+  assert.equal(w.at(), 3); assert.equal(w.current(), 3); assert.equal(w.status.textContent, 'Woodstar, 4 of 4');
+  w.settle(); assert.equal(w.at(), 7);
+  // quick presses before the glide ends still land on real apps
+  const v = appsWorld({ random: 0.99 }); v.see(true);
+  for (let k = 0; k < 6; k++) v.next.fire('click');
+  assert.equal(v.current(), 1); v.settle(); assert.ok(v.at() >= 4 && v.at() < 8); assert.equal(v.order[v.at()], v.real[1]);
+  for (let k = 0; k < 9; k++) v.prev.fire('click');
+  assert.equal(v.current(), 0); v.settle(); assert.equal(v.order[v.at()], v.real[0]);
+  // a swipe that comes to rest on a copy is moved to the real app too
+  const s = appsWorld({ random: 0 }); s.track.fire('pointerdown', { pointerType: 'touch' });
+  s.track.scrollLeft = 700 * 2 - 130; s.settle();
+  assert.equal(s.current(), 2); assert.equal(s.at(), 6);
+  s.track.scrollLeft = 700 * 9 - 130; s.settle(); assert.equal(s.current(), 1); assert.equal(s.at(), 5);
+});
+
+test('apps: hover and focus hold it; Pause, a touch, a drag or a chosen app stop it until Play', () => {
   const w = appsWorld(); w.see(true);
   w.track.fire('pointerenter', { pointerType: 'mouse' });
   assert.equal(w.advance(), 0); assert.equal(w.status.getAttribute('aria-live'), 'polite');
   w.track.fire('pointerleave', { pointerType: 'mouse' }); assert.equal(w.advance(), 1);
   w.track.fire('focusin', {}); assert.equal(w.advance(), 0);
-  w.track.fire('focusout', { relatedTarget: w.slides[2] }); assert.equal(w.advance(), 0, 'focus still inside');
+  w.track.fire('focusout', { relatedTarget: w.real[2] }); assert.equal(w.advance(), 0, 'focus still inside');
   w.track.fire('focusout', { relatedTarget: null }); assert.equal(w.advance(), 1);
+  w.see(false); assert.equal(w.advance(), 0, 'scrolled away: it waits'); w.see(true);
+  w.doc.hidden = true; w.doc.l.visibilitychange.forEach(f => f()); assert.equal(w.advance(), 0, 'hidden tab: it waits'); w.doc.hidden = false; w.doc.l.visibilitychange.forEach(f => f());
   w.pause.fire('click');
   assert.equal(w.pause.textContent, 'Play'); assert.equal(w.advance(), 0); assert.equal(w.status.getAttribute('aria-live'), 'polite');
   w.pause.fire('click'); assert.equal(w.pause.textContent, 'Pause'); assert.equal(w.advance(), 1);
@@ -423,15 +465,29 @@ test('apps: hover and focus hold it; Pause, a touch or a chosen app stop it unti
   // choosing an app moves there, announces it and leaves the advance stopped
   const v = appsWorld(); v.see(true);
   v.next.fire('click'); assert.equal(v.current(), 1); assert.equal(v.status.textContent, 'Jelly, 2 of 4'); assert.equal(v.pause.textContent, 'Play'); assert.equal(v.advance(), 0);
-  v.prev.fire('click'); v.prev.fire('click'); assert.equal(v.current(), 3, 'previous from the first wraps to the last');
-  v.dots[2].fire('click'); assert.equal(v.current(), 2); assert.equal(v.status.textContent, 'Eleven, 3 of 4');
+  v.dots[3].fire('click'); assert.equal(v.current(), 3); assert.equal(v.status.textContent, 'Woodstar, 4 of 4'); assert.equal(v.at(), 7);
+  const short = appsWorld({ random: 0 }); short.dots[3].fire('click'); assert.equal(short.current(), 3); assert.equal(short.at(), 3, 'from the first, the last is one step back'); short.settle(); assert.equal(short.at(), 7);
+  // a mouse drag moves the row, settles on an app and is not a click on it
+  const d = appsWorld(); d.see(true);
+  d.track.fire('pointerdown', { pointerType: 'mouse', button: 0, clientX: 600, pointerId: 1 });
+  d.track.fire('pointermove', { clientX: 597, pointerId: 1 }); assert.ok(!d.track.classList.contains('is-dragging'), 'a wobble is still a click');
+  d.track.fire('pointermove', { clientX: 540, pointerId: 1 });
+  assert.ok(d.track.classList.contains('is-dragging')); assert.equal(d.track.scrollLeft, 700 * 4 - 130 + 60); assert.equal(d.pause.textContent, 'Play');
+  d.settle(); assert.equal(d.track.scrollLeft, 700 * 4 - 130 + 60, 'no snapping back mid-drag');
+  d.track.fire('pointerup', { clientX: 540, pointerId: 1 });
+  assert.ok(!d.track.classList.contains('is-dragging')); assert.equal(d.current(), 1, 'a deliberate short drag moves one app'); assert.equal(d.at(), 5);
+  let blocked = false; d.track.fire('click', { preventDefault() { blocked = true; }, stopPropagation() {} }); assert.ok(blocked);
 });
 
-test('apps: reduced motion never advances, hides Pause and jumps instead of gliding', () => {
-  const r = appsWorld({ reduce: true }); r.see(true);
+test('apps: reduced motion never advances, hides Pause, jumps instead of gliding and still loops', () => {
+  const r = appsWorld({ reduce: true, random: 0.99 }); r.see(true);
   assert.equal(r.pause.hidden, true); assert.equal(r.advance(), 0); assert.equal(r.status.getAttribute('aria-live'), 'polite');
-  r.next.fire('click'); assert.equal(r.track.scrolls.at(-1), 'auto'); assert.equal(r.current(), 1);
+  r.next.fire('click'); assert.equal(r.track.scrolls.at(-1), 'instant'); assert.equal(r.current(), 0);
+  r.settle(); assert.equal(r.at(), 4);
   // switched on mid-advance: the pending move is dropped
   const w = appsWorld(); w.see(true); assert.equal([...w.timeouts.values()].filter(t => t.ms === 6000).length, 1);
   w.mq.set(true); assert.equal(w.advance(), 0); assert.equal(w.pause.hidden, true);
+  // a new width puts the current app back in the middle
+  const z = appsWorld({ random: 0.3 }); z.track.scrollLeft = 123; z.win.resize.forEach(f => f()); [...z.timeouts.entries()].filter(([, t]) => t.ms === 100).forEach(([, t]) => t.f());
+  assert.equal(z.at(), 5);
 });

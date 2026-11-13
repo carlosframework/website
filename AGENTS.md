@@ -86,10 +86,13 @@ person marker.**
   blades then a smaller picture; stopped off screen, in a hidden tab, by the
   replay's Pause and under reduced motion, where it draws one still frame;
   without WebGL2 the CSS gradient stays), `src/home/apps.js` (the apps carousel under the
-  hero: previous/next, dots and a slow advance with a Pause control, held on hover, focus and off
-  screen, never under reduced motion; without it the apps are a sideways row that snaps. Names,
+  hero: an endless ring, a copy of every app on each side hidden from screen readers and the tab
+  order, the current app centred, a random start; previous/next, dots, drag and a slow advance with
+  a Pause control, held on hover, focus and off screen, never under reduced motion; without it the
+  apps are a sideways row that snaps. Names,
   lines, logos and links are read from the Apps page at build time; screenshots and their capture
-  date live in `src/home/apps/sources.json`), `src/home/figures.js` (the "What you get" figures
+  date, and the carousel's explicit name/url overrides and wordmark flags, live in
+  `src/home/apps/sources.json`), `src/home/figures.js` (the "What you get" figures
   count up once in view, over the real text, which is all that screen readers,
   no-JS and reduced motion get)
   and `src/home/stacks.js` (the interactive stacks, with a Pause control; they
