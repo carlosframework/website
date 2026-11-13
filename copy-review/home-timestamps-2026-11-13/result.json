@@ -1,0 +1,62 @@
+{
+  "action": "approve",
+  "guidance": null,
+  "strings": [
+    {
+      "id": "replay.live",
+      "text": "Live at {time}",
+      "original": "Live at {time}",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.at",
+      "text": "at {time}",
+      "original": "at {time}",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.minute",
+      "text": "{n} minute",
+      "original": "{n} minute",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.minutes",
+      "text": "{n} minutes",
+      "original": "{n} minutes",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.second",
+      "text": "{n} second",
+      "original": "{n} second",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "replay.seconds",
+      "text": "{n} seconds",
+      "original": "{n} seconds",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    }
+  ],
+  "review": "lk6vbgxjz7sresqa5f3byoxoam",
+  "generation": 1
+}
