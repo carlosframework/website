@@ -71,6 +71,10 @@ a.rp-url { text-decoration: none; overflow-wrap: anywhere; }
 a.rp-url:hover { text-decoration: underline; text-underline-offset: 0.18em; }
 a.rp-url:focus-visible { outline: 2px solid light-dark(#1a5f4f, #2fd4ac); outline-offset: 2px; border-radius: 3px; }
 a.rp-url svg { width: 0.8em; height: 0.8em; vertical-align: -0.05em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+/* Each line's stamp: the agent's real working time at that point, quiet, at the top right of the line; the live line
+   ends with a slightly stronger "Live at m:ss". The replay is sped up; the stamps are real time. */
+.rp-time { float: right; margin: 0 0 0 0.6rem; font: 400 0.64rem/1.7 ui-monospace, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; letter-spacing: 0.02em; color: light-dark(#6b7076, #93a0ae); }
+.rp-live { display: inline-block; margin-left: 0.25rem; padding: 0 0.4rem; border-radius: 99px; background: light-dark(rgba(26, 95, 79, 0.1), rgba(127, 208, 182, 0.14)); color: light-dark(#1a5f4f, #7fe9cf); font: 650 0.66rem/1.6 ui-monospace, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .rp-stage { display: grid; }
 .rp-stage > * { grid-area: 1 / 1; min-width: 0; }
 /* One session per tab, stacked in the stage; inside each, the two scenes stack the same way. */

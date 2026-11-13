@@ -87,7 +87,8 @@
   const wrap = (el, unit) => {
     const spans = [], walk = node => {
       for (const child of [...node.childNodes]) {
-        if (child.nodeType === 1) { if (!child.classList.contains('rp-who')) walk(child); continue; }
+        // the speaker, the stamps and the words only screen readers hear are not typed or streamed: they are there with the line
+        if (child.nodeType === 1) { if (!child.classList.contains('rp-who') && !child.classList.contains('rp-time') && !child.classList.contains('rp-live') && !child.classList.contains('rp-sr')) walk(child); continue; }
         if (child.nodeType !== 3 || !child.nodeValue) continue;
         const frag = document.createDocumentFragment();
         for (const piece of unit === 'char' ? [...child.nodeValue] : child.nodeValue.split(/(\s+)/)) {
@@ -102,6 +103,9 @@
     walk(el);
     return spans;
   };
+  // the words of a line as seen: not the speaker, the stamps or the words only screen readers hear
+  const skip = el => ['rp-who', 'rp-time', 'rp-live', 'rp-sr'].some(c => el.classList.contains(c));
+  const shown = node => [...node.childNodes].map(c => (c.nodeType === 3 ? c.nodeValue : c.nodeType === 1 && !skip(c) ? shown(c) : '')).join(' ');
   // ---- each session: its lines wrapped, its timeline, and how far it was last drawn
   const sessions = panels.map(el => {
     const turns = [];
@@ -109,7 +113,7 @@
       const li = el.querySelector(`.rp-s${k}`);
       if (!li) return null;
       const kind = li.classList.contains('rp-you') ? 'you' : 'agent';
-      const text = [...li.childNodes].filter(c => !(c.classList && c.classList.contains('rp-who'))).map(c => c.textContent).join(' ').replace(/\s+/g, ' ').trim();
+      const text = shown(li).replace(/\s+/g, ' ').trim(); // its reading time counts what is read on screen
       turns.push({ li, kind, text, units: wrap(li, kind === 'you' ? 'char' : 'word') });
       if (k === 3) turns.push({ kind: 'scene' });
     }

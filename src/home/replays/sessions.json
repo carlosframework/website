@@ -1,14 +1,14 @@
 {
-  "//": "🤖 The hero replay's sessions, in tab order (src/_includes/home-hero.njk, src/home/replay.js). Each is a real /start run recorded on 2026-11-13 (~/.cache/start-recording/examples/<slug>: replay.json, SUMMARY.md). The words are excerpts from it in src/_data/start-copy.json under home.replay.<slug>.*; the last line links to the app's permanent example copy (on the flagship demo account) instead of the 24-hour demo address the run printed. The screenshot is the app's own source (with its example-app banner) run locally from a fresh database, so it shows only the made-up starting data and never a visitor's entry, at 390 px, retaken 2026-11-13: the top 2400 px at 2x, as JPEG. Tab order alternates work and personal apps; the first is also what plays without JavaScript, so the CSS-only loop in home/hero.css is timed from it. With JavaScript a visit starts on a random one. Wedding RSVP and book club are the v2 reruns; shipment-exceptions is the exceptions-log run.",
+  "//": "🤖 The hero replay's sessions, in tab order (src/_includes/home-hero.njk, src/home/replay.js). Each is a real /start run recorded on 2026-11-13 (~/.cache/start-recording/examples/<slug>: replay.json, SUMMARY.md). The words are excerpts from it in src/_data/start-copy.json under home.replay.<slug>.*; the last line links to the app's permanent example copy (on the flagship demo account) instead of the 24-hour demo address the run printed. The screenshot is the app's own source (with its example-app banner) run locally from a fresh database, so it shows only the made-up starting data and never a visitor's entry, at 390 px, retaken 2026-11-13: the top 2400 px at 2x, as JPEG. Tab order alternates work and personal apps; the first is also what plays without JavaScript, so the CSS-only loop in home/hero.css is timed from it. With JavaScript a visit starts on a random one. Wedding RSVP and book club are the v2 reruns; shipment-exceptions is the exceptions-log run. times: each line's stamp, in seconds of the agent's own working time since the paste line was sent (the person's replies were scripted instantly, so the waits for them are left out): the sum of the earlier turns' durations plus the moment within the turn (replay.json phases[].duration and events[].t). Lines: the paste line, the questions, the brief, the plan, three progress lines, the live line.",
   "sessions": [
-    { "slug": "status-page", "url": "https://status-page-example.bdf.oncarlos.com/", "shot": [780, 2400] },
-    { "slug": "band-gigs", "url": "https://band-gigs-example.bdf.oncarlos.com/", "shot": [780, 2400] },
-    { "slug": "defect-log", "url": "https://defect-log-example.bdf.oncarlos.com/", "shot": [780, 2400] },
-    { "slug": "wedding-rsvp", "url": "https://wedding-rsvp-example.bdf.oncarlos.com/", "shot": [780, 2400] },
-    { "slug": "project-board", "url": "https://project-board-example.bdf.oncarlos.com/", "shot": [780, 2400] },
-    { "slug": "climbing-gym", "url": "https://climbing-gym-example.bdf.oncarlos.com/", "shot": [780, 2400] },
-    { "slug": "shipment-exceptions", "url": "https://shipment-exceptions-example.bdf.oncarlos.com/", "shot": [780, 2400] },
-    { "slug": "book-club", "url": "https://book-club-example.bdf.oncarlos.com/", "shot": [780, 2400] },
-    { "slug": "intake-queue", "url": "https://intake-queue-example.bdf.oncarlos.com/", "shot": [780, 2400] }
+    { "slug": "status-page", "url": "https://status-page-example.bdf.oncarlos.com/", "shot": [780, 2400], "times": [0, 14, 14, 30, 74, 223, 268, 336] },
+    { "slug": "band-gigs", "url": "https://band-gigs-example.bdf.oncarlos.com/", "shot": [780, 2400], "times": [0, 26, 26, 42, 107, 275, 298, 351] },
+    { "slug": "defect-log", "url": "https://defect-log-example.bdf.oncarlos.com/", "shot": [780, 2400], "times": [0, 24, 24, 41, 62, 151, 166, 217] },
+    { "slug": "wedding-rsvp", "url": "https://wedding-rsvp-example.bdf.oncarlos.com/", "shot": [780, 2400], "times": [0, 34, 34, 49, 61, 185, 284, 349] },
+    { "slug": "project-board", "url": "https://project-board-example.bdf.oncarlos.com/", "shot": [780, 2400], "times": [0, 24, 24, 39, 58, 184, 198, 261] },
+    { "slug": "climbing-gym", "url": "https://climbing-gym-example.bdf.oncarlos.com/", "shot": [780, 2400], "times": [0, 23, 23, 33, 65, 170, 264, 274] },
+    { "slug": "shipment-exceptions", "url": "https://shipment-exceptions-example.bdf.oncarlos.com/", "shot": [780, 2400], "times": [0, 16, 16, 28, 73, 171, 229, 282] },
+    { "slug": "book-club", "url": "https://book-club-example.bdf.oncarlos.com/", "shot": [780, 2400], "times": [0, 24, 24, 35, 71, 199, 263, 280] },
+    { "slug": "intake-queue", "url": "https://intake-queue-example.bdf.oncarlos.com/", "shot": [780, 2400], "times": [0, 31, 31, 47, 73, 171, 230, 293] }
   ]
 }

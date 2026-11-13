@@ -49,19 +49,28 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.match(hero,/<div class="rp-col">\s*(?:<!--[\s\S]*?-->\s*)?<figure class="rp"/);
  assert.ok(hero.includes(`<div class="rp-now"><span class="rp-now-name">${copy[`home.replay.${sessions[0].slug}.tab`]}</span> <span class="rp-now-count" data-format="${copy['home.apps.position']}">1 of ${sessions.length}</span></div>`));
  assert.doesNotMatch(home,/class="rp-tabs"|class="rp-tab"/);
- sessions.forEach(({slug,url,shot},i)=>{
+ // each line's text as quoted: without its stamp, its stamp read aloud, or the live chip (checked on their own below)
+ const quoted=html=>plain(html.replace(/<span class="rp-time"[^>]*>[^<]*<\/span>|<span class="rp-sr">[^<]*<\/span>|<span class="rp-live"[^>]*>[^<]*<\/span>/g,'')).replace(/\s+/g,' ').trim();
+ const mss=x=>`${Math.floor(x/60)}:${String(x%60).padStart(2,'0')}`;
+ const words=x=>{const m=Math.floor(x/60),sec=x%60,o=[];if(m) o.push(copy[`home.replay.time.${m===1?'minute':'minutes'}`].replace('{n}',m));if(sec||!m) o.push(copy[`home.replay.time.${sec===1?'second':'seconds'}`].replace('{n}',sec));return o.join(' ');};
+ sessions.forEach(({slug,url,shot,times},i)=>{
   const c=k=>copy[`home.replay.${slug}.${k}`], host=new URL(url).host;
   const panel=hero.match(new RegExp(`<div class="rp-session" id="rp-session-${slug}" role="tabpanel" aria-labelledby="rp-tab-${slug}" data-slug="${slug}"( hidden)?>([\\s\\S]*?)</div>\\s*</div>\\s*</div>`));
   assert.ok(panel,slug); assert.equal(!!panel[1],i>0,`${slug}: only the first open`);
   const p=panel[2];
-  assert.equal(plain(p.match(/class="rp-you rp-s1">[\s\S]*?<p>([\s\S]*?)<\/p>/)[1]),copy['home.replay.you.1']);
+  assert.equal(quoted(p.match(/class="rp-you rp-s1">[\s\S]*?<p>([\s\S]*?)<\/p>/)[1]),copy['home.replay.you.1']);
   assert.equal(plain(p.match(/class="rp-agent rp-s2">[\s\S]*?<p>([\s\S]*?)<\/p>/)[1]),c('agent.1'));
   assert.deepEqual([...p.match(/<ol class="rp-qs">([\s\S]*?)<\/ol>/)[1].matchAll(/<li>([^<]+)<\/li>/g)].map(m=>plain(m[1])),['q1','q2','q3'].map(c).filter(Boolean));
-  assert.equal(plain(p.match(/class="rp-you rp-s3">[\s\S]*?<p>([\s\S]*?)<\/p>/)[1]),c('you.2'));
-  assert.deepEqual([...p.matchAll(/class="rp-agent rp-s(\d)"[\s\S]*?<p>([\s\S]*?)<\/p>/g)].slice(1).map(m=>[m[1],plain(m[2]).trim()]),[['4',c('plan')],['5',c('p1')],['6',c('p2')],['7',c('p3')],['8',`${c('p4')} ${host}`]]);
+  assert.equal(quoted(p.match(/class="rp-you rp-s3">[\s\S]*?<p>([\s\S]*?)<\/p>/)[1]),c('you.2'));
+  assert.deepEqual([...p.matchAll(/class="rp-agent rp-s(\d)"[\s\S]*?<p>([\s\S]*?)<\/p>/g)].slice(1).map(m=>[m[1],quoted(m[2])]),[['4',c('plan')],['5',c('p1')],['6',c('p2')],['7',c('p3')],['8',`${c('p4')} ${host}`]]);
   // the live line: the permanent example app, in a new tab, never the expired demo address
   assert.ok(p.includes(`<a class="rp-url" href="${url}" target="_blank" rel="noopener noreferrer">${host} <svg`),slug);
   assert.doesNotMatch(p,/trycarlos\.com/);
+  // the agent's real working time at each line (sessions.json), seen as m:ss and read in words; the live line says when
+  assert.equal(times.length,8);
+  assert.deepEqual([...p.matchAll(/<span class="rp-time" aria-hidden="true">([^<]+)<\/span>/g)].map(m=>m[1]),times.slice(0,7).map(mss),slug);
+  assert.deepEqual([...p.matchAll(/<span class="rp-sr"> ([^<]+)<\/span>/g)].map(m=>m[1]),[...times.slice(0,7).map(x=>copy['home.replay.time.at'].replace('{time}',words(x))),copy['home.replay.time.live'].replace('{time}',words(times[7]))],slug);
+  assert.ok(p.includes(`<span class="rp-live" aria-hidden="true">${copy['home.replay.time.live'].replace('{time}',mss(times[7]))}</span>`),slug);
   assert.ok(p.includes(`<div class="rp-app-bar" aria-hidden="true"><span></span>${host}</div>`),slug);
   assert.ok(p.includes(`<img src="/home/replays/${slug}-390.jpg" width="${shot[0]}" height="${shot[1]}" alt="${escapeHTML(c('shot.alt'))}" decoding="async"${i?' loading="lazy"':''}>`),slug);
  });

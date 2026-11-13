@@ -19,21 +19,25 @@
       choose; without JavaScript the first session plays and the dots stay hidden. #}
   <div class="rp-now"><span class="rp-now-name">{{ replays[0].tab }}</span> <span class="rp-now-count" data-format="{{ t('apps.position') }}">{{ t('apps.position') | replace('{n}', '1') | replace('{total}', replays.length ~ '') }}</span></div>
   <div class="rp-stage">
+{#- Each line's stamp: the agent's real working time at that point, seen as m:ss (aria-hidden) and read in words at
+    the end of the line. The replay itself is sped up; the stamps tell the real time. #}
+{%- macro stamp(st) %}<span class="rp-time" aria-hidden="true">{{ st.shown }}</span>{% endmacro -%}
+{%- macro said(st) %}<span class="rp-sr"> {{ st.at }}</span>{% endmacro -%}
 {%- for s in replays %}
     <div class="rp-session" id="rp-session-{{ s.slug }}" role="tabpanel" aria-labelledby="rp-tab-{{ s.slug }}" data-slug="{{ s.slug }}"{% if not s.first %} hidden{% endif %}>
     <ol class="rp-log rp-scene1" role="list">
-      <li class="rp-you rp-s1"><span class="rp-who">{{ t('replay.who.you') }}</span><p>{{ t('replay.you.1') }}</p></li>
-      <li class="rp-agent rp-s2"><span class="rp-who">{{ t('replay.who.agent') }}</span><div><p>{{ s.agent1 }}</p>
-        <ol class="rp-qs">{% for q in s.questions %}<li>{{ q }}</li>{% endfor %}</ol></div></li>
-      <li class="rp-you rp-s3"><span class="rp-who">{{ t('replay.who.you') }}</span><p>{{ s.you2 }}</p></li>
+      <li class="rp-you rp-s1"><span class="rp-who">{{ t('replay.who.you') }}</span><p>{{ stamp(s.stamps[0]) }}{{ t('replay.you.1') }}{{ said(s.stamps[0]) }}</p></li>
+      <li class="rp-agent rp-s2"><span class="rp-who">{{ t('replay.who.agent') }}</span><div>{{ stamp(s.stamps[1]) }}<p>{{ s.agent1 }}</p>
+        <ol class="rp-qs">{% for q in s.questions %}<li>{{ q }}</li>{% endfor %}</ol>{{ said(s.stamps[1]) }}</div></li>
+      <li class="rp-you rp-s3"><span class="rp-who">{{ t('replay.who.you') }}</span><p>{{ stamp(s.stamps[2]) }}{{ s.you2 }}{{ said(s.stamps[2]) }}</p></li>
     </ol>
     <div class="rp-scene2">
       <ol class="rp-log" role="list">
-        <li class="rp-agent rp-s4"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ s.plan }}</p></li>
-        <li class="rp-agent rp-s5"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ s.p1 }}</p></li>
-        <li class="rp-agent rp-s6"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ s.p2 }}</p></li>
-        <li class="rp-agent rp-s7"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ s.p3 }}</p></li>
-        <li class="rp-agent rp-s8"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ s.p4 }} <a class="rp-url" href="{{ s.url }}" target="_blank" rel="noopener noreferrer">{{ s.host }} <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 3h6v6M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg></a></p></li>
+        <li class="rp-agent rp-s4"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ stamp(s.stamps[3]) }}{{ s.plan }}{{ said(s.stamps[3]) }}</p></li>
+        <li class="rp-agent rp-s5"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ stamp(s.stamps[4]) }}{{ s.p1 }}{{ said(s.stamps[4]) }}</p></li>
+        <li class="rp-agent rp-s6"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ stamp(s.stamps[5]) }}{{ s.p2 }}{{ said(s.stamps[5]) }}</p></li>
+        <li class="rp-agent rp-s7"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ stamp(s.stamps[6]) }}{{ s.p3 }}{{ said(s.stamps[6]) }}</p></li>
+        <li class="rp-agent rp-s8"><span class="rp-who">{{ t('replay.who.agent') }}</span><p>{{ s.p4 }} <a class="rp-url" href="{{ s.url }}" target="_blank" rel="noopener noreferrer">{{ s.host }} <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 3h6v6M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg></a> <span class="rp-live" aria-hidden="true">{{ s.live.shown }}</span><span class="rp-sr"> {{ s.live.spoken }}</span></p></li>
       </ol>
       <div class="rp-app rp-s9">
         <div class="rp-app-bar" aria-hidden="true"><span></span>{{ s.host }}</div>
