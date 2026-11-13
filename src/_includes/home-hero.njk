@@ -8,16 +8,16 @@
 {{ heroPaste | safe }}
 <details class="hv-cloud"><summary>{{ t('hero.cloud.summary') }}</summary>{{ hosts | safe }}</details>
 </div>
+{#- The replay with its dots underneath, as one pane of the hero (hero.js aligns panes). #}
+<div class="rp-col">
 <figure class="rp" aria-label="{{ t('replay.figure.aria') }}" data-thinking="{{ t('replay.thinking') }}">
   <div class="rp-bar"><span class="rp-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="rp-title">{{ t('replay.title') }}</span>
     <span class="rp-steps" hidden><button type="button" class="rp-back" aria-label="{{ t('replay.back') }}" title="{{ t('replay.back') }}"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M2.5 2.5v7"/><path class="fill" d="M9.5 2.6v6.8L4.6 6z"/></svg></button><button type="button" class="rp-fwd" aria-label="{{ t('replay.fwd') }}" title="{{ t('replay.fwd') }}"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M9.5 2.5v7"/><path class="fill" d="M2.5 2.6v6.8L7.4 6z"/></svg></button></span>
     <span class="rp-speed" role="group" aria-label="{{ t('replay.speed') }}" hidden><button type="button" class="rp-slower" aria-label="{{ t('replay.slower') }}" title="{{ t('replay.slower') }}"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M2.5 6h7"/></svg></button><output class="rp-rate" aria-live="polite" data-format="{{ t('replay.rate') }}">{{ t('replay.rate') | replace('{rate}', '1.5') }}</output><button type="button" class="rp-faster" aria-label="{{ t('replay.faster') }}" title="{{ t('replay.faster') }}"><svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M2.5 6h7M6 2.5v7"/></svg></button></span>
     <label class="rp-pause"><input type="checkbox"><svg class="rp-ic-pause" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5.5 3.5v9M10.5 3.5v9"/></svg><svg class="rp-ic-play" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5 3.2v9.6L12.6 8z"/></svg><span class="rp-pause-off">{{ t('replay.pause') }}</span><span class="rp-pause-on">{{ t('replay.play') }}</span></label></div>
-  {#- Real sessions to choose from (home/replays/sessions.json, words in home.replay.<slug>.*). Without JavaScript only the
-      first is shown, playing the CSS loop; home/replay.js shows the tabs and plays the chosen one as a chat. #}
-  <div class="rp-tabs" role="tablist" aria-label="{{ t('replay.tabs') }}" hidden>
-{%- for s in replays %}<button type="button" role="tab" class="rp-tab" id="rp-tab-{{ s.slug }}" aria-controls="rp-session-{{ s.slug }}" aria-selected="{{ 'true' if s.first else 'false' }}" tabindex="{{ '0' if s.first else '-1' }}">{{ s.tab }}</button>{% endfor -%}
-  </div>
+  {#- The session showing: its name and where it is among them (home/replay.js updates both). The dots under the panel
+      choose; without JavaScript the first session plays and the dots stay hidden. #}
+  <div class="rp-now"><span class="rp-now-name">{{ replays[0].tab }}</span> <span class="rp-now-count" data-format="{{ t('apps.position') }}">{{ t('apps.position') | replace('{n}', '1') | replace('{total}', replays.length ~ '') }}</span></div>
   <div class="rp-stage">
 {%- for s in replays %}
     <div class="rp-session" id="rp-session-{{ s.slug }}" role="tabpanel" aria-labelledby="rp-tab-{{ s.slug }}" data-slug="{{ s.slug }}"{% if not s.first %} hidden{% endif %}>
@@ -45,4 +45,9 @@
   </div>
   <figcaption class="rp-cap">{{ t('replay.caption') }}</figcaption>
 </figure>
+  {#- One dot per session: the active one long, like the apps carousel's; each named and titled with its session. #}
+  <div class="rp-dotrow" role="tablist" aria-label="{{ t('replay.tabs') }}" hidden>
+{%- for s in replays %}<button type="button" role="tab" class="rp-dot" id="rp-tab-{{ s.slug }}" aria-controls="rp-session-{{ s.slug }}" aria-selected="{{ 'true' if s.first else 'false' }}" tabindex="{{ '0' if s.first else '-1' }}" aria-label="{{ s.tab }}" title="{{ s.tab }}"></button>{% endfor -%}
+  </div>
+</div>
 </div></section>

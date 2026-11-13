@@ -77,25 +77,28 @@ a.rp-url svg { width: 0.8em; height: 0.8em; vertical-align: -0.05em; fill: none;
 .rp-session { display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); }
 .rp-session[hidden] { display: none; }
 .rp-session > * { grid-area: 1 / 1; min-width: 0; min-height: 0; }
-/* The sessions' tabs: quiet pills under the title bar, scrolling sideways if they do not fit. */
-.rp-tabs { flex: none; position: relative; display: flex; gap: 4px; padding: 0.4rem 0.6rem; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scroll-padding-inline: 0.6rem; scrollbar-width: none; border-bottom: 1px solid light-dark(rgba(27, 31, 36, 0.08), rgba(255, 255, 255, 0.08));
-  /* a soft fade at an end while more tabs lie beyond it (home/replay.js sets more-left and more-right) */
-  --rp-fl: 0px; --rp-fr: 0px;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--rp-fl), #000 calc(100% - var(--rp-fr)), transparent);
-  mask-image: linear-gradient(to right, transparent, #000 var(--rp-fl), #000 calc(100% - var(--rp-fr)), transparent); }
-.rp-tabs.more-left { --rp-fl: 32px; }
-.rp-tabs.more-right { --rp-fr: 32px; }
-.rp-tabs.is-dragging { scroll-snap-type: none; cursor: grabbing; user-select: none; -webkit-user-select: none; }
-.rp-tab { scroll-snap-align: start; }
-.rp-tabs::-webkit-scrollbar { display: none; }
-.rp-tabs[hidden] { display: none; }
-.rp-tab { flex: none; min-height: 28px; padding: 0 0.7rem; border: 1px solid light-dark(rgba(27, 31, 36, 0.16), rgba(255, 255, 255, 0.16)); border-radius: 99px; background: none; color: light-dark(#464b52, #c9d2de); font: 600 0.72rem/1 var(--site-sans, inherit); white-space: nowrap; cursor: pointer; transition: background-color 0.15s, color 0.15s, border-color 0.15s, transform 0.16s cubic-bezier(0.16, 1, 0.3, 1); }
-.rp-tab[aria-selected="true"] { background: light-dark(#1a5f4f, #7fd0b6); border-color: transparent; color: light-dark(#ffffff, #062a24); }
-@media (hover: hover) { .rp-tab[aria-selected="false"]:hover { background: color-mix(in srgb, currentColor 9%, transparent); color: light-dark(#181c21, #eef2f6); } }
-.rp-tab:active { transform: scale(0.95); transition-duration: 0.08s; }
-.rp-tab:focus-visible { outline: 3px solid light-dark(#1a5f4f, #2fd4ac); outline-offset: 1px; }
-@media (pointer: coarse) { .rp-tab { min-height: 36px; } }
-@media (prefers-reduced-motion: reduce) { .rp-tab:active { transform: none; } }
+/* The session showing, under the title bar: its name and a quiet "n of N", crossfading when it changes. */
+.rp-now { flex: none; display: flex; align-items: baseline; gap: 0.5rem; padding: 0.45rem 0.9rem; border-bottom: 1px solid light-dark(rgba(27, 31, 36, 0.08), rgba(255, 255, 255, 0.08)); transition: opacity 0.12s ease-out; }
+.rp-now.is-swapping { opacity: 0; }
+.rp-now-name { font: 650 0.8rem/1.3 var(--site-sans, inherit); color: light-dark(#181c21, #eef2f6); }
+.rp-now-count { font: 400 0.68rem/1.3 ui-monospace, Menlo, Consolas, monospace; letter-spacing: 0.04em; color: light-dark(#5b6067, #a9b4c2); }
+/* The replay and its dots, one pane of the hero. */
+.rp-col { display: flex; flex-direction: column; align-items: center; width: 100%; min-width: 0; }
+/* The dots under the window: one per session, the active one long, like the apps carousel's dots. They choose a
+   session at any time; each is named and titled with it. */
+.rp-dotrow { display: flex; justify-content: center; margin-top: 0.35rem; }
+.rp-dotrow[hidden] { display: none; }
+.rp-dot { display: grid; place-items: center; width: 26px; height: 32px; padding: 0; border: 0; border-radius: 6px; background: none; cursor: pointer; }
+.rp-dot::before { content: ""; width: 8px; height: 8px; border-radius: 99px; background: light-dark(rgba(27, 31, 36, 0.2), rgba(255, 255, 255, 0.24)); transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s, transform 0.16s cubic-bezier(0.16, 1, 0.3, 1); }
+.rp-dot[aria-selected="true"]::before { width: 20px; background: light-dark(#1a5f4f, #7fd0b6); }
+@media (hover: hover) {
+  .rp-dot[aria-selected="false"]:hover::before { background: light-dark(#5b6067, #a9b4c2); transform: scale(1.3); }
+  .rp-dot[aria-selected="true"]:hover::before { transform: scaleY(1.25); }
+}
+.rp-dot:active::before { transform: scale(0.85); transition-duration: 0.08s; }
+.rp-dot:focus-visible { outline: 2px solid light-dark(#1a5f4f, #2fd4ac); outline-offset: -2px; }
+@media (pointer: coarse) { .rp-dot { width: 28px; height: 44px; } }
+@media (prefers-reduced-motion: reduce) { .rp-dot::before, .rp-dot:hover::before, .rp-dot:active::before { transform: none !important; } .rp-now { transition: none; } }
 .rp-scene2 { display: flex; flex-direction: column; }
 .rp-scene2 .rp-app { margin-top: auto; }
 .rp-log div > p + .rp-qs { margin-top: 0.3rem; }

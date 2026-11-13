@@ -87,7 +87,8 @@ person marker.**
   replay's Pause and under reduced motion, where it draws one still frame;
   without WebGL2 the CSS gradient stays), `src/home/replay.js` (real /start sessions in tabs, each played as a chat
   (`src/home/replays/sessions.json`, words in `home.replay.<slug>.*`; a random one first each visit,
-  the next plays at the end of one; the tabs are a sideways strip with fades at the ends): a loading
+  the next plays at the end of one, round all of them; dots under the panel choose a session at any
+  time, and the row under the title bar names the one showing): a loading
   screen, the person's lines typed with a caret, thinking dots, then the agent's words streamed; a
   timeline worked out from the copy, at reading pace; slower/faster 0.5x to 2x, 1.5x by default,
   remembered for the visit; back/forward a turn, pausing it; the text stays whole in the page for
