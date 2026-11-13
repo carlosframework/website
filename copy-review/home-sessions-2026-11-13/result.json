@@ -1,0 +1,557 @@
+{
+  "action": "approve",
+  "guidance": null,
+  "strings": [
+    {
+      "id": "home.replay.caption",
+      "text": "Excerpts from one recorded run, 13 November 2026.",
+      "original": "Excerpts from one recorded run, 13 November 2026.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.tabs",
+      "text": "Example sessions",
+      "original": "Example sessions",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.status-page.agent.1",
+      "text": "I’ve read the directions. They ask me to check a few things with you before I build anything, so here are the questions.",
+      "original": "I’ve read the directions. They ask me to check a few things with you before I build anything, so here are the questions.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.status-page.p1",
+      "text": "Now writing the app code.",
+      "original": "Now writing the app code.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.status-page.p2",
+      "text": "Everything works: posting needs the passphrase, and resolving an incident sets the part back to Working. …",
+      "original": "Everything works: posting needs the passphrase, and resolving an incident sets the part back to Working. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.status-page.p3",
+      "text": "The phone layout passes: nothing scrolls sideways and every button and field is at least 44 px tall. …",
+      "original": "The phone layout passes: nothing scrolls sideways and every button and field is at least 44 px tall. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.status-page.p4",
+      "text": "Your Ledgerlight status page is live:",
+      "original": "Your Ledgerlight status page is live:",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.status-page.plan",
+      "text": "Here’s what I plan to build. … The look: calm and trustworthy. Off-white page, dark navy text, one muted teal for the brand, and clear status colours that always have a word next to them. …",
+      "original": "Here’s what I plan to build. … The look: calm and trustworthy. Off-white page, dark navy text, one muted teal for the brand, and clear status colours that always have a word next to them. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.status-page.q1",
+      "text": "What would you like to make?",
+      "original": "What would you like to make?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.status-page.q2",
+      "text": "How should it feel?",
+      "original": "How should it feel?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.status-page.q3",
+      "text": "Are you comfortable with code?",
+      "original": "Are you comfortable with code?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.status-page.shot.alt",
+      "text": "The live status page: Ledgerlight’s “Some systems are slow: API” banner, its four parts marked Working or Slow, and an ongoing incident.",
+      "original": "The live status page: Ledgerlight’s “Some systems are slow: API” banner, its four parts marked Working or Slow, and an ongoing incident.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.status-page.tab",
+      "text": "Status page",
+      "original": "Status page",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.status-page.you.2",
+      "text": "I run operations at Ledgerlight, a small invoicing software company. We need a public status page. … Only our staff should be able to post incidents and updates; a shared staff passphrase is fine for now. … It should feel calm and trustworthy, like a proper status page. I’m not technical, so keep it simple for me.",
+      "original": "I run operations at Ledgerlight, a small invoicing software company. We need a public status page. … Only our staff should be able to post incidents and updates; a shared staff passphrase is fine for now. … It should feel calm and trustworthy, like a proper status page. I’m not technical, so keep it simple for me.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.defect-log.agent.1",
+      "text": "I’ve read the CARLOS start directions. They say to ask you a few questions before building anything, so here they are:",
+      "original": "I’ve read the CARLOS start directions. They say to ask you a few questions before building anything, so here they are:",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.defect-log.p1",
+      "text": "Now writing the app: the Go server, the page template and the styling.",
+      "original": "Now writing the app: the Go server, the page template and the styling.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.defect-log.p2",
+      "text": "Everything works locally. …",
+      "original": "Everything works locally. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.defect-log.p3",
+      "text": "Both layouts look right. …",
+      "original": "Both layouts look right. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.defect-log.p4",
+      "text": "Your defect log is live and loads correctly:",
+      "original": "Your defect log is live and loads correctly:",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.defect-log.plan",
+      "text": "Before I write anything, here’s the plan in plain terms: … Look: plain and industrial. It’ll have a dark steel-grey header with the company name and a small logo mark, a light grey page and one safety-orange accent. …",
+      "original": "Before I write anything, here’s the plan in plain terms: … Look: plain and industrial. It’ll have a dark steel-grey header with the company name and a small logo mark, a light grey page and one safety-orange accent. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.defect-log.q1",
+      "text": "What would you like to make?",
+      "original": "What would you like to make?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.defect-log.q2",
+      "text": "How should it look and feel?",
+      "original": "How should it look and feel?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.defect-log.q3",
+      "text": "How much detail do you want from me?",
+      "original": "How much detail do you want from me?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.defect-log.shot.alt",
+      "text": "The live defect log: a dark Corrin Mouldings header, a “Log a defect” form with line, defect type and quantity, and the last 7 days’ totals.",
+      "original": "The live defect log: a dark Corrin Mouldings header, a “Log a defect” form with line, defect type and quantity, and the last 7 days’ totals.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.defect-log.tab",
+      "text": "Defect log",
+      "original": "Defect log",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.defect-log.you.2",
+      "text": "I’m the quality manager at Corrin Mouldings, a small plastics manufacturer with three production lines (Line 1, Line 2, Line 3). I’d like a defect log … Show the recent defects, plus counts by line and by type for the last 7 days, with a simple chart. It should feel industrial and data-first. I’m not technical, so keep it simple for me.",
+      "original": "I’m the quality manager at Corrin Mouldings, a small plastics manufacturer with three production lines (Line 1, Line 2, Line 3). I’d like a defect log … Show the recent defects, plus counts by line and by type for the last 7 days, with a simple chart. It should feel industrial and data-first. I’m not technical, so keep it simple for me.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.project-board.agent.1",
+      "text": "I’ve read the directions on that page. … Step one is to ask you a few questions and wait for your answers before I build anything.",
+      "original": "I’ve read the directions on that page. … Step one is to ask you a few questions and wait for your answers before I build anything.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.project-board.p1",
+      "text": "I’ve confirmed the starter is intact, so now I’m writing the app … the board page and its styling.",
+      "original": "I’ve confirmed the starter is intact, so now I’m writing the app … the board page and its styling.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.project-board.p2",
+      "text": "Everything works locally. …",
+      "original": "Everything works locally. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.project-board.p3",
+      "text": "The page looks right on both phone and desktop. …",
+      "original": "The page looks right on both phone and desktop. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.project-board.p4",
+      "text": "Your project board is live and working:",
+      "original": "Your project board is live and working:",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.project-board.plan",
+      "text": "Your design is a good fit for this. … The look: quiet and refined, like a studio drawing board. It uses warm off-white paper, charcoal text, a single muted terracotta accent and serif headings …",
+      "original": "Your design is a good fit for this. … The look: quiet and refined, like a studio drawing board. It uses warm off-white paper, charcoal text, a single muted terracotta accent and serif headings …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.project-board.q1",
+      "text": "What do you want to make?",
+      "original": "What do you want to make?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.project-board.q2",
+      "text": "How should it feel?",
+      "original": "How should it feel?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.project-board.q3",
+      "text": "What’s the one main screen, and what does it save?",
+      "original": "What’s the one main screen, and what does it save?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.project-board.shot.alt",
+      "text": "The live project board: Okafor Lind Architects’ counts of active, at-risk and late projects, then project cards grouped by stage, marked On track or At risk.",
+      "original": "The live project board: Okafor Lind Architects’ counts of active, at-risk and late projects, then project cards grouped by stage, marked On track or At risk.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.project-board.tab",
+      "text": "Project board",
+      "original": "Project board",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.project-board.you.2",
+      "text": "I’m the studio manager at Okafor Lind Architects, a small practice. I’d like a project status board for our current projects. … The board shows projects grouped by stage, with anything late or at risk easy to spot. It should feel refined and minimal, like an architecture studio. I’m not technical, so keep it simple for me.",
+      "original": "I’m the studio manager at Okafor Lind Architects, a small practice. I’d like a project status board for our current projects. … The board shows projects grouped by stage, with anything late or at risk easy to spot. It should feel refined and minimal, like an architecture studio. I’m not technical, so keep it simple for me.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.band-gigs.agent.1",
+      "text": "I’ve read the CARLOS directions. … Before I write any code, the directions say I need a few answers from you:",
+      "original": "I’ve read the CARLOS directions. … Before I write any code, the directions say I need a few answers from you:",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.band-gigs.p1",
+      "text": "… Now I’m writing the app: the poster page, the sign-up form, and the private sign-ups page.",
+      "original": "… Now I’m writing the app: the poster page, the sign-up form, and the private sign-ups page.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.band-gigs.p2",
+      "text": "On phones, “MARROW” splits across two lines because of the fallback font, so I’ll make the band name a bit smaller on small screens.",
+      "original": "On phones, “MARROW” splits across two lines because of the fallback font, so I’ll make the band name a bit smaller on small screens.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.band-gigs.p3",
+      "text": "The page looks right on phones too. …",
+      "original": "The page looks right on phones too. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.band-gigs.p4",
+      "text": "Your band page is built and online. You can open it here:",
+      "original": "Your band page is built and online. You can open it here:",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.band-gigs.plan",
+      "text": "Before I build it, here’s my plan. … Like a gig poster pasted on a dark wall: near-black background, aged off-white paper panels, one strong rust-red accent … and a faint grain pattern behind everything.",
+      "original": "Before I build it, here’s my plan. … Like a gig poster pasted on a dark wall: near-black background, aged off-white paper panels, one strong rust-red accent … and a faint grain pattern behind everything.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.band-gigs.q1",
+      "text": "What do you want to make?",
+      "original": "What do you want to make?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.band-gigs.q2",
+      "text": "How should it look and feel?",
+      "original": "How should it look and feel?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.band-gigs.q3",
+      "text": "What’s the one main screen, and what’s the one kind of thing it saves?",
+      "original": "What’s the one main screen, and what’s the one kind of thing it saves?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.band-gigs.shot.alt",
+      "text": "The live band page: a torn gig poster for The Marrow Lights with “Loud songs for quiet towns.” and the upcoming gigs as taped-up strips.",
+      "original": "The live band page: a torn gig poster for The Marrow Lights with “Loud songs for quiet towns.” and the upcoming gigs as taped-up strips.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.band-gigs.tab",
+      "text": "Gig list",
+      "original": "Gig list",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.band-gigs.you.2",
+      "text": "I’m in a small band called The Marrow Lights. I’d like a page with our upcoming gigs and a mailing-list sign-up, so people leave their name and email to hear about new shows. … Put a line on it like “Loud songs for quiet towns.” I want it to feel moody, like an old gig poster on a wall. …",
+      "original": "I’m in a small band called The Marrow Lights. I’d like a page with our upcoming gigs and a mailing-list sign-up, so people leave their name and email to hear about new shows. … Put a line on it like “Loud songs for quiet towns.” I want it to feel moody, like an old gig poster on a wall. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.climbing-gym.agent.1",
+      "text": "I’ve read the CARLOS getting-started directions. The first step is to ask you a few things before I build anything.",
+      "original": "I’ve read the CARLOS getting-started directions. The first step is to ask you a few things before I build anything.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.climbing-gym.p1",
+      "text": "Starter verified and extracted. Now writing the app.",
+      "original": "Starter verified and extracted. Now writing the app.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.climbing-gym.p2",
+      "text": "The app works locally: sends save, the most-sent route moves to the top, and bad input is rejected. …",
+      "original": "The app works locally: sends save, the most-sent route moves to the top, and bad input is rejected. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.climbing-gym.p3",
+      "text": "The board is live. …",
+      "original": "The board is live. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.climbing-gym.p4",
+      "text": "Your Granite Yard Route Board is live:",
+      "original": "Your Granite Yard Route Board is live:",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.climbing-gym.plan",
+      "text": "Here’s what I’m planning. … The look: a dark, chalky charcoal wall with bright, chunky route cards in your hold colours, a punchy yellow “Log send” button … so it feels like walking into the gym.",
+      "original": "Here’s what I’m planning. … The look: a dark, chalky charcoal wall with bright, chunky route cards in your hold colours, a punchy yellow “Log send” button … so it feels like walking into the gym.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.climbing-gym.q1",
+      "text": "What should the app be?",
+      "original": "What should the app be?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.climbing-gym.q2",
+      "text": "How should it feel?",
+      "original": "How should it feel?",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.climbing-gym.shot.alt",
+      "text": "The live route board: a loud yellow Granite Yard header, a count of sends logged, and a “Log a send” form on a dark wall.",
+      "original": "The live route board: a loud yellow Granite Yard header, a count of sends logged, and a “Log a send” form on a dark wall.",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.climbing-gym.tab",
+      "text": "Route board",
+      "original": "Route board",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    },
+    {
+      "id": "home.replay.climbing-gym.you.2",
+      "text": "I run a small climbing gym called Granite Yard. I’d like a route board page … Save the sends and show who’s sent what, with the most-sent routes up top. … I want it to feel bold and energetic, like a gym wall with loud colours. …",
+      "original": "I run a small climbing gym called Granite Yard. I’d like a route board page … Save the sends and show who’s sent what, with the most-sent routes up top. … I want it to feel bold and energetic, like a gym wall with loud colours. …",
+      "edited": false,
+      "rerolled": false,
+      "rerolls": [],
+      "done": false
+    }
+  ],
+  "review": "4tsn24nxcoqozsxejnmyl3e4n4",
+  "generation": 1
+}

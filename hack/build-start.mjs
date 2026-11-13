@@ -118,6 +118,17 @@ export function homeApps(appsPage,sources) {
    host:new URL(href).host.replace(/^www\./,''),shot:`/home/apps/${app}`,width:sources.size[0],height:sources.size[1],n:i+1};
  });
 }
+// The hero replay's sessions, in tab order: each one's words from the copy (home.replay.<slug>.*, excerpts of a real
+// run), its permanent example app and that app's screenshot. A missing line fails the build.
+export function homeReplays(copy,{sessions}) {
+ return sessions.map(({slug,url,shot},i)=>{
+  const t=key=>{const v=copy[`home.replay.${slug}.${key}`];if(typeof v!=='string') throw configError(`replay ${slug}: home.replay.${slug}.${key} is missing`);return v;};
+  const questions=['q1','q2','q3','q4'].map(q=>copy[`home.replay.${slug}.${q}`]).filter(q=>typeof q==='string');
+  if(questions.length<2) throw configError(`replay ${slug}: it needs at least two questions`);
+  return {slug,first:i===0,url,host:new URL(url).host,shot:`/home/replays/${slug}-390.jpg`,width:shot[0],height:shot[1],
+   tab:t('tab'),agent1:t('agent.1'),questions,you2:t('you.2'),plan:t('plan'),p1:t('p1'),p2:t('p2'),p3:t('p3'),p4:t('p4'),alt:t('shot.alt')};
+ });
+}
 const balloonTints=['#dcbcb2','#dccba8','#c3c6d6','#d2bcd9','#e3bf9f','#cfcac1','#dbaeb0','#c6bcd4','#cbb9a4']; // soft, no greens
 async function homeHTML(config,copy,original) {
  const t=id=>{if(typeof copy[`home.${id}`]!=='string') throw configError(`homepage copy home.${id} is missing`);return copy[`home.${id}`];};
@@ -139,7 +150,7 @@ async function homeHTML(config,copy,original) {
  };
  const apps=homeApps(await read('src/apps/index.html'),JSON.parse(await read('src/home/apps/sources.json')));
  const context={t,c,html,human,figures:homeFigures,balloons,apps,hosts:hostsHTML(config,copy),
-  questions:Object.keys(copy).filter(key=>/^home\.replay\.agent\.q\d+$/.test(key)).map(key=>copy[key]),
+  replays:homeReplays(copy,JSON.parse(await read('src/home/replays/sessions.json'))),
   gloss:{before:gloss.slice(0,at),word:words[0],after:gloss.slice(at+words[0].length),words:words.join(' ')},
   heroPaste:homePromptHTML(config,copy,'home-prompt'),endPaste:homePromptHTML(config,copy,'end-prompt',t('end.paste.works'))};
  const render=async name=>templates.renderString(await read(`src/_includes/${name}`),context).trim();

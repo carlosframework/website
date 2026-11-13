@@ -34,11 +34,31 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.doesNotMatch(hero,/pb-works/);
  assert.match(hero,/<details class="hv-cloud"><summary>Using a cloud agent\?<\/summary><!-- 👨 Paul's words, verbatim --><p class="start-hosts">/);
  assert.match(hero,/<figure class="rp" aria-label="A real run of this journey, sped up" data-thinking="Thinking">/);
- assert.ok(hero.includes(`<img src="/home/replay-panaderia-run4-390.png" width="780" height="1764" alt="${copy['home.replay.shot.alt']}" decoding="async">`));
- // Run 4's excerpts (2026-11-12): three questions, then the agent's play-back of the plan and look, three progress lines and the live line.
- assert.equal((hero.match(/<ol class="rp-qs">([\s\S]*?)<\/ol>/)[1].match(/<li>/g)||[]).length,3);
- assert.deepEqual([...hero.matchAll(/class="rp-agent rp-s(\d)"[\s\S]*?<p>([\s\S]*?)<\/p>/g)].slice(1).map(m=>[m[1],plain(m[2])]),[['4',copy['home.replay.agent.plan']],['5',copy['home.replay.agent.p1']],['6',copy['home.replay.agent.p2']],['7',copy['home.replay.agent.p3']],['8',`${copy['home.replay.agent.p4']} ${copy['home.replay.url']}`]]);
- assert.match(hero,/<div class="rp-app rp-s9">/);
+ // Real sessions to tab through (2026-11-13): one panel per session, only the first open without JavaScript; each
+ // is excerpts of its run, and its live line links to the app's permanent example copy in a new tab.
+ const {sessions}=JSON.parse(await read('src/home/replays/sessions.json'));
+ assert.ok(sessions.length>=5);
+ const tabs=hero.match(/<div class="rp-tabs" role="tablist" aria-label="([^"]+)" hidden>([\s\S]*?)<\/div>/);
+ assert.equal(tabs[1],copy['home.replay.tabs']);
+ assert.deepEqual([...tabs[2].matchAll(/<button type="button" role="tab" class="rp-tab" id="rp-tab-([a-z-]+)" aria-controls="rp-session-\1" aria-selected="(true|false)" tabindex="(0|-1)">([^<]+)<\/button>/g)].map(m=>[m[1],m[2],m[3],m[4]]),
+  sessions.map(({slug},i)=>[slug,String(!i),i?'-1':'0',copy[`home.replay.${slug}.tab`]]));
+ sessions.forEach(({slug,url,shot},i)=>{
+  const c=k=>copy[`home.replay.${slug}.${k}`], host=new URL(url).host;
+  const panel=hero.match(new RegExp(`<div class="rp-session" id="rp-session-${slug}" role="tabpanel" aria-labelledby="rp-tab-${slug}" data-slug="${slug}"( hidden)?>([\\s\\S]*?)</div>\\s*</div>\\s*</div>`));
+  assert.ok(panel,slug); assert.equal(!!panel[1],i>0,`${slug}: only the first open`);
+  const p=panel[2];
+  assert.equal(plain(p.match(/class="rp-you rp-s1">[\s\S]*?<p>([\s\S]*?)<\/p>/)[1]),copy['home.replay.you.1']);
+  assert.equal(plain(p.match(/class="rp-agent rp-s2">[\s\S]*?<p>([\s\S]*?)<\/p>/)[1]),c('agent.1'));
+  assert.deepEqual([...p.match(/<ol class="rp-qs">([\s\S]*?)<\/ol>/)[1].matchAll(/<li>([^<]+)<\/li>/g)].map(m=>plain(m[1])),['q1','q2','q3'].map(c).filter(Boolean));
+  assert.equal(plain(p.match(/class="rp-you rp-s3">[\s\S]*?<p>([\s\S]*?)<\/p>/)[1]),c('you.2'));
+  assert.deepEqual([...p.matchAll(/class="rp-agent rp-s(\d)"[\s\S]*?<p>([\s\S]*?)<\/p>/g)].slice(1).map(m=>[m[1],plain(m[2]).trim()]),[['4',c('plan')],['5',c('p1')],['6',c('p2')],['7',c('p3')],['8',`${c('p4')} ${host}`]]);
+  // the live line: the permanent example app, in a new tab, never the expired demo address
+  assert.ok(p.includes(`<a class="rp-url" href="${url}" target="_blank" rel="noopener noreferrer">${host} <svg`),slug);
+  assert.doesNotMatch(p,/trycarlos\.com/);
+  assert.ok(p.includes(`<div class="rp-app-bar" aria-hidden="true"><span></span>${host}</div>`),slug);
+  assert.ok(p.includes(`<img src="/home/replays/${slug}-390.jpg" width="${shot[0]}" height="${shot[1]}" alt="${escapeHTML(c('shot.alt'))}" decoding="async"${i?' loading="lazy"':''}>`),slug);
+ });
+ assert.doesNotMatch(hero,/panaderia|green-bean-72/);
  // The mockup's furniture stays behind.
  assert.doesNotMatch(home,/🤖|class="robot"|hv-draft|rw-draft|rw-draftbar|rw-claim|hero-switch|hv-a\b|hero-current|notes\.html|DRAFT COPY|noindex/);
  const body=home.match(/<div class="rw">[\s\S]*<\/div>\n?<\/main>/)[0];
@@ -183,7 +203,9 @@ test('enabled homepage replay has a speed control, and reading-pace timing in it
  assert.ok(home.includes(`<figure class="rp" aria-label="${copy['home.replay.figure.aria']}" data-thinking="${copy['home.replay.thinking']}">`));
  const css=await read('src/home/hero.css');
  const cycle=Number(css.match(/\.rp \{ --rp-cycle: ([\d.]+)s; \}/)[1]);
- const words={1:copy['home.replay.you.1'],2:[copy['home.replay.agent.1'],copy['home.replay.agent.q1'],copy['home.replay.agent.q2'],copy['home.replay.agent.q3']].join(' '),3:copy['home.replay.you.2'],4:copy['home.replay.agent.plan'],5:copy['home.replay.agent.p1'],6:copy['home.replay.agent.p2'],7:copy['home.replay.agent.p3'],8:copy['home.replay.agent.p4']};
+ // the CSS-only loop plays the first session (without JavaScript only it is shown)
+ const first=JSON.parse(await read('src/home/replays/sessions.json')).sessions[0], f=k=>copy[`home.replay.${first.slug}.${k}`];
+ const words={1:copy['home.replay.you.1'],2:[f('agent.1'),f('q1'),f('q2'),f('q3')].filter(Boolean).join(' '),3:f('you.2'),4:f('plan'),5:f('p1'),6:f('p2'),7:f('p3'),8:`${f('p4')} ${new URL(first.url).host}`};
  const line=k=>{const m=css.match(new RegExp(`@keyframes rp-k${k} \\{ 0%, ([\\d.]+)% \\{ opacity: 0;[^}]*\\} ([\\d.]+)%, ([\\d.]+)% \\{ opacity: 1;`));return {from:m[1]*cycle/100,full:m[2]*cycle/100};};
  for(let k=1;k<=9;k++) {
   const {from,full}=line(k);
@@ -337,8 +359,10 @@ test('homepage carries Paul’s 2026-11-12 approved copy byte for byte, with cur
  // ~/.cache/start-recording/replay4.json, trimmed with "…". Pending Paul's OK through the coordinator.
  const run4={'replay.agent.1':"I’ve read the CARLOS start page. … I have a few questions.",'replay.agent.q2':"How should it look and feel?",'replay.agent.q3':"How much have you built before?",'replay.agent.p1':"Now writing the app code.",'replay.agent.p2':"Everything works: orders save, they’re grouped by collection day with a per-day “To bake” total, and bad input is rejected. …",'replay.agent.p3':"The page looks right on both phone and desktop. …",'replay.agent.p4':"Your pre-order page for Panadería Carlos is online:",'replay.url':"green-bean-72.dev.trycarlos.com",'replay.shot.alt':"The live page: a cream and brown bakery page with a bread icon, the serif heading “Panadería Carlos”, “Order today, collect mañana.” and menu cards for Pan de pueblo, Magdalenas and Ensaimada.",'replay.caption':"Excerpts from one recorded run, 12 November 2026."};
  for(const s of result.strings) if(run4[s.id]) s.text=run4[s.id];
- assert.equal(copy['home.replay.agent.plan'],'That sounds lovely. Here’s what I’d build. … Look: warm cream background, a toasted-crust brown for buttons and highlights, a soft honey-gold second colour, elegant serif headings …');
- const removed=new Set(['replay.badge','replay.agent.q4','hero.gloss.word.cheaper']);
+ // 2026-11-13: the bakery run gave way to real sessions in tabs (home.replay.<slug>.*, pending copy review);
+ // its quotations, address, alt text and caption date are superseded, not reworded.
+ const removed=new Set(['replay.badge','replay.agent.q4','hero.gloss.word.cheaper','replay.agent.1','replay.agent.q1','replay.agent.q2','replay.agent.q3','replay.agent.plan','replay.you.2','replay.agent.p1','replay.agent.p2','replay.agent.p3','replay.agent.p4','replay.url','replay.shot.alt','replay.caption']);
+ for(const id of removed) if(id.startsWith('replay.') && id!=='replay.caption') assert.ok(!Object.hasOwn(copy,`home.${id}`),id);
  assert.ok(!Object.hasOwn(copy,'home.replay.agent.q4'));
  assert.ok(!Object.hasOwn(copy,'home.replay.badge'));
  result.strings=result.strings.filter(s=>!removed.has(s.id));
@@ -350,7 +374,7 @@ test('homepage carries Paul’s 2026-11-12 approved copy byte for byte, with cur
  await pages(async home=>{
   const text=visible(home);
   assert.doesNotMatch(home,/rp-badge|A real run, sped up/);
-  const sample=['hero.gloss','hero.cloud.summary','replay.agent.1','replay.agent.q3','replay.you.2','replay.caption','what.button','what.prop2.body','practice.4.aria','tools.heading','tools.skill.body','get.ship.item1','get.ship.item2','get.build.item2','get.save.item1','get.build.figure.note','stacks.sub','stacks.reset','stacks.balloon.file-storage','stacks.after.base','who.by','end.heading','end.paste.works','end.hand.link','typical.closing.lead','typical.closing.body'];
+  const sample=['hero.gloss','hero.cloud.summary','what.button','what.prop2.body','practice.4.aria','tools.heading','tools.skill.body','get.ship.item1','get.ship.item2','get.build.item2','get.save.item1','get.build.figure.note','stacks.sub','stacks.reset','stacks.balloon.file-storage','stacks.after.base','who.by','end.heading','end.paste.works','end.hand.link','typical.closing.lead','typical.closing.body'];
   for(const id of sample) assert.ok(text.includes(copy[`home.${id}`]),id);
   // Every approved string shown on the page; the alternatives to the figures are kept for a one-line switch.
   for(const {id,text:value} of result.strings) if(!/^get\.[a-z]+\.alt/.test(id) && !id.startsWith('hero.gloss.word.')) assert.ok(text.includes(value),id);

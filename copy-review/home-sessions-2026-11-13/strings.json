@@ -1,0 +1,429 @@
+[
+ {
+  "id": "home.replay.caption",
+  "section": "Demo box: tabs and caption",
+  "label": "caption",
+  "text": "Excerpts from one recorded run, 13 November 2026.",
+  "context": "In the hero's 'Your agent' demo box, which now has tabs for five recorded sessions."
+ },
+ {
+  "id": "home.replay.tabs",
+  "section": "Demo box: tabs and caption",
+  "label": "tabs",
+  "text": "Example sessions",
+  "context": "In the hero's 'Your agent' demo box, which now has tabs for five recorded sessions."
+ },
+ {
+  "id": "home.replay.status-page.agent.1",
+  "section": "Demo box: Status page",
+  "label": "status-page.agent.1",
+  "text": "I’ve read the directions. They ask me to check a few things with you before I build anything, so here are the questions.",
+  "context": "A line quoted from the recorded session where an agent built the Status page example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.status-page.p1",
+  "section": "Demo box: Status page",
+  "label": "status-page.p1",
+  "text": "Now writing the app code.",
+  "context": "A line quoted from the recorded session where an agent built the Status page example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.status-page.p2",
+  "section": "Demo box: Status page",
+  "label": "status-page.p2",
+  "text": "Everything works: posting needs the passphrase, and resolving an incident sets the part back to Working. …",
+  "context": "A line quoted from the recorded session where an agent built the Status page example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.status-page.p3",
+  "section": "Demo box: Status page",
+  "label": "status-page.p3",
+  "text": "The phone layout passes: nothing scrolls sideways and every button and field is at least 44 px tall. …",
+  "context": "A line quoted from the recorded session where an agent built the Status page example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.status-page.p4",
+  "section": "Demo box: Status page",
+  "label": "status-page.p4",
+  "text": "Your Ledgerlight status page is live:",
+  "context": "A line quoted from the recorded session where an agent built the Status page example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.status-page.plan",
+  "section": "Demo box: Status page",
+  "label": "status-page.plan",
+  "text": "Here’s what I plan to build. … The look: calm and trustworthy. Off-white page, dark navy text, one muted teal for the brand, and clear status colours that always have a word next to them. …",
+  "context": "A line quoted from the recorded session where an agent built the Status page example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.status-page.q1",
+  "section": "Demo box: Status page",
+  "label": "status-page.q1",
+  "text": "What would you like to make?",
+  "context": "A line quoted from the recorded session where an agent built the Status page example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.status-page.q2",
+  "section": "Demo box: Status page",
+  "label": "status-page.q2",
+  "text": "How should it feel?",
+  "context": "A line quoted from the recorded session where an agent built the Status page example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.status-page.q3",
+  "section": "Demo box: Status page",
+  "label": "status-page.q3",
+  "text": "Are you comfortable with code?",
+  "context": "A line quoted from the recorded session where an agent built the Status page example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.status-page.shot.alt",
+  "section": "Demo box: Status page",
+  "label": "status-page.shot.alt",
+  "text": "The live status page: Ledgerlight’s “Some systems are slow: API” banner, its four parts marked Working or Slow, and an ongoing incident.",
+  "context": "Not shown. Screen-reader description of the app screenshot at the end of the Status page session."
+ },
+ {
+  "id": "home.replay.status-page.tab",
+  "section": "Demo box: Status page",
+  "label": "status-page.tab",
+  "text": "Status page",
+  "context": "A line quoted from the recorded session where an agent built the Status page example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.status-page.you.2",
+  "section": "Demo box: Status page",
+  "label": "status-page.you.2",
+  "text": "I run operations at Ledgerlight, a small invoicing software company. We need a public status page. … Only our staff should be able to post incidents and updates; a shared staff passphrase is fine for now. … It should feel calm and trustworthy, like a proper status page. I’m not technical, so keep it simple for me.",
+  "context": "A line quoted from the recorded session where an agent built the Status page example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.defect-log.agent.1",
+  "section": "Demo box: Defect log",
+  "label": "defect-log.agent.1",
+  "text": "I’ve read the CARLOS start directions. They say to ask you a few questions before building anything, so here they are:",
+  "context": "A line quoted from the recorded session where an agent built the Defect log example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.defect-log.p1",
+  "section": "Demo box: Defect log",
+  "label": "defect-log.p1",
+  "text": "Now writing the app: the Go server, the page template and the styling.",
+  "context": "A line quoted from the recorded session where an agent built the Defect log example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.defect-log.p2",
+  "section": "Demo box: Defect log",
+  "label": "defect-log.p2",
+  "text": "Everything works locally. …",
+  "context": "A line quoted from the recorded session where an agent built the Defect log example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.defect-log.p3",
+  "section": "Demo box: Defect log",
+  "label": "defect-log.p3",
+  "text": "Both layouts look right. …",
+  "context": "A line quoted from the recorded session where an agent built the Defect log example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.defect-log.p4",
+  "section": "Demo box: Defect log",
+  "label": "defect-log.p4",
+  "text": "Your defect log is live and loads correctly:",
+  "context": "A line quoted from the recorded session where an agent built the Defect log example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.defect-log.plan",
+  "section": "Demo box: Defect log",
+  "label": "defect-log.plan",
+  "text": "Before I write anything, here’s the plan in plain terms: … Look: plain and industrial. It’ll have a dark steel-grey header with the company name and a small logo mark, a light grey page and one safety-orange accent. …",
+  "context": "A line quoted from the recorded session where an agent built the Defect log example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.defect-log.q1",
+  "section": "Demo box: Defect log",
+  "label": "defect-log.q1",
+  "text": "What would you like to make?",
+  "context": "A line quoted from the recorded session where an agent built the Defect log example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.defect-log.q2",
+  "section": "Demo box: Defect log",
+  "label": "defect-log.q2",
+  "text": "How should it look and feel?",
+  "context": "A line quoted from the recorded session where an agent built the Defect log example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.defect-log.q3",
+  "section": "Demo box: Defect log",
+  "label": "defect-log.q3",
+  "text": "How much detail do you want from me?",
+  "context": "A line quoted from the recorded session where an agent built the Defect log example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.defect-log.shot.alt",
+  "section": "Demo box: Defect log",
+  "label": "defect-log.shot.alt",
+  "text": "The live defect log: a dark Corrin Mouldings header, a “Log a defect” form with line, defect type and quantity, and the last 7 days’ totals.",
+  "context": "Not shown. Screen-reader description of the app screenshot at the end of the Defect log session."
+ },
+ {
+  "id": "home.replay.defect-log.tab",
+  "section": "Demo box: Defect log",
+  "label": "defect-log.tab",
+  "text": "Defect log",
+  "context": "A line quoted from the recorded session where an agent built the Defect log example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.defect-log.you.2",
+  "section": "Demo box: Defect log",
+  "label": "defect-log.you.2",
+  "text": "I’m the quality manager at Corrin Mouldings, a small plastics manufacturer with three production lines (Line 1, Line 2, Line 3). I’d like a defect log … Show the recent defects, plus counts by line and by type for the last 7 days, with a simple chart. It should feel industrial and data-first. I’m not technical, so keep it simple for me.",
+  "context": "A line quoted from the recorded session where an agent built the Defect log example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.project-board.agent.1",
+  "section": "Demo box: Project board",
+  "label": "project-board.agent.1",
+  "text": "I’ve read the directions on that page. … Step one is to ask you a few questions and wait for your answers before I build anything.",
+  "context": "A line quoted from the recorded session where an agent built the Project board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.project-board.p1",
+  "section": "Demo box: Project board",
+  "label": "project-board.p1",
+  "text": "I’ve confirmed the starter is intact, so now I’m writing the app … the board page and its styling.",
+  "context": "A line quoted from the recorded session where an agent built the Project board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.project-board.p2",
+  "section": "Demo box: Project board",
+  "label": "project-board.p2",
+  "text": "Everything works locally. …",
+  "context": "A line quoted from the recorded session where an agent built the Project board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.project-board.p3",
+  "section": "Demo box: Project board",
+  "label": "project-board.p3",
+  "text": "The page looks right on both phone and desktop. …",
+  "context": "A line quoted from the recorded session where an agent built the Project board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.project-board.p4",
+  "section": "Demo box: Project board",
+  "label": "project-board.p4",
+  "text": "Your project board is live and working:",
+  "context": "A line quoted from the recorded session where an agent built the Project board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.project-board.plan",
+  "section": "Demo box: Project board",
+  "label": "project-board.plan",
+  "text": "Your design is a good fit for this. … The look: quiet and refined, like a studio drawing board. It uses warm off-white paper, charcoal text, a single muted terracotta accent and serif headings …",
+  "context": "A line quoted from the recorded session where an agent built the Project board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.project-board.q1",
+  "section": "Demo box: Project board",
+  "label": "project-board.q1",
+  "text": "What do you want to make?",
+  "context": "A line quoted from the recorded session where an agent built the Project board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.project-board.q2",
+  "section": "Demo box: Project board",
+  "label": "project-board.q2",
+  "text": "How should it feel?",
+  "context": "A line quoted from the recorded session where an agent built the Project board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.project-board.q3",
+  "section": "Demo box: Project board",
+  "label": "project-board.q3",
+  "text": "What’s the one main screen, and what does it save?",
+  "context": "A line quoted from the recorded session where an agent built the Project board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.project-board.shot.alt",
+  "section": "Demo box: Project board",
+  "label": "project-board.shot.alt",
+  "text": "The live project board: Okafor Lind Architects’ counts of active, at-risk and late projects, then project cards grouped by stage, marked On track or At risk.",
+  "context": "Not shown. Screen-reader description of the app screenshot at the end of the Project board session."
+ },
+ {
+  "id": "home.replay.project-board.tab",
+  "section": "Demo box: Project board",
+  "label": "project-board.tab",
+  "text": "Project board",
+  "context": "A line quoted from the recorded session where an agent built the Project board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.project-board.you.2",
+  "section": "Demo box: Project board",
+  "label": "project-board.you.2",
+  "text": "I’m the studio manager at Okafor Lind Architects, a small practice. I’d like a project status board for our current projects. … The board shows projects grouped by stage, with anything late or at risk easy to spot. It should feel refined and minimal, like an architecture studio. I’m not technical, so keep it simple for me.",
+  "context": "A line quoted from the recorded session where an agent built the Project board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.band-gigs.agent.1",
+  "section": "Demo box: Gig list",
+  "label": "band-gigs.agent.1",
+  "text": "I’ve read the CARLOS directions. … Before I write any code, the directions say I need a few answers from you:",
+  "context": "A line quoted from the recorded session where an agent built the Gig list example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.band-gigs.p1",
+  "section": "Demo box: Gig list",
+  "label": "band-gigs.p1",
+  "text": "… Now I’m writing the app: the poster page, the sign-up form, and the private sign-ups page.",
+  "context": "A line quoted from the recorded session where an agent built the Gig list example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.band-gigs.p2",
+  "section": "Demo box: Gig list",
+  "label": "band-gigs.p2",
+  "text": "On phones, “MARROW” splits across two lines because of the fallback font, so I’ll make the band name a bit smaller on small screens.",
+  "context": "A line quoted from the recorded session where an agent built the Gig list example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.band-gigs.p3",
+  "section": "Demo box: Gig list",
+  "label": "band-gigs.p3",
+  "text": "The page looks right on phones too. …",
+  "context": "A line quoted from the recorded session where an agent built the Gig list example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.band-gigs.p4",
+  "section": "Demo box: Gig list",
+  "label": "band-gigs.p4",
+  "text": "Your band page is built and online. You can open it here:",
+  "context": "A line quoted from the recorded session where an agent built the Gig list example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.band-gigs.plan",
+  "section": "Demo box: Gig list",
+  "label": "band-gigs.plan",
+  "text": "Before I build it, here’s my plan. … Like a gig poster pasted on a dark wall: near-black background, aged off-white paper panels, one strong rust-red accent … and a faint grain pattern behind everything.",
+  "context": "A line quoted from the recorded session where an agent built the Gig list example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.band-gigs.q1",
+  "section": "Demo box: Gig list",
+  "label": "band-gigs.q1",
+  "text": "What do you want to make?",
+  "context": "A line quoted from the recorded session where an agent built the Gig list example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.band-gigs.q2",
+  "section": "Demo box: Gig list",
+  "label": "band-gigs.q2",
+  "text": "How should it look and feel?",
+  "context": "A line quoted from the recorded session where an agent built the Gig list example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.band-gigs.q3",
+  "section": "Demo box: Gig list",
+  "label": "band-gigs.q3",
+  "text": "What’s the one main screen, and what’s the one kind of thing it saves?",
+  "context": "A line quoted from the recorded session where an agent built the Gig list example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.band-gigs.shot.alt",
+  "section": "Demo box: Gig list",
+  "label": "band-gigs.shot.alt",
+  "text": "The live band page: a torn gig poster for The Marrow Lights with “Loud songs for quiet towns.” and the upcoming gigs as taped-up strips.",
+  "context": "Not shown. Screen-reader description of the app screenshot at the end of the Gig list session."
+ },
+ {
+  "id": "home.replay.band-gigs.tab",
+  "section": "Demo box: Gig list",
+  "label": "band-gigs.tab",
+  "text": "Gig list",
+  "context": "A line quoted from the recorded session where an agent built the Gig list example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.band-gigs.you.2",
+  "section": "Demo box: Gig list",
+  "label": "band-gigs.you.2",
+  "text": "I’m in a small band called The Marrow Lights. I’d like a page with our upcoming gigs and a mailing-list sign-up, so people leave their name and email to hear about new shows. … Put a line on it like “Loud songs for quiet towns.” I want it to feel moody, like an old gig poster on a wall. …",
+  "context": "A line quoted from the recorded session where an agent built the Gig list example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.climbing-gym.agent.1",
+  "section": "Demo box: Route board",
+  "label": "climbing-gym.agent.1",
+  "text": "I’ve read the CARLOS getting-started directions. The first step is to ask you a few things before I build anything.",
+  "context": "A line quoted from the recorded session where an agent built the Route board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.climbing-gym.p1",
+  "section": "Demo box: Route board",
+  "label": "climbing-gym.p1",
+  "text": "Starter verified and extracted. Now writing the app.",
+  "context": "A line quoted from the recorded session where an agent built the Route board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.climbing-gym.p2",
+  "section": "Demo box: Route board",
+  "label": "climbing-gym.p2",
+  "text": "The app works locally: sends save, the most-sent route moves to the top, and bad input is rejected. …",
+  "context": "A line quoted from the recorded session where an agent built the Route board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.climbing-gym.p3",
+  "section": "Demo box: Route board",
+  "label": "climbing-gym.p3",
+  "text": "The board is live. …",
+  "context": "A line quoted from the recorded session where an agent built the Route board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.climbing-gym.p4",
+  "section": "Demo box: Route board",
+  "label": "climbing-gym.p4",
+  "text": "Your Granite Yard Route Board is live:",
+  "context": "A line quoted from the recorded session where an agent built the Route board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.climbing-gym.plan",
+  "section": "Demo box: Route board",
+  "label": "climbing-gym.plan",
+  "text": "Here’s what I’m planning. … The look: a dark, chalky charcoal wall with bright, chunky route cards in your hold colours, a punchy yellow “Log send” button … so it feels like walking into the gym.",
+  "context": "A line quoted from the recorded session where an agent built the Route board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.climbing-gym.q1",
+  "section": "Demo box: Route board",
+  "label": "climbing-gym.q1",
+  "text": "What should the app be?",
+  "context": "A line quoted from the recorded session where an agent built the Route board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.climbing-gym.q2",
+  "section": "Demo box: Route board",
+  "label": "climbing-gym.q2",
+  "text": "How should it feel?",
+  "context": "A line quoted from the recorded session where an agent built the Route board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.climbing-gym.shot.alt",
+  "section": "Demo box: Route board",
+  "label": "climbing-gym.shot.alt",
+  "text": "The live route board: a loud yellow Granite Yard header, a count of sends logged, and a “Log a send” form on a dark wall.",
+  "context": "Not shown. Screen-reader description of the app screenshot at the end of the Route board session."
+ },
+ {
+  "id": "home.replay.climbing-gym.tab",
+  "section": "Demo box: Route board",
+  "label": "climbing-gym.tab",
+  "text": "Route board",
+  "context": "A line quoted from the recorded session where an agent built the Route board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ },
+ {
+  "id": "home.replay.climbing-gym.you.2",
+  "section": "Demo box: Route board",
+  "label": "climbing-gym.you.2",
+  "text": "I run a small climbing gym called Granite Yard. I’d like a route board page … Save the sends and show who’s sent what, with the most-sent routes up top. … I want it to feel bold and energetic, like a gym wall with loud colours. …",
+  "context": "A line quoted from the recorded session where an agent built the Route board example. Verbatim from the recording, trimmed with '…'. The question is whether to show it, not how to reword it (rewording a quote misrepresents the session)."
+ }
+]

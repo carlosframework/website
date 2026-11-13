@@ -1,0 +1,10 @@
+{
+  "//": "🤖 The hero replay's sessions, in tab order (src/_includes/home-hero.njk, src/home/replay.js). Each is a real /start run recorded on 2026-11-13 (~/.cache/start-recording/examples/<slug>: replay.json, SUMMARY.md). The words are excerpts from it in src/_data/start-copy.json under home.replay.<slug>.*; the last line links to the app's permanent example copy (on the flagship demo account) instead of the 24-hour demo address the run printed. The screenshot is that permanent copy at 390 px (permanent/perm-390.png), the top 2400 px at 2x, as JPEG.",
+  "sessions": [
+    { "slug": "status-page", "url": "https://status-page-example.bdf.oncarlos.com/", "shot": [780, 2400] },
+    { "slug": "defect-log", "url": "https://defect-log-example.bdf.oncarlos.com/", "shot": [780, 2400] },
+    { "slug": "project-board", "url": "https://project-board-example.bdf.oncarlos.com/", "shot": [780, 2400] },
+    { "slug": "band-gigs", "url": "https://band-gigs-example.bdf.oncarlos.com/", "shot": [780, 2400] },
+    { "slug": "climbing-gym", "url": "https://climbing-gym-example.bdf.oncarlos.com/", "shot": [780, 2400] }
+  ]
+}
