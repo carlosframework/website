@@ -360,3 +360,78 @@ test('hero: a height-only resize measures again when it changed the replay (a ta
   rpH = 552; hero.rect = { ...hero.rect, height: 952 }; listeners.resize();
   assert.equal(hero.style.height, held(952), 'a taller window grew the replay: measured again');
 });
+
+// 🤖 The apps carousel (home/apps.js): the controls appear, the advance waits until the row is on screen, holds for
+// hover and focus, stops for good on Pause, a touch or a chosen app, and never runs under reduced motion. The status
+// line is silent while the row moves by itself.
+const appsJS = await read('src/home/apps.js');
+function appsWorld({ reduce = false, count = 4 } = {}) {
+  const mq = media(reduce), root = new El('rw-apps'), track = new El('ap-track'), ctrl = new El('ap-ctrl'), dotsBox = new El('ap-dots');
+  const pause = new El('ap-pause'), prev = new El('ap-prev'), next = new El('ap-next'), status = new El('ap-status');
+  ctrl.hidden = dotsBox.hidden = true; pause.dataset.pause = 'Pause'; pause.dataset.play = 'Play'; pause.textContent = 'Pause';
+  status.dataset.format = '{app}, {n} of {total}';
+  const names = ['Tito', 'Jelly', 'Eleven', 'Woodstar'].slice(0, count);
+  const slides = names.map((name, i) => { const s = new El('ap-slide'); s.dataset.name = name; Object.defineProperty(s, 'offsetLeft', { get: () => 6 + i * 700 }); return s; });
+  const dots = names.map(() => new El(''));
+  track.scrollLeft = 0; track.scrolls = [];
+  track.scrollTo = ({ left, behavior }) => { track.scrollLeft = left; track.scrolls.push(behavior); };
+  track.contains = el => slides.includes(el);
+  track.qs['.ap-slide'] = slides; dotsBox.qs.button = dots;
+  Object.assign(root.qs, { '.ap-track': [track], '.ap-ctrl': [ctrl], '.ap-pause': [pause], '.ap-prev': [prev], '.ap-next': [next], '.ap-dots': [dotsBox], '.ap-status': [status] });
+  const timeouts = new Map(), observers = [], doc = { hidden: false, l: {} };
+  let n = 0;
+  Object.assign(doc, { querySelector: s => (s === '.rw-apps[data-carousel]' ? root : null), addEventListener: (t, f) => (doc.l[t] ||= []).push(f) });
+  const g = {
+    document: doc, matchMedia: () => mq, Math, String,
+    setTimeout: (f, ms) => { timeouts.set(++n, { f, ms }); return n; }, clearTimeout: id => timeouts.delete(id),
+    IntersectionObserver: class { constructor(cb) { this.cb = cb; observers.push(this); } observe() {} },
+  };
+  runInContext(appsJS, createContext(g));
+  const see = on => observers.forEach(o => o.cb([{ isIntersecting: on }]));
+  const advance = () => { const due = [...timeouts.entries()].filter(([, t]) => t.ms === 6000); due.forEach(([id]) => timeouts.delete(id)); due.forEach(([, t]) => t.f()); return due.length; };
+  const current = () => dots.findIndex(d => d.getAttribute('aria-current') === 'true');
+  return { mq, root, track, ctrl, dotsBox, pause, prev, next, status, slides, dots, doc, timeouts, see, advance, current };
+}
+
+test('apps: the controls appear, and the advance waits until the row is seen', () => {
+  const w = appsWorld();
+  assert.equal(w.ctrl.hidden, false); assert.equal(w.dotsBox.hidden, false); assert.ok(w.root.classList.contains('is-live'));
+  assert.equal(w.pause.hidden, false); assert.equal(w.current(), 0);
+  assert.equal(w.status.textContent, '', 'nothing announced on arrival');
+  assert.equal(w.advance(), 0, 'off screen: no advance');
+  w.see(true);
+  assert.equal(w.status.getAttribute('aria-live'), 'off', 'silent while it moves by itself');
+  assert.equal(w.advance(), 1); assert.equal(w.current(), 1); assert.equal(w.track.scrollLeft, 700);
+  assert.equal(w.track.scrolls.at(-1), 'smooth');
+  w.advance(); w.advance(); w.advance(); assert.equal(w.current(), 0, 'after the last app it starts again');
+  w.see(false); assert.equal(w.advance(), 0, 'scrolled away: it waits');
+  w.see(true); w.doc.hidden = true; w.doc.l.visibilitychange.forEach(f => f()); assert.equal(w.advance(), 0, 'hidden tab: it waits');
+});
+
+test('apps: hover and focus hold it; Pause, a touch or a chosen app stop it until Play', () => {
+  const w = appsWorld(); w.see(true);
+  w.track.fire('pointerenter', { pointerType: 'mouse' });
+  assert.equal(w.advance(), 0); assert.equal(w.status.getAttribute('aria-live'), 'polite');
+  w.track.fire('pointerleave', { pointerType: 'mouse' }); assert.equal(w.advance(), 1);
+  w.track.fire('focusin', {}); assert.equal(w.advance(), 0);
+  w.track.fire('focusout', { relatedTarget: w.slides[2] }); assert.equal(w.advance(), 0, 'focus still inside');
+  w.track.fire('focusout', { relatedTarget: null }); assert.equal(w.advance(), 1);
+  w.pause.fire('click');
+  assert.equal(w.pause.textContent, 'Play'); assert.equal(w.advance(), 0); assert.equal(w.status.getAttribute('aria-live'), 'polite');
+  w.pause.fire('click'); assert.equal(w.pause.textContent, 'Pause'); assert.equal(w.advance(), 1);
+  w.track.fire('pointerdown', { pointerType: 'touch' }); assert.equal(w.pause.textContent, 'Play'); assert.equal(w.advance(), 0);
+  // choosing an app moves there, announces it and leaves the advance stopped
+  const v = appsWorld(); v.see(true);
+  v.next.fire('click'); assert.equal(v.current(), 1); assert.equal(v.status.textContent, 'Jelly, 2 of 4'); assert.equal(v.pause.textContent, 'Play'); assert.equal(v.advance(), 0);
+  v.prev.fire('click'); v.prev.fire('click'); assert.equal(v.current(), 3, 'previous from the first wraps to the last');
+  v.dots[2].fire('click'); assert.equal(v.current(), 2); assert.equal(v.status.textContent, 'Eleven, 3 of 4');
+});
+
+test('apps: reduced motion never advances, hides Pause and jumps instead of gliding', () => {
+  const r = appsWorld({ reduce: true }); r.see(true);
+  assert.equal(r.pause.hidden, true); assert.equal(r.advance(), 0); assert.equal(r.status.getAttribute('aria-live'), 'polite');
+  r.next.fire('click'); assert.equal(r.track.scrolls.at(-1), 'auto'); assert.equal(r.current(), 1);
+  // switched on mid-advance: the pending move is dropped
+  const w = appsWorld(); w.see(true); assert.equal([...w.timeouts.values()].filter(t => t.ms === 6000).length, 1);
+  w.mq.set(true); assert.equal(w.advance(), 0); assert.equal(w.pause.hidden, true);
+});

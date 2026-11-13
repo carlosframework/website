@@ -43,7 +43,7 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.doesNotMatch(home,/🤖|class="robot"|hv-draft|rw-draft|rw-draftbar|rw-claim|hero-switch|hv-a\b|hero-current|notes\.html|DRAFT COPY|noindex/);
  const body=home.match(/<div class="rw">[\s\S]*<\/div>\n?<\/main>/)[0];
  assert.match(body,/<section class="rw-what" id="architecture"/);
- assert.deepEqual([...body.matchAll(/<section class="(rw-[a-z]+)"/g)].map(m=>m[1]),['rw-what','rw-tools','rw-get','rw-who','rw-end']);
+ assert.deepEqual([...body.matchAll(/<section class="(rw-[a-z]+)"/g)].map(m=>m[1]),['rw-apps','rw-what','rw-tools','rw-get','rw-who','rw-end']);
  assert.match(body,/<h2 id="rw-what-title">CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily\.<\/h2>\s*<p class="rw-what-sub">Inspired by UNIX principles, CARLOS deploys full stack web apps as single processes rather than sprawling containerised services, using fast compiled languages\. This unlocks a slew of benefits\.<\/p>/);
  assert.match(body,/<p class="rw-follow">It’s defined by an <a href="https:\/\/spec\.carlosframework\.com" target="_blank" rel="noopener noreferrer">open specification<\/a>\.<\/p>/);
  assert.match(body,/<p class="rw-closing"><strong>CARLOS is a set of strong opinions, not rules\.<\/strong> They’re the defaults we believe make web apps better for everyone, and for their agents\.<\/p>/);
@@ -72,7 +72,7 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.doesNotMatch(hero+body,/—/);
  // Spec links keep their visible text as the name (WCAG 2.5.3) and carry the approved longer label as a description.
  for(const [ref,aria] of [['1.ref','1.aria'],['2.ref','2.aria'],['2.ref2','2.aria2'],['3.ref','3.aria'],['4.ref','4.aria']]) assert.ok(body.includes(`aria-describedby="practice-${aria.replace('.','-')}">${escapeHTML(copy['home.practice.'+ref])}</a><span id="practice-${aria.replace('.','-')}" hidden>${escapeHTML(copy['home.practice.'+aria])}</span>`),aria);
- for(const asset of ['/home/hero.css','/home/sections.css','/home/stacks.css','/home/theme.css','/home/hero.js','/home/hero-bg.js','/home/figures.js','/home/stacks.js']) assert.ok(home.includes(`="${asset}?v=0"`),asset);
+ for(const asset of ['/home/hero.css','/home/sections.css','/home/apps.css','/home/stacks.css','/home/theme.css','/home/hero.js','/home/hero-bg.js','/home/apps.js','/home/figures.js','/home/stacks.js']) assert.ok(home.includes(`="${asset}?v=0"`),asset);
  // The theme is set before anything is drawn: theme.js first in <head>, blocking, ahead of every stylesheet.
  const head=home.match(/<head>[\s\S]*?<\/head>/)[0];
  assert.ok(head.includes('<script src="/home/theme.js?v=0"></script>'));
@@ -94,6 +94,51 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
   for(const id of ['copy.label','copy.done','copy.aria','copy.fallback','home.paste.done']) assert.ok(html.includes(escapeHTML(copy[id])),id);
   assert.match(html,/role="status" aria-live="polite"/);
  }
+}));
+// 🤖 The apps carousel directly under the hero: Paul's heading, one slide per screenshot with the Apps page's own
+// name, line and link, a row that scrolls and snaps without JavaScript, and controls that wait for the script.
+test('enabled homepage has the apps carousel under the hero',()=>pages(async(home)=>{
+ const sources=JSON.parse(await read('src/home/apps/sources.json'));
+ const appsPage=await read('src/apps/index.html');
+ const heroEnd=home.indexOf('</figure>\n</div></section>');
+ const section=home.match(/<section class="rw-apps"[\s\S]*?<\/div><\/section>/)[0];
+ assert.ok(heroEnd>0 && home.indexOf('<section class="rw-apps"')>heroEnd);
+ assert.match(home.slice(heroEnd),/^<\/figure>\n<\/div><\/section>\s*<div class="rw">\s*<section class="rw-apps"/,'the first section after the hero');
+ assert.match(section,/^<section class="rw-apps" aria-roledescription="carousel" aria-labelledby="rw-apps-title" data-carousel>/);
+ assert.ok(section.includes(`<!-- 👨 Paul's words, verbatim --><h2 id="rw-apps-title">What are people building using CARLOS?</h2><!-- /👨 -->`));
+ assert.equal(copy['home.apps.heading'],'What are people building using CARLOS?');
+ const slides=[...section.matchAll(/<li class="ap-slide"[\s\S]*?<\/li>/g)].map(m=>m[0]);
+ assert.equal(slides.length,sources.apps.length);
+ assert.ok(slides.length>=6);
+ slides.forEach((slide,i)=>{
+  const {app,url}=sources.apps[i];
+  const card=appsPage.match(new RegExp(`<li class="app-card">(?:(?!</li>)[\\s\\S])*?<h2>([^<]+)</h2>(?:</div>)?<p>([^<]+)</p>(?:(?!</li>)[\\s\\S])*?href="${url.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')}"`))
+  assert.ok(card,app);
+  const [,name,about]=card;
+  assert.equal(name.toLowerCase(),app);
+  assert.ok(slide.includes(`role="group" aria-roledescription="slide" aria-label="${i+1} of ${slides.length}" data-name="${escapeHTML(name)}"`),app);
+  // a real screenshot, sized, with alt text, in AVIF and WebP with a JPEG fallback
+  assert.ok(slide.includes(`<source type="image/avif" srcset="/home/apps/${app}.avif"><source type="image/webp" srcset="/home/apps/${app}.webp"><img src="/home/apps/${app}.jpg" width="960" height="600" alt="${escapeHTML(copy['home.apps.shot.alt'].replace('{app}',name))}" loading="lazy" decoding="async">`),app);
+  assert.ok(slide.includes(`<h3>${escapeHTML(name)}</h3>`),app);
+  assert.ok(slide.includes(`<p class="ap-about">${escapeHTML(about.replace(/'/g,'’'))}</p>`),app);
+  // the way out: the app's own site, in a new tab, without handing it this page
+  assert.match(slide,new RegExp(`<a class="ap-link" href="${url.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')}" target="_blank" rel="noopener noreferrer">[^<]+ <svg viewBox="0 0 24 24" aria-hidden="true">`),app);
+  assert.equal((slide.match(/<a /g)||[]).length,1,`${app}: one link per slide`);
+ });
+ // Without JavaScript: a sideways row that snaps, every app reachable by Tab; the controls stay hidden until home/apps.js.
+ const css=await read('src/home/apps.css');
+ assert.match(css,/\.rw \.ap-track \{[^}]*overflow-x: auto;[^}]*scroll-snap-type: x mandatory;/);
+ assert.match(css,/\.rw \.ap-slide \{[^}]*scroll-snap-align: start;/);
+ assert.match(css,/\.rw \.ap-ctrl\[hidden\] \{ display: none; \}/);
+ assert.match(css,/@media \(prefers-reduced-motion: no-preference\) \{ \.rw \.ap-track \{ scroll-behavior: smooth; \} \}/);
+ assert.match(section,/<div class="ap-ctrl" hidden>/);
+ assert.match(section,/<div class="ap-dots" role="group" aria-label="Choose an app" hidden>/);
+ // Pause reuses the replay's approved words; the status line is the only live region.
+ assert.ok(section.includes(`<button type="button" class="ap-pause" data-pause="${copy['home.replay.pause']}" data-play="${copy['home.replay.play']}">${copy['home.replay.pause']}</button>`));
+ for(const k of ['prev','next']) assert.ok(section.includes(`<button type="button" class="ap-${k}" aria-label="${copy['home.apps.'+k]}" title="${copy['home.apps.'+k]}">`),k);
+ assert.match(section,/<p class="ap-status" aria-live="polite" aria-atomic="true" data-format="\{app\}, \{n\} of \{total\}"><\/p>/);
+ assert.ok(section.includes(`<a class="rw-more" href="/apps/">${copy['home.apps.all']} `));
+ assert.doesNotMatch(section,/—/);
 }));
 test('development paste URL wraps only at separators and copies the generated line',()=>pages((home,start)=>{
  const url='https://tmp-pj4lpm.bab.dev.oncarlos.com/start';

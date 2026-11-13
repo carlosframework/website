@@ -213,5 +213,15 @@
   "home.theme.label": "Theme",
   "home.theme.auto": "Auto",
   "home.theme.light": "Light",
-  "home.theme.dark": "Dark"
+  "home.theme.dark": "Dark",
+  "home.apps.heading": "What are people building using CARLOS?",
+  "home.apps.all": "See all apps",
+  "home.apps.prev": "Previous app",
+  "home.apps.next": "Next app",
+  "home.apps.dots": "Choose an app",
+  "home.apps.carousel": "carousel",
+  "home.apps.slide": "slide",
+  "home.apps.position": "{n} of {total}",
+  "home.apps.status": "{app}, {n} of {total}",
+  "home.apps.shot.alt": "The {app} website"
 }

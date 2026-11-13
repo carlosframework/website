@@ -11,6 +11,36 @@
 {%- set countFrom = { ship: 1, build: 250, save: 0 } -%}
 <div class="rw">
 
+{#- The apps carousel (home/apps.css, home/apps.js). Without JavaScript it is a row that scrolls sideways and snaps
+    to each app; the script reveals the buttons, the dots and Pause. Names, descriptions, logos and links are the
+    Apps page's own (build-start.mjs reads src/apps/index.html); the screenshots are listed in src/home/apps/sources.json. -#}
+{%- set chevron = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg>' -%}
+<section class="rw-apps" aria-roledescription="{{ t('apps.carousel') }}" aria-labelledby="rw-apps-title" data-carousel><div class="rw-wrap">
+  <div class="ap-head">
+    <!-- 👨 Paul's words, verbatim --><h2 id="rw-apps-title">{{ t('apps.heading') }}</h2><!-- /👨 -->
+    <div class="ap-ctrl" hidden>
+      <button type="button" class="ap-pause" data-pause="{{ t('replay.pause') }}" data-play="{{ t('replay.play') }}">{{ t('replay.pause') }}</button>
+      <button type="button" class="ap-prev" aria-label="{{ t('apps.prev') }}" title="{{ t('apps.prev') }}">{{ chevron | safe }}</button>
+      <button type="button" class="ap-next" aria-label="{{ t('apps.next') }}" title="{{ t('apps.next') }}">{{ chevron | safe }}</button>
+    </div>
+  </div>
+  <ul class="ap-track" role="list">
+{%- for a in apps %}
+    <li class="ap-slide" role="group" aria-roledescription="{{ t('apps.slide') }}" aria-label="{{ t('apps.position') | replace('{n}', a.n ~ '') | replace('{total}', apps.length ~ '') }}" data-name="{{ a.name }}">
+      <picture class="ap-shot"><source type="image/avif" srcset="{{ a.shot }}.avif"><source type="image/webp" srcset="{{ a.shot }}.webp"><img src="{{ a.shot }}.jpg" width="{{ a.width }}" height="{{ a.height }}" alt="{{ t('apps.shot.alt') | replace('{app}', a.name) }}" loading="lazy" decoding="async"></picture>
+      <div class="ap-name"><span class="ap-logo{% if a.wordmark %} is-wordmark{% endif %}"><img src="{{ a.logo }}" alt="" width="{{ 60 if a.wordmark else 24 }}" height="{{ 20 if a.wordmark else 24 }}" loading="lazy" decoding="async"></span><h3>{{ a.name }}</h3></div>
+      <p class="ap-about">{{ a.about }}</p>
+      <a class="ap-link" href="{{ a.url }}" {{ blank | safe }}>{{ a.host }} {{ ext | safe }}</a>
+    </li>
+{%- endfor %}
+  </ul>
+  <div class="ap-foot">
+    <div class="ap-dots" role="group" aria-label="{{ t('apps.dots') }}" hidden>{% for a in apps %}<button type="button" aria-label="{{ a.name }}" aria-current="{{ 'true' if loop.first else 'false' }}"></button>{% endfor %}</div>
+    <p class="ap-status" aria-live="polite" aria-atomic="true" data-format="{{ t('apps.status') }}"></p>
+    <a class="rw-more" href="/apps/">{{ t('apps.all') }} {{ arrow | safe }}</a>
+  </div>
+</div></section>
+
 <section class="rw-what" id="architecture" aria-labelledby="rw-what-title"><div class="rw-wrap">
   <!-- 👨 Paul's words, verbatim --><h2 id="rw-what-title">{{ html.whatHeading | safe }}</h2>
   <p class="rw-what-sub">{{ t('what.sub') }}</p><!-- /👨 -->

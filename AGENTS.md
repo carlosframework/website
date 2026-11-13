@@ -85,7 +85,11 @@ person marker.**
   0.4 resolution, DPR capped at 1.5, 30 fps, a slow device gets half the
   blades then a smaller picture; stopped off screen, in a hidden tab, by the
   replay's Pause and under reduced motion, where it draws one still frame;
-  without WebGL2 the CSS gradient stays), `src/home/figures.js` (the "What you get" figures
+  without WebGL2 the CSS gradient stays), `src/home/apps.js` (the apps carousel under the
+  hero: previous/next, dots and a slow advance with a Pause control, held on hover, focus and off
+  screen, never under reduced motion; without it the apps are a sideways row that snaps. Names,
+  lines, logos and links are read from the Apps page at build time; screenshots and their capture
+  date live in `src/home/apps/sources.json`), `src/home/figures.js` (the "What you get" figures
   count up once in view, over the real text, which is all that screen readers,
   no-JS and reduced motion get)
   and `src/home/stacks.js` (the interactive stacks, with a Pause control; they

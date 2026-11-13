@@ -1,0 +1,64 @@
+/* 🤖 "What are people building using CARLOS?": the apps carousel directly under the hero (enabled demo
+   builds). Without JavaScript it is a row that scrolls sideways and snaps to each app, every app one link;
+   home/apps.js adds .is-live and reveals previous/next, the dots and Pause. Scoped under .rw like
+   sections.css, and coloured with its light-dark() tokens. Glanceable: the screenshot first, then the name,
+   then one line. One large app with the next peeking in; on phones one app with a narrower peek. */
+/* Widths are fractions of the content column (cqi); the row itself runs on to the right edge of the screen. */
+.rw .rw-apps { --ap-w: 84cqi; --ap-gap: clamp(1rem, 2.6vw, 1.75rem); background: var(--rw-bg-2); overflow-x: clip; }
+.rw .rw-apps .rw-wrap { container-type: inline-size; }
+@media (min-width: 640px) { .rw .rw-apps { --ap-w: 68cqi; } }
+@media (min-width: 1000px) { .rw .rw-apps { --ap-w: 63cqi; } }
+
+.rw .ap-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1rem 2rem; }
+.rw .ap-head h2 { max-width: 24ch; }
+
+/* Pause, previous and next: quiet round controls beside the heading. */
+.rw .ap-ctrl { display: flex; align-items: center; gap: 0.5rem; }
+.rw .ap-ctrl[hidden] { display: none; }
+.rw .ap-ctrl button { display: inline-grid; place-items: center; min-width: 44px; height: 44px; padding: 0; border: 1px solid var(--rw-line); border-radius: 99px; background: var(--rw-card); color: var(--rw-ink); font: 650 0.92rem/1 var(--site-sans); cursor: pointer; transition: border-color 0.15s, background-color 0.15s; }
+.rw .ap-ctrl .ap-pause { padding: 0 1.05rem; }
+.rw .ap-ctrl .ap-pause[hidden] { display: none; }
+.rw .ap-ctrl button:hover { border-color: var(--rw-acc); }
+.rw .ap-ctrl button:focus-visible, .rw .ap-dots button:focus-visible { outline: 2px solid var(--rw-acc); outline-offset: 2px; }
+.rw .ap-ctrl svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.rw .ap-ctrl .ap-next svg { transform: scaleX(-1); }
+
+/* The row. A few pixels of padding (taken back by the margin) keep the focus ring inside the scroller's clip;
+   the spacer at the end lets the last app snap to the start like the others. */
+.rw .ap-track { list-style: none; display: flex; gap: var(--ap-gap); margin: clamp(1.5rem, 3vw, 2.25rem) calc(-6px - (100vw - 100cqi) / 2) 0 -6px; padding: 6px 6px 0.9rem; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-left: 6px; scrollbar-width: thin; scrollbar-color: var(--rw-line) transparent; }
+.rw .ap-track::after { content: ""; flex: 0 0 calc(100% - var(--ap-w) - var(--ap-gap)); }
+.rw .rw-apps.is-live .ap-track { scrollbar-width: none; }
+.rw .rw-apps.is-live .ap-track::-webkit-scrollbar { display: none; }
+@media (prefers-reduced-motion: no-preference) { .rw .ap-track { scroll-behavior: smooth; } }
+
+.rw .ap-slide { position: relative; flex: 0 0 var(--ap-w); min-width: 0; scroll-snap-align: start; display: grid; align-content: start; }
+.rw .ap-shot { display: block; aspect-ratio: 8 / 5; overflow: hidden; border: 1px solid var(--rw-line); border-radius: 10px; background: #ffffff; box-shadow: 0 22px 40px -30px light-dark(rgba(40, 30, 10, 0.45), rgba(0, 0, 0, 0.9)); transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out); }
+.rw .ap-shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.rw .ap-slide:hover .ap-shot { transform: translateY(-2px); box-shadow: 0 26px 44px -28px light-dark(rgba(40, 30, 10, 0.5), rgba(0, 0, 0, 0.95)); }
+
+.rw .ap-name { display: flex; align-items: center; gap: 0.65rem; margin-top: 1.05rem; }
+/* Logos sit on white, as on the Apps page, so every brand colour reads in both themes. */
+.rw .ap-logo { flex: none; display: grid; place-items: center; width: 34px; height: 34px; padding: 5px; border: 1px solid var(--rw-line-soft); border-radius: 8px; background: #ffffff; }
+.rw .ap-logo.is-wordmark { width: 76px; padding: 6px 8px; }
+.rw .ap-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.rw .ap-slide h3 { font-size: 1.3rem; }
+.rw .ap-about { margin-top: 0.4rem; max-width: 46ch; color: var(--rw-ink-2); font-size: 0.97rem; line-height: 1.5; text-wrap: pretty; }
+/* The way out: the app's own address. Its ::after covers the whole slide, so the screenshot and text are one link. */
+.rw .ap-link { justify-self: start; display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; font: 400 0.8rem/1.4 var(--rw-mono); letter-spacing: 0.02em; text-decoration: none; }
+.rw .ap-link svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.rw .ap-link::after { content: ""; position: absolute; inset: -4px; border-radius: 12px; }
+.rw .ap-slide:hover .ap-link { text-decoration: underline; text-underline-offset: 0.22em; }
+.rw .ap-link:focus-visible { outline: none; }
+.rw .ap-link:focus-visible::after { outline: 2px solid var(--rw-acc); }
+
+/* Dots (one per app; the current one is a short bar), the screen-reader status, and "See all apps". */
+.rw .ap-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1.5rem; margin-top: 0.4rem; }
+.rw .ap-dots { display: flex; flex-wrap: wrap; margin-left: -8px; }
+.rw .ap-dots[hidden] { display: none; }
+.rw .ap-dots button { display: grid; place-items: center; width: 28px; height: 32px; padding: 0; border: 0; border-radius: 6px; background: none; cursor: pointer; }
+.rw .ap-dots button::before { content: ""; width: 8px; height: 8px; border-radius: 99px; background: var(--rw-line); transition: width 0.2s var(--ease-out), background-color 0.2s; }
+.rw .ap-dots button:hover::before { background: var(--rw-muted); }
+.rw .ap-dots button[aria-current="true"]::before { width: 20px; background: var(--rw-acc); }
+@media (pointer: coarse) { .rw .ap-dots button { width: 32px; height: 44px; } }
+.rw .ap-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.rw .ap-foot .rw-more { margin-left: auto; }
