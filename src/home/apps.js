@@ -1,4 +1,4 @@
-// 🤖 "What are people building using CARLOS?": the apps carousel under the hero. Without this script the apps
+// 🤖 "What kinds of apps can be built using CARLOS?": the apps carousel under the hero. Without this script the apps
 // are a row that scrolls sideways and snaps to each one, and every app is a link. With it: previous and next,
 // a dot per app, and a slow move to the next app every 6 s. The move waits while the pointer is over the apps,
 // while focus is in them, while the section is off screen and while the tab is hidden. It stops for good when

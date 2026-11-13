@@ -1,4 +1,4 @@
-/* 🤖 "What are people building using CARLOS?": the apps carousel directly under the hero (enabled demo
+/* 🤖 "What kinds of apps can be built using CARLOS?": the apps carousel directly under the hero (enabled demo
    builds). Without JavaScript it is a row that scrolls sideways and snaps to each app, every app one link;
    home/apps.js adds .is-live and reveals previous/next, the dots and Pause. Scoped under .rw like
    sections.css, and coloured with its light-dark() tokens. Glanceable: the screenshot first, then the name,
@@ -10,7 +10,9 @@
 @media (min-width: 1000px) { .rw .rw-apps { --ap-w: 63cqi; } }
 
 .rw .ap-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1rem 2rem; }
-.rw .ap-head h2 { max-width: 24ch; }
+.rw .ap-intro { flex: 1 1 32rem; max-width: 46rem; }
+.rw .ap-head h2 { max-width: 26ch; }
+.rw .ap-sub { margin-top: 0.8rem; max-width: 60ch; color: var(--rw-ink-2); font-size: clamp(1.02rem, 1.7vw, 1.15rem); line-height: 1.55; text-wrap: pretty; }
 
 /* Pause, previous and next: quiet round controls beside the heading. */
 .rw .ap-ctrl { display: flex; align-items: center; gap: 0.5rem; }
@@ -42,6 +44,8 @@
 .rw .ap-logo.is-wordmark { width: 76px; padding: 6px 8px; }
 .rw .ap-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .rw .ap-slide h3 { font-size: 1.3rem; }
+/* A wordmark that spells the name (or part of it) sits in the heading in place of those letters. */
+.rw .ap-slide h3.ap-spelled { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.45rem; }
 .rw .ap-about { margin-top: 0.4rem; max-width: 46ch; color: var(--rw-ink-2); font-size: 0.97rem; line-height: 1.5; text-wrap: pretty; }
 /* The way out: the app's own address. Its ::after covers the whole slide, so the screenshot and text are one link. */
 .rw .ap-link { justify-self: start; display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; font: 400 0.8rem/1.4 var(--rw-mono); letter-spacing: 0.02em; text-decoration: none; }

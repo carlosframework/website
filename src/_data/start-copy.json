@@ -214,7 +214,8 @@
   "home.theme.auto": "Auto",
   "home.theme.light": "Light",
   "home.theme.dark": "Dark",
-  "home.apps.heading": "What are people building using CARLOS?",
+  "home.apps.heading": "What kinds of apps can be built using CARLOS?",
+  "home.apps.sub": "CARLOS excels at producing fast, accessible sites that can be deployed easily, locally, on-prem, or on-cloud, as well as providing APIs, CLIs, MCPs, and backends for native apps.",
   "home.apps.all": "See all apps",
   "home.apps.prev": "Previous app",
   "home.apps.next": "Next app",
@@ -223,5 +224,5 @@
   "home.apps.slide": "slide",
   "home.apps.position": "{n} of {total}",
   "home.apps.status": "{app}, {n} of {total}",
-  "home.apps.shot.alt": "The {app} website"
+  "home.apps.shot.alt": "{app}’s website"
 }

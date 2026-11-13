@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import { readFile, mkdtemp, rm, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { buildStart, escapeHTML } from '../hack/build-start.mjs';
+import { buildStart, escapeHTML, homeApps } from '../hack/build-start.mjs';
 import { loadStartConfig } from '../src/_data/start-config.mjs';
 const read=p=>readFile(p,'utf8');
 const copy=JSON.parse(await read('src/_data/start-copy.json'));
@@ -95,8 +95,9 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
   assert.match(html,/role="status" aria-live="polite"/);
  }
 }));
-// 🤖 The apps carousel directly under the hero: Paul's heading, one slide per screenshot with the Apps page's own
-// name, line and link, a row that scrolls and snaps without JavaScript, and controls that wait for the script.
+// 🤖 The apps carousel directly under the hero: Paul's heading and subtitle, one slide per screenshot with the Apps
+// page's own name, line and link (except where sources.json overrides them, explicitly), a row that scrolls and
+// snaps without JavaScript, and controls that wait for the script.
 test('enabled homepage has the apps carousel under the hero',()=>pages(async(home)=>{
  const sources=JSON.parse(await read('src/home/apps/sources.json'));
  const appsPage=await read('src/apps/index.html');
@@ -105,24 +106,31 @@ test('enabled homepage has the apps carousel under the hero',()=>pages(async(hom
  assert.ok(heroEnd>0 && home.indexOf('<section class="rw-apps"')>heroEnd);
  assert.match(home.slice(heroEnd),/^<\/figure>\n<\/div><\/section>\s*<div class="rw">\s*<section class="rw-apps"/,'the first section after the hero');
  assert.match(section,/^<section class="rw-apps" aria-roledescription="carousel" aria-labelledby="rw-apps-title" data-carousel>/);
- assert.ok(section.includes(`<!-- 👨 Paul's words, verbatim --><h2 id="rw-apps-title">What are people building using CARLOS?</h2><!-- /👨 -->`));
- assert.equal(copy['home.apps.heading'],'What are people building using CARLOS?');
+ assert.ok(section.includes(`<!-- 👨 Paul's words, verbatim --><h2 id="rw-apps-title">What kinds of apps can be built using CARLOS?</h2>\n    <p class="ap-sub">CARLOS excels at producing fast, accessible sites that can be deployed easily, locally, on-prem, or on-cloud, as well as providing APIs, CLIs, MCPs, and backends for native apps.</p><!-- /👨 -->`));
+ assert.equal(copy['home.apps.heading'],'What kinds of apps can be built using CARLOS?');
  const slides=[...section.matchAll(/<li class="ap-slide"[\s\S]*?<\/li>/g)].map(m=>m[0]);
  assert.equal(slides.length,sources.apps.length);
  assert.ok(slides.length>=6);
  slides.forEach((slide,i)=>{
-  const {app,url}=sources.apps[i];
+  const {app,url,gallery={},logoSpells}=sources.apps[i];
   const card=appsPage.match(new RegExp(`<li class="app-card">(?:(?!</li>)[\\s\\S])*?<h2>([^<]+)</h2>(?:</div>)?<p>([^<]+)</p>(?:(?!</li>)[\\s\\S])*?href="${url.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')}"`))
   assert.ok(card,app);
-  const [,name,about]=card;
-  assert.equal(name.toLowerCase(),app);
+  const [,pageName,about]=card;
+  assert.equal(pageName.toLowerCase(),app);
+  const name=gallery.name??pageName, href=gallery.url??url;
   assert.ok(slide.includes(`role="group" aria-roledescription="slide" aria-label="${i+1} of ${slides.length}" data-name="${escapeHTML(name)}"`),app);
   // a real screenshot, sized, with alt text, in AVIF and WebP with a JPEG fallback
   assert.ok(slide.includes(`<source type="image/avif" srcset="/home/apps/${app}.avif"><source type="image/webp" srcset="/home/apps/${app}.webp"><img src="/home/apps/${app}.jpg" width="960" height="600" alt="${escapeHTML(copy['home.apps.shot.alt'].replace('{app}',name))}" loading="lazy" decoding="async">`),app);
-  assert.ok(slide.includes(`<h3>${escapeHTML(name)}</h3>`),app);
+  if(logoSpells) {
+   // the wordmark stands in for its letters: the name is never printed beside a logo that already spells it
+   const h3=slide.match(/<h3 class="ap-spelled">([\s\S]*?)<\/h3>/)[1];
+   assert.ok(h3.includes(`<span class="ap-logo is-wordmark"><img src="/apps/logos/${app}.svg" alt="${logoSpells}" width="60" height="20"`),app);
+   assert.equal(plain(h3).replace(/\s+/g,' ').trim(),name.replace(logoSpells,'').replace(/\s+/g,' ').trim(),app);
+   assert.doesNotMatch(slide,/<h3>/,app);
+  } else assert.ok(slide.includes(`<h3>${escapeHTML(name)}</h3>`),app);
   assert.ok(slide.includes(`<p class="ap-about">${escapeHTML(about.replace(/'/g,'’'))}</p>`),app);
   // the way out: the app's own site, in a new tab, without handing it this page
-  assert.match(slide,new RegExp(`<a class="ap-link" href="${url.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')}" target="_blank" rel="noopener noreferrer">[^<]+ <svg viewBox="0 0 24 24" aria-hidden="true">`),app);
+  assert.match(slide,new RegExp(`<a class="ap-link" href="${href.replace(/[.*+?^${}()|[\]\\/]/g,'\\$&')}" target="_blank" rel="noopener noreferrer">[^<]+ <svg viewBox="0 0 24 24" aria-hidden="true">`),app);
   assert.equal((slide.match(/<a /g)||[]).length,1,`${app}: one link per slide`);
  });
  // Without JavaScript: a sideways row that snaps, every app reachable by Tab; the controls stay hidden until home/apps.js.
@@ -139,6 +147,32 @@ test('enabled homepage has the apps carousel under the hero',()=>pages(async(hom
  assert.match(section,/<p class="ap-status" aria-live="polite" aria-atomic="true" data-format="\{app\}, \{n\} of \{total\}"><\/p>/);
  assert.ok(section.includes(`<a class="rw-more" href="/apps/">${copy['home.apps.all']} `));
  assert.doesNotMatch(section,/—/);
+}));
+// 🤖 Paul's 2026-11-13 edits, as the carousel shows them, and the rules that keep the overrides honest.
+test('apps carousel overrides are explicit and checked against the Apps page',()=>pages(async(home)=>{
+ const section=home.match(/<section class="rw-apps"[\s\S]*?<\/div><\/section>/)[0];
+ const slide=name=>section.match(new RegExp(`<li class="ap-slide"[^>]*data-name="${name}">[\\s\\S]*?</li>`))?.[0];
+ assert.match(slide('The new Tito'),/<h3 class="ap-spelled"><span>The new<\/span> <span class="ap-logo is-wordmark"><img src="\/apps\/logos\/tito.svg" alt="Tito"/);
+ assert.match(slide('The new Tito'),/href="https:\/\/go\.tito\.io\/home"[^>]*>go\.tito\.io /);
+ assert.match(slide('The new Tito'),/alt="The new Tito’s website"/);
+ assert.match(slide('Jelly'),/<h3 class="ap-spelled"><span class="ap-logo is-wordmark"><img src="\/apps\/logos\/jelly.svg" alt="Jelly"[^>]*><\/span><\/h3>/);
+ assert.match(slide('Jelly'),/href="https:\/\/letsjelly\.dev"/);
+ assert.match(slide('Amadan'),/<h3>Amadan<\/h3>/);
+ assert.doesNotMatch(section,/>amadan<|"amadan"|data-name="Tito"/);
+ assert.ok(section.includes('<button type="button" aria-label="Amadan"'));
+ // The Oficina apps have no public pages of their own (each goes to the shared sign-in), so Oficina is one slide.
+ assert.equal((section.match(/data-name="Oficina"/g)||[]).length,1);
+ const appsPage=await read('src/apps/index.html'), base=JSON.parse(await read('src/home/apps/sources.json'));
+ const tweak=(app,patch)=>({...base,apps:base.apps.map(a=>a.app===app?patch(structuredClone(a)):a)});
+ for(const [why,sources,message] of [
+  ['an override that repeats the Apps page is stale',tweak('amadan',a=>({...a,gallery:{name:'amadan',why:'x'}})),/matches the Apps page/],
+  ['an override needs a reason',tweak('amadan',a=>({...a,gallery:{name:'Amadan'}})),/without a reason/],
+  ['only names and urls can be overridden',tweak('amadan',a=>({...a,gallery:{name:'Amadan',about:'x',why:'x'}})),/unknown keys about/],
+  ['the base url must still be the Apps page link',tweak('tito',a=>({...a,url:'https://go.tito.io/home'})),/links tito to https:\/\/ti\.to/],
+  ['a wordmark must spell part of the name',tweak('tito',a=>({...a,logoSpells:'Titto'})),/does not contain "Titto"/],
+  ['only a wordmark can spell the name',tweak('eleven',a=>({...a,logoSpells:'Eleven'})),/not a wordmark/],
+  ['no unknown keys',tweak('eleven',a=>({...a,nmae:'x'})),/unknown keys nmae/],
+ ]) assert.throws(()=>homeApps(appsPage,sources),message,why);
 }));
 test('development paste URL wraps only at separators and copies the generated line',()=>pages((home,start)=>{
  const url='https://tmp-pj4lpm.bab.dev.oncarlos.com/start';

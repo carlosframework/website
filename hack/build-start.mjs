@@ -95,12 +95,27 @@ export function homeApps(appsPage,sources) {
   wordmark:card.includes('wordmark-logo'),
   url:card.match(/<div class="app-links"><a href="([^"]+)"/)?.[1],
  }));
- return sources.apps.map(({app,url},i)=>{
+ return sources.apps.map(({app,url,gallery={},logoSpells,...rest},i)=>{
   const card=cards.find(c=>c.name?.toLowerCase()===app);
   if(!card || !card.about || !card.logo) throw configError(`apps carousel: ${app} is not on the Apps page with a description and logo`);
   if(card.url!==url) throw configError(`apps carousel: the Apps page links ${app} to ${card.url}, not ${url}`);
-  return {slug:app,name:unescapeHTML(card.name),about:curl(unescapeHTML(card.about)),logo:card.logo,wordmark:card.wordmark,url,
-   host:new URL(url).host.replace(/^www\./,''),shot:`/home/apps/${app}`,width:sources.size[0],height:sources.size[1],n:i+1};
+  if(Object.keys(rest).length) throw configError(`apps carousel: ${app} has unknown keys ${Object.keys(rest).join(', ')}`);
+  // The carousel's own exceptions to the Apps page: explicit, with a reason, and never a copy of what the Apps page already says.
+  const {name:nameOverride,url:urlOverride,why,...unknown}=gallery;
+  if(Object.keys(unknown).length) throw configError(`apps carousel: ${app} overrides unknown keys ${Object.keys(unknown).join(', ')}`);
+  if((nameOverride||urlOverride) && !why) throw configError(`apps carousel: ${app} overrides the Apps page without a reason`);
+  if(nameOverride===unescapeHTML(card.name) || urlOverride===card.url) throw configError(`apps carousel: ${app}'s override matches the Apps page; remove it`);
+  const name=nameOverride||unescapeHTML(card.name), href=urlOverride||url;
+  // A wordmark that already spells (part of) the name stands in for that part: shown once, as the logo, with the words as its alt.
+  let spelled;
+  if(logoSpells!==undefined) {
+   if(!card.wordmark) throw configError(`apps carousel: ${app}'s logo is not a wordmark on the Apps page`);
+   const at=name.indexOf(logoSpells);
+   if(at<0) throw configError(`apps carousel: ${app}'s name "${name}" does not contain "${logoSpells}"`);
+   spelled={before:name.slice(0,at).trimEnd(),word:logoSpells,after:name.slice(at+logoSpells.length).trimStart()};
+  }
+  return {slug:app,name,about:curl(unescapeHTML(card.about)),logo:card.logo,wordmark:card.wordmark,spelled,url:href,
+   host:new URL(href).host.replace(/^www\./,''),shot:`/home/apps/${app}`,width:sources.size[0],height:sources.size[1],n:i+1};
  });
 }
 const balloonTints=['#dcbcb2','#dccba8','#c3c6d6','#d2bcd9','#e3bf9f','#cfcac1','#dbaeb0','#c6bcd4','#cbb9a4']; // soft, no greens
