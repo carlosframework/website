@@ -119,12 +119,12 @@ body.site-home .c-hero, .rp { touch-action: manipulation; }
 .rp-speed { margin-left: auto; display: inline-flex; align-items: center; flex: none; border: 1px solid light-dark(rgba(27, 31, 36, 0.2), rgba(255, 255, 255, 0.18)); border-radius: 99px; color: light-dark(#2b3036, #dfe6ee); }
 .rp-speed[hidden] { display: none; }
 .rp-speed:not([hidden]) + .rp-pause { margin-left: 0; }
-.rp-speed button { display: inline-grid; place-items: center; width: 28px; min-height: 32px; padding: 0; border: 0; border-radius: 99px; background: none; color: inherit; cursor: pointer; }
+.rp-speed button { display: inline-grid; place-items: center; width: 28px; min-height: 32px; padding: 0; border: 0; border-radius: 0; background: none; color: inherit; cursor: pointer; }
 .rp-speed button[aria-disabled="true"] { opacity: 0.35; cursor: default; }
 .rp-speed button:focus-visible { outline: 3px solid light-dark(#1a5f4f, #2fd4ac); outline-offset: 1px; }
 .rp-speed svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
 /* A fixed width with tabular figures: 0.5x, 1x, 1.5x and 2x all take the same room. */
-.rp-speed output { width: 3.4em; flex: none; white-space: nowrap; text-align: center; font: 600 0.74rem/1 ui-monospace, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+.rp-speed output { align-self: stretch; display: grid; place-items: center; box-shadow: inset 1px 0 0 var(--rp-seg-line), inset -1px 0 0 var(--rp-seg-line); width: 3.4em; flex: none; white-space: nowrap; text-align: center; font: 600 0.74rem/1 ui-monospace, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
 @media (pointer: coarse) { .rp-speed button { width: 36px; min-height: 40px; } }
 
 /* The replay played as a chat by home/replay.js (.is-live): the CSS loop above stands down, and the script shows
@@ -164,26 +164,35 @@ body.site-home .c-hero, .rp { touch-action: manipulation; }
 .rp-steps { margin-left: auto; display: inline-flex; align-items: center; flex: none; border: 1px solid light-dark(rgba(27, 31, 36, 0.2), rgba(255, 255, 255, 0.18)); border-radius: 99px; color: light-dark(#2b3036, #dfe6ee); }
 .rp-steps[hidden] { display: none; }
 .rp-steps:not([hidden]) + .rp-speed { margin-left: 0; }
-.rp-steps button { display: inline-grid; place-items: center; width: 28px; min-height: 32px; padding: 0; border: 0; border-radius: 99px; background: none; color: inherit; cursor: pointer; }
+.rp-steps button { display: inline-grid; place-items: center; width: 28px; min-height: 32px; padding: 0; border: 0; border-radius: 0; background: none; color: inherit; cursor: pointer; }
 .rp-steps button:focus-visible { outline: 3px solid light-dark(#1a5f4f, #2fd4ac); outline-offset: 1px; }
 .rp-steps svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .rp-steps svg .fill { fill: currentColor; stroke-width: 1; }
 @media (pointer: coarse) { .rp-steps button { width: 34px; min-height: 40px; } }
 
-/* Hover and press on the panel's controls, as on the rest of the page: a soft tint (pointers only), a quick
-   press-down; the speed control's spent end takes neither. Colour alone under reduced motion. */
+/* Back/forward and slower/readout/faster are segmented controls: hairline dividers (inset shadows, so they take no
+   room), and each segment square at a divider and rounded only on the pill's outer end, so a hover or press tint
+   fills its segment edge to edge. Segments press with a darker fill only (a shrinking segment would open a gap);
+   the round Pause presses down like the page's other round buttons. The speed control's spent end takes neither.
+   Colour alone under reduced motion. */
+.rp { --rp-seg-line: light-dark(rgba(27, 31, 36, 0.16), rgba(255, 255, 255, 0.15)); }
+.rp-steps button:first-child, .rp-speed button:first-child { border-radius: 99px 0 0 99px; }
+.rp-steps button:last-child, .rp-speed button:last-child { border-radius: 0 99px 99px 0; }
+.rp-steps button + button { box-shadow: inset 1px 0 0 var(--rp-seg-line); }
+.rp-steps button:focus-visible, .rp-speed button:focus-visible { outline-offset: 1px; }
 .rp-steps button, .rp-speed button, .rp-pause { transition: background-color 0.15s, transform 0.16s cubic-bezier(0.16, 1, 0.3, 1); }
 @media (hover: hover) {
   .rp-steps button:hover, .rp-speed button:not([aria-disabled="true"]):hover, .rp-pause:hover { background: color-mix(in srgb, currentColor 10%, transparent); }
 }
-.rp-steps button:active, .rp-speed button:not([aria-disabled="true"]):active, .rp-pause:active { transform: scale(0.94); transition-duration: 0.08s; background: color-mix(in srgb, currentColor 17%, transparent); }
+.rp-steps button:active, .rp-speed button:not([aria-disabled="true"]):active { transition-duration: 0.08s; background: color-mix(in srgb, currentColor 17%, transparent); }
+.rp-pause:active { transform: scale(0.94); transition-duration: 0.08s; background: color-mix(in srgb, currentColor 17%, transparent); }
 .rp-speed button[aria-disabled="true"] { background: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .rp *, .rp { animation: none !important; }
   body.landing .rp .rp-scene1 { display: none; }
   .rp-pause, .rp-speed, .rp-steps, .rp-loading, .rp-think, .rp-caret { display: none !important; }
-  .rp-steps button:active, .rp-speed button:active, .rp-pause:active { transform: none; }
+  .rp-pause:active { transform: none; }
 }
 .rp-title, .rp-pause { white-space: nowrap; flex: none; }
 @media (max-width: 30rem) { .rp-dots { display: none; } .rp-bar { gap: 0.45rem; } }
