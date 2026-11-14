@@ -1155,6 +1155,15 @@ a.hero-tool:hover h2, .hero-tool :is(h2, h3) a:hover { text-decoration: underlin
 .paste .pb-text, .paste .pb-text span { user-select: text; overflow-wrap: normal; word-break: normal; }
 .paste .pb-text { min-width: 0; }
 .paste .pb-url { white-space: nowrap; }
+/* A box too narrow for the whole URL (a phone up to about 390 px) lets it break once, after "https://" (a zero-width space
+   drawn only there, so nothing extra is copied), with the line a little smaller. */
+.paste { container: paste / inline-size; }
+@container paste (max-width: 18rem) {
+  .paste .pb-url { white-space: normal; display: inline-block; }   /* a box: the whole URL starts a new line, and breaks only if it must */
+  .paste .pb-brk::after { content: "\200B"; }
+  .paste .pb-url-end { white-space: nowrap; }   /* the caret stays with the last piece */
+  .paste .pb-line { font-size: 0.94rem; }
+}
 .paste .pb-url-wrap { white-space: normal; }
 .paste .pb-url-wrap > span { white-space: nowrap; }
 .paste .pb-copy {

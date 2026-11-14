@@ -24,7 +24,7 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  // The answer, the line about CARLOS (one fixed sentence for screen readers), then the invitation.
  const ask=hero.match(/<p class="ask hv-ask">([\s\S]*?)<\/p>/)[1];
  assert.equal(plain(ask.replace(/<span class="hv-rot-line"[\s\S]*?web apps\.<\/span>/,'')),'You want CARLOS. A system for building better web apps. Read on, or try it now:');
- assert.match(ask,/<span class="hv-rot-line" aria-hidden="true">A system for building <span class="hv-rot" data-words="better remarkable faster accessible secure private simple resilient portable distributable decentralisable agent-ready"><span class="hv-rot-word">better<\/span><\/span> web apps\.<\/span>/);
+ assert.match(ask,/<span class="hv-rot-line" aria-hidden="true"><span class="hv-rot-pre">A system for building<\/span> <span class="hv-rot" data-words="better remarkable faster accessible secure private simple resilient portable distributable decentralisable agent-ready"><span class="hv-rot-word">better<\/span><\/span> web apps\.<\/span>/);
  assert.match(hero,/<a href="#architecture">Read on<\/a>/);
  assert.doesNotMatch(home,/class="hero-tools"|class="hero-wordmark"|class="hero-subtitle"|class="parts"|class="riff-grid"|id="ready"/);
  assert.match(hero,/<div class="paste v-soft hv-paste">/);

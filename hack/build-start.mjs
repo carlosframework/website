@@ -45,12 +45,15 @@ const human = "<!-- 👨 Paul's words, verbatim -->";
 export const homeFigures = true;
 function homePromptHTML(config,copy,id,works) {
  const line=pasteLine(config), url=`${config.siteOrigin}/start`;
- // Keep the production URL together; other origins may wrap only at URL separators.
+ // Keep the production URL together; other origins may wrap only at URL separators. In a very narrow box (a 320 px
+ // phone) the production URL may break once, after its scheme (.pb-brk, a break offered only there: see home.css;
+ // not <wbr>, which Chrome honours even inside nowrap).
  const production=config.siteOrigin==='https://carlosframework.com';
  const caret='<span class="pb-caret" aria-hidden="true"></span>';
  // The caret rides inside the last unbreakable piece, so it never wraps onto a line alone.
  const parts=url.split(/(?<=[./])/);
- const urlHTML=production?escapeHTML(url)+caret:parts.map((part,i)=>`<span>${escapeHTML(part)}${i===parts.length-1?caret:''}</span>`).join('<wbr>');
+ const scheme=url.match(/^https?:\/\//)?.[0]||'';
+ const urlHTML=production?escapeHTML(scheme)+'<span class="pb-brk"></span><span class="pb-url-end">'+escapeHTML(url.slice(scheme.length))+caret+'</span>':parts.map((part,i)=>`<span>${escapeHTML(part)}${i===parts.length-1?caret:''}</span>`).join('<wbr>');
  const lineHTML=`<p class="pb-line"><svg class="pb-sign" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5 10 8l-5 4.5"/></svg><span class="pb-text"><span id="${id}">${escapeHTML(line.slice(0,-url.length))}<span class="pb-url${production?'':' pb-url-wrap'}">${urlHTML}</span></span></span></p>`;
  const button=`<button type="button" class="copy-button pb-copy" hidden data-copy-target="${id}" data-original="${escapeHTML(copy['copy.label'])}" data-copied="${escapeHTML(copy['copy.done'])}" data-copy-success="${escapeHTML(copy['home.paste.done'])}" data-copy-fallback="${escapeHTML(copy['copy.fallback'])}" data-copy-status="${id}-status" aria-label="${escapeHTML(copy['copy.aria'])}"><svg class="ic-copy" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><svg class="ic-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>${escapeHTML(copy['copy.label'])}</span></button>`;
  // The hero's box is one calm row; the closing box keeps the line under it.
