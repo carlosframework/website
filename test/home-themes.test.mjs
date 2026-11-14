@@ -203,6 +203,30 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
       assert.ok(look.dots <= 0.5, `${width}x${height}: the dots are inside the pane`);
       await ctx.close();
     }
+    // Narrow phones (Paul's iPhone: "distributable" pushed the gloss past the pane): with every rotating word, nothing in
+    // the hero is wider than its pane or the page, the gloss line keeps one height (it is always two lines there), the
+    // paste line's URL stays inside its box, and the replay's title bar fits its controls.
+    for (const width of [320, 360, 390, 430, 1024]) {
+      const ctx = await browser.newContext({ viewport: { width, height: 844 }, reducedMotion: 'reduce' });
+      const page = await ctx.newPage();
+      await page.goto(url, { waitUntil: 'load' });
+      const r = await page.evaluate(() => {
+        const rot = document.querySelector('.hv-rot'), word = rot.querySelector('.hv-rot-word'), col = document.querySelector('.hv-col'), pane = document.querySelector('.hv-pane');
+        const heights = new Set(), over = [];
+        for (const x of rot.dataset.words.split(' ')) {
+          word.textContent = x; rot.style.width = word.getBoundingClientRect().width + 'px';
+          heights.add(document.querySelector('.hv-gloss').getBoundingClientRect().height);
+          const cr = col.getBoundingClientRect(), cs = getComputedStyle(col), left = cr.left + parseFloat(cs.paddingLeft), right = cr.right - parseFloat(cs.paddingRight);
+          if ([...document.querySelector('.hv-rot-line').getClientRects()].some(q => q.left < left - 0.5 || q.right > right + 0.5)) over.push(`${x}: line`);
+          if (pane.scrollWidth > pane.clientWidth || document.documentElement.scrollWidth > innerWidth) over.push(`${x}: page`);
+        }
+        const urls = [...document.querySelectorAll('.paste')].filter(b => { const u = b.querySelector('.pb-url').getBoundingClientRect(), br = b.getBoundingClientRect(), cs = getComputedStyle(b); return u.right > br.right - parseFloat(cs.paddingRight) + 0.5; }).length;
+        const bar = document.querySelector('.rp-bar');
+        return { heights: heights.size, over, urls, bar: bar.scrollWidth - bar.clientWidth };
+      });
+      assert.deepEqual(r, { heights: 1, over: [], urls: 0, bar: 0 }, `${width}: every rotating word fits`);
+      await ctx.close();
+    }
     // The switch: visible, pressed state follows, the page changes at once and remembers.
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, colorScheme: 'dark' });
     const page = await ctx.newPage();

@@ -259,6 +259,11 @@ body.site-home .c-hero, .rp { touch-action: manipulation; }
 .hv .hv-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .c-hero.hv .hv-ask .hv-gloss > span { display: inline; }
 .hv .hv-rot-line { white-space: nowrap; }
+/* Where the text column is narrow (a phone, or the two-column layout just past 64rem), the line is always two lines,
+   "A system for building" then the word and "web apps.": the longest words fit, and as the words change nothing
+   moves up or down. The column is the container, so this follows its width, not the screen's. */
+.c-hero.hv .hv-col { container: hv-col / inline-size; }
+@container hv-col (max-width: 30rem) { .hv .hv-rot-pre { display: block; } }
 .hv .hv-rot { display: inline-block; overflow: hidden; vertical-align: bottom; line-height: inherit; transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
 .hv .hv-rot-word { display: inline-block; color: var(--hv-accent); transition: transform 0.22s ease-out, opacity 0.22s ease-out; }
 .hv .hv-rot-word.is-out { transform: translateY(-0.5em); opacity: 0; }
@@ -341,3 +346,6 @@ body.site-home .c-hero .v-soft:focus-within, body.site-home .c-hero .v-soft.is-c
 .c-hero .rp-bar { border-bottom-color: var(--g-rule); }
 .c-hero .rp-cap { background: transparent; border-top: 1px solid var(--g-rule); }
 .c-hero .rp-app { box-shadow: none; border: 1px solid var(--g-rule); border-bottom: 0; }
+
+/* The hero's paste line in a box too narrow for the whole URL: a little smaller, as in home.css. */
+@container paste (max-width: 18rem) { .hv .hv-paste .pb-line { font-size: 0.94rem; } }

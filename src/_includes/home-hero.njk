@@ -6,7 +6,7 @@
 <div class="hv-pane">
 <div class="hv-col">
 {{ human | safe }}<h1>{{ html.heading | safe }}</h1><p class="sub">{{ html.sub | safe }}</p><!-- /👨 -->
-<p class="ask hv-ask">{{ human | safe }}<span>{{ c('home.hero.answer') }}</span><!-- /👨 --> <span class="hv-gloss"><span class="hv-sr">{{ t('hero.gloss') }}</span><span class="hv-rot-line" aria-hidden="true">{{ gloss.before }}<span class="hv-rot" data-words="{{ gloss.words }}"><span class="hv-rot-word">{{ gloss.word }}</span></span>{{ gloss.after }}</span></span> {{ human | safe }}<span>{{ html.ask | safe }}</span><!-- /👨 --></p>
+<p class="ask hv-ask">{{ human | safe }}<span>{{ c('home.hero.answer') }}</span><!-- /👨 --> <span class="hv-gloss"><span class="hv-sr">{{ t('hero.gloss') }}</span><span class="hv-rot-line" aria-hidden="true"><span class="hv-rot-pre">{{ gloss.before | trim }}</span> <span class="hv-rot" data-words="{{ gloss.words }}"><span class="hv-rot-word">{{ gloss.word }}</span></span>{{ gloss.after }}</span></span> {{ human | safe }}<span>{{ html.ask | safe }}</span><!-- /👨 --></p>
 {{ heroPaste | safe }}
 <details class="hv-cloud"><summary>{{ t('hero.cloud.summary') }}</summary>{{ hosts | safe }}</details>
 </div>
