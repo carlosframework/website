@@ -268,18 +268,26 @@ Changes land through a reviewed PR, then ship from a clean export of the merged
 commit. Never ship the repository tree: only the built `_site/` directory.
 Keep scratch on disk under `$TMPDIR` or `~/.cache`, not the shared `/tmp` RAM disk.
 
+**Production releases go through `hack/release-start.mjs`, never a plain
+`npm run build` + `carlos deploy`.** The live homepage and `/start` are the
+demo-enabled build: a plain build has the demo off and ships the OLD
+homepage (that happened on 2026-11-14 with the #120 docs sync). The script
+builds from a clean export of the merged commit with the production origins,
+runs the full gate, cache-busts and deploys:
+
 ```sh
-release_sha=$(git rev-parse --short HEAD)
-release_dir=$(mktemp -d "$HOME/.cache/carlos-website-ship.XXXXXX")
-git archive HEAD | tar -x -C "$release_dir"
-cd "$release_dir"
-npm ci
-npm run check
-node hack/cache-bust.mjs "$release_sha"
-carlos deploy --console https://console.carloku.com --account ops \
-  --app carlosframework --kind static --channel canary/rehearsal \
-  --version "$release_sha" --no-prompt _site
+node hack/release-start.mjs --console https://console.carloku.com --account ops \
+  --app carlosframework --channel canary/rehearsal \
+  --site-origin https://carlosframework.com \
+  --console-origin https://console.carloku.com \
+  --account-url https://console.carloku.com/ --execute
 ```
+
+Run it from a clean clone of `main` (it refuses untracked files). Versions are
+immutable: a version shipped with different content can't be shipped again, so
+a wrong build needs a new commit to fix it. After deploying, check that the
+homepage contains the new hero (`grep -c hv-col` on the fetched page) as well
+as `X-Carlos-Version`.
 
 The cache-busting script versions every local stylesheet and script in every
 built HTML page, including the generated docs and the clipboard/sidebar
