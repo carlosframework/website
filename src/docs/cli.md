@@ -51,17 +51,23 @@ the platform holds itself to, and a command that broke it would be a bug.
 
 ### carlos auth
 
-Logs this terminal in to a console. `carlos auth login` prints a short code
-that you approve in a browser already signed in to that console, and the
-browser does not have to be on this machine, so this works over SSH. The
-token lands in `~/.carlos/credentials` at mode 0600, one entry per console,
-so a laptop can hold credentials for the flagship and your own deployment at
-once.
+Signs the agent or terminal in to a console. `carlos auth login` prints a link to
+open and a short code. Open the link in a browser already signed in to that
+console, check that the page shows the same code, and approve. The browser
+does not have to be on this machine, so this works over SSH. The token lands
+in `~/.carlos/credentials` at mode 0600, one entry per console, so a laptop
+can hold credentials for the flagship and your own deployment at once.
 
 ```sh
 carlos auth login
 carlos auth whoami
 ```
+
+Some agents, Claude Code among them, only show you a command's output when
+the command ends. For those, run `carlos auth login --no-wait`. It prints the
+link and the code, then exits. Show the link to the person, and once they
+have approved it, run `carlos auth login --wait` to finish. A code lasts ten
+minutes. If it runs out, start again with `--no-wait`.
 
 Do not do this on a box. A box has no browser and no human, and the
 long-lived token you would leave behind is a standing credential nobody is
@@ -125,6 +131,12 @@ prints one line saying which and why:
 
 ```sh
 carlos apps create --app hello --region uk
+```
+
+`--ha` turns on high availability: a second server in the region is kept ready to take over the app. It needs `--region` and an account that has high availability. [High availability](/docs/high-availability) says what it covers.
+
+```sh
+carlos apps create --app hello --region us --ha
 ```
 
 `--analytics` or `--no-analytics` turns analytics on or off for the new app.
@@ -236,6 +248,8 @@ Set the count with carlos apps set shop --copies 2. Each instance of shop gets t
 
 If a box is lost or detached, the requested count stays the same. The platform uses a distinct spare when one is available, otherwise the app runs short until a suitable box returns.
 
+[Stateless replicas](/docs/stateless-replicas) covers what an app needs before it runs more than one copy, how deploys switch copies, and what happens when a box stops.
+
 System operators can also set an app's instance policy: which private addresses its instances may reach and the size each instance runs at. `carlos apps show` reads it back.
 
 ```sh
@@ -263,8 +277,9 @@ If the box running the release command disappears, its result may be unknown. Th
 
 Publishes a release. The artifact is hashed, stored under its content
 address, and recorded in a manifest that never changes afterwards. Shipping
-does not change what anything serves — for that, see
-[carlos promote](/docs/cli#carlos-promote).
+does not change what anything serves. To put a build live in one step, use
+[carlos deploy](/docs/cli#carlos-deploy); to put an already shipped release
+live, use [carlos promote](/docs/cli#carlos-promote).
 
 ```sh
 carlos ship --app hello --label "fixing modals" ./hello
@@ -664,6 +679,8 @@ stop within seconds and respawn on their next request, which for an idle app
 may be a while. Nothing is stuck: the instance comes back with the next
 request that needs it. Hibernating instances are left asleep.
 
+An app that runs more than one copy of an instance refuses `carlos restart --app` and `--environment`, because every copy would restart at the same time. Deploy a new build instead: its copies switch one box at a time.
+
 #### Restarting less than the whole app
 
 An app is not always a small thing. One app can own a relay, a router, a
@@ -873,6 +890,26 @@ carlos schedule set --app hello --name nightly --every 6h --path /jobs/nightly
 
 `--every` takes whole minutes, from `1m` up to `720h`; `--cron` takes a
 five-field expression instead, and you give one or the other, never both.
+
+An `--every` schedule is spread. Each instance of the app fires at its own
+point in the period, and that point is fixed by the instance's host name: it
+is the same after a restart, after a move to another box, and when you
+declare the schedule again. One instance's runs are always exactly one period
+apart. Across the app the instances land evenly over the whole period, so an
+hourly schedule on a hundred instances wakes about one every 36 seconds and
+never all hundred at the top of the hour. Your handler does not change. Two
+schedules with the same period share an instance's point, and an instance's
+6h run falls on one of its 1h runs, so several schedules wake it once. The
+spread covers the whole period however long it is: an `--every 24h` schedule
+runs once a day on each instance, at any time of day.
+
+Add `--aligned` to fire every instance together on the period's boundary
+(the top of the hour for `1h`, midnight UTC for `24h`), as every schedule did
+before spreading. Setting the schedule again without `--aligned` spreads it
+again. A `--cron` schedule names a time of day and is never spread; it fires
+at that moment on every instance. `carlos schedule ls` marks each `--every`
+schedule `spread` or `aligned`, and each instance's `next in` is its own.
+
 `carlos schedule ls` prints the declared schedules alongside what each
 instance reports it will do next and what it did last. `carlos schedule run
 --app hello --name nightly` asks for one out-of-band run on top of the normal
@@ -1109,6 +1146,8 @@ build that failed there is tried again, as a canary:
 carlos instances retry --app hello shop-1.hello.example.com
 ```
 
+For an instance with more than one copy, `carlos instances list` prints a second table with one row per copy: its box, build, state, health and workers. These come from the router's live check of each copy, not from the boxes' five-minute reports. A copy with no live reading shows as unknown, and a copy that no box holds yet shows as missing. The app's overview page counts the copies running out of the copies wanted.
+
 When a box refuses an instance's config, REASON in `carlos instances list` says why and what to do. A box without a secrets key needs `CARLOS_SECRETS_KEY` in its `host.env` and a restart with `systemctl restart carlos-edge`. A box that cannot open a secret needs its key compared with the fleet's using `carlos secrets fingerprint` and `carlos fleets ls`. If the keys match, run `carlos secrets set` for the listed values and rotate any credential the console minted.
 
 For a rootfs app, RUNTIME says `rootfs`, or `rootfs, hibernates` for an instance that sleeps when idle. WORKERS counts the instance's running workers out of the ones it declares, and names a worker that keeps crashing. A binary instance shows `binary` and a dash.
@@ -1177,8 +1216,10 @@ no bundle can override:
 | `CARLOS_HOST` | the instance's hostname, exactly as in `carlos instances list`. Read this, never the socket's file name, which says nothing about the host on an isolated box |
 | `CARLOS_REGION` | the box's region code, such as `ie` |
 | `CARLOS_CONTROL_SOCKET` | the socket the platform listens on for your app's purge and scheduling calls |
-| `CARLOS_PURGE` | `header` when the edge honours a `Carlos-Purge` response header |
+| `CARLOS_PURGE` | `header` when the edge honours a `Carlos-Purge` response header, including `all` for every host of the instance |
 | `CARLOS_ADMIN_TOKEN` | a secret shared with this one instance: the platform presents it when it calls your app, and your app presents it on `CARLOS_CONTROL_SOCKET` |
+
+A binary instance with an applied memory cap also gets `GOMEMLIMIT`, set to 80% of its memory size, unless your app’s config or `<host>.env` sets a value for it. Seeds, `carlos run` commands, rootfs apps and instances run under gVisor don’t get it.
 
 The box keeps a sealed copy of each instance's `<host>.env`. It also keeps sealed copies of the `instance.key` and `report.token` files an app keeps at the top of its own directory. These copies are stored in the region's data bucket. Each copy is sealed to the box's secrets key and bound to your app. Only a box that can already read your app's secrets can open it. When a box starts an instance whose `<host>.env` is missing, it puts the sealed copy back first. This keeps the instance's `CARLOS_ADMIN_TOKEN` and `CARLOS_INSTANCE_KEY` instead of giving it new ones. A file that is there is never replaced. You can edit other values in `<host>.env`. The box seals the new contents within a minute. `CARLOS_ADMIN_TOKEN`, `CARLOS_INSTANCE_KEY`, `instance.key` and `report.token` cannot change once sealed. If the box finds a different value, it refuses to start the instance and raises an alert. Deleting the file does not reset it. A box without the secrets key a copy was sealed to will not start that instance. This includes a box whose key was changed. Put the old key back.
 
@@ -1194,6 +1235,22 @@ A command started with carlos run gets the same environment, without CARLOS_CONT
 | `CARLOS_RUN_DIR` | a directory holding the files passed with --file, under their own names. Always set, even with no files. Deleted after the run |
 
 Its arguments are exactly what followed --, after your binary. The platform adds nothing. It runs in the instance's data directory. On a cancel, a timeout or an instance stop it gets SIGTERM, then SIGKILL 20 seconds later.
+
+#### Caching pages at the edge
+
+Your app can ask the edge to keep a copy of a page and serve it without waking the app. Send `Carlos-Page-Cache: on` with the page, and a `Cache-Control` that says how long the copy may last, for example `public, s-maxage=31536000, max-age=0`. The edge keeps the copy until it expires, until your app clears it, or until the instance gets a new release or new config.
+
+Use a long `s-maxage` and `max-age=0`. The edge can clear its own copy but not the one in a visitor's browser, so `max-age=0` makes the browser check with the edge each time, and the edge answers from its copy. If a page changes at a set time, such as a post scheduled for 9:00, make `s-maxage` end then, because nothing else will tell the edge.
+
+Copies are kept only for visitors who send no cookies and no `Authorization` header, and served only to visitors in the same position, so a signed-in page is never shared. If a cookie doesn't change the page, such as a consent cookie, name it: `Carlos-Page-Cache: on; ignore-cookies="consent"`. A visitor carrying only that cookie still gets the copy.
+
+A page is kept only when your app answers with status 200, no `Set-Cookie`, no `Vary` other than `Accept-Encoding`, an uncompressed body of at most 8 MiB, and a path outside your release's asset folders. Instances that run as `carlos-app@` systemd units are not cached yet.
+
+An instance with more than one copy keeps a separate page cache on each copy's box. A purge clears only the cache of the copy that sent it, so another copy can serve its own saved page until it expires or that copy purges it too.
+
+Clear copies with the `Carlos-Purge` header or `CARLOS_CONTROL_SOCKET`, as you would for the response cache. In the header, `*` clears one host, a path clears that path with any query, `/path?query` clears one address, and `all` clears every host of the instance, including its aliases and custom domains. On the socket, `{"path": "*"}` and `{"path": "all"}` work the same way, and any other `path` with its `query` clears exactly that one address. Each response says what happened in a `Carlos-Cache` header, in the same words as for asset files.
+
+Once a page has been marked, the instance's other responses are no longer kept in the five-minute response cache, so mark every page you want cached.
 
 #### Storage of its own, for every instance
 
@@ -1242,6 +1299,37 @@ would reach that quota between them.
 `--private-storage=false` turns the policy off. Instances created before it
 keep the bindings and buckets they already have.
 
+#### Bringing back a deleted instance
+
+Deleting an instance keeps its database. To bring the instance back with
+that data, create it again on the same host with `--restore`:
+
+```sh
+carlos instances delete --app jam --host acme.jam.bab.oncarlos.com
+carlos instances create --app jam --host acme.jam.bab.oncarlos.com --restore
+```
+
+A service credential with the `instance` role does the same through the
+create door, with `"restore": true` in the body. The instance wakes with
+whatever data it kept when it was deleted. `"restore": true` in the answer
+means the restore was accepted, not that the data is already back.
+
+Without `--restore`, a create on a host that has held data is refused, as it
+always has been. The refusal often says when `--restore` would work, but not
+every time, so if the instance was yours, try `--restore`.
+
+A restore works only when all of these are true:
+
+- The same app in the same account deleted the instance. An app deleted and
+  created again under the same name counts as a different app.
+- The instance was created after restore became available, and deleted after
+  that too.
+- It is a plain instance: no seed, import, pool, fleet placement or high
+  availability.
+- You restore it from the console in the region it lived in.
+
+Anything else is refused with the reason, and nothing is written.
+
 **The edge-local door.** Some apps run their own processes on a box beside their instances: a router that serves many customers under one domain, a relay, a sync loop. Dialling each instance's socket directly stops working when an instance sleeps, moves to another box, or changes where its socket lives. The edge-local door is one socket those processes dial instead, wherever the instance is.
 
 ```sh
@@ -1283,6 +1371,20 @@ Turns asset copying on or off for one instance. `off` means requests for its ass
 
 ```sh
 carlos instances set-assets --app shop a.shop.example.com off
+```
+
+### carlos instances set-pages
+
+Turns page caching on or off for one instance. `off` throws away the pages it keeps and stops keeping new ones, which helps while you are debugging or if a page was cached that shouldn't have been. The instance then uses the ordinary five-minute response cache again. `on` goes back to keeping the pages the app marks. Instances start with it on.
+
+```sh
+carlos instances set-pages --app shop a.shop.example.com off
+```
+
+### carlos instances backups
+
+```sh
+carlos instances backups --app shop --instance a.shop.example.com
 ```
 
 ### carlos sidecars
@@ -1719,6 +1821,25 @@ these headers, it must credit the database `X-Carlos-Geo-Source` names:
 - `DBIP-…`: "IP Geolocation by DB-IP", linked to https://db-ip.com
 - `GeoLite2-…`: "This product includes GeoLite2 data created by MaxMind,
   available from https://www.maxmind.com"
+
+### The visitor's country in a static page
+
+A static site runs no code, so it never sees these headers. Its pages can
+ask the edge instead. Every site, static or app, answers `GET /.carlos/geo`
+with the visitor's country:
+
+```json
+{"country":"IE","source":"DBIP-City-Lite"}
+```
+
+Both are `null` when the country is unknown, for the same reasons the
+headers can be missing. Fetch it from the page's own address, and fall back
+to another guess, such as the browser's language, on `null` or an error.
+
+The edge answers this address itself, so a file or route of your own at
+`/.carlos/geo` is never served. The answer is never cached, sets no cookie
+and isn't counted in analytics. Credit the database `source` names, as
+above.
 
 ### carlos geo
 
@@ -2243,6 +2364,19 @@ carlos accounts plan --account bac --set free --sponsored limits.json --reason "
 
 Without `--set` it prints the plan, who set it and why, and every limit the account has. With `--set` it changes the plan and prints the result. `--reason` is required for a change. `--pack` can be repeated. `--sponsored` names a JSON file of limits; each one replaces the plan's limit where it is more generous.
 
+### carlos accounts subdomain
+
+Assigns a readable name to an account's app addresses, so `shop.bdq.oncarlos.com` also works as `shop.harbour.oncarlos.com`. Only platform operators can use it.
+
+```sh
+carlos accounts subdomain set --account bdq harbour
+carlos accounts subdomain show --account bdq
+carlos accounts subdomain remove --account bdq
+carlos accounts subdomain inventory
+```
+
+The `set` command gives the account the subdomain, then checks for up to two minutes that addresses under it work over HTTPS. The `remove` command takes it away, and refuses while the account still has hosts attached under the name, listing them. The `show` command prints the subdomain and any hosts under it that belong to other accounts. The `inventory` command lists labels under the apps domain that are neither an account sqid nor an assigned subdomain, with the hosts under each.
+
 ### carlos billing
 
 Lists the billing problems the console could not settle on its own, and closes one once you have dealt with it in the Stripe Dashboard. It is a deployment-operator command, and it only works where the console has billing turned on (see [Plans](plans#billing-operators)).
@@ -2250,12 +2384,19 @@ Lists the billing problems the console could not settle on its own, and closes o
 ```sh
 carlos billing problems
 carlos billing problems -all
+carlos billing revenue
+carlos billing payments -month 2026-11
+carlos billing payments -kind unmatched
 carlos billing close -id 12 -note "refunded and cancelled in the dashboard"
 carlos billing house -account bac -on -note "our own shop"
 carlos billing house -account bac -off -note "now a customer"
 ```
 
 `problems` prints one line per open problem: its number, the account, the reason, the subscription, when it opened (UTC) and what the console saw. `-all` adds closed problems. `close` needs `-note`. The console refuses to close most problems while Stripe still shows the subscription as live.
+
+`revenue` prints what the paying accounts bring in, before tax: ARR and MRR in euros, with each currency's own total beside ARR. When a total converts another currency, it is an estimate at the ECB rates of the day it names, for example `arr  €2,425.00 a year before tax (€2,400.00 + $28.00), estimated at ecb rates of 2026-11-06`. Then it prints how many accounts pay, how many of those have a failing renewal or are cancelling, and how many accounts are paying, free, sponsored, house and ours. A figure the console can't stand behind yet, because a read from Stripe is behind or a rate is missing, says `not available yet` and why, instead of a wrong number. In test mode it says so.
+
+`payments` lists the money Stripe has taken and paid back, newest first, up to 500 lines: when it happened (UTC), the account, the kind, the amount charged, the tax, what settled in the currency Stripe pays out in, and Stripe's fee. `-month 2026-11` keeps one month. `-kind` keeps one of `subscription`, `once-off`, `refund`, `fee` or `unmatched`, a payment from a Stripe customer the console can't match to an account.
 
 `house` marks an account as a house account, whose checkout carries the house coupon and so pays nothing, or clears the mark. It needs `-account` (the account's sqid), exactly one of `-on` and `-off`, and `-note` saying why. The mark applies when the account starts a checkout, and does not change a subscription it already has. It works only against a console. See [Plans](plans#house-accounts).
 
@@ -2371,6 +2512,42 @@ and reasons, and the command exits with a failure status. With no operation in p
 
 If a box has not reported its version, you see `unknown`. Bring-your-own fleets
 have no managed readiness checks. Use `--account-id` to select an exact account ID.
+
+<!-- COPY: linked deployments slice 1, carlos link and carlos links: drafts awaiting copy review (Task 9 copy addendum). -->
+### carlos link
+
+Publish apps from a deployment you run yourself through an account on
+Carloku. Run these on the home deployment, against its own console. Only
+the deployment's operator can run them.
+
+```sh
+carlos link create --to https://console.carloku.com
+carlos link publish shop --name blog
+carlos link status
+```
+
+`create` prints a link and a code. Open the link, sign in to Carloku and
+choose the account; the command waits until you approve, then says which
+account it linked to. `--name` sets the name the deployment goes by there.
+
+`publish` prints the app's public address. `--account` names the account
+here that holds the app, when more than one does. `unpublish <name>` takes
+it off Carloku. `rotate` replaces the link's key. `remove` unlinks; with
+`--local` it only forgets the link here, for when Carloku no longer accepts
+it, and you then unlink it on the account's Fleet tab.
+
+```text
+usage: carlos link create --to <console URL> [--name <name>] | status | publish <app> [--account <account>] [--name <name>] | unpublish <name> | rotate | remove [--local]
+```
+
+### carlos links
+
+List the deployments linked to an account, with whether each is reachable,
+when it was last seen, and the apps it publishes. Run it against Carloku.
+
+```sh
+carlos links ls --account shop
+```
 
 ### carlos services
 
@@ -2633,7 +2810,7 @@ Records one month's AWS bill so the console's economics dashboard has a real
 number to divide by.
 
 ```sh
-carlos economics bill --month 2026-08 --total 412.55 --line AmazonEC2=55.00
+carlos economics bill --month 2026-08 --total 412.55 --line AmazonEC2=55.00 --basis account
 ```
 
 Operator only, and the console answers everyone else with the same bare 404
@@ -3109,6 +3286,50 @@ carlos system host-env seed --deployment prod --region ie --kms-key alias/carlos
 
 Seeding needs ssm:GetParametersByPath and ssm:PutParameter on the deployment's two parameter paths, and kms:Encrypt and kms:Decrypt on its configuration key.
 
+#### carlos system group: maintain one group member
+
+Attended maintenance of one member of a region's Auto Scaling group. It replaces
+`scripts/region-group-roll.py`. Run it from the deployment's operator account on
+the operator machine named in the card. Never run it as root or on a box. It
+needs the AWS profile named in the group config and the Session Manager plugin
+on PATH. Every command takes flags only. `--config` names the group config file.
+
+Before the first run, set up the operator account and switch the group from the script as the region HA runbook says (`docs/region-ha-runbook.md` in the platform repository).
+
+```sh
+carlos system group plan --config ie.json --member i-0abc --to-sha256 <sha>
+carlos system group roll --config ie.json --member i-0abc --to-sha256 <sha>
+carlos system group replace --config ie.json --member i-0abc
+carlos system group remove --config ie.json --member i-0abc
+carlos system group resume --config ie.json --transaction <id>
+carlos system group status --config ie.json --transaction <id>
+carlos system group cancel-drain --config ie.json --member i-0abc --transaction <id>
+carlos system group probe start --config ie.json --member i-0abc
+```
+
+One transaction runs per group at a time. A replace or remove drains the member
+first, so its hosts move to other members before the member stops. If a step
+cannot be proved, the command stops and keeps the transaction for `resume`. It
+never guesses. `plan` changes nothing. `status` reads the saved transaction
+without contacting AWS.
+
+- `carlos system group plan --config ie.json --member i-0abc --to-sha256 <sha> [--attended-by <name>]`: Read readiness and list refusals. It changes no group or box state.
+- `carlos system group roll --config ie.json --member i-0abc --to-sha256 <sha> [--transaction <id>] [--attended-by <name>]`: Roll one member to the named artifact.
+- `carlos system group replace --config ie.json --member i-0abc [--transaction <id>] [--attended-by <name>]`: Drain one member, terminate it and let the group launch its replacement.
+- `carlos system group remove --config ie.json --member i-0abc [--transaction <id>] [--attended-by <name>]`: Drain one member and terminate it without a replacement (scale-in).
+- `carlos system group rollback --config ie.json --member i-0abc --transaction <id> [--attended-by <name>]`: Restore this transaction's old artifact while in Standby.
+- `carlos system group resume --config ie.json --transaction <id> [--attended-by <name>]`: Resume from the durable journal and current provider state.
+- `carlos system group return --config ie.json --transaction <id> [--attended-by <name>]`: Return an already restarted and admitted member.
+- `carlos system group status --config ie.json --transaction <id> [--attended-by <name>]`: Read the saved journal without contacting AWS.
+- `carlos system group abandon --config ie.json --transaction <id> [--attended-by <name>]`: Close a transaction that has no group write intent.
+- `carlos system group close-lost --config ie.json --transaction <id> [--attended-by <name>]`: Close an active transaction after confirming that its member is gone. Record failure.
+- `carlos system group cancel-drain --config ie.json --member i-0abc --transaction <id> [--attended-by <name>]`: End a failed drain of this member: drain --cancel on the box, which lifts the fence.
+- `carlos system group probe start --config ie.json --member i-0abc [--attended-by <name>]`: Observe an unchanged member leaving and returning without a lifecycle hook.
+- `carlos system group probe resume --config ie.json --transaction <id> [--attended-by <name>]`: Resume from the durable journal and current provider state.
+- `carlos system group probe status --config ie.json --transaction <id> [--attended-by <name>]`: Read the saved journal without contacting AWS.
+- `carlos system group probe abandon --config ie.json --transaction <id> [--attended-by <name>]`: Close a transaction that has no group write intent.
+- `carlos system group probe close-lost --config ie.json --transaction <id> [--attended-by <name>]`: Close an active transaction after confirming that its member is gone. Record failure.
+
 ### carlos move
 
 Moves into or out of an active high availability region are refused before staging, stopping or other move state is written. Imports into an active high availability region are refused before import data is written. An immutable high availability record remains refused even after the region setting is turned off. Static records are exempt only from this new regional refusal. Existing seed, runtime, shape and immutable-record refusals still apply. Operations that already started can finish or be cleaned up.
@@ -3169,6 +3390,8 @@ carlos move offline status --host <host>
 The instance is offline from `start` until `open`. Until `open`, `abort` puts it back where it was with nothing lost. After `open`, moving it back is a new move.
 
 `stage` is optional and comes before `start`. It copies the instance's data to the region it moves to while the instance keeps serving, and each time it runs it copies only what is new. The more it has copied, the less is left to copy while the instance is offline. Until `start`, `abort` removes the staged copy and the instance is never offline.
+
+`stage` and `start` refuse an offline move when a box in the target region still holds a live link for the instance from an earlier time it ran there, or has more live links than its report can carry. The refusal names the box and says what it found.
 
 ## On the host
 
@@ -3251,6 +3474,13 @@ exit record in the instance's run directory from the four variables
 systemd provides; the agent proves termination from the unit's state and
 its cgroup, not from this file.
 
+### carlos instance-stop
+
+`ExecStop=` of the run, generation and sidecar templates, run as root. It
+sends the unit's main process one SIGTERM, waits up to 18 seconds for it to
+exit, then sends SIGKILL. systemd passes it `$MAINPID`, and it signals only
+a process in the unit's own cgroup.
+
 ### carlos instance-probe
 
 The isolation probe, run under the same namespace text as the instance
@@ -3284,3 +3514,12 @@ carlos ops restore-verify
 Prints the command list, grouped the way this page is. It goes to stdout and
 exits 0, so `carlos help | less` works. A bare `carlos` with no arguments
 prints the same text on stderr and exits 2, because that one is a mistake.
+
+## carlos apps source pull
+
+Download the source saved when you kept this app. Later deployments do not update it.
+
+```sh
+carlos apps source pull --console '<console-origin>' --account-id '<sqid>' --app '<app>'
+carlos apps source pull --console '<console-origin>' --account '<name-or-sqid>' --app '<app>' --output '<path>'
+```

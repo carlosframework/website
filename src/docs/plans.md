@@ -157,6 +157,8 @@ Every billing setting lives in the console's EnvironmentFile. None of them is a 
 
 If any of them is wrong, the console refuses to start and names the variable, never its value.
 
+So the console can record the money it receives, the restricted key also needs read access to Balance, Balance Transaction Sources, Charges and Refunds, and Invoices. The webhook also needs `charge.succeeded`, `charge.captured` and `charge.refunded`.
+
 Point Stripe's webhook at `https://<console>/billing/webhook`. When the console starts, it checks the account, every price in the book, the portal configuration and the house coupon (if you set one) against Stripe before it accepts a webhook. Until that check passes, the webhook answers 503 and Stripe tries again later, so a console that starts while Stripe is unreachable catches up by itself.
 
 ### The portal and the house coupon
