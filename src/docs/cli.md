@@ -291,6 +291,8 @@ off is the point of having one: ship mints the next iteration under it. Use
 is one line for humans and shows up in `carlos releases` and in the console,
 so write it for the person doing a rollback at 2am.
 
+`--mail submit` declares that the build can send mail through Carlos's submission socket when `CARLOS_MAIL=submit` is set. An app can only switch email submission on once every instance runs a build shipped with it. A rootfs release cannot declare it yet.
+
 `--assets` names a folder your build writes its files to, for example `/assets/`. Repeat it for up to 8 folders. Each must start and end with `/`, be at most 128 bytes, and contain none of `%`, `?`, `#`, `*` or `..`. `/` alone is refused, because it would keep copies of every page. No folder may sit inside another. A static site cannot use it, because a static site is already served from every region. The folders belong to the release, so a rollback to an older build uses the folders that build declared.
 
 Files under an asset folder are fetched without the visitor's cookies or login, so put only public files there. Anything that needs to know who is asking belongs outside those folders.
@@ -1056,14 +1058,213 @@ not reach <host>"), with the two ways out: name the unit that runs the
 process on the box, or opt the bundle into file delivery. A stamped route
 the root pass will refuse is reported as blocked with the reason.
 
+#### Config versions and digests
+
+Every bundle has a version, and every var in it has a digest. They let you
+check whether something changed since you last looked, without comparing
+values by eye.
+
+A version looks like `cv1:` followed by a hash of the bundle as it is stored.
+Two reads of a bundle nobody wrote give the same version, and any change to
+the bundle gives a new one. A bundle that has never been written has the
+version `none`, which is different from a bundle that exists and holds no
+vars. A version can come back: set a var to B and then back to A, and the
+bundle returns to its first version, because the stored bytes are the same
+again. So a version that matches the one you read means the bundle holds the
+same bytes, not that nobody wrote to it in between.
+
+A digest looks like `vd1:` followed by a hash of one var as it is stored. For
+a plain var that is its value, so the digest changes when the value does. For
+a secret it is the sealed envelope, which is different every time the secret
+is set. So setting a secret again, even to the same value, gives it a new
+digest, and a secret's digest tells you only that it was written, never what
+it holds.
+
+`carlos env list` prints the version in its header line, and `--digests` adds
+a `DIGEST` column. `carlos secrets list --digests` prints key names and
+digests, still no values. `--json` always carries the version and every
+digest. `carlos env list --json` carries every var in the bundle, plain vars
+with their values and secrets with their digests only, all from one read, so
+the version it prints is the version of everything it lists.
+
+```sh
+carlos env list --app shop --digests
+```
+
+```text
+shop (default, version cv1:3f0c…):
+KEY        VALUE   DIGEST
+LOG_LEVEL  info    vd1:91ab…
+REGION     eu      vd1:c7d2…
+```
+
+A plain var's digest is as sensitive as its value. It is a hash of the value,
+so anyone holding the digest can test a guess against it. Treat it the way you
+treat the value: do not paste digests of plain vars into a report, ticket or
+channel that reaches more people than the value would. A secret's digest does
+not have this problem.
+
+`carlos env digest` computes a digest on your machine without contacting a
+console, so you can compare it with the digest in a listing. The receipt a write
+prints does not carry digests.
+
+```sh
+carlos env digest --kind env --value info
+carlos env digest --kind secret --envelope-file sent.envelope --sealed-to <fingerprint>
+```
+
+For a secret you pass the envelope that was sent and, with `--sealed-to`, the
+fingerprint of the key it was sealed to. Both are part of the stored var, so
+both go into the digest. `carlos secrets set` does not save the envelope it
+sends, so the secret form is for a script that seals and sends for itself.
+
+`carlos env effective --app shop --host shop.example.com` shows what one
+route gets. It prints each layer's version (`default`, `environment` and
+`overlay`) and then one row per key with its `KIND`, the layer it comes
+from (`FROM`) and any lower layers that also set it, in a `HIDES` column. The
+`VALUE` column shows a plain var's value when it comes from the default or
+environment layer. It is blank for secrets and for values from the platform's
+per-instance overlay. Use it when a var you set does not seem to take effect:
+it will say if a higher layer is covering it. `--json` prints the console's
+answer as JSON: the fields this version of `carlos` knows, under the
+console's names. A field added by a newer console is left out. It shows only
+the stored layers. Values set on the box itself, such as an exec route's
+own `<host>.env`, are not in the bucket and are not shown. It works through
+a console, not in direct-bucket mode.
+
+#### Writing only if the bundle has not changed
+
+`carlos env set`, `carlos env unset`, `carlos secrets set` and `carlos
+secrets unset` take `--if-version <v>`. The write happens only if the bundle
+is still at version `v`, that is, only if its stored bytes are exactly the
+ones you read. So you can read a bundle, decide what to change, and write
+only if it still holds what you saw. A write that changed it and a later
+write that changed it back are not detected, because the bytes are the same
+again. `--if-version none` means the write happens only if the bundle does
+not exist yet.
+
+```sh
+carlos env set --app shop --if-version cv1:3f0c… FEATURE_X=on
+```
+
+If the bundle has changed, nothing is written, the command prints the current
+version and exits with code 4. Every other failure exits 1, so a script can
+tell "read again and decide" from "something is broken". The console makes the
+check where the bundle is stored, so it still holds if someone else writes at
+the same moment. For that reason `--if-version` needs a console. In
+direct-bucket mode it is refused before anything is written. A console that
+cannot make this guarantee refuses it too. An `--if-version` that is given
+but empty, as with an unset shell variable, is refused too, rather than read
+as no precondition.
+
+With no `--if-version`, a write behaves as it always did.
+
+A `set` or `unset` through a console prints a receipt of what was stored: the
+names it set (`set:`), the names it removed (`removed:`), and any names you
+asked to remove that were not there (`not there:`), followed by the version
+after the write and the version before. Some writes print no receipt: a
+direct-bucket write, `carlos env exec-delivery`, and any write through a
+console too old to send one. If the write changed nothing, because every
+value was already what you sent, it says so and prints the version the bundle
+is still at. A write to a named environment also tells you if the default
+bundle changed while it ran, or that the console could not read the default
+to compare. The two bundles are separate objects, so the console can report
+that but cannot prevent it; whether it matters is for you to decide.
+`--if-version` covers the bundle you wrote to, not the default.
+
+A receipt describes what is stored. It does not say that a process has
+picked the config up. That is a separate question, and the restart notice
+under it is still the place that answers it.
+
+#### Adding keys from a script without overwriting anyone
+
+A script that adds keys to a bundle other people also write needs to be sure
+of two things: that it did not overwrite or remove anything it was meant to
+leave alone, and that if its write is lost or refused it can tell what
+happened and try again safely. Take the app `shop` and a script that adds
+`AGENT_ISSUER` and `AGENT_TEAM`, and must leave `DATABASE_URL` and
+`LOG_LEVEL` as they are.
+
+1. **Baseline.** Read the bundle once and keep its version and the digest of
+   each key the script must preserve.
+
+   ```sh
+   carlos env list --app shop --json
+   ```
+
+   This one listing carries every var, plain and secret, and the version of
+   exactly those bytes. Keep `version`, and the `digest` of `LOG_LEVEL` and
+   of `DATABASE_URL`. Take the baseline from this single read. Do not
+   combine `carlos env list` with `carlos secrets list`: they are two reads,
+   and someone can write between them.
+
+2. **Write.** Pass the baseline version as `--if-version` and set only the
+   new keys.
+
+   ```sh
+   carlos env set --app shop --if-version cv1:3f0c… \
+     AGENT_ISSUER=https://issuer.example.com AGENT_TEAM=shop
+   ```
+
+3. **Check the receipt.** On success the receipt's `set:` line should name
+   exactly `AGENT_ISSUER` and `AGENT_TEAM`, and there should be no
+   `removed:` line. To check the values, compare `carlos env digest --kind
+   env --value <what you sent>` with the digest `carlos env list --digests`
+   shows for the key.
+
+4. **If the answer was lost, or the write was refused with exit code 4,
+   read again** with the same single `carlos env list --app shop --json`,
+   and compare that one listing with your baseline. Keep the digests from
+   step 1 for every retry; only the version comes from the new read. Exactly
+   one of these applies to any read, and the first that matches wins:
+
+   - A preserved key has a different digest from the baseline, or is gone.
+     Stop. Something else changed what the script promised to leave alone.
+     Do not retry and do not take a new baseline.
+   - Every preserved key matches the baseline, and every new key is present
+     with the digest of what you sent. The write landed. You are done.
+   - Every preserved key matches the baseline, and no new key is present.
+     The write did not land and nothing you care about moved. Retry from step
+     2 with `--if-version` set to the version of this same listing, never one
+     from another read.
+   - Every preserved key matches the baseline, but the new keys are only
+     partly there, or one has a different digest or a different kind. Stop.
+     Another writer touched the keys this script was adding. Do not
+     overwrite them, do not take a new baseline, and report the conflict.
+
+The baseline is the digests of the keys you promised to preserve, not the
+bundle's version. That is deliberate. A write to some unrelated key between
+your attempts changes the version but not your baseline, so you do not have
+to start again, and a change to a key you promised to preserve can never be
+absorbed into a fresh baseline by accident.
+
+The `carlos secrets set` command does not give you the envelope it sent, so
+for a secret you can check that a key is present or absent and that its
+digest moved, but not that it equals what you sent. A script that needs that
+check seals and sends for itself.
+
 ### carlos secrets
 
-The same shape as `carlos env`, sealed. `list` prints key names and never
-values.
+The same commands as `carlos env`, with sealed values. `list` prints key
+names and never values.
 
 ```sh
 carlos secrets set --app hello STRIPE_KEY=sk_live_example
 ```
+
+A lone `-` after a key reads that key’s value from stdin, so the value never
+appears in the command line, where other people on the same machine can see it. One
+trailing newline is dropped. Only one key per command can read stdin, and it
+must be a pipe or a file, not the terminal. The input can be up to 64 KiB, including its trailing newline.
+
+```sh
+op read op://shop/stripe/key | carlos secrets set --app hello STRIPE_KEY -
+```
+
+A value that starts with its own key and `=`, such as
+`STRIPE_KEY=STRIPE_KEY=sk_live_example`, is refused: the variable name has
+been pasted into the value. If a secret really does start that way, add
+`--literal` to store it as it is.
 
 A write that reaches a route no pass delivers to says so ("this write did
 not reach <host>"), with the two ways out: name the unit that runs the
@@ -1079,6 +1280,11 @@ An app placed on a fleet is sealed to the fleet's key, which `carlos secrets set
 In direct-bucket mode, `carlos secrets set` refuses for any account that owns a fleet, because it cannot tell which key an app needs. Unset `CARLOS_DEPLOYMENT_BUCKET` and `CARLOS_DEPLOYMENT_DIR`, sign in with `carlos auth login`, and run `carlos secrets set` through the console.
 
 `carlos secrets fingerprint` prints the fingerprint of the `CARLOS_SECRETS_KEY` in `/etc/carlos/host.env`, or in the file you name with `--file`. It runs on your machine, calls no console and never prints the key.
+
+Versions, digests and `--if-version` work as they do for `carlos env`, see
+[Config versions and digests](#config-versions-and-digests). A secret's digest
+is computed from its sealed envelope, so it reveals nothing about the value
+and changes every time the secret is set, even to the same value.
 
 An empty value is refused rather than stored. A command substitution that
 produced nothing looks exactly like a real value at the point you type it, and
@@ -1379,6 +1585,41 @@ Turns page caching on or off for one instance. `off` throws away the pages it ke
 
 ```sh
 carlos instances set-pages --app shop a.shop.example.com off
+```
+
+### carlos instances label
+
+Ties an instance on a fleet to the box serving it now. An instance that is not tied to a box is carried by every box of its fleet. That is fine while the fleet has one box. With more than one, the platform will not add a box, run more than one copy, or switch it to a release without a local database until the instance is tied to one box.
+
+Use it when a refusal tells you to tie an instance first, or before you add a second box to a fleet that already runs instances. New process instances on a fleet with more than one box are tied when they are created. Older process instances are the ones that need it.
+
+Run it without `--box` first. This is a dry run and changes nothing. It shows two reports: the box that last reported running the instance, and the box the hub sends its requests to. When they agree, it names that box and gives you the command that ties it.
+
+```sh
+carlos instances label --app shop shop.example.com
+```
+
+```text
+shop.example.com is not tied to a box of fleet pi
+  last report from box-1 (3m05s ago)
+  the hub sends its requests to box-1
+  these agree: box-1 looks like the box serving it
+  this is what the boxes reported, not proof of which box runs it now
+box-1 can take it
+if the report is wrong, tying it moves the instance. it stops on the serving box and starts on box-1 from its last saved copy
+to tie it, run:
+  carlos instances label --app shop shop.example.com --box box-1
+dry run. nothing changed
+```
+
+The reports are not proof. If they are wrong, tying the instance moves it. It stops on the serving box and starts on the box you named from its last saved copy.
+
+You can only tie an instance to the box serving it now. Naming any other box is refused. To move an instance off a box, drain that box with `carlos fleets drain`. If the two reports disagree, or one is missing, wait for the instance to settle, or open it once, then try again in about 10 minutes.
+
+To tie it, run the command the dry run gave you. Only an account owner can tie an instance to a box. The other boxes stop carrying it once they update, usually within seconds. If the command cannot tell whether the change landed, run it again without `--box` to see.
+
+```sh
+carlos instances label --app shop shop.example.com --box box-1
 ```
 
 ### carlos instances backups
@@ -1710,6 +1951,8 @@ carlos logs --app hello --since 1h -f
 `-f` follows, polling every two seconds until you interrupt it. `--grep` takes
 an RE2 pattern, `--stream app` drops the platform commentary, and `--host`
 narrows to one instance.
+
+Logs and errors are kept for 7 days, up to 50 MiB per app on each server, whichever runs out first. On your own servers you can change both in each server's host.env: `CARLOS_LOG_RETENTION_DAYS` takes whole days, and `CARLOS_LOG_RETENTION_MB` takes whole MiB or `off` for no size limit. A value the server can't use is logged, and the default stays.
 
 ### carlos explain
 
@@ -2244,6 +2487,21 @@ mints a fresh delivered credential and leaves the old one live until you run
 it again with `--finish`. `pause` and `resume` are operator verbs. None of it
 has a direct-bucket form; all of it wants a logged-in console.
 
+`submission on --app <a>` switches an app to sending through the box: its
+instances post each message to their own control socket, the box's mailer
+sends it, and no instance holds an SMTP credential. Each bundle gets one
+variable instead, `<P>_MAIL_FROM` (the prefix with its `_SMTP` cut off, so
+`CARLOS_MAIL_FROM` by default), which the app's mail library reads. The
+switch refuses until every instance runs a build shipped with
+`--mail submit`, every channel they follow heads one, every box hosting the
+app has its mailer armed, and the deployment counts sends through SES
+events; each refusal says what to do. A route with no instance record can't
+send mail once it is on, and its app refuses to start, so check
+`carlos instances --app <a>` first. While it is on, promoting, rolling back
+or pinning a build without `--mail submit` is refused. The app-level SMTP
+user goes a week after its key stops being used. `submission off` delivers
+the SMTP credential again. Both restart the app's instances.
+
 ### carlos ledger
 
 Append-only hash-chained ledgers an app can publish. `append` adds one JSON
@@ -2598,6 +2856,15 @@ home's code does not admit the home.
 The secret prints once, same as a fleet token, and the same distinction
 applies at the other end: `rotate` refuses the credential's next call with
 the old secret, `revoke` stops it whatever secret it holds.
+
+For a script, `create` and `rotate` take `--json` and print one JSON object
+and nothing else. The secret alone is in its `secret` field, 43 characters,
+without the `CARLOS_SERVICE_TOKEN=` the human output puts in front of it:
+
+```sh
+carlos services create --role publish --app hello --json ci-shipper \
+  | jq -r .secret | carlos secrets set --app hello CARLOS_SERVICE_TOKEN -
+```
 
 ### carlos add
 
@@ -3099,6 +3366,8 @@ The migration census reads the backfill plan `backfill-collect` wrote. It report
 carlos system pdf status
 ```
 
+System operators (`CARLOS_SYSTEM_OPERATORS`) and store operators (`CARLOS_STORE_OPERATORS`) can run this read-only command.
+
 #### Deployment-wide object scanning
 
 ```sh
@@ -3120,8 +3389,9 @@ not just the hourly pass. `enable` is refused when no engine is wired: a record
 claiming enabled with nothing behind it would report health for a deployment
 where no scan can run.
 
-Deployment operators only (`CARLOS_STORE_OPERATORS`). Enabling scans nothing by
-itself — a member still requests scanning for their app and an operator still
+Store operators (`CARLOS_STORE_OPERATORS`) can use `enable`, `disable`, and `status`.
+System operators (`CARLOS_SYSTEM_OPERATORS`) can use `status`. Enabling scans nothing by
+itself. A member still requests scanning for their app, and an operator still
 grants it per store.
 
 ##### Deployment-wide callback rotation
@@ -3374,9 +3644,13 @@ to confirm.
 
 Operators who are members of the instance's account.
 
-`carlos move offline` moves one instance with planned downtime, one step at a time. It is for operators, works with host claims and Phase 1 moves off, and never acts on its own: each verb does one step and says which verb comes next.
+`carlos move offline` moves one instance with planned downtime. It is for operators. `run` carries a move through every step. Each other verb does one step and says which verb comes next.
 
 ```sh
+carlos move offline run    --host <host> --to <region>
+carlos move offline run    --host <host> --resume <move-id>
+carlos move offline status --host <host>
+
 carlos move offline stage  --host <host> --to <region>
 carlos move offline start  --host <host> --to <region>
 carlos move offline seal   --host <host>
@@ -3384,10 +3658,61 @@ carlos move offline flip   --host <host>
 carlos move offline open   --host <host>
 carlos move offline finish --host <host>
 carlos move offline abort  --host <host>
-carlos move offline status --host <host>
 ```
 
 The instance is offline from `start` until `open`. Until `open`, `abort` puts it back where it was with nothing lost. After `open`, moving it back is a new move.
+
+`run` copies the instance’s data while it still serves, then takes it offline and runs `start`, `seal`, `flip` and `open` in turn. Once the instance answers in the new region, it runs `finish`. It prints one line per step with the time, and an indented line when the console starts waiting on a box:
+
+```text
+$ carlos move offline run --host shop.example.com --to uk
+06:12:03Z  stage    sent, accepted
+Moving shop.example.com from Dublin (IE) to London (UK). Move mv_7kq2xw5rbt3yfn6hd4jm2pcsea.
+06:12:31Z  stage    1204 of 1204 objects (48.2 of 48.2 MB)
+06:12:31Z  stage    sent, accepted
+06:12:38Z  stage    1204 of 1204 objects (48.3 of 48.3 MB)
+06:12:38Z  start    sent, accepted. Offline from now.
+  Waiting for box-1 in Dublin (IE) to confirm it has stopped shop.example.com. shop.example.com is offline.
+06:12:58Z  seal     sent, accepted
+06:13:40Z  flip     sent, accepted
+06:13:52Z  open     sent, accepted
+06:13:55Z  check    https://shop.example.com/ answered 200
+06:13:56Z  finish   sent, accepted
+06:14:31Z  finish   sent, accepted
+Moved. shop.example.com is served from London (UK). It was offline for 74 seconds.
+```
+
+Before `open`, if a step fails or takes too long, `run` moves the instance back and exits 3. `--max-offline` sets how long the instance may stay offline before that happens (15 minutes by default). After `open`, `run` never moves it back. If the instance does not answer within 2 minutes of `open`, `run` stops with exit 4 and leaves `finish` to you.
+
+`--no-finish` stops once the instance is served from the new region, so you can check it before `finish` cleans up the old one. `--probe-path` is the path `run` checks after `open` (`/` by default). `--log` also writes every line to a file.
+
+The first Ctrl-C before `open` moves the instance back. A second one stops watching and leaves the move running. After `open`, Ctrl-C only stops watching.
+
+On Linux and macOS a dropped SSH connection does not stop `run`. If `run` stops for any other reason, the move waits where it is, even while the instance is offline. Run `status` first. Then use `run --resume <move-id>` to carry the move on from where it stands, or, before `open`, `abort` and then `finish` to move it back. Without `--resume`, `run` refuses a host that already has a move.
+
+`run` ends with one of these exit codes:
+
+| exit code | meaning |
+|---|---|
+| `0` | the move finished, or is open with `--no-finish` |
+| `3` | the instance was moved back |
+| `4` | `run` stopped, and you decide what comes next |
+| `5` | refused before anything was written: by the console, at the first status read or the first stage (`--resume` included), or by `carlos` itself (run as root, or with no console) |
+| `1` | the console could not be reached or answered with an error, or the `--log` file could not be opened |
+
+`status` leads with the state, then shows the move, how long the instance has been offline when that applies, how long it has been in this step, and the one command forward and the one back:
+
+```text
+$ carlos move offline status --host shop.example.com
+Ready to open
+  move        mv_7kq2xw5rbt3yfn6hd4jm2pcsea, Dublin (IE) to London (UK)
+  offline     1 min 2 s, since 06:12:38Z
+  this step   4 s
+  forward     carlos move offline open --host shop.example.com
+  back        carlos move offline abort --host shop.example.com
+```
+
+While the console waits on a box, a `waiting` row says what for, and the forward command ends with “when ready”. Under the block, `status` lists each item the move checks and each box’s report.
 
 `stage` is optional and comes before `start`. It copies the instance's data to the region it moves to while the instance keeps serving, and each time it runs it copies only what is new. The more it has copied, the less is left to copy while the instance is offline. Until `start`, `abort` removes the staged copy and the instance is never offline.
 
@@ -3455,6 +3780,21 @@ ready while the binary it runs is no longer `/opt/carlos/carlos`, and the
 agent refuses to wake isolated instances while the service reports another
 build than its own, or none. Either way the reason in `carlos logs` ends
 with `restart carlos-instance-control.service`.
+
+### carlos mailer
+
+The box-local mailer. An instance of an app switched to platform mail
+submission sends a message by `POST /v1/mail` on its own control socket;
+the agent stamps it with that socket's route and hands it to this process,
+which checks the sender's From, pause, daily cap and rate, and sends it
+through SES as the region's dedicated IAM user. No instance holds a sending
+credential.
+
+`carlos mailer serve` is what `carlos-mailer.service` runs, as its own user,
+`carlos-mailer`. Not for operators: there is nothing to type.
+`carlos-mailer.socket` listens only once an operator has written the key to
+`/etc/carlos-mailer/keys`, and the mailer admits only the agent's own main
+process.
 
 ### carlos instance-exec
 

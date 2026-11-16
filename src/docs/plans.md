@@ -36,6 +36,12 @@ Every account without a plan of its own is on `default_plan`. Packs may only rai
 
 Set `pdf_renders_month` in a plan's limits to give your account a monthly PDF allowance shared by its apps. A value of 0 means no monthly limit. The PDF service's fair-use limits still apply.
 
+Set `email_per_hour` to cap how many emails an account can send in one UTC hour. 0 means no hourly limit. There's no grace: once the hour's sends reach the limit, every sender of every app is held back until the next UTC hour.
+
+With `storage_self_serve`, members can set up their app's object storage with `carlos store create`, without an operator's approval. Sponsored accounts still need approval. Add `storage_scan_required` to scan that plan's stores for viruses and block infected objects from the moment each store is made. The deployment needs scanning switched on (`carlos system antivirus enable`). A plan that requires scanning can't have per-environment or per-instance stores, which aren't scanned, or stores marked client-encrypted, which a scanner can't read.
+
+When you lower a plan's storage, `kept_storage` lets accounts an operator already approved keep the old amount. For example, `"kept_storage": {"approved_before": "2026-11-15T00:00:00Z", "storage_bytes": 1073741824}` keeps 1 GB for every account approved before that time. The console records it on each of those accounts once, when it starts with the catalog.
+
 Change `version` whenever you change the file. The console notices an edit that kept the old version and treats it as a new catalog anyway, so every account's limits are written again.
 
 ## Assigning a plan
@@ -90,7 +96,7 @@ While an account is over, its owners get one reminder a day, saying when grace e
 
 After grace, only the capped action is refused, and each refusal lifts by itself:
 
-- **Email.** When an account has sent twice its daily limit, every sender of every app is paused until midnight UTC. This does not wait for notice, because sending reputation is shared by every tenant. The catalog's email ceiling caps it.
+- **Email.** When an account has sent twice its daily limit, every sender of every app is paused until midnight UTC. This does not wait for notice, because sending reputation is shared by every tenant. The catalog's email ceiling caps it. An operator's `carlos email resume` lifts the hold anyway, as a deliberate override, but the app's next send puts it back while the limit is still used up. To let an account send more, raise its limit with `carlos accounts plan --sponsored`.
 - **PDFs.** At twice your account's monthly PDF allowance, new requests are refused with `402` until the 1st of the UTC month or until you move to a larger plan. This does not wait for notice. Your apps share the allowance, and the PDF service's fair-use limits still apply.
 - **Storage.** New uploads to the account's stores are refused once grace has ended and an owner has had notice for 3 days, or straight away at twice the limit. Downloads, listing and deletes keep working, so the account can clean up. Uploads come back once usage is under the limit or the limit is raised.
 
