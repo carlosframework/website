@@ -20,7 +20,8 @@ try {
  const disabled=JSON.parse(await readFile(disabledPath,'utf8'));
  const clean={...process.env};
  for(const key of Object.keys(clean)) if(key.startsWith('CARLOS_START_')) delete clean[key];
- execFileSync(process.execPath,['node_modules/@11ty/eleventy/cmd.cjs',`--output=${dir}`],{env:clean,stdio:'pipe'});
+ // The old (demo-off) site is built only when asked for: the default is the production site.
+ execFileSync(process.execPath,['node_modules/@11ty/eleventy/cmd.cjs',`--output=${dir}`],{env:{...clean,CARLOS_START_DEMO:'0'},stdio:'pipe'});
  for(const name of Object.keys(disabled)) {
   disabled[name]=createHash('sha256').update(await readFile(join(dir,name))).digest('hex');
  }

@@ -37,7 +37,7 @@ test('disabled pages match original build bytes; reused output loses all anonymo
  await writeFile(join(dir,'start/agent.md'),'stale raw template');
  await mkdir(join(dir,'start/agent'),{recursive:true});
  await writeFile(join(dir,'start/agent/index.html'),'stale accidental Eleventy output');
- await buildStart(dir,loadStartConfig({}));
+ await buildStart(dir,loadStartConfig({CARLOS_START_DEMO:'0'}));
  assert.deepEqual(await files(join(dir,'start')),['index.html','start-tabs.js','start.css']);
  await addFooter(dir);
  const baseline=JSON.parse(await read('test/fixtures/start-baseline.json'));
@@ -111,13 +111,13 @@ test('claim-off builds identical Markdown and visible HTML without claim instruc
 }));
 test('enabled build accepts the merged contract and refuses invalid origins',()=>scratch(async dir=>{
  await buildStart(dir,config);
- for(const key of ['CARLOS_START_SITE_ORIGIN','CARLOS_START_CONSOLE_ORIGIN','CARLOS_START_ACCOUNT_URL']) assert.throws(()=>loadStartConfig({...env,[key]:undefined}));
+ for(const [key,value] of [['CARLOS_START_SITE_ORIGIN','http://site.example.com'],['CARLOS_START_CONSOLE_ORIGIN','https://console.example.com/path'],['CARLOS_START_ACCOUNT_URL','https://other.example.com/']]) assert.throws(()=>loadStartConfig({...env,[key]:value}));
 }));
-test('Eleventy refuses claim-off without the demo',()=>scratch(async dir=>{
+test('Eleventy refuses claim-off with the demo turned off',()=>scratch(async dir=>{
  const {spawnSync}=await import('node:child_process');
  const clean={...process.env};for(const key of Object.keys(clean)) if(key.startsWith('CARLOS_START_')) delete clean[key];
  for(const [inputs,message] of [
-  [{CARLOS_START_CLAIM:'off'},/requires CARLOS_START_DEMO=1/],
+  [{CARLOS_START_DEMO:'0',CARLOS_START_CLAIM:'off'},/requires the demo/],
  ]) {
   const result=spawnSync(process.execPath,['node_modules/@11ty/eleventy/cmd.cjs',`--output=${dir}`],{env:{...clean,...inputs},encoding:'utf8'});
   assert.notEqual(result.status,0);
@@ -125,11 +125,30 @@ test('Eleventy refuses claim-off without the demo',()=>scratch(async dir=>{
  }
 }));
 
+// 🤖 The guard: a plain build (no CARLOS_START_* at all, as `npm run build` on any machine) is the production site.
+// Twice a plain build with the demo off shipped the old homepage (2026-11-14 and 2026-11-16); the default is now
+// the live homepage and /start with the production origins, and this fails if that ever changes.
+test('a plain build is the production site: the new homepage and /start with production origins',()=>scratch(async dir=>{
+ const {spawnSync}=await import('node:child_process');
+ const clean={...process.env};for(const key of Object.keys(clean)) if(key.startsWith('CARLOS_START_')) delete clean[key];
+ const result=spawnSync(process.execPath,['node_modules/@11ty/eleventy/cmd.cjs',`--output=${dir}`],{env:clean,encoding:'utf8'});
+ assert.equal(result.status,0,result.stderr+'\n'+result.stdout);
+ const home=await read(join(dir,'index.html'));
+ assert.equal((home.match(/class="hv-col"/g)||[]).length,1,'the new hero');
+ assert.match(home,/class="hv-pane"/);
+ assert.ok((await files(join(dir,'start'))).includes('index.md'),'/start/ with the agent page');
+ assert.match(await read(join(dir,'start/index.html')),/<h1/);
+ const agent=await read(join(dir,'start/index.md'));
+ assert.ok(agent.includes('https://carlosframework.com/start/starter/v1/source.tar.gz'),'production site origin');
+ assert.ok(agent.includes('https://console.carloku.com'),'production console origin');
+ assert.doesNotMatch(agent,/site\.example\.com|console\.example\.com/);
+}));
+
 test('Eleventy integration: enabled then disabled rebuild keeps main pages byte-identical',()=>scratch(async dir=>{
  const {spawnSync}=await import('node:child_process');
  const build=(enabled,overrides={})=>{
   const clean={...process.env};for(const key of Object.keys(clean)) if(key.startsWith('CARLOS_START_')) delete clean[key];
-  const result=spawnSync(process.execPath,['node_modules/@11ty/eleventy/cmd.cjs',`--output=${dir}`],{env:{...clean,...(enabled?env:{}),...overrides},encoding:'utf8'});
+  const result=spawnSync(process.execPath,['node_modules/@11ty/eleventy/cmd.cjs',`--output=${dir}`],{env:{...clean,...(enabled?env:{CARLOS_START_DEMO:'0'}),...overrides},encoding:'utf8'});
   assert.equal(result.status,0,result.stderr+'\n'+result.stdout);
  };
  build(true);
@@ -176,7 +195,7 @@ test('enabled homepage preserves everything outside the hero, the body and metad
  assert.doesNotMatch(await read(join(dir,'start/index.html')),/theme-switch|site-footer:theme/);
  assert.deepEqual((await readdir(join(dir,'home'))).sort(),(await readdir('src/home')).sort());
  assert.doesNotMatch(home,/start-demo:(hero|body|parts)/);
- await buildStart(dir,loadStartConfig({}));
+ await buildStart(dir,loadStartConfig({CARLOS_START_DEMO:'0'}));
  assert.equal(await read(join(dir,'index.html')),source.replace(/<!-- \/?start-demo:(?:hero|body) -->/g,''));
  // Demo-off builds carry none of the homepage's own assets.
  await assert.rejects(readdir(join(dir,'home')));

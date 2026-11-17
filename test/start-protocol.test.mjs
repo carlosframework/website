@@ -27,19 +27,33 @@ test('claim appendix omits private provenance and HTML bodies after the developm
  const off={...config,claimOff:true};
  assert.equal(renderAgent(template,off,contract,manifest),renderAgent(template,off,undefined,manifest));
 });
-test('default off, explicit origins, strict HTTPS inputs and safe diagnostics', () => {
- assert.equal(loadStartConfig({}).enabled, false);
+test('default on with production origins, explicit opt-out and overrides, strict HTTPS inputs and safe diagnostics', () => {
+ // With nothing set, the build is the production site (a plain build with the demo off shipped the old homepage).
+ const plain=loadStartConfig({});
+ assert.equal(plain.enabled, true);
+ assert.deepEqual([plain.siteOrigin,plain.consoleOrigin,plain.apiOrigin,plain.accountUrl],['https://carlosframework.com','https://console.carloku.com','https://console.carloku.com','https://console.carloku.com/']);
+ assert.equal(plain.claimOff,false);
+ assert.ok(plain.claimContractRevision);
+ assert.equal(loadStartConfig({CARLOS_START_DEMO:''}).enabled, true);
+ assert.equal(loadStartConfig({CARLOS_START_DEMO:'1'}).enabled, true);
+ // The old page only when asked for.
+ assert.equal(loadStartConfig({CARLOS_START_DEMO:'0'}).enabled, false);
+ for (const bad of ['true','yes','off','2',' 1']) assert.throws(() => loadStartConfig({CARLOS_START_DEMO:bad}), /must be unset, 1 or 0/);
+ // One origin overridden, the rest stay production; the account URL follows an overridden console.
+ assert.equal(loadStartConfig({CARLOS_START_SITE_ORIGIN:'https://dev.example.com'}).consoleOrigin,'https://console.carloku.com');
+ assert.equal(loadStartConfig({CARLOS_START_CONSOLE_ORIGIN:'https://console.dev.example.com'}).accountUrl,'https://console.dev.example.com/');
  assert.equal(config.apiOrigin,config.consoleOrigin);
  assert.equal(loadStartConfig({...env,CARLOS_START_API_ORIGIN:''}).apiOrigin,config.consoleOrigin);
  assert.equal(loadStartConfig({...env,CARLOS_START_API_ORIGIN:'https://api.example.com/'}).apiOrigin,'https://api.example.com');
- for (const key of ['CARLOS_START_SITE_ORIGIN','CARLOS_START_CONSOLE_ORIGIN','CARLOS_START_ACCOUNT_URL']) {
-  assert.throws(() => loadStartConfig({...env,[key]:undefined}), /The start page could not be built:/);
- }
+ assert.equal(loadStartConfig({...env,CARLOS_START_SITE_ORIGIN:undefined}).siteOrigin,'https://carlosframework.com');
+ assert.equal(loadStartConfig({...env,CARLOS_START_ACCOUNT_URL:undefined}).accountUrl,'https://console.example.com/');
+ // an account URL on another console than the (default) one is still refused
+ assert.throws(() => loadStartConfig({...env,CARLOS_START_CONSOLE_ORIGIN:undefined}), /must use CARLOS_START_CONSOLE_ORIGIN/);
  for (const bad of ['http://example.com','https://user:SECRET@example.com','https://example.com/path','https://example.com?x','https://example.com#x','https://example.com/../','https://example.com\\evil',' https://example.com']) {
   for(const key of ['CARLOS_START_SITE_ORIGIN','CARLOS_START_CONSOLE_ORIGIN','CARLOS_START_API_ORIGIN']) assert.throws(() => loadStartConfig({...env,[key]:bad}), e => e.message.startsWith('The start page could not be built:') && !e.message.includes('SECRET'));
  }
  assert.throws(() => loadStartConfig({...env,CARLOS_START_ACCOUNT_URL:'https://other.example.com/'}));
- assert.throws(() => loadStartConfig({CARLOS_START_DEMO:'0'}));
+ assert.throws(() => loadStartConfig({CARLOS_START_DEMO:'0 '}));
 });
 test('API calls and status validation use API origin; browser claims and CLI retain console origin',()=>{
  const split=loadStartConfig({...env,CARLOS_START_API_ORIGIN:'https://api.example.com:8443'});
@@ -93,8 +107,9 @@ test('claim-off requires an enabled demo and refuses unsupported claim modes', (
  assert.equal(loadStartConfig(off).claimContractRevision,'');
  assert.equal(config.claimOff,false);
  assert.equal(loadStartConfig({...env,CARLOS_START_CLAIM:''}).claimOff,false);
- assert.throws(()=>loadStartConfig({...off,CARLOS_START_DEMO:undefined}),/requires CARLOS_START_DEMO=1/);
- assert.throws(()=>loadStartConfig({...off,CARLOS_START_DEMO:''}),/requires CARLOS_START_DEMO=1/);
+ assert.equal(loadStartConfig({...off,CARLOS_START_DEMO:undefined}).claimOff,true);
+ assert.equal(loadStartConfig({...off,CARLOS_START_DEMO:''}).claimOff,true);
+ assert.throws(()=>loadStartConfig({...off,CARLOS_START_DEMO:'0'}),/requires the demo/);
  for(const value of ['on','0','1','OFF',' off']) assert.throws(()=>loadStartConfig({...off,CARLOS_START_CLAIM:value}),/must be unset or off/);
 });
 test('claim-off renders without a contract and preserves shared sections', () => {
@@ -117,7 +132,7 @@ test('claim-off renders without a contract and preserves shared sections', () =>
  assert.match(sections[9],/Keep the create response's `claimToken` private and use it only as the update bearer/);
  assert.equal(sections[10].split('\n## After you keep it')[0],`## 10. For a permanent app\n\nPoint the person to the [account path](${config.accountUrl}) and stop.\n`);
  assert.equal(markdown.split('## After you keep it')[1],rendered.split('## After you keep it')[1]);
- assert.throws(()=>renderAgent(template,{...off,enabled:false},undefined,manifest),/CARLOS_START_DEMO=1/);
+ assert.throws(()=>renderAgent(template,{...off,enabled:false},undefined,manifest),/require the demo/);
 });
 const section = (markdown, n) => markdown.split(/(?=^## \d+\.)/m)[n];
 for(const claimOff of [false,true]) test(`private response storage, cleanup and lost-token rules: claim ${claimOff?'off':'on'}`,()=>{
