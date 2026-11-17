@@ -17,9 +17,9 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.equal(plain(hero.match(/<h1>([\s\S]*?)<\/h1>/)[1]),"You’re already using agents.");
  assert.ok(hero.includes('<span class="nw">using agents.</span>'));
  const sub=hero.match(/<p class="sub">([\s\S]*?)<\/p>/)[1];
- assert.equal(plain(sub),'Now you want to ship faster, build better and save money.');
- for(const word of ['faster','better','save money']) assert.ok(sub.includes(`<em>${word}</em>`));
- assert.ok(sub.includes('<em>save money</em>.'));
+ assert.equal(plain(sub),'Now you want to ship faster, build better and spend less.');
+ for(const word of ['faster','better','spend less']) assert.ok(sub.includes(`<em>${word}</em>`));
+ assert.ok(sub.includes('<em>spend less</em>.'));
  assert.match(hero,/<!-- 👨 Paul's words, verbatim --><h1>/);
  // The answer, the line about CARLOS (one fixed sentence for screen readers), then the invitation.
  const ask=hero.match(/<p class="ask hv-ask">([\s\S]*?)<\/p>/)[1];
@@ -333,7 +333,7 @@ test('homepage and host copy matches Paul’s approved copy review verbatim',()=
   "start.hosts.two": "Make sure your agent has access to {siteHost} and {apiHost}",
   "start.hosts.one": "Make sure your agent has access to {host}",
   "home.hero.heading": "You’re already using agents.",
-  "home.hero.subheading": "Now you want to ship faster, build better and save money.",
+  "home.hero.subheading": "Now you want to ship faster, build better and spend less.",
   "home.hero.answer": "You want CARLOS.",
   "home.hero.ask": "Read on, or try it now:",
   "home.paste.label": "Paste this into your agent and it can take things from there",
@@ -373,7 +373,7 @@ test('homepage carries Paul’s 2026-11-12 approved copy byte for byte, with cur
  assert.equal(result.action,'approve');
  assert.deepEqual(result.strings.map(s=>s.id),strings.map(s=>s.id));
  // Paul's later verbatim rewrites (2026-11-12, after the review) replace the reviewed text.
- const later={'what.prop1.body':'Web server, database engine, background jobs and interface, compiled into a single binary.','get.ship.figure.note':'faster shipping to production','get.build.figure':'20 ms','get.build.figure.note':'Average response time, down from 250ms','get.ship.item2':'Roll releases to a few customers first','end.paste.works':'Try it with your preferred agent setup','get.save.figure.note':'less to run than a traditional web app','get.save.figure':'80%','tools.heading':'To make it easy, we built an agent-first modern web framework to build apps and a platform to deploy them on','tools.platform.body':'Get your CARLOS apps online with HTTPS, backups, provisioning, observability and analytics. Static sites work great too.','tools.skill.lead':'Try CARLOS with zero effort.','tools.skill.body':'The CARLOS skill has everything it needs to build and deploy a sample app and get it live right now.','what.heading':'CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily.','hero.gloss':'A system for building better web apps.'};
+ const later={'get.save.title':'Spend less','what.prop1.body':'Web server, database engine, background jobs and interface, compiled into a single binary.','get.ship.figure.note':'faster shipping to production','get.build.figure':'20 ms','get.build.figure.note':'Average response time, down from 250ms','get.ship.item2':'Roll releases to a few customers first','end.paste.works':'Try it with your preferred agent setup','get.save.figure.note':'less to run than a traditional web app','get.save.figure':'80%','tools.heading':'To make it easy, we built an agent-first modern web framework to build apps and a platform to deploy them on','tools.platform.body':'Get your CARLOS apps online with HTTPS, backups, provisioning, observability and analytics. Static sites work great too.','tools.skill.lead':'Try CARLOS with zero effort.','tools.skill.body':'The CARLOS skill has everything it needs to build and deploy a sample app and get it live right now.','what.heading':'CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily.','hero.gloss':'A system for building better web apps.'};
  for(const s of result.strings) if(later[s.id]) s.text=later[s.id];
  // Paul, 2026-11-12: the replay no longer needs its "A real run, sped up" badge. Removed, not reworded.
  // The re-recorded run 4 (2026-11-12) replaces the replay's quotations, alt text and caption: verbatim from
