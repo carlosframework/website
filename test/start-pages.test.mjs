@@ -18,8 +18,8 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.ok(hero.includes('<span class="nw">using agents.</span>'));
  const sub=hero.match(/<p class="sub">([\s\S]*?)<\/p>/)[1];
  assert.equal(plain(sub),'Now you want to ship faster, build better and spend less.');
- for(const word of ['faster','better','spend less']) assert.ok(sub.includes(`<em>${word}</em>`));
- assert.ok(sub.includes('<em>spend less</em>.'));
+ for(const word of ['faster','better','less']) assert.ok(sub.includes(`<em>${word}</em>`));
+ assert.ok(sub.includes('spend <em>less</em>.'));
  assert.match(hero,/<!-- 👨 Paul's words, verbatim --><h1>/);
  // The answer, the line about CARLOS (one fixed sentence for screen readers), then the invitation.
  const ask=hero.match(/<p class="ask hv-ask">([\s\S]*?)<\/p>/)[1];

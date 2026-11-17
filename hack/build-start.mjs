@@ -155,7 +155,7 @@ async function homeHTML(config,copy,original) {
  if(!foot) throw configError('homepage credit line is missing');
  const html={
   heading:escapeHTML(c('home.hero.heading')).replace(/using agents\./,text=>`<span class="nw">${text}</span>`),
-  sub:escapeHTML(c('home.hero.subheading')).replace(/ship faster,|build better|spend less\./g,text=>`<span class="nw">${text}</span>`).replace(/faster|better|spend less/g,text=>`<em>${text}</em>`),
+  sub:escapeHTML(c('home.hero.subheading')).replace(/ship faster,|build better|spend less\./g,text=>`<span class="nw">${text}</span>`).replace(/faster|better|less(?=\.)/g,text=>`<em>${text}</em>`),
   ask:escapeHTML(c('home.hero.ask')).replace(/^Read on/,text=>`<a href="#architecture">${text}</a>`),
   whatHeading:escapeHTML(t('what.heading')),
   whatFollow:wrap(t('what.follow'),'open specification','<a href="https://spec.carlosframework.com" target="_blank" rel="noopener noreferrer">','</a>'),
