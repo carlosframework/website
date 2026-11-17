@@ -1,0 +1,177 @@
+<!doctype html>
+<!-- 🤖 Storyboard for docs/superpowers/specs/2026-11-17-story-proposal.md. Rough key frames, not a design.
+     Every word in it is DRAFT copy for Paul's review. Not built, not linked, not shipped.
+     Open the file directly; add ?m to the address for the 390 px frames. render.mjs beside it takes the screenshots. -->
+<html lang="en">
+<meta charset="utf-8">
+<title>CARLOS story: storyboard (draft)</title>
+<style>
+  :root { --ink:#17191c; --soft:#4a4f55; --teal:#067a68; --btn:#1b5e50; --paper:#fbf9f5; --line:#d9d4c8; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #2a2a28; font: 17px/1.5 Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif; color: var(--ink); }
+  .f { position: relative; width: 1280px; height: 720px; margin: 24px auto; overflow: hidden; display: flex; align-items: center; gap: 40px; padding: 56px 64px 48px;
+       background: linear-gradient(#bfd3e8 0%, #f3dccd 46%, #fde3b8 74%, #b9ab6a 86%, #7c7a43 100%); }
+  .f.night { background: linear-gradient(#070a22 0%, #191a45 50%, #34326a 76%, #1c2148 88%, #0c1030 100%); color: #eef0f6; --ink:#eef0f6; --soft:#b9bfd2; --teal:#2fd4ac; --line:#3a3f66; }
+  .f.plain { background: var(--paper); }
+  .tag { position: absolute; left: 64px; top: 20px; font: 12px/1 ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+  .tag b { color: var(--ink); }
+  .draft { position: absolute; right: 64px; top: 20px; font: 12px/1 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .08em; color: var(--soft); }
+  .rail { position: absolute; right: 64px; bottom: 18px; display: flex; gap: 10px; font: 11px/1 ui-monospace, Menlo, Consolas, monospace; color: var(--soft); }
+  .rail i { font-style: normal; opacity: .55; } .rail i.on { opacity: 1; color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
+  .bar { position: absolute; left: 0; right: 0; top: 0; height: 0; }
+  .txt { flex: 0 0 440px; background: rgba(255,255,255,.62); border: 1px solid rgba(255,255,255,.8); border-radius: 22px; padding: 30px 32px; backdrop-filter: blur(8px); }
+  .night .txt { background: rgba(20,22,56,.6); border-color: rgba(255,255,255,.14); }
+  .plain .txt { background: none; border: 0; padding: 0; }
+  h1, h2 { margin: 0 0 12px; letter-spacing: -.025em; line-height: 1.08; }
+  h1 { font-size: 46px; } h2 { font-size: 36px; }
+  p { margin: 0 0 12px; color: var(--soft); } p.big { font-size: 21px; line-height: 1.35; } p.ink { color: var(--ink); }
+  .src { font: 11px/1.5 ui-monospace, Menlo, Consolas, monospace; color: var(--soft); margin: 14px 0 0; }
+  .paste { background: rgba(255,255,255,.75); border-radius: 14px; padding: 12px 14px; margin-top: 14px; display: flex; align-items: center; gap: 12px; font-size: 15px; color: var(--ink); }
+  .night .paste { background: rgba(255,255,255,.1); }
+  .paste small { display: block; color: var(--soft); font-size: 12px; margin-bottom: 2px; }
+  .copy { margin-left: auto; background: var(--btn); color: #fff; border-radius: 10px; padding: 9px 16px; font-weight: 600; font-size: 14px; white-space: nowrap; }
+  .btn { display: inline-block; background: var(--btn); color: #fff; border-radius: 8px; padding: 9px 16px; font-weight: 600; font-size: 15px; }
+  .ver { font: 11px ui-monospace, Menlo, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); margin-left: 12px; }
+  .stage { flex: 1; height: 100%; position: relative; }
+  svg { width: 100%; height: 100%; overflow: visible; }
+  .blk rect, .blk polygon { stroke: #2b2f33; stroke-width: 1; }
+  .blk text { font: 500 14px Inter, Roboto, 'Helvetica Neue', Arial, sans-serif; fill: #17191c; }
+  .lab { font: 11px ui-monospace, Menlo, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; fill: var(--soft); }
+  .num { font: 700 44px Inter, Roboto, 'Helvetica Neue', Arial, sans-serif; fill: var(--ink); letter-spacing: -.02em; }
+  .hint { font: italic 14px Inter, Roboto, Arial, sans-serif; fill: var(--soft); }
+  .chips { position: absolute; left: 0; top: 0; display: flex; gap: 0; font-size: 13px; font-weight: 600; }
+  .chips span { padding: 7px 12px; border: 1px solid var(--line); background: #fff; } .chips span.on { background: var(--btn); color: #fff; border-color: var(--btn); }
+  .rp { position: absolute; inset: 20px 206px 30px 0; background: rgba(255,255,255,.82); border: 1px solid rgba(255,255,255,.9); border-radius: 16px; overflow: hidden; font-size: 13.5px; }
+  .rp header { padding: 10px 14px; border-bottom: 1px solid var(--line); display: flex; gap: 8px; color: var(--soft); }
+  .rp li { list-style: none; display: grid; grid-template-columns: 54px 1fr; padding: 7px 14px; }
+  .rp li b { font: 10px ui-monospace, Menlo, monospace; letter-spacing: .08em; color: var(--soft); padding-top: 3px; }
+  .rp ul { margin: 6px 0; padding: 0; }
+  .rp .shot { margin: 6px 14px 0 68px; height: 150px; border-radius: 8px; border: 1px solid var(--line); background: linear-gradient(#1f2f4d 0 26%, #f4f1ea 26%); position: relative; }
+  .rp .shot::after { content: "Ledgerlight status · All systems working"; position: absolute; left: 12px; top: 9px; color: #fff; font-size: 12px; }
+  .stops { position: absolute; right: 0; top: 30px; width: 190px; display: grid; gap: 14px; }
+  .stop { background: rgba(255,255,255,.7); border-radius: 12px; padding: 10px 12px; font-size: 13px; color: var(--soft); opacity: .6; }
+  .stop.on { opacity: 1; outline: 2px solid var(--teal); } .stop b { display: block; color: var(--ink); font-size: 14px; }
+  .nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 10px; }
+  .nums div { border-top: 2px solid var(--btn); padding-top: 10px; font-size: 14px; color: var(--soft); }
+  .nums strong { display: block; font-size: 52px; letter-spacing: -.03em; color: var(--btn); line-height: 1.1; }
+  .apps { display: flex; gap: 10px; margin-top: 26px; font-size: 13px; font-weight: 600; } .apps span { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; background: #fff; }
+  /* 390 px frames */
+  .m .f { width: 390px; height: 880px; flex-direction: column; gap: 14px; padding: 44px 18px 34px; align-items: stretch; }
+  .m .stage { order: -1; flex: 0 0 330px; } .m .txt { flex: 1; padding: 18px 18px; border-radius: 18px; } .m .plain .txt { padding: 0; }
+  .m h1 { font-size: 30px; } .m h2 { font-size: 26px; } .m p.big { font-size: 17px; } .m .tag, .m .draft { left: 18px; right: auto; } .m .draft { left: auto; right: 18px; } .m .rail, .m .draft { display: none; }
+  .m .rp { inset: 0 0 0 0; } .m .stops { display: none; } .m .nums { grid-template-columns: 1fr; gap: 10px; } .m .nums strong { font-size: 38px; } .m .apps { flex-wrap: wrap; }
+</style>
+<body>
+<script>
+if (location.search.includes('m')) document.documentElement.classList.add('m');
+const TOWER = ['App backend', 'App frontend', 'Background workers', 'Web server', 'Observability layer', 'Containers', 'Microservices', 'Cluster orchestrator', 'App server', 'Database server', 'Memory cache', 'Load balancer', 'Cloud provider'];
+// An oblique slab: a labelled front face with a thin top and side, so a flat diagram block reads as a solid thing.
+function slab(x, y, w, h, o = {}) {
+  const d = o.d ?? 12, fill = o.fill ?? '#ffffff', top = o.top ?? '#f1eee6', side = o.side ?? '#dcd7ca', op = o.op ?? 1, rot = o.rot ? ` transform="rotate(${o.rot} ${x + w / 2} ${y + h / 2})"` : '';
+  return `<g class="blk" opacity="${op}"${rot}><polygon points="${x},${y} ${x + d},${y - d * .6} ${x + w + d},${y - d * .6} ${x + w},${y}" fill="${top}"/>` +
+    `<polygon points="${x + w},${y} ${x + w + d},${y - d * .6} ${x + w + d},${y + h - d * .6} ${x + w},${y + h}" fill="${side}"/>` +
+    `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"/>` +
+    (o.label ? `<text x="${x + w / 2}" y="${y + h / 2 + 5}" text-anchor="middle"${o.ink ? ` style="fill:${o.ink};font-weight:700"` : ''}>${o.label}</text>` : '') + `</g>`;
+}
+const TEAL = { fill: '#0b8a76', top: '#3fb39f', side: '#066555', ink: '#fff' };
+const tower = (x, y, o = {}) => TOWER.map((t, i) => { const last = i === TOWER.length - 1, w = last ? 230 : 150 + (i * 37 % 50), jx = last ? 0 : ((i * 53) % 34) - 17;
+  return slab(x - w / 2 + jx, y + i * 37, w, 30, { label: t, op: o.op, rot: o.lean ? (i % 2 ? 1.2 : -1.4) : 0, ...(o.pull === i ? { skip: 1 } : {}) }); }).filter((_, i) => i !== o.pull).join('');
+const pyramid = (x, y) => slab(x - 60, y, 120, 34, { label: 'Your app', ...TEAL }) + slab(x - 95, y + 41, 190, 34, { label: 'CARLOS Platform' }) + slab(x - 125, y + 82, 250, 34, { label: 'Any host, any provider' });
+const grass = (y = 560) => `<line x1="-40" y1="${y}" x2="760" y2="${y}" stroke="currentColor" stroke-opacity=".35"/>`;
+const frame = (n, name, cls, text, stage, railOn) => `<section class="f ${cls}"><span class="tag"><b>${n}</b> · ${name}</span><span class="draft">DRAFT COPY · STORYBOARD</span>` +
+  `<div class="txt">${text}</div><div class="stage">${stage}</div><div class="rail">${[1, 2, 3, 4, 5, 6].map(i => `<i class="${i === railOn ? 'on' : ''}">${i}</i>`).join('')}<i>· Copy the line</i></div></section>`;
+const paste = `<div class="paste"><div><small>Paste this into your agent and it can take things from there</small>Follow the directions on https://carlosframework.com/start</div><span class="copy">Copy</span></div>`;
+
+document.body.innerHTML = [
+frame('0', 'Header: orient, and the way in', '',
+  `<h1>You’re already using agents.</h1><p class="big">Now you want to ship <i>faster</i>, build <i>better</i> and spend <i>less</i>.</p>
+   <p class="ink">You want CARLOS. A way to build a whole web app as one small program. Your agent writes it, and it runs anywhere.</p>${paste}
+   <p style="font-size:13px;margin:10px 0 0">Your agent asks what you want to make, builds it, and gives you a public link for 24 hours. No account or install needed.</p>`,
+  `<svg viewBox="0 0 700 620">${grass()}${tower(190, 78, { op: .5, lean: 1 })}<text class="lab" x="190" y="590" text-anchor="middle">A typical web app</text>
+   <path d="M330 420 C 380 400, 410 400, 450 430" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 5"/><path d="M450 430l-11-2 6-9z"/>
+   ${pyramid(540, 437)}<text class="lab" x="540" y="590" text-anchor="middle">The same app, with CARLOS</text></svg>`, 0),
+
+frame('1a', 'One file: the pile (interactive stacks, pinned here)', '',
+  `<h2>A web app has become a lot of parts.</h2>
+   <p>This is what a typical multi-tenant app needs before your own code does anything.</p>
+   <p class="ink">Go on, pull one out.</p>
+   <p style="font-size:13px">Or see the other way to do it: nine rented services, each one a balloon holding your app up.</p>`,
+  `<div class="chips"><span class="on">One server stack</span><span>Many services</span><span style="margin-left:10px">Pause</span></div>
+   <svg viewBox="0 0 700 620">${grass()}${tower(300, 78, { lean: 1, pull: 9 })}
+   ${slab(455, 300, 164, 30, { label: 'Database server', rot: 14 })}
+   <path d="M620 345 l-18 -22 m18 22 l4 -27 m-4 27 l-27 -6" stroke="currentColor" fill="none" stroke-width="1.6"/><circle cx="632" cy="356" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+   <text class="hint" x="470" y="392">It sways, then it falls.</text></svg>`, 1),
+
+frame('1b', 'One file: the turn (scroll folds the pile)', '',
+  `<h2>CARLOS puts the whole app in one file.</h2>
+   <p>Web server, database engine, background jobs and interface, compiled into a single program. One process, where there was a cluster.</p>
+   <p class="ink">CARLOS is the open specification for building web apps this way.</p>
+   <p><span class="btn">Read the spec</span><span class="ver">v0.1, draft for comment</span></p>`,
+  `<svg viewBox="0 0 700 620">${grass()}
+   ${[['Web server', 60, 120, -9], ['Database server', 30, 215, 6], ['Background workers', 70, 300, -5], ['App server', 120, 55, 8], ['App frontend', 250, 100, -12], ['App backend', 235, 205, 10]].map(([t, x, y, r], i) => slab(x, y, 150, 30, { label: t, rot: r, op: .45 + i * .08 })).join('')}
+   <path d="M215 150 C 330 200, 380 330, 420 420 M190 235 C 300 280, 360 370, 415 430 M240 320 C 320 360, 370 400, 412 440 M395 130 C 440 250, 450 340, 450 415" fill="none" stroke="currentColor" stroke-opacity=".55" stroke-dasharray="3 6"/>
+   ${pyramid(480, 430)}
+   ${['Containers', 'Cluster orchestrator', 'Microservices', 'Load balancer'].map((t, i) => slab(520 + (i % 2) * 20, 60 + i * 42, 160, 28, { label: t, op: .22 })).join('')}
+   <text class="hint" x="520" y="250">No longer needed.</text>
+   <text class="hint" x="40" y="590">The flat diagram turns into a solid thing as you scroll.</text></svg>`, 1),
+
+frame('2', 'Why: twenty years (the values chapter, one screen)', '',
+  `<h2>Computers got faster and far cheaper. Software got heavier.</h2>
+   <p>Memory costs about a ninetieth of what it did in 2005. The median web page weighs six times what it did in 2010.</p>
+   <p class="ink">The hardware kept its promise. We spent it on layers.</p>
+   <p>We think software should be small enough to understand, fast on ordinary hardware, private by design, usable by everyone and yours to move.</p>
+   <p class="src">Sources: Our World in Data (McCallum), HTTP Archive. Drawn to scale.</p>`,
+  `<svg viewBox="0 0 700 620">${grass()}
+   <text class="lab" x="40" y="60">The price of memory</text>
+   ${slab(40, 560 - 465, 46, 465, { fill: '#e9e4d6' })}<text class="lab" x="63" y="582" text-anchor="middle">2005</text>
+   ${slab(130, 555, 46, 5, { ...TEAL, d: 8 })}<text class="lab" x="153" y="582" text-anchor="middle">2023</text>
+   <text class="num" x="205" y="548">1/93</text>
+   <text class="lab" x="330" y="60">The median web page</text>
+   ${slab(330, 560 - 60, 60, 60, { fill: '#e9e4d6', label: '' })}<text class="lab" x="360" y="582" text-anchor="middle">2010 · 468 KB</text>
+   ${slab(440, 560 - 151, 151, 151, { fill: '#fff' })}<text class="lab" x="515" y="582" text-anchor="middle">2026 · 2,957 KB</text>
+   <text class="num" x="604" y="548">6.3×</text>
+   <text class="hint" x="330" y="96">Scroll moves the year. Both pictures change together.</text></svg>`, 2),
+
+frame('3', 'Your agent builds it (the agent browser, pinned here)', '',
+  `<h2>You don’t have to learn any of this. Your agent does.</h2>
+   <p>Watch one real session. Scrolling steps through it; the three parts of CARLOS light up as each one does its work.</p>${paste}`,
+  `<div class="rp"><header>● ● ● &nbsp; Your agent · Status page</header><ul>
+     <li><b>YOU</b><span>Follow the directions on https://carlosframework.com/start</span></li>
+     <li><b>AGENT</b><span>I’ve read the directions. They ask me to check a few things with you before I build anything.</span></li>
+     <li><b>YOU</b><span>We need a public status page. It should feel calm and trustworthy.</span></li>
+     <li><b>AGENT</b><span>Now writing the app code.</span></li>
+     <li><b>AGENT</b><span>Your Ledgerlight status page is live:</span></li></ul><div class="shot"></div></div>
+   <div class="stops"><div class="stop"><b>1 · The skill</b>Instructions your agent reads before it starts.</div>
+     <div class="stop on"><b>2 · Rastrillo</b>The Go web framework it builds with. Ready-made parts, so it writes less from scratch.</div>
+     <div class="stop"><b>3 · CARLOS Platform</b>Where the app runs: hosted on Carloku or on your own hardware.</div></div>`, 3),
+
+frame('4a', 'What one file makes possible: a copy for every customer', '',
+  `<h2>Every customer gets their own.</h2>
+   <p>Their own instance and their own data. Nothing shared, nothing to leak across.</p>
+   <p class="src">spec §1 · next beats on the same stage: asleep until needed, at home anywhere, for people and agents, good by default</p>`,
+  `<svg viewBox="0 0 700 620">${grass()}
+   ${[...Array(15)].map((_, i) => { const c = i % 5, r = (i / 5) | 0, x = 60 + c * 118 + r * 26, y = 250 + r * 100, s = 1 - (2 - r) * .12;
+     return `<g transform="translate(${x} ${y}) scale(${s})">${slab(0, 0, 70, 44, { ...TEAL, d: 14 })}<ellipse cx="96" cy="38" rx="13" ry="5" fill="#fff" stroke="#2b2f33"/><path d="M83 38v-18a13 5 0 0 1 26 0v18" fill="#fff" stroke="#2b2f33"/><ellipse cx="96" cy="20" rx="13" ry="5" fill="#fff" stroke="#2b2f33"/></g>`; }).join('')}
+   <text class="lab" x="60" y="200">One app · one database · per customer</text></svg>`, 4),
+
+frame('4b', 'What one file makes possible: asleep until needed', 'night',
+  `<h2>It sleeps when nobody is using it.</h2>
+   <p>It stops when idle and wakes on the next request, with nothing lost.</p>
+   <p class="ink">So you stop paying for idle servers.</p>
+   <p class="src">spec §8 · in the light theme the blocks dim to outlines; in the dark theme the meadow is already at night</p>`,
+  `<svg viewBox="0 0 700 620">${grass()}
+   ${[...Array(15)].map((_, i) => { const c = i % 5, r = (i / 5) | 0, x = 60 + c * 118 + r * 26, y = 250 + r * 100, s = 1 - (2 - r) * .12, on = i === 7;
+     return `<g transform="translate(${x} ${y}) scale(${s})">${on ? `<circle cx="40" cy="20" r="62" fill="#ffd98a" opacity=".22"/>` : ''}${slab(0, 0, 70, 44, on ? { fill: '#2fd4ac', top: '#8ff0d8', side: '#149c7e', d: 14 } : { fill: '#20244f', top: '#2b3063', side: '#161a40', d: 14, op: .8 })}</g>`; }).join('')}
+   <circle cx="150" cy="140" r="4" fill="#ffe7a8"/><path d="M150 140 C 220 200, 250 260, 300 330" fill="none" stroke="#ffe7a8" stroke-dasharray="2 7"/>
+   <text class="lab" x="165" y="136">A request arrives</text><text class="lab" x="330" y="420">Awake</text></svg>`, 4),
+
+frame('5 + 6', 'It’s real, and the way in again', 'plain',
+  `<h2>Tito rebuilt a ten-year-old Rails app this way.</h2><p class="src" style="margin:0 0 10px">The three figures are Tito’s, before and after. How we measured →</p><p>And Jelly, Eleven, Woodstar, Slopbox, Amadan and Oficina run on it.</p>
+   <p><u>Read the Tito story</u> &nbsp; <u>See all apps</u></p>
+   <h2 style="margin-top:34px">Try it now</h2>${paste}<p style="font-size:13px;margin-top:10px">Rather set it up yourself? <u>Get started by hand</u></p>`,
+  `<div class="nums"><div><strong>12×</strong>faster shipping to production</div><div><strong>20 ms</strong>average response time, down from 250 ms</div><div><strong>80%</strong>less to run than a traditional web app</div></div>
+   <div class="apps"><span>Tito</span><span>Jelly</span><span>Eleven</span><span>Woodstar</span><span>Slopbox</span><span>Amadan</span><span>Oficina</span></div>`, 5),
+].join('');
+</script>
+</body>
+</html>
