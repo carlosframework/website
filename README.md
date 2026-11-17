@@ -16,26 +16,30 @@ one exception: a dozen reference pages sharing a sidebar go through Eleventy
 build step, run before you ship rather than in anyone's browser.
 
 🤖 Eleventy builds the site into `_site/` and injects the shared footer.
-Enabled demo builds generate `/start/index.html` and
+Builds with the demo on (the default) generate `/start/index.html` and
 `/start/index.md` from one agent source, publish the pinned starter, and
 give the homepage its demo hero and sections, whose scripts are progressive
 enhancements like the rest (see `AGENTS.md`).
 
-🤖 The demo journey defaults off. To build it, set `CARLOS_START_DEMO=1` and
-explicitly set `CARLOS_START_SITE_ORIGIN`, `CARLOS_START_CONSOLE_ORIGIN` and
-`CARLOS_START_ACCOUNT_URL`. Production defaults are
-[https://carlosframework.com](https://carlosframework.com),
-[https://console.carloku.com](https://console.carloku.com) and
-[https://console.carloku.com/](https://console.carloku.com/), respectively;
-enabled builds still require all three. Origins must use HTTPS, and the
-account URL must use the console origin. `CARLOS_START_API_ORIGIN` is optional and
-defaults to `CARLOS_START_CONSOLE_ORIGIN`.
+🤖 A plain `npm run build` is the production site: the demo is on, with the
+production origins
+[https://carlosframework.com](https://carlosframework.com) (site),
+[https://console.carloku.com](https://console.carloku.com) (console) and
+[https://console.carloku.com/](https://console.carloku.com/) (account URL).
+Each can be overridden for a development preview with
+`CARLOS_START_SITE_ORIGIN`, `CARLOS_START_CONSOLE_ORIGIN` and
+`CARLOS_START_ACCOUNT_URL`; an unset account URL follows the console origin.
+Origins must use HTTPS, and the account URL must use the console origin.
+`CARLOS_START_API_ORIGIN` is optional and defaults to the console origin.
+`CARLOS_START_DEMO=0` turns the demo off and builds the old homepage and
+`/start`, for development only; `CARLOS_START_DEMO` accepts only unset, `1` or `0`.
+(The default used to be off, and a plain build twice shipped the old homepage.)
 🤖 If set, `CARLOS_START_API_ORIGIN` must equal the console's `CARLOS_DEMO_API_ORIGIN`.
 🤖 Set `CARLOS_START_CLAIM=off` for a
 development-only mode with no claim instructions.
 
 🤖 Normal enablement requires a
-merged producer SHA and `producerMerged: true`. When the demo is unset, builds
+merged producer SHA and `producerMerged: true`. With `CARLOS_START_DEMO=0`, builds
 preserve the original pages and remove stale anonymous downloads and Markdown.
 Run `npm run check` with `STARTER_SCRATCH` set to an on-disk scratch directory.
 

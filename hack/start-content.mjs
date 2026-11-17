@@ -41,7 +41,7 @@ export function publicClaimOperation(value) {
   .map(([key,item])=>[key,publicClaimOperation(item)]));
 }
 export function renderAgent(template, config, claimContract, starter) {
- if(!config.enabled) throw configError('agent instructions require CARLOS_START_DEMO=1');
+ if(!config.enabled) throw configError('agent instructions require the demo (CARLOS_START_DEMO=0 turns it off)');
  if(!config.claimOff) validateClaimContract(claimContract,config);
  if(config.starterVersion!=='v1' || !/^[a-f0-9]{64}$/.test(starter?.archiveSHA256 ?? '') || starter?.schema!==1 || !starter.files?.length) throw configError('starter manifest is incomplete');
  const values={siteOrigin:config.siteOrigin,consoleOrigin:config.consoleOrigin,apiOrigin:config.apiOrigin,apiHost:new URL(config.apiOrigin).host,accountUrl:config.accountUrl,starterVersion:config.starterVersion,starterSHA256:starter.archiveSHA256};

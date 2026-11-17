@@ -248,7 +248,9 @@ built file.
 
 🤖 `npm run check` includes the start checks. Regenerate test baselines with `npm run update:start-baselines` when the homepage or agent source changes.
 
-🤖 The demo journey defaults off. See README for the explicit origin inputs.
+🤖 The demo journey defaults on, with the production origins: a plain build is
+the live site. `CARLOS_START_DEMO=0` builds the old page for development only.
+See README for the origin overrides.
 Before public activation, bind the claim fixture to merged handlers.
 Verify the platform's demo protection and claim-by-email changes in
 `docs/superpowers/plans/2026-11-04-agent-start-demo-2-edge-protections.md` and
@@ -268,12 +270,16 @@ Changes land through a reviewed PR, then ship from a clean export of the merged
 commit. Never ship the repository tree: only the built `_site/` directory.
 Keep scratch on disk under `$TMPDIR` or `~/.cache`, not the shared `/tmp` RAM disk.
 
-**Production releases go through `hack/release-start.mjs`, never a plain
-`npm run build` + `carlos deploy`.** The live homepage and `/start` are the
-demo-enabled build: a plain build has the demo off and ships the OLD
-homepage (that happened on 2026-11-14 with the #120 docs sync). The script
-builds from a clean export of the merged commit with the production origins,
-runs the full gate, cache-busts and deploys:
+**A plain `npm run build` is now safe to ship: with no `CARLOS_START_*`
+variables it builds the live homepage and `/start` with the production
+origins.** It used to build with the demo off, and twice shipped the OLD
+homepage (2026-11-14 with the #120 docs sync, 2026-11-16 with #123). A test in
+`test/start-build.test.mjs` fails if a plain build stops being the production
+site. Never set `CARLOS_START_DEMO=0` for a release.
+
+`hack/release-start.mjs` is still the recommended path for production: it
+builds from a clean export of the merged commit with the production origins
+passed explicitly, runs the full gate, cache-busts and deploys:
 
 ```sh
 node hack/release-start.mjs --console https://console.carloku.com --account ops \
