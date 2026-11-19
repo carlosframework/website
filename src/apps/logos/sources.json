@@ -42,7 +42,7 @@
   },
   {
     "app": "jelly",
-    "source": "https://letsjelly.dev",
+    "source": "https://letsjelly.com",
     "file": "jelly.svg",
     "note": "Official header mascot and wordmark. Checked 2026-11-13 against letsjelly.dev, whose header shows the same lockup; the file is unchanged."
   }

@@ -6,7 +6,7 @@
   "widths": [360, 720, 960],
   "apps": [
     { "app": "tito", "url": "https://go.tito.io/home", "logoSpells": "Tito" },
-    { "app": "jelly", "url": "https://letsjelly.dev", "logoSpells": "Jelly" },
+    { "app": "jelly", "url": "https://letsjelly.com", "logoSpells": "Jelly" },
     { "app": "eleven", "url": "https://elevenmessenger.com/" },
     { "app": "woodstar", "url": "https://woodstar.app/" },
     { "app": "slopbox", "url": "https://slopbox.cloud/" },
