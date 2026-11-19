@@ -384,6 +384,8 @@ having no instances to resolve a channel from.
 carlos deploy --app website --kind static --host www.example.com ./dist
 ```
 
+`--mail submit` declares that the build can send mail through Carlos's submission socket. It has the same meaning as [carlos ship](/docs/cli#carlos-ship). Once email submission is on for the app, deploy every build with it. A build without it is shipped but not promoted.
+
 `--swap hold` ships a release that stops each instance before starting the
 new build, for a migration the previous build cannot share the database
 with. It applies to that release only; `carlos apps set --swap hold` makes it
@@ -618,10 +620,13 @@ dashes. The name and the app share one hostname label, so together they can be a
 region). It is refused for an existing canary in another region, and for an
 app that runs on one of your fleets.
 
-Promotion into a canary is never refused, on any app, from any rung. Nor
-does a canary cost you a rung: canary channels sit outside every pipeline, so
-a build that has been on one still enters the pipeline as a fresh build.
-Canary, then promote to your entry channel, and the ladder is untouched.
+`--mail submit` declares that the build can send mail through Carlos's submission socket. It has the same meaning as [carlos deploy](/docs/cli#carlos-deploy).
+
+Promotion into a canary is allowed from any rung, unless email submission is
+on and the build lacks `--mail submit`. A canary does not cost you a rung:
+canary channels sit outside every pipeline, so a build that has been on one
+still enters the pipeline as a fresh build. You can canary a build, then
+promote it to your entry channel, without changing the ladder.
 
 **If your app carries config, reach for `--environment`.** A canary is a
 second instance standing alongside a live one, and config in CARLOS is
@@ -2493,7 +2498,8 @@ sends it, and no instance holds an SMTP credential. Each bundle gets one
 variable instead, `<P>_MAIL_FROM` (the prefix with its `_SMTP` cut off, so
 `CARLOS_MAIL_FROM` by default), which the app's mail library reads. The
 switch refuses until every instance runs a build shipped with
-`--mail submit`, every channel they follow heads one, every box hosting the
+`--mail submit` (`carlos ship`, `carlos deploy` and `carlos canary` all take
+it), every channel they follow heads one, every box hosting the
 app has its mailer armed, and the deployment counts sends through SES
 events; each refusal says what to do. A route with no instance record can't
 send mail once it is on, and its app refuses to start, so check
@@ -3336,15 +3342,50 @@ The member command remains `carlos ops host resolve`.
 
 #### carlos system named-units
 
-`carlos system named-units install <file>` installs the box's declaration
-of named units, `/etc/carlos/named-units.json`, from `<file>`. It runs as
-root only. It checks the file first (schema 1, one JSON document, one line
-per host and per unit, as shown under `carlos route`), then replaces the
-live file in one step while holding the lock the config pass holds, so a
-pass never sees half a change. Provisioning writes the file before the
-agent starts, or runs this command; editing the file by hand while carlos
-runs is not supported, and a pass that sees the file change under it does
-nothing and says so.
+A fixed box's named-unit file, `/etc/carlos/named-units.json`, can come
+from an SSM parameter for that box, so you can change it from your own
+machine. Root reads `/carlos/host/named-units/<instance-id>` in the
+box's own AWS region on every config pass. It installs a value only if
+it passes the same checks as a local install. If the parameter does not
+exist, the installed file stays as it is.
+
+`carlos system named-units put` checks a declaration file, then writes
+it to the box's parameter with your AWS profile. You need
+`ssm:PutParameter` on that path. You do not need root. `put` checks
+only the file's format and fields. The box checks the console-guard rule
+separately. `--aws-region` must be the box's region; without it, your
+profile's region is used.
+
+```sh
+carlos system named-units put --instance i-0abc1234def567890 --aws-region eu-west-1 named-units.json
+```
+
+The box installs it on its next config pass, within the hour. A config
+write starts an earlier pass only when the app you write to runs as a
+named unit on that box. To clear a box's units,
+put `{"schema":1,"units":[]}`. Deleting the parameter does not clear
+them: the box keeps the file it has.
+
+`carlos system named-units show` prints the stored value and its
+version, then what the box last reported in its heartbeat: the version
+it read, what it did with that version, and each unit's delivery state.
+The box report comes through the console, so you need to be logged in as
+a system operator. Without a console, `show` still prints the parameter
+and says why the box report is missing. It also says when the box reads
+another region, or has not yet taken the stored version.
+
+```sh
+carlos system named-units show --instance i-0abc1234def567890 --aws-region eu-west-1
+```
+
+`carlos system named-units install <file>` installs the file on the box
+directly. Use it for boxes set up without a parameter, and during
+provisioning. It runs as root only. It checks the file first (schema 1,
+one JSON document, one line per host and per unit, as shown under
+`carlos route`), then replaces the live file in one step while holding
+the lock the config pass holds, so a pass never sees half a change.
+Editing the file by hand while carlos runs is not supported, and a pass
+that sees the file change under it does nothing and says so.
 
 ```sh
 carlos system named-units install /root/named-units.json
@@ -3843,6 +3884,25 @@ the deployment bucket so you can read it off-box.
 
 ```sh
 carlos ops restore-verify
+```
+
+`ha-generations` recovers a region HA host whose wake was refused
+(`ha_generation_refused`). Run it on a box as the carlos user. `list <host>`
+shows the host's head.json, each storage generation with its newest L0
+transaction, and its lock. `verify <host> --gen <g-N>` restores one
+generation into a temporary file, integrity-checks it and removes the file.
+Both only read. `point <host> --gen <g-N> --accept-loss-after <txid>` points
+the host at a generation head.json names or keeps in its history, and
+permanently gives up every transaction after `<txid>`, which must be that
+generation's newest L0 transaction. It runs the same verify first. Without
+`--yes` it is a dry run: it prints what is lost and the two documents it
+would write, head.json and then lock.json, and writes nothing. With `--yes`
+it writes head.json first. If lock.json then changed before its own write,
+point says that head.json was written and lock.json was not; run `list`
+again, then point again.
+
+```sh
+carlos ops ha-generations point shop.example.com --gen g-00000000000000000005 --accept-loss-after 120
 ```
 
 ## Everything else
