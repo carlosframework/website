@@ -247,7 +247,7 @@ test('apps carousel overrides are explicit and checked against the Apps page',()
  assert.match(slide('The new Tito'),/href="https:\/\/go\.tito\.io\/home"[^>]*>go\.tito\.io /);
  assert.match(slide('The new Tito'),/alt="The new Tito’s website"/);
  assert.match(slide('Jelly'),/<h3 class="ap-spelled"><span class="ap-logo is-wordmark"><img src="\/apps\/logos\/jelly.svg" alt="Jelly"[^>]*><\/span><\/h3>/);
- assert.match(slide('Jelly'),/href="https:\/\/letsjelly\.dev"/);
+ assert.match(slide('Jelly'),/href="https:\/\/letsjelly\.com"/);
  assert.match(slide('Amadan'),/<h3>Amadan<\/h3>/);
  assert.doesNotMatch(section,/>amadan<|"amadan"|data-name="Tito"/);
  assert.ok(section.includes('<button type="button" aria-label="Amadan"'));
