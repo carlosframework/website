@@ -1,0 +1,332 @@
+<!doctype html>
+<!-- 🤖 Storyboard for docs/superpowers/specs/2026-11-20-uncompromising-story.md. Rough key frames, not a design.
+     Every word in it is DRAFT copy for Paul's review. Not built, not linked, not shipped.
+     Open the file directly; add ?m to the address for the 390 px frames. render.mjs beside it takes the screenshots. -->
+<html lang="en">
+<meta charset="utf-8">
+<title>CARLOS story, round 2: storyboard (draft)</title>
+<style>
+  :root { --ink:#17191c; --soft:#4a4f55; --teal:#067a68; --btn:#1b5e50; --paper:#fbf9f5; --line:#d9d4c8; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #2a2a28; font: 17px/1.5 Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif; color: var(--ink); }
+  .f { position: relative; width: 1280px; height: 720px; margin: 24px auto; overflow: hidden; display: flex; align-items: center; gap: 40px; padding: 56px 64px 48px;
+       background: linear-gradient(#bfd3e8 0%, #f3dccd 46%, #fde3b8 74%, #b9ab6a 86%, #7c7a43 100%); }
+  .f.night { background: linear-gradient(#070a22 0%, #191a45 50%, #34326a 76%, #1c2148 88%, #0c1030 100%); color: #eef0f6; --ink:#eef0f6; --soft:#b9bfd2; --teal:#2fd4ac; --line:#3a3f66; }
+  .f.plain { background: var(--paper); }
+  .tag { position: absolute; left: 64px; top: 20px; font: 12px/1 ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+  .tag b { color: var(--ink); }
+  .draft { position: absolute; right: 64px; top: 20px; font: 12px/1 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .08em; color: var(--soft); }
+  .rail { position: absolute; right: 64px; bottom: 16px; display: flex; gap: 9px; align-items: center; font: 600 13px/1 ui-monospace, Menlo, Consolas, monospace; color: var(--soft); }
+  .rail i { font-style: normal; opacity: .4; width: 20px; height: 20px; display: grid; place-items: center; border: 1px solid currentColor; border-radius: 4px; }
+  .rail i.on { opacity: 1; color: #fff; background: var(--btn); border-color: var(--btn); }
+  .rail span { font-weight: 400; font-size: 11px; margin-left: 6px; }
+  .txt { flex: 0 0 440px; background: rgba(255,255,255,.62); border: 1px solid rgba(255,255,255,.8); border-radius: 22px; padding: 30px 32px; backdrop-filter: blur(8px); }
+  .night .txt { background: rgba(20,22,56,.6); border-color: rgba(255,255,255,.14); }
+  .plain .txt { background: none; border: 0; padding: 0; }
+  h1, h2 { margin: 0 0 12px; letter-spacing: -.025em; line-height: 1.08; }
+  h1 { font-size: 46px; } h2 { font-size: 34px; }
+  p { margin: 0 0 12px; color: var(--soft); } p.big { font-size: 20px; line-height: 1.35; } p.ink { color: var(--ink); }
+  .eye { font: 600 12px/1 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--teal); margin: 0 0 12px; }
+  .src { font: 11px/1.5 ui-monospace, Menlo, Consolas, monospace; color: var(--soft); margin: 12px 0 0; }
+  .note { font: 11px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--soft); border: 1px dashed currentColor; border-radius: 6px; padding: 6px 8px; margin: 10px 0 0; }
+  .paste { background: rgba(255,255,255,.75); border-radius: 14px; padding: 12px 14px; margin-top: 14px; display: flex; align-items: center; gap: 12px; font-size: 15px; color: var(--ink); }
+  .night .paste { background: rgba(255,255,255,.1); } .plain .paste { background: #fff; border: 1px solid var(--line); }
+  .paste small { display: block; color: var(--soft); font-size: 12px; margin-bottom: 2px; }
+  .copy { margin-left: auto; background: var(--btn); color: #fff; border-radius: 10px; padding: 9px 16px; font-weight: 600; font-size: 14px; white-space: nowrap; }
+  .unc { text-decoration: underline dotted; text-decoration-thickness: 3px; text-underline-offset: 7px; color: var(--teal); }
+  .six { list-style: none; margin: 2px 0 6px; padding: 0; font-size: 31px; font-weight: 700; letter-spacing: -.02em; line-height: 1.16; }
+  .six li { display: flex; align-items: baseline; gap: 12px; } .six b { color: var(--teal); }
+  .six small { font: 400 13px/1.2 Inter, Roboto, Arial, sans-serif; letter-spacing: 0; color: var(--soft); }
+  .stage { flex: 1; height: 100%; position: relative; }
+  svg { width: 100%; height: 100%; overflow: visible; }
+  .blk rect, .blk polygon { stroke: #2b2f33; stroke-width: 1; }
+  .blk text { font: 500 14px Inter, Roboto, 'Helvetica Neue', Arial, sans-serif; fill: #17191c; }
+  .lab { font: 11px ui-monospace, Menlo, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; fill: var(--soft); }
+  .num { font: 700 44px Inter, Roboto, 'Helvetica Neue', Arial, sans-serif; fill: var(--ink); letter-spacing: -.02em; }
+  .hint { font: italic 14px Inter, Roboto, Arial, sans-serif; fill: var(--soft); }
+  .slider { margin: 14px 0 4px; font-size: 13px; color: var(--soft); }
+  .slider .track { height: 6px; border-radius: 3px; background: rgba(255,255,255,.25); position: relative; margin: 10px 0 12px; }
+  .slider .track::after { content: ""; position: absolute; left: 34%; top: -7px; width: 20px; height: 20px; border-radius: 50%; background: var(--teal); }
+  .bars div { height: 14px; border-radius: 3px; margin: 3px 0 9px; background: var(--teal); }
+  .rp { position: absolute; inset: 20px 206px 30px 0; background: rgba(255,255,255,.82); border: 1px solid rgba(255,255,255,.9); border-radius: 16px; overflow: hidden; font-size: 13.5px; }
+  .rp header { padding: 10px 14px; border-bottom: 1px solid var(--line); display: flex; gap: 8px; color: var(--soft); }
+  .rp li { list-style: none; display: grid; grid-template-columns: 54px 1fr; padding: 7px 14px; }
+  .rp li b { font: 10px ui-monospace, Menlo, monospace; letter-spacing: .08em; color: var(--soft); padding-top: 3px; }
+  .rp ul { margin: 6px 0; padding: 0; }
+  .rp .shot { margin: 6px 14px 0 68px; height: 150px; border-radius: 8px; border: 1px solid var(--line); background: linear-gradient(#1f2f4d 0 26%, #f4f1ea 26%); position: relative; }
+  .rp .shot::after { content: "Ledgerlight status · All systems working"; position: absolute; left: 12px; top: 9px; color: #fff; font-size: 12px; }
+  .stops { position: absolute; right: 0; top: 30px; width: 190px; display: grid; gap: 14px; }
+  .stop { background: rgba(255,255,255,.7); border-radius: 12px; padding: 10px 12px; font-size: 13px; color: var(--soft); opacity: .6; }
+  .stop.on { opacity: 1; outline: 2px solid var(--teal); } .stop b { display: block; color: var(--ink); font-size: 14px; }
+  .stop.on b::after { content: "  ■"; color: var(--teal); }
+  /* objections */
+  .qs { list-style: none; margin: 16px 0 0; padding: 0; font-size: 15px; }
+  .qs li { padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; margin-bottom: 7px; background: #fff; color: var(--soft); line-height: 1.3; }
+  .qs li b { display: block; color: var(--ink); font-size: 16px; } .qs li.on { border-color: var(--btn); box-shadow: 0 0 0 1px var(--btn); }
+  .ans { position: absolute; inset: 0; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 22px 26px; font-size: 14.5px; line-height: 1.42; overflow: hidden; }
+  .ans h3 { margin: 0 0 6px; font-size: 23px; letter-spacing: -.02em; line-height: 1.15; }
+  .ans h4 { margin: 14px 0 6px; font: 600 11px/1 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--soft); }
+  .ans p { margin: 0 0 8px; } .ans ul { margin: 0; padding: 0 0 0 18px; color: var(--soft); } .ans li { margin-bottom: 4px; } .ans li b, .ans p b { color: var(--ink); }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .stats div { font-size: 12.5px; color: var(--soft); line-height: 1.3; } .stats strong { display: block; font-size: 23px; letter-spacing: -.02em; color: var(--btn); line-height: 1.15; }
+  .chip { display: inline-block; font: 600 10.5px/1 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .06em; text-transform: uppercase; border: 1px solid currentColor; border-radius: 99px; padding: 4px 8px; margin: 0 6px 4px 0; color: var(--btn); white-space: nowrap; }
+  .chip.wait { color: #8a5a00; border-style: dashed; } .chip.idea { color: #5b4a9a; border-style: dotted; }
+  .cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 10px; }
+  .cols > div { border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; } .cols p { font-size: 13.5px; margin-bottom: 6px; }
+  .nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .nums div { border-top: 2px solid var(--btn); padding-top: 8px; font-size: 13px; color: var(--soft); }
+  .nums strong { display: block; font-size: 44px; letter-spacing: -.03em; color: var(--btn); line-height: 1.1; }
+  .four { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 26px; font-size: 13px; color: var(--soft); }
+  .four b { display: block; color: var(--ink); font-size: 15px; }
+  /* 390 px frames */
+  .m .f { width: 390px; height: 880px; flex-direction: column; gap: 14px; padding: 44px 18px 34px; align-items: stretch; }
+  .m .stage { order: -1; flex: 0 0 330px; } .m .txt { flex: 1; padding: 18px 18px; border-radius: 18px; } .m .plain .txt { padding: 0; }
+  .m .f.tf .stage { order: 1; flex: 1 1 0; min-height: 0; } .m .f.tf .txt { flex: 0 0 auto; }
+  .m .f.long { height: auto; } .m .f.long .stage { order: 1; flex: none; height: auto; } .m .f.long .txt { flex: none; }
+  .m .ans { position: static; padding: 16px 16px; } .m .stats { grid-template-columns: 1fr 1fr; } .m .cols { grid-template-columns: 1fr; } .m .ans h3 { font-size: 20px; }
+  .m .qs li:not(.on) span { display: none; }
+  .m h1 { font-size: 31px; } .m h2 { font-size: 25px; } .m p.big { font-size: 16px; } .m .six { font-size: 25px; }
+  .m .tag { left: 18px; right: 18px; font-size: 10.5px; white-space: nowrap; overflow: hidden; } .m .draft { display: none; } .m .rail { right: 18px; bottom: 8px; gap: 5px; } .m .rail span { display: none; }
+  .m .rp { inset: 0 0 0 0; } .m .stops { display: none; } .m .nums { grid-template-columns: 1fr 1fr 1fr; gap: 8px; } .m .nums strong { font-size: 26px; } .m .four { grid-template-columns: 1fr 1fr; margin-top: 14px; }
+  .m .f.long .svgbox { height: 300px; }
+  .svgbox { height: 100%; }
+</style>
+<body>
+<script>
+if (location.search.includes('m')) document.documentElement.classList.add('m');
+const TOWER = ['App backend', 'App frontend', 'Background workers', 'Web server', 'Observability layer', 'Containers', 'Microservices', 'Cluster orchestrator', 'App server', 'Database server', 'Memory cache', 'Load balancer', 'Cloud provider'];
+// An oblique slab: a labelled front face with a top and a side, so a flat diagram block reads as a solid thing.
+function slab(x, y, w, h, o = {}) {
+  const d = o.d ?? 12, fill = o.fill ?? '#ffffff', top = o.top ?? '#f1eee6', side = o.side ?? '#dcd7ca', op = o.op ?? 1, rot = o.rot ? ` transform="rotate(${o.rot} ${x + w / 2} ${y + h / 2})"` : '';
+  return `<g class="blk" opacity="${op}"${rot}${o.dash ? ' stroke-dasharray="4 4"' : ''}><polygon points="${x},${y} ${x + d},${y - d * .6} ${x + w + d},${y - d * .6} ${x + w},${y}" fill="${top}"/>` +
+    `<polygon points="${x + w},${y} ${x + w + d},${y - d * .6} ${x + w + d},${y + h - d * .6} ${x + w},${y + h}" fill="${side}"/>` +
+    `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"/>` +
+    (o.label ? `<text x="${x + w / 2}" y="${y + h / 2 + 5}" text-anchor="middle"${o.ink ? ` style="fill:${o.ink};font-weight:700"` : ''}>${o.label}</text>` : '') + `</g>`;
+}
+const TEAL = { fill: '#0b8a76', top: '#3fb39f', side: '#066555', ink: '#fff' };
+const DIM = { fill: '#20244f', top: '#2b3063', side: '#161a40' };
+// The story's one object: the app block, a solid cube.
+const app = (x, y, s = 1, o = {}) => slab(x, y, 96 * s, 64 * s, { ...TEAL, d: 26 * s, label: o.label ?? 'Your app', ...o });
+const db = (x, y, s = 1, o = '') => `<g transform="translate(${x} ${y}) scale(${s})" ${o}><ellipse cx="0" cy="26" rx="15" ry="6" fill="#fff" stroke="#2b2f33"/><path d="M-15 26v-22a15 6 0 0 1 30 0v22" fill="#fff" stroke="#2b2f33"/><ellipse cx="0" cy="4" rx="15" ry="6" fill="#fff" stroke="#2b2f33"/><path d="M-15 15a15 6 0 0 0 30 0" fill="none" stroke="#2b2f33"/></g>`;
+const tower = (x, y, o = {}) => TOWER.map((t, i) => { const last = i === TOWER.length - 1, w = last ? 230 : 150 + (i * 37 % 50), jx = last ? 0 : ((i * 53) % 34) - 17;
+  return slab(x - w / 2 + jx, y + i * 37, w, 30, { label: t, op: o.op, rot: o.lean ? (i % 2 ? 1.6 : -2.2) : 0 }); }).filter((_, i) => i !== o.pull).join('');
+const pile = (x, y, n, s = .5) => [...Array(n)].map((_, i) => slab(x - (60 + (i * 37 % 30)) * s + ((i * 53) % 16 - 8), y - (n - i) * 17, (120 + (i * 37 % 60)) * s, 13, { d: 6, op: .75 })).join('');
+const grass = (y = 560) => `<line x1="-40" y1="${y}" x2="760" y2="${y}" stroke="currentColor" stroke-opacity=".35"/>`;
+const LIT = { 0: '', 1: 'L', 2: 'LS', 3: 'LSC', 4: 'LSCR', 5: 'LSCRA', 6: 'LSCRAO' };
+const rail = lit => `<div class="rail">${[...'CARLOS'].map(c => `<i class="${lit.includes(c) ? 'on' : ''}">${c}</i>`).join('')}<span>· Copy the line</span></div>`;
+const frame = (n, name, cls, text, stage, lit) => `<section class="f ${cls}"><span class="tag"><b>${n}</b> · ${name}</span><span class="draft">DRAFT COPY · STORYBOARD</span>` +
+  `<div class="txt">${text}</div><div class="stage">${stage}</div>${lit == null ? '' : rail(LIT[lit] ?? lit)}</section>`;
+const paste = `<div class="paste"><div><small>Paste this into your agent and it can take things from there</small>Follow the directions on https://carlosframework.com/start</div><span class="copy">Copy</span></div>`;
+const under = `<p style="font-size:13px;margin:10px 0 0">Your agent asks what you want to make, builds it, and gives you a public link for 24 hours. No account or install needed.</p>`;
+
+document.body.innerHTML = [
+frame('0a', 'Hero, before the hover', 'tf',
+  `<h1>Build <span class="unc">uncompromising</span> apps<br>with CARLOS</h1>
+   <p class="big">One small program per app. Your agent writes it, and it runs anywhere.</p>${paste}${under}`,
+  `<svg viewBox="0 0 700 620">${grass()}${app(300, 470, 1.25)}
+   <path d="M120 150 C 60 180, 20 230, -20 250" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 5"/>
+   <text class="hint" x="130" y="146">The dotted word is the only thing that asks to be touched.</text>
+   <text class="hint" x="130" y="168">Hover, tap or focus it. It also opens when you start to scroll.</text>
+   <text class="lab" x="360" y="590" text-anchor="middle">One block. It gains a property each chapter.</text></svg>`, 0),
+
+frame('0b', 'Hero, after: the word unfolds into the name', 'tf',
+  `<h1 style="margin-bottom:4px">Build</h1>
+   <ul class="six"><li><span><b>C</b>ost-effective</span><small>asleep until it’s needed</small></li><li><span><b>A</b>vailable</span><small>moves when a server fails</small></li>
+   <li><span><b>R</b>eplicated</span><small>copied as it’s written</small></li><li><span><b>L</b>ightweight</span><small>one file</small></li>
+   <li><span><b>O</b>pen</span><small>runs anywhere</small></li><li><span><b>S</b>ecure</span><small>a database per customer</small></li></ul>
+   <h1>apps with CARLOS</h1>${paste}`,
+  `<svg viewBox="0 0 700 620">${grass()}${app(300, 470, 1.25)}
+   ${[['C', 190, 400], ['A', 250, 330], ['R', 330, 300], ['L', 420, 320], ['O', 490, 380], ['S', 520, 460]].map(([c, x, y]) => `<circle cx="${x}" cy="${y}" r="15" fill="#fff" stroke="#2b2f33"/><text x="${x}" y="${y + 5}" text-anchor="middle" style="font:700 14px ui-monospace,Menlo,monospace;fill:#067a68">${c}</text>`).join('')}
+   <text class="hint" x="60" y="130">The six initials line up and spell the name.</text>
+   <text class="hint" x="60" y="152">Then the page takes them one at a time, in story order:</text>
+   <text class="lab" x="60" y="182">L · S · C · R · A · O</text>
+   <text class="hint" x="60" y="212">The rail (bottom right) lights a letter as each chapter is told.</text></svg>`, 0),
+
+frame('0c', 'Alternative hero: it plays by itself, once', 'tf',
+  `<h1>Build <span class="unc">uncompromising</span> apps<br>with CARLOS</h1>
+   <p class="big">One small program per app. Your agent writes it, and it runs anywhere.</p>${paste}
+   <p class="note">ALTERNATIVE (recommended). About a second after the page settles, the word unfolds into the six, holds for two seconds and folds back, leaving the six initials as the rail. Hover, tap or focus replays it. Nobody has to find a hover to learn what the page is about.</p>`,
+  `<svg viewBox="0 0 700 620">${grass()}${app(300, 470, 1.25)}
+   ${[...'CARLOS'].map((c, i) => `<g opacity="${.35 + i * .13}"><rect x="${150 + i * 74}" y="${250 - i * 22}" width="26" height="26" rx="4" fill="#fff" stroke="#2b2f33"/><text x="${163 + i * 74}" y="${268 - i * 22}" text-anchor="middle" style="font:700 14px ui-monospace,Menlo,monospace;fill:#067a68">${c}</text></g>`).join('')}
+   <path d="M610 150 C 660 260, 690 420, 690 590" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 5"/>
+   <text class="hint" x="150" y="330">The initials leave the headline and travel to the rail.</text></svg>`, 'CARLOS'),
+
+frame('1', 'Lightweight: the pile and the block', '',
+  `<p class="eye">L · Lightweight</p><h2>Simple, without being a toy.</h2>
+   <p>A CARLOS app is a single binary with SQLite built in. Web server, database, background jobs and interface: one file, one process.</p>
+   <p class="ink">Go on, pull a part out of the usual pile.</p>
+   <p class="src">The pile is today’s stacks, made solid. Scrolling on folds it into the block.</p>`,
+  `<svg viewBox="0 0 700 620">${grass()}${tower(190, 78, { lean: 1, pull: 9 })}
+   ${slab(300, 330, 164, 30, { label: 'Database server', rot: 16 })}
+   <text class="hint" x="318" y="402">It sways, then it falls.</text>
+   ${app(500, 470, 1.25)}
+   <text class="hint" x="470" y="424">Nothing to pull out.</text>
+   <text class="lab" x="190" y="590" text-anchor="middle">A typical web app · 13 parts</text><text class="lab" x="575" y="590" text-anchor="middle">The same app · 1</text></svg>`, 1),
+
+frame('1½', 'Interlude: why (the values, one screen)', '',
+  `<h2>Computers got faster and far cheaper. Software got heavier.</h2>
+   <p>Memory costs about a ninetieth of what it did in 2005. The median web page weighs six times what it did in 2010.</p>
+   <p class="ink">The hardware kept its promise. We spent it on layers.</p>
+   <p class="src">Sources: Our World in Data (McCallum), HTTP Archive. Drawn to scale. Unchanged from the 17 November proposal.</p>`,
+  `<svg viewBox="0 0 700 620">${grass()}
+   <text class="lab" x="40" y="60">The price of memory</text>
+   ${slab(40, 560 - 465, 46, 465, { fill: '#e9e4d6' })}<text class="lab" x="63" y="582" text-anchor="middle">2005</text>
+   ${slab(130, 555, 46, 5, { ...TEAL, d: 8 })}<text class="lab" x="153" y="582" text-anchor="middle">2023</text>
+   <text class="num" x="205" y="548">1/93</text>
+   <text class="lab" x="330" y="60">The median web page</text>
+   ${slab(330, 560 - 60, 60, 60, { fill: '#e9e4d6' })}<text class="lab" x="360" y="582" text-anchor="middle">2010 · 468 KB</text>
+   ${slab(440, 560 - 151, 151, 151, { fill: '#fff' })}<text class="lab" x="515" y="582" text-anchor="middle">2026 · 2,957 KB</text>
+   <text class="num" x="604" y="548">6.3×</text></svg>`, 1),
+
+frame('2', 'Secure and private: a copy per customer, walls between', '',
+  `<p class="eye">S · Secure and private</p><h2>Many customers, without shared data.</h2>
+   <p>Every customer gets their own copy of the app and their own database file. The wall between two customers is a process and a file, not a line in a query.</p>
+   <p class="ink">Try to read next door.</p>
+   <p class="src">Drag from one customer’s app towards another’s database. It stops at the wall.</p>`,
+  `<svg viewBox="0 0 700 620">${grass()}
+   ${['Acme', 'Birch', 'Cobalt'].map((n, i) => `${app(40 + i * 235, 440, .95, { label: n })}${db(165 + i * 235, 474)}<text class="lab" x="${100 + i * 235}" y="590" text-anchor="middle">its own file</text>`).join('')}
+   ${[0, 1].map(i => slab(222 + i * 235, 330, 12, 230, { d: 46, fill: '#f6f3ea', top: '#fff', side: '#d5cfbf' })).join('')}
+   <path d="M95 430 C 120 330, 190 320, 222 372" fill="none" stroke="#b3261e" stroke-width="2.5" stroke-dasharray="6 5"/>
+   <path d="M212 360 l22 24 m0 -24 l-22 24" stroke="#b3261e" stroke-width="3"/>
+   <text class="hint" x="60" y="300">A request from Acme’s copy for Birch’s data</text><text class="hint" x="60" y="320">has nowhere to go.</text></svg>`, 2),
+
+frame('3', 'Cost-effective: asleep until needed', 'night',
+  `<p class="eye">C · Cost-effective</p><h2>Always there, without always running.</h2>
+   <p>A copy nobody is using runs nothing. The next request wakes it in under half a second, with nothing lost.</p>
+   <div class="slider">Traffic: about 2,000 requests a day<div class="track"></div>
+     <div class="bars">Awake about 3 hours in 24 (illustrative)<div style="width:12.5%"></div>A server that never sleeps: 24 in 24<div style="width:100%;opacity:.35"></div></div></div>
+   <p class="src">The slider shows hours awake. A price beside it needs a ruling (question 4).</p>`,
+  `<svg viewBox="0 0 700 620">${grass()}
+   ${[...Array(15)].map((_, i) => { const c = i % 5, r = (i / 5) | 0, x = 50 + c * 122 + r * 26, y = 250 + r * 100, s = 1 - (2 - r) * .12, on = i === 7 || i === 13;
+     return `<g transform="translate(${x} ${y}) scale(${s})">${on ? `<circle cx="40" cy="20" r="62" fill="#ffd98a" opacity=".22"/>` : ''}${slab(0, 0, 70, 44, on ? { fill: '#2fd4ac', top: '#8ff0d8', side: '#149c7e', d: 16 } : { ...DIM, d: 16, op: .8 })}</g>`; }).join('')}
+   <circle cx="150" cy="140" r="4" fill="#ffe7a8"/><path d="M150 140 C 220 200, 250 260, 320 330" fill="none" stroke="#ffe7a8" stroke-dasharray="2 7"/>
+   <text class="lab" x="165" y="136">A request arrives</text><text class="lab" x="345" y="420">Awake</text><text class="hint" x="40" y="590">Tap a sleeping copy to send it a request.</text></svg>`, 3),
+
+frame('4', 'Replicated: every change streams to a copy', '',
+  `<p class="eye">R · Replicated</p><h2>One file, never one copy.</h2>
+   <p>Every change streams off the server to storage as it is written, from the first byte. Lose the server and the data is still there.</p>
+   <p class="ink">Add a row and watch it arrive.</p>
+   <p class="note">CORRECTED. The brief said “a copy in another region”. What exists is a continuous copy in object storage, about a second behind. The frame draws that.</p>`,
+  `<svg viewBox="0 0 700 620">${grass()}
+   ${slab(30, 520, 290, 40, { label: 'A server', d: 30 })}${app(60, 438, 1)}${db(215, 470, 1.15)}
+   ${slab(450, 380, 200, 180, { d: 30, fill: '#f6f3ea', label: '' })}
+   ${[0, 1, 2].map(i => db(495 + i * 55, 470, 1.05, 'opacity=".9"')).join('')}${db(550, 420, 1.05)}
+   <text class="lab" x="550" y="590" text-anchor="middle">Object storage · the copy</text>
+   <path d="M235 462 C 300 300, 440 300, 540 410" fill="none" stroke="#067a68" stroke-width="2" stroke-dasharray="2 9" stroke-linecap="round"/>
+   ${[[270, 390], [330, 335], [400, 322], [470, 345]].map(([x, y]) => `<rect x="${x}" y="${y}" width="16" height="7" fill="#0b8a76" stroke="#2b2f33" transform="rotate(${(x - 370) / 5} ${x} ${y})"/>`).join('')}
+   <text class="hint" x="300" y="290">each write, as it happens</text><text class="lab" x="60" y="590">Your app and its database</text></svg>`, 4),
+
+frame('5', 'Available: pull the plug', '',
+  `<p class="eye">A · Available</p><h2>One server at a time, without going down with it.</h2>
+   <p>When a server stops, the app starts on another one from its copy. For planned work, requests wait a few seconds and then succeed.</p>
+   <p class="ink">Pull the plug.</p>
+   <p class="note">HONEST NUMBERS. If a server fails without warning, takeover can take up to 15 minutes today, and about the last second of writes can be lost. High availability is on Carloku’s US region, for accounts that have it. Question 5.</p>`,
+  `<svg viewBox="0 0 700 620">${grass()}
+   ${slab(30, 520, 270, 40, { label: 'Server one', d: 30, fill: '#e3ded0', op: .7 })}
+   <path d="M150 505 l14 22 l-16 10 l18 26" fill="none" stroke="#2b2f33" stroke-width="2.5"/>
+   ${app(70, 438, 1, { op: .25, label: '' })}
+   <path d="M150 420 C 230 250, 400 240, 470 420" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 5"/><path d="M470 420l-12-6 10-9z"/>
+   ${slab(390, 520, 270, 40, { label: 'Server two', d: 30 })}${app(430, 438, 1)}${db(585, 470, 1.15)}
+   <path d="M60 600 h60 m0 0 l10 -8 h18 v16 h-18 z" fill="none" stroke="#2b2f33" stroke-width="2"/><path d="M40 600 h-60" stroke="#2b2f33" stroke-width="2" stroke-dasharray="3 5"/>
+   <text class="lab" x="310" y="226" text-anchor="middle">planned: a few seconds</text><text class="lab" x="310" y="246" text-anchor="middle">unplanned: up to 15 minutes today</text>
+   <text class="hint" x="405" y="400">It carries on from its copy.</text></svg>`, 5),
+
+frame('6', 'Open: drag the block onto any host', '',
+  `<p class="eye">O · Open</p><h2>Hosted, without being locked in.</h2>
+   <p>The same binary runs on Carloku, on your own servers, on a small VPS or on a laptop. The specification is open, and you can run the platform yourself.</p>
+   <p class="ink">Drag it somewhere else.</p>
+   <p class="src">On a plain server the app runs by itself. The sleeping, copying and moving come from the platform, hosted or your own.</p>`,
+  `<svg viewBox="0 0 700 620">${grass()}
+   ${[['Carloku', 0], ['Your servers', 1], ['A small VPS', 2], ['A laptop', 3]].map(([t, i]) => slab(10 + i * 172, 520 - (i % 2) * 14, 150, 40 + (i % 2) * 14, { label: t, d: 22 })).join('')}
+   ${app(34, 436, 1)}${[1, 2, 3].map(i => app(34 + i * 172, 436 - (i % 2) * 14, 1, { op: .28, label: '', dash: 1 })).join('')}
+   <path d="M120 410 C 180 320, 300 320, 380 400" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 5"/><path d="M380 400l-12-5 9-10z"/>
+   <text class="hint" x="150" y="300">Same file. Nothing rebuilt.</text>
+   <text class="lab" x="20" y="600">A Raspberry Pi is in the brief; it needs a check before it is drawn (question 7)</text></svg>`, 6),
+
+frame('7', 'The turn: real apps, the pile beside the block', 'plain',
+  `<h2>But surely not every app can be like this?</h2>
+   <p class="big">These are real products. Each one is drawn beside the pile it would usually have needed.</p>
+   <p>Ticketing, a shared inbox, a code host, an office suite, a messenger, a mail service. <u>See all the apps</u></p>
+   <p class="src">Each pile is that team’s own list, or it is not drawn (question 8).</p>`,
+  `<svg viewBox="0 0 700 620">${grass(540)}
+   ${[['Tito', 'ticketing', 'one per organiser', 13], ['Jelly', 'shared inbox', 'run it yourself', 9], ['Amadan', 'git forge and CI', 'one per repository', 11], ['Oficina', 'office suite', 'one per team', 8]].map(([n, k, u, c], i) => { const x = 20 + i * 172;
+     return `${pile(x + 40, 540, c)}${app(x + 82, 498, .62, { label: n })}<text x="${x + 70}" y="150" text-anchor="middle" style="font:700 22px Inter,Arial,sans-serif;fill:#17191c">${n}</text>
+     <text class="lab" x="${x + 70}" y="172" text-anchor="middle">${k}</text><text class="lab" x="${x + 70}" y="570" text-anchor="middle">${u}</text>`; }).join('')}
+   <text class="hint" x="20" y="604">Hover an app: its pile folds into its block, as in chapter 1.</text></svg>`, 6),
+
+frame('8a', 'Fair questions: the six, and “What about scale?” open', 'plain long',
+  `<h2>Fair questions.</h2><p>Straight answers. What works today is kept apart from what is coming.</p>
+   <ul class="qs"><li class="on"><b>What about scale?</b><span>One file per customer is fast, and you grow by adding customers.</span></li>
+   <li><b>What about security?</b><span>The wall is a process and a file, not a WHERE clause.</span></li>
+   <li><b>What about single sign-on?</b><span>Company logins and one sign-in across copies work today.</span></li>
+   <li><b>What about the things every customer shares?</b><span>Allowed, as glue: thin, blind, replaceable.</span></li>
+   <li><b>What about real-time?</b><span>Live pages work, even while the app sleeps.</span></li>
+   <li><b>What about my existing app?</b><span>Run it as it is, or have your agent port it.</span></li></ul>`,
+  `<div class="ans"><h3>One file per customer is fast, and you grow by adding customers, not by growing one database.</h3>
+   <h4>Measured, November 2026</h4>
+   <div class="stats"><div><strong>27,000 to 36,000</strong>single-row writes a second</div><div><strong>12,000 to 16,000</strong>chat messages written a second</div>
+   <div><strong>11,000 to 14,000</strong>with 50 writers at once</div><div><strong>370 to 450</strong>when every commit is synced to disk first</div></div>
+   <p class="src" style="margin:6px 0 0">SQLite with Rastrillo’s defaults, on one Carloku server (AWS m7g.xlarge, Graviton3, EBS). That is one customer’s database, not the whole product’s.</p>
+   <h4>Your options</h4>
+   <ul><li><b>Most apps:</b> one copy per customer. Busy customers do not slow quiet ones, and the load spreads across servers. <span class="chip">works today</span></li>
+   <li><b>An app that keeps its data elsewhere</b> (Rails with Postgres, say): several copies on servers you own, with deploys one server at a time. <span class="chip">works today</span></li>
+   <li><b>Staying up through a server failure:</b> high availability. <span class="chip">Carloku US today</span></li>
+   <li><b>Servers the platform starts and stops for you.</b> <span class="chip wait">being built</span></li></ul>
+   <h4>Where it does not fit</h4>
+   <p>One customer who needs more writes than one machine can do, or a product that must query across all its customers at once.</p></div>`, 6),
+
+frame('8b', 'Fair questions: “What about single sign-on?”', 'plain long',
+  `<h2>What about single sign-on?</h2>
+   <p class="big">People mean three different things by it. Two work today. The third is where glue comes in.</p>
+   <p class="src">The right-hand column is a design direction. Pegamento has a doctrine and a wire design, and no code yet. The page must say so.</p>`,
+  `<div class="ans"><h3>Company logins and one sign-in across copies work today.</h3>
+   <div class="cols"><div><span class="chip">works today</span>
+     <p><b>Your customer’s company login.</b> Sign in with Microsoft Entra ID or Google Workspace. SAML is not built.</p>
+     <p><b>One sign-in across a customer’s copies.</b> A small home or hub signs people in and hands them to each copy with a signed, single-use pass. Tito, Amadan and Oficina work this way.</p>
+     <p><b>One identity across products.</b> Sign in with Keymail: a passkey, no password. Email links upgrade to it by themselves.</p></div>
+   <div><span class="chip wait">on the way</span>
+     <p><b>Oficina ID.</b> One sign-in for the Oficina suite, beside each app’s own. Built and running on staging, not switched on.</p>
+     <p><b>Apple, Google and GitHub sign-in</b> for the Carloku console. Designed and approved; only the groundwork is built.</p></div>
+   <div><span class="chip idea">design direction</span>
+     <p><b>Pegamento: glue services.</b> One shared sign-in service for any CARLOS app, in three parts: a registry (who exists and how to check it is them), a vault (sealed blobs it cannot read) and a graph (who is linked to whom).</p>
+     <p>It knows who you are and never holds your data. Each copy still decides who gets in.</p></div></div>
+   <h4>The rule under all three</h4><p>Sharing is membership. A person joins a copy; data never moves between copies.</p></div>`, 6),
+
+frame('8c', 'Fair questions: shared services, relays and brokers', 'plain long',
+  `<h2>What about the things every customer shares?</h2>
+   <p class="big">Some things cannot live in each copy: a payment account, push notifications, a view across customers.</p>
+   <p>Shared pieces are allowed on one condition. They are glue: thin, blind, replaceable.</p>`,
+  `<div class="ans"><div class="svgbox" style="height:250px"><svg viewBox="0 0 700 250">
+     ${['Acme', 'Birch', 'Cobalt', 'Delta'].map((n, i) => `${app(30 + i * 165, 40, .6, { label: n })}${db(112 + i * 165, 58, .7)}<path d="M${60 + i * 165} 82 V 150" stroke="#2b2f33" stroke-dasharray="3 4"/>`).join('')}
+     ${slab(20, 150, 300, 30, { label: 'A relay: passes it on, keeps nothing', d: 10 })}${slab(350, 150, 320, 30, { label: 'A broker: holds the one key, acts for each', d: 10 })}
+     <text class="lab" x="170" y="212" text-anchor="middle">push · calls · payment webhooks</text><text class="lab" x="510" y="212" text-anchor="middle">a payment account · a provider’s client secret</text>
+     <text class="lab" x="20" y="240">If the glue is lost or seized, customers lose a convenience, never their data.</text></svg></div>
+   <h4>Your options</h4>
+   <ul><li><b>Use what the platform already shares:</b> email sending, file storage, PDFs, schedules, a relay for video calls. <span class="chip">works today</span></li>
+   <li><b>Build a small relay or broker of your own.</b> Tito and Eleven each run one for payments; Eleven runs one for push. It is a pattern with rules, not yet a package. <span class="chip">pattern, in use</span></li>
+   <li><b>Totals across customers:</b> each copy reports fixed facts to the centre. The centre never opens a customer’s database. <span class="chip">pattern, in use</span></li>
+   <li><b>Pegamento</b> turns the pattern into shared services with one contract. <span class="chip idea">design direction</span></li></ul></div>`, 6),
+
+frame('9', 'How it works: the block travels through three parts', '',
+  `<h2>You don’t build it by hand. Your agent does.</h2>
+   <p>Watch one real session. The block passes through the three parts of CARLOS, and each lights up as it does its work.</p>${paste}`,
+  `<div class="rp"><header>● ● ● &nbsp; Your agent · Status page</header><ul>
+     <li><b>YOU</b><span>Follow the directions on https://carlosframework.com/start</span></li>
+     <li><b>AGENT</b><span>I’ve read the directions. They ask me to check a few things with you before I build anything.</span></li>
+     <li><b>YOU</b><span>We need a public status page. It should feel calm and trustworthy.</span></li>
+     <li><b>AGENT</b><span>Now writing the app code.</span></li>
+     <li><b>AGENT</b><span>Your Ledgerlight status page is live:</span></li></ul><div class="shot"></div></div>
+   <div class="stops"><div class="stop"><b>1 · The skill</b>Instructions your agent reads before it starts.</div>
+     <div class="stop on"><b>2 · Rastrillo</b>The Go web framework it builds with. Ready-made parts, so it writes less from scratch.</div>
+     <div class="stop"><b>3 · CARLOS Platform</b>Where the app runs: hosted on Carloku or on your own hardware.</div></div>`, 6),
+
+frame('10', 'What you get, and the start', 'plain long',
+  `<h2>What you get</h2><p>Best practices built in, by default. Each with one thing you can check.</p>
+   <h2 style="margin-top:30px">Try it now</h2>${paste}<p style="font-size:13px;margin-top:10px">Rather set it up yourself? <u>Get started by hand</u></p>`,
+  `<div class="nums"><div><strong>12×</strong>faster shipping to production</div><div><strong>20 ms</strong>average response time, down from 250 ms</div><div><strong>80%</strong>less to run than a traditional web app</div></div>
+   <p class="src" style="margin:8px 0 0">Tito’s figures, before and after. How we measured →</p>
+   <div class="four"><div><b>Performance</b>20 ms average response</div><div><b>Security</b>Each customer’s data in its own file</div><div><b>Accessibility</b>WCAG 2.2 AA from day one</div><div><b>Privacy</b>Visitor counts with no cookie and no stored IP</div></div>`, 'CARLOS'),
+].join('');
+</script>
+</body>
+</html>

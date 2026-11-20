@@ -5,6 +5,13 @@ it progressively, the way carloku.com now does. Nothing here is built. Every
 line of page copy below is **draft**, for Paul's review, and none of it goes
 into `src/_data/start-copy.json` except through a copy review.
 
+**Revised on 2026-11-20** by [the uncompromising story](2026-11-20-uncompromising-story.md),
+after Paul's new direction: a new headline, the six words of the name as the
+chapters, and a section answering objections. The arc in section 2 and
+directions A to C below are superseded by it. Sections 1 (the read of the live
+page), 3 (the values chapter), 4 (the paste line) and 5 (rendering and
+fallbacks) still stand and are relied on there.
+
 Supporting files, in `2026-11-17-story-proposal/`:
 
 - `reader-panel.md`: two synthetic reader panels, one on the live page and one
