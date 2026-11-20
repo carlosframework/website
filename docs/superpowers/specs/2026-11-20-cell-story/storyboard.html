@@ -1,0 +1,312 @@
+<!doctype html>
+<!-- 🤖 Storyboard for docs/superpowers/specs/2026-11-20-cell-story.md. Rough key frames, not a design.
+     Every word in it is DRAFT copy for Paul's review. Not built, not linked, not shipped.
+     Open the file directly; add ?m to the address for the 390 px frames. render.mjs beside it takes the screenshots. -->
+<html lang="en">
+<meta charset="utf-8">
+<title>CARLOS story, round 3: the cell (draft storyboard)</title>
+<style>
+  :root { --ink:#14232b; --soft:#4c5a60; --teal:#067a68; --btn:#1b5e50; --paper:#f4f7f1; --line:#d3dbd0; --lilac:#b394f2; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #2a2a28; font: 17px/1.5 Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif; color: var(--ink); }
+  .f { position: relative; width: 1280px; height: 720px; margin: 24px auto; overflow: hidden; display: flex; align-items: center; gap: 40px; padding: 56px 64px 48px; background: var(--paper); }
+  .f.night { background: #101c23; color: #e9f0ee; --ink:#e9f0ee; --soft:#a9b9bd; --teal:#2fd4ac; --line:#2c4049; }
+  .tag { position: absolute; left: 64px; top: 20px; font: 12px/1 ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+  .tag b { color: var(--ink); }
+  .draft { position: absolute; right: 64px; top: 20px; font: 12px/1 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .08em; color: var(--soft); }
+  .rail { position: absolute; right: 64px; bottom: 16px; display: flex; gap: 7px; align-items: center; font: 11px/1 ui-monospace, Menlo, Consolas, monospace; color: var(--soft); }
+  .rail i { width: 13px; height: 13px; border-radius: 50%; border: 1.5px solid currentColor; opacity: .45; }
+  .rail i.on { opacity: 1; background: var(--teal); border-color: var(--teal); }
+  .rail span { margin-left: 6px; }
+  .txt { flex: 0 0 440px; }
+  h1, h2 { margin: 0 0 12px; letter-spacing: -.025em; line-height: 1.08; }
+  h2 { font-size: 36px; }
+  p { margin: 0 0 12px; color: var(--soft); } p.big { font-size: 20px; line-height: 1.35; } p.ink { color: var(--ink); font-weight: 600; }
+  .eye { font: 600 12px/1 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--teal); margin: 0 0 12px; }
+  .src { font: 11px/1.5 ui-monospace, Menlo, Consolas, monospace; color: var(--soft); margin: 12px 0 0; }
+  .note { font: 11px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--soft); border: 1px dashed currentColor; border-radius: 6px; padding: 6px 8px; margin: 10px 0 0; }
+  .paste { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; margin-top: 14px; display: flex; align-items: center; gap: 12px; font-size: 15px; color: var(--ink); text-align: left; }
+  .paste small { display: block; color: var(--soft); font-size: 12px; margin-bottom: 2px; }
+  .copy { margin-left: auto; background: var(--btn); color: #fff; border-radius: 10px; padding: 9px 16px; font-weight: 600; font-size: 14px; white-space: nowrap; }
+  .stage { flex: 1; height: 100%; position: relative; }
+  svg { width: 100%; height: 100%; overflow: visible; }
+  .lab { font: 11px ui-monospace, Menlo, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; fill: var(--soft); }
+  .hint { font: italic 14px Inter, Roboto, Arial, sans-serif; fill: var(--soft); }
+  .in { font: 600 12px Inter, Roboto, Arial, sans-serif; fill: #063f37; }
+  .blk rect, .blk polygon { stroke: #2b2f33; stroke-width: 1; }
+  .blk text { font: 500 13px Inter, Roboto, 'Helvetica Neue', Arial, sans-serif; fill: #17191c; }
+  .slider { margin: 14px 0 4px; font-size: 13px; color: var(--soft); }
+  .slider .track { height: 6px; border-radius: 3px; background: rgba(255,255,255,.25); position: relative; margin: 10px 0 12px; }
+  .slider .track::after { content: ""; position: absolute; left: 34%; top: -7px; width: 20px; height: 20px; border-radius: 50%; background: var(--teal); }
+  .bars div { height: 14px; border-radius: 3px; margin: 3px 0 9px; background: var(--teal); }
+  /* hero */
+  .f.hero { display: block; text-align: center; padding: 44px 64px 40px; }
+  .sky { position: relative; height: 236px; margin: 0 auto; max-width: 1040px; }
+  .sky svg { position: absolute; left: 50%; top: 50%; width: 190px; height: 190px; transform: translate(-50%, -50%); }
+  .sky .w { position: absolute; left: var(--x); top: var(--y); font-weight: 600; font-size: var(--s, 20px); color: #0a5a4d; white-space: nowrap; letter-spacing: -.01em; }
+  .sky .w::before { content: ""; display: inline-block; width: .42em; height: .42em; border: 1.5px solid var(--teal); border-radius: 50%; margin-right: .4em; vertical-align: .12em; opacity: .7; }
+  .hero h1 { font-size: 78px; font-weight: 750; margin: 0; }
+  .unc { color: var(--teal); position: relative; display: inline-block; }
+  .unc span { display: inline-block; }
+  .unc i { position: absolute; border: 1.5px solid var(--teal); border-radius: 50%; }
+  .with { font-size: 38px; font-weight: 650; color: var(--ink); letter-spacing: -.02em; margin: 6px 0 0; line-height: 1.2; }
+  .hero .paste { width: 600px; margin: 26px auto 0; }
+  .hero .under { font-size: 13px; margin: 10px auto 0; max-width: 500px; }
+  .hn { position: absolute; width: 300px; text-align: left; margin: 0; }
+  .plainlist { list-style: none; margin: 16px auto 0; padding: 0; max-width: 820px; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 22px; font-size: 20px; font-weight: 600; color: #0a5a4d; }
+  /* grouped words */
+  .groups { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 26px; margin: 0; }
+  .groups div { border-top: 1px solid var(--line); padding-top: 8px; font-size: 15px; font-weight: 600; color: #0a5a4d; line-height: 1.45; }
+  .groups small { display: block; font: 11px/1.4 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--soft); font-weight: 400; margin-bottom: 2px; }
+  .svgbox { height: 100%; }
+  /* variants */
+  .vrow { display: grid; grid-template-columns: 190px repeat(5, 1fr); align-items: center; border-top: 1px solid var(--line); height: 176px; }
+  .vrow:first-of-type { border-top: 0; }
+  .vrow h3 { margin: 0 0 4px; font-size: 21px; letter-spacing: -.02em; } .vrow p { font-size: 13px; line-height: 1.35; margin: 0; }
+  .vrow svg { height: 150px; }
+  .vhead { display: grid; grid-template-columns: 190px repeat(5, 1fr); font: 11px/1 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); text-align: center; margin-bottom: 2px; }
+  .f.var { display: block; padding-top: 50px; }
+  .f.var h2 { font-size: 26px; margin-bottom: 6px; }
+  /* ending */
+  .words { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 16px; font-weight: 600; color: #0a5a4d; }
+  .words li { text-decoration: underline; text-decoration-color: rgba(6,122,104,.4); text-underline-offset: 4px; }
+  /* 390 px frames */
+  .m .f { width: 390px; height: 880px; flex-direction: column; gap: 14px; padding: 44px 18px 34px; align-items: stretch; }
+  .m .stage { order: -1; flex: 0 0 330px; } .m .txt { flex: 1; }
+  .m .f.long { height: auto; } .m .f.long .stage { order: 1; flex: none; height: auto; } .m .f.long .txt { flex: none; }
+  .m .f.long .svgbox { height: 250px; }
+  .m h2 { font-size: 27px; } .m p.big { font-size: 17px; }
+  .m .tag { left: 18px; right: 18px; font-size: 10.5px; white-space: nowrap; overflow: hidden; } .m .draft { display: none; } .m .rail { right: 18px; bottom: 10px; } .m .rail span { display: none; }
+  .m .lab { font-size: 19px; } .m .hint { font-size: 23px; } .m .in { font-size: 19px; } .m .blk text { font-size: 19px; }
+  .m .f.hero { padding: 40px 18px 30px; }
+  .m .sky { height: 268px; } .m .sky svg { width: 150px; height: 150px; }
+  .m .sky .w { left: var(--mx); top: var(--my); font-size: 15.5px; }
+  .m .hero h1 { font-size: 45px; } .m .with { font-size: 27px; }
+  .m .hero .paste { width: auto; margin-top: 20px; } .m .hero .under { max-width: none; } .m .hn { position: static; width: auto; margin-top: 12px; }
+  .m .plainlist { font-size: 16px; gap: 2px 14px; }
+  .m .groups { grid-template-columns: 1fr 1fr; gap: 10px 14px; } .m .groups div { font-size: 14px; }
+  .m .f.var { height: auto; } .m .vhead { display: none; }
+  .m .vrow { grid-template-columns: repeat(3, 1fr); height: auto; padding: 12px 0 4px; } .m .vrow > div { grid-column: 1 / -1; } .m .vrow svg { height: 104px; }
+  .m .vrow svg:nth-of-type(2), .m .vrow svg:nth-of-type(5) { display: none; }
+  .m .words { font-size: 15px; gap: 4px 12px; }
+</style>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <radialGradient id="gCell" cx="42%" cy="38%" r="70%"><stop offset="0" stop-color="#e3f8f1" stop-opacity=".9"/><stop offset=".7" stop-color="#9adfce" stop-opacity=".8"/><stop offset="1" stop-color="#5cc7b0" stop-opacity=".85"/></radialGradient>
+  <radialGradient id="gCellZ" cx="42%" cy="38%" r="70%"><stop offset="0" stop-color="#2b4a55" stop-opacity=".7"/><stop offset="1" stop-color="#1c3540" stop-opacity=".9"/></radialGradient>
+  <radialGradient id="gCellW" cx="42%" cy="38%" r="70%"><stop offset="0" stop-color="#d9fff4"/><stop offset="1" stop-color="#2fd4ac"/></radialGradient>
+  <radialGradient id="gPutty" cx="34%" cy="26%" r="80%"><stop offset="0" stop-color="#58cdb6"/><stop offset=".5" stop-color="#0f9480"/><stop offset="1" stop-color="#05594c"/></radialGradient>
+  <radialGradient id="gPuttyZ" cx="34%" cy="26%" r="80%"><stop offset="0" stop-color="#6f8f8a"/><stop offset="1" stop-color="#39544f"/></radialGradient>
+  <linearGradient id="gBlob" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#63e2c5"/><stop offset="1" stop-color="#0b8a76"/></linearGradient>
+  <linearGradient id="gBlobZ" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9c9c2"/><stop offset="1" stop-color="#6d938b"/></linearGradient>
+  <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="9"/></filter>
+</defs></svg>
+<script>
+if (location.search.includes('m')) document.documentElement.classList.add('m');
+const M = location.search.includes('m');
+// The outline of the cell. k pinches it into a peanut (dividing); sx, sy stretch it; flat gives it a base to sit on.
+function outline(cx, cy, r, o = {}) {
+  const k = o.k ?? 0, sx = o.sx ?? 1, sy = o.sy ?? 1, seed = o.seed ?? 0, n = 96, p = [];
+  for (let i = 0; i < n; i++) { const t = i / n * Math.PI * 2, R = r * (1 + k * Math.cos(2 * t) + .02 * Math.sin(3 * t + seed) + .012 * Math.sin(5 * t + seed * 2.3));
+    let y = cy + R * Math.sin(t) * sy; if (o.flat) y = Math.min(y, cy + r * sy * o.flat); p.push(`${(cx + R * Math.cos(t) * sx).toFixed(1)},${y.toFixed(1)}`); }
+  return 'M' + p.join('L') + 'Z';
+}
+let LOOK = 'cell';
+// The story's one character. No face. It says things by changing shape: swelling, shrinking, pinching in two.
+function cell(cx, cy, r, o = {}) {
+  const look = o.look ?? LOOK, z = o.sleep, op = o.op ?? 1, k = o.k ?? 0, sx = o.sx ?? 1, d = outline(cx, cy, r, o), w = Math.max(1.6, r * .065);
+  if (o.ghost) return `<path d="${d}" fill="none" stroke="currentColor" stroke-opacity=".5" stroke-width="1.5" stroke-dasharray="4 5"/>`;
+  const spots = k > .2 ? [cx - r * .62 * sx, cx + r * .62 * sx] : [cx - r * .12];
+  let s = `<g opacity="${op}">`;
+  if (look === 'putty') {
+    s += `<ellipse cx="${cx + r * .08}" cy="${cy + r * (o.sy ?? 1) * (o.flat ?? 1) + r * .04}" rx="${r * sx * (1 + k) * .95}" ry="${r * .13}" fill="#14232b" opacity=".16"/>`;
+    s += `<path d="${d}" fill="url(#${z ? 'gPuttyZ' : 'gPutty'})"/>`;
+    s += spots.map(x => `<ellipse cx="${x - r * .2}" cy="${cy - r * .42 * (o.sy ?? 1)}" rx="${r * .2}" ry="${r * .1}" fill="#fff" opacity="${z ? .12 : .32}" transform="rotate(-24 ${x - r * .2} ${cy - r * .42})"/>`).join('');
+  } else if (look === 'blob') {
+    s += `<path d="${d}" fill="${z ? '#6d938b' : '#2fd4ac'}" opacity=".35" filter="url(#soft)" transform="translate(0 ${r * .12})"/>`;
+    s += `<path d="${d}" fill="url(#${z ? 'gBlobZ' : 'gBlob'})"/>`;
+    s += spots.map(x => `<circle cx="${x - r * .18}" cy="${cy - r * .3 * (o.sy ?? 1)}" r="${r * .16}" fill="#fff" opacity=".28"/>`).join('');
+  } else {
+    s += `<path d="${d}" fill="url(#${z ? 'gCellZ' : o.wake ? 'gCellW' : 'gCell'})" stroke="${z ? '#3f7d8a' : o.wake ? '#8ff0d8' : '#067a68'}" stroke-width="${w * (o.thick ?? 1)}" stroke-linejoin="round"/>`;
+    s += `<path d="${outline(cx, cy, r * .86, o)}" fill="none" stroke="${z ? '#3f7d8a' : '#067a68'}" stroke-opacity=".28" stroke-width="1"/>`;
+    if (o.nuc !== 0) s += spots.map(x => { const w2 = r * .24, h = r * .3, e = r * .085, y0 = cy - h / 2 + r * .08 * (o.sy ?? 1), f = z ? '#2e5a66' : '#0b8a76', t = z ? '#3f7d8a' : '#5cc7b0';
+      return `<path d="M${x - w2} ${y0} v${h} a${w2} ${e} 0 0 0 ${w2 * 2} 0 v${-h} z" fill="${f}"/><ellipse cx="${x}" cy="${y0}" rx="${w2}" ry="${e}" fill="${t}"/><path d="M${x - w2} ${y0 + h / 2} a${w2} ${e} 0 0 0 ${w2 * 2} 0" fill="none" stroke="${t}" stroke-width="${Math.max(.8, r * .02)}"/>`; }).join('');
+    if (o.parts) s += [[.42, -.36, 24], [.5, .3, -18], [-.5, -.5, 40], [-.34, .52, 8]].map(([x, y, a]) => `<rect x="${cx + r * x - r * .15}" y="${cy + r * y - r * .07}" width="${r * .3}" height="${r * .14}" rx="${r * .07}" fill="#fff" fill-opacity=".8" stroke="#067a68" stroke-width="1" transform="rotate(${a} ${cx + r * x} ${cy + r * y})"/>`).join('');
+  }
+  if (o.label) s += `<text class="lab" x="${cx}" y="${cy + r * (o.sy ?? 1) + (M ? 30 : 20)}" text-anchor="middle">${o.label}</text>`;
+  return s + '</g>';
+}
+function slab(x, y, w, h, o = {}) {
+  const d = o.d ?? 12, fill = o.fill ?? '#ffffff', top = o.top ?? '#eef2ea', side = o.side ?? '#d7ddd2', op = o.op ?? 1, rot = o.rot ? ` transform="rotate(${o.rot} ${x + w / 2} ${y + h / 2})"` : '';
+  return `<g class="blk" opacity="${op}"${rot}><polygon points="${x},${y} ${x + d},${y - d * .6} ${x + w + d},${y - d * .6} ${x + w},${y}" fill="${top}"/>` +
+    `<polygon points="${x + w},${y} ${x + w + d},${y - d * .6} ${x + w + d},${y + h - d * .6} ${x + w},${y + h}" fill="${side}"/>` +
+    `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"/>` + (o.label ? `<text x="${x + w / 2}" y="${y + h / 2 + 5}" text-anchor="middle">${o.label}</text>` : '') + `</g>`;
+}
+const TOWER = ['App backend', 'App frontend', 'Background workers', 'Web server', 'Observability layer', 'Containers', 'Microservices', 'Cluster orchestrator', 'App server', 'Database server', 'Memory cache', 'Load balancer', 'Cloud provider'];
+const ground = (y = 560) => `<line x1="-20" y1="${y}" x2="720" y2="${y}" stroke="currentColor" stroke-opacity=".25"/>`;
+// Carloku's character, for the one place the two meet: a lilac block with eyes. Drawn from carloku.com's own symbol.
+const block = (x, y, s, inside = '') => `<g transform="translate(${x} ${y}) scale(${s})"><rect width="26.25" height="21" rx="1.5" fill="#b394f2" stroke="#1d1927" stroke-width=".5"/>${inside}<rect x="8" y="8" width="2" height="4.5" fill="#17223b"/><rect x="16.25" y="8" width="2" height="4.5" fill="#17223b"/></g>`;
+const rail = n => `<div class="rail">${[1, 2, 3, 4, 5, 6].map(i => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}<span>· Copy the line</span></div>`;
+const frame = (n, name, cls, text, stage, lit) => `<section class="f ${cls}"><span class="tag"><b>${n}</b> · ${name}</span><span class="draft">DRAFT COPY · STORYBOARD</span>` +
+  `<div class="txt">${text}</div><div class="stage">${stage}</div>${lit == null ? '' : rail(lit)}</section>`;
+const paste = `<div class="paste"><div><small>Paste this into your agent and it can take things from there</small>Follow the directions on https://carlosframework.com/start</div><span class="copy">Copy</span></div>`;
+const under = `<p class="under">Your agent asks what you want to make, builds it, and gives you a public link for 24 hours. No account or install needed.</p>`;
+// "uncompromising", fizzing: each letter sits a hair off the baseline, and a few small bubbles rise from the word.
+const unc = (bub = 1) => `<span class="unc">${[...'uncompromising'].map((c, i) => `<span style="transform:translateY(${[-1.5, 1, 0, 1.5, -1, .5, -1.5, 1.5, 0, -1, 1, -.5, 1.5, -1][i]}px)">${c}</span>`).join('')}` +
+  (bub ? [[6, -4, 7, .8], [19, -15, 4, .5], [33, -7, 9, .7], [47, -19, 5, .45], [61, -5, 6, .8], [78, -13, 8, .6], [91, -3, 4, .7]].map(([x, y, s, o]) => `<i style="left:${x}%;top:${M ? y * .6 : y}px;width:${s}px;height:${s}px;opacity:${o}"></i>`).join('') : '') + `</span>`;
+const WORDS = [['secure', 6, 16, 24, 2, 6], ['private', 21, 58, 21, 0, 30], ['exciting', 3, 78, 20, 4, 78], ['accessible', 24, 6, 20, 30, 0], ['lower-cost', 9, 44, 19, 2, 53], ['globally distributed', 63, 6, 21, 46, 92],
+  ['deployable', 80, 30, 22, 70, 30], ['decentralisable', 66, 52, 20, 60, 64], ['resilient', 86, 76, 23, 72, 6], ['lightweight', 62, 82, 19, 4, 92], ['open', 32, 84, 24, 78, 79]];
+const cloud = WORDS.map(([w, x, y, s, mx, my]) => `<span class="w" style="--x:${x}%;--y:${y}%;--s:${s}px;--mx:${mx}%;--my:${my}%">${w}</span>`).join('');
+const hero = (n, name, sky, h1, extra) => `<section class="f hero"><span class="tag"><b>${n}</b> · ${name}</span><span class="draft">DRAFT COPY · STORYBOARD</span>` +
+  `<div class="sky">${sky}</div>${h1}<p class="with">with CARLOS</p>${extra}</section>`;
+const one = (r, o = {}) => `<svg viewBox="0 0 200 200">${cell(100, 100, r, { seed: 1, ...o })}</svg>`;
+const VLOOK = [['putty', 'A. Putty', 'Opaque and matte, with weight. It sits on the ground and sags a little under its own weight. Warmest in the hand. It cannot show what is inside.'],
+  ['cell', 'B. Translucent cell', 'A clear body, a visible edge and the database at its centre. The only look that draws “everything inside” and “a wall around it” without a label.'],
+  ['blob', 'C. Soft blob', 'Flat colour and a glow, no edge. The lightest to animate and the closest to an app icon. The least particular: it could be anyone’s mascot.']];
+const pose = (look, i) => `<svg viewBox="0 0 240 200">${[
+  () => cell(120, 104, 52, { look, seed: 1, flat: look === 'putty' ? .9 : 0 }),
+  () => cell(120, 100, 74, { look, seed: 2, parts: 1, flat: look === 'putty' ? .9 : 0 }),
+  () => cell(120, 104, 46, { look, k: .42, sx: 1.5, seed: 1, flat: look === 'putty' ? .86 : 0 }),
+  () => cell(68, 108, 40, { look, seed: 1, flat: look === 'putty' ? .9 : 0 }) + cell(172, 108, 40, { look, seed: 4, flat: look === 'putty' ? .9 : 0 }),
+  () => cell(120, 120, 40, { look, sleep: 1, sx: 1.12, sy: look === 'putty' ? .62 : .8, seed: 3, flat: look === 'putty' ? .9 : 0 })][i]()}</svg>`;
+
+document.body.insertAdjacentHTML('beforeend', [
+hero('H1', 'Hero at rest: the word fizzes', one(60, { parts: 0 }),
+  `<h1>Build ${unc()} apps</h1>`,
+  `${paste}${under}
+   <p class="note hn" style="left:64px;bottom:26px">THE FIZZ. Each letter of the word drifts about 1 px off the line, out of step with its neighbours. At most six small bubbles rise from it at a time and fade within 16 px. No glow, no sparks. After eight seconds it settles to one bubble every two seconds.</p>
+   <p class="note hn" style="right:64px;bottom:26px">THE CELL. No face. It breathes: it swells and settles about once every four seconds. That is all it does here.</p>`),
+
+hero('H2', 'Hero with the attributes out', one(66, { parts: 0, seed: 2 }) + cloud,
+  `<h1>Build ${unc(0)} apps</h1>`,
+  `${paste}
+   <p class="note hn" style="left:64px;bottom:26px">HOW IT OPENS. By itself, once, about a second after the page settles: the bubbles grow into the words, hold for four seconds and sink back. Hover or keyboard focus opens it again and holds it. A tap opens it and a second tap closes it.</p>
+   <p class="note hn" style="right:64px;bottom:26px">The word is a real button. The eleven words are a real list that screen readers always get, open or shut. The cell swells a little while they are out.</p>`),
+
+hero('H3', 'Hero with reduced motion or no script: the list is simply there', one(60, { parts: 0 }),
+  `<h1>Build ${unc(0)} apps</h1>`,
+  `<ul class="plainlist">${WORDS.map(w => `<li>${w[0]}</li>`).join('')}</ul>${paste}
+   <p class="note hn" style="left:64px;bottom:26px">Nothing moves and nothing is hidden. The same list sits under the headline. This is also what a reader sees if the script fails.</p>`),
+
+frame('U', '“What does uncompromising mean?”', 'long',
+  `<h2>What does uncompromising mean?</h2>
+   <p class="big">Most apps are built on compromises. There was never enough time, so something had to give.</p>
+   <p>Accessibility waited for version two. Security became a ticket. Everyone’s data went into one database, because one each was too much work.</p>
+   <p class="ink">Building apps with AI means we no longer have to cut corners.</p>
+   <p>But agents cut corners too, unless the careful way is also the easy way. CARLOS makes it the easy way. So one app can be all of these at once.</p>`,
+  `<div class="svgbox" style="height:${M ? 250 : 330}px"><svg viewBox="0 0 700 330">
+     <polygon points="92,60 228,60 270,102 270,238 228,280 92,280 50,238 50,102" fill="#fff" stroke="#2b2f33" stroke-width="1.5"/>
+     ${[[50, 60, 92, 60, 50, 102], [270, 60, 228, 60, 270, 102], [270, 280, 270, 238, 228, 280], [50, 280, 50, 238, 92, 280]].map(p => `<polygon points="${p[0]},${p[1]} ${p[2]},${p[3]} ${p[4]},${p[5]}" fill="none" stroke="#2b2f33" stroke-dasharray="3 4" stroke-opacity=".6"/>`).join('')}
+     <text class="in" x="160" y="176" text-anchor="middle" style="fill:#17191c">The usual app</text>
+     <text class="lab" x="50" y="${M ? 36 : 44}">accessibility, later</text><text class="lab" x="50" y="${M ? 316 : 304}">one shared database</text>
+     ${M ? '' : `<text class="lab" x="284" y="84">one region</text><text class="lab" x="284" y="262">backups, nightly</text>`}
+     ${cell(560, 170, 104, { parts: 1, seed: 2 })}
+     <text class="hint" x="560" y="${M ? 324 : 316}" text-anchor="middle">No corners to cut.</text></svg></div>
+   <div class="groups"><div><small>For the people using it</small>secure · private · accessible · exciting</div><div><small>For whoever pays for it</small>lower-cost · lightweight</div>
+     <div><small>For when something breaks</small>resilient · globally distributed</div><div><small>For whoever owns it</small>open · deployable · decentralisable</div></div>
+   <p class="src">The eleven words, grouped by who each one is for. A proposal: Paul’s flat list is frame H2.</p>`, 0),
+
+frame('C1', 'The cell, 1: everything it needs is inside', '',
+  `<p class="eye">lightweight</p><h2>Everything it needs is inside.</h2>
+   <p>Think of a CARLOS app as a cell. It is one file: web server, database, background jobs and interface. Nothing to wire together, so nothing to come loose.</p>
+   <p class="ink">Go on, give it a poke.</p>
+   <p class="src">The cell takes in the parts of the usual pile, swells, and settles back to the size it started. Poke it and it wobbles. Nothing falls out.</p>`,
+  `<svg viewBox="0 0 700 620">${ground()}
+   ${TOWER.map((t, i) => i % 3 === 1 ? '' : slab(20 + (i * 53 % 30), 150 + i * 31, 120 + (i * 37 % 40), 24, { op: .2 + (i % 4) * .12, d: 8, rot: i % 2 ? 2 : -2.5 })).join('')}
+   ${[[236, 216, 12], [286, 300, -9], [262, 396, 16]].map(([x, y, a], i) => slab(x, y, 70 - i * 12, 18 - i * 2, { d: 6, rot: a, op: .8 - i * .15 })).join('')}
+   <path d="M215 250 C 270 240, 300 270, 335 300 M215 420 C 260 420, 300 400, 335 380" fill="none" stroke="currentColor" stroke-opacity=".45" stroke-dasharray="3 6"/>
+   ${cell(490, 340, 170, { parts: 1, seed: 2 })}
+   <text class="in" x="${M ? 500 : 482}" y="${M ? 424 : 416}" text-anchor="middle">database</text><text class="in" x="${M ? 556 : 561}" y="${M ? 318 : 306}" text-anchor="middle">web server</text>
+   <text class="in" x="578" y="${M ? 432 : 418}" text-anchor="middle">jobs</text><text class="in" x="${M ? 436 : 412}" y="${M ? 296 : 282}" text-anchor="middle">interface</text>
+   <text class="lab" x="100" y="590" text-anchor="middle">${M ? '13 parts' : 'The usual pile · 13 parts'}</text><text class="lab" x="490" y="590" text-anchor="middle">${M ? '1' : 'The same app · 1'}</text></svg>`, 1),
+
+frame('C2', 'The cell, 2: it divides, one for each customer', '',
+  `<p class="eye">secure · private</p><h2>One each.</h2>
+   <p>Every customer gets their own copy of the app, with their own database inside it. What keeps two customers apart is a wall, not a line in a query.</p>
+   <p class="ink">Try to read next door.</p>
+   <p class="src">A new customer: the cell pinches in two. Drag from one copy towards another’s data and the line stops at the edge.</p>`,
+  `<svg viewBox="0 0 700 620">${ground()}
+   ${cell(350, 150, 56, { k: .42, sx: 1.5, seed: 1 })}<text class="lab" x="350" y="${M ? 60 : 72}" text-anchor="middle">A new customer signs up</text>
+   <path d="M270 215 C 200 260, 150 300, 130 350 M350 222 V 340 M430 215 C 500 260, 550 300, 570 350" fill="none" stroke="currentColor" stroke-opacity=".4" stroke-dasharray="3 6"/>
+   ${['Acme', 'Birch', 'Cobalt'].map((n, i) => cell(120 + i * 230, 450, 86, { seed: i + 1, thick: 1.6, label: n })).join('')}
+   <path d="M160 420 C 200 350, 240 360, 268 410" fill="none" stroke="#b3261e" stroke-width="2.5" stroke-dasharray="6 5"/>
+   <path d="M256 398 l22 24 m0 -24 l-22 24" stroke="#b3261e" stroke-width="3"/>
+   <text class="hint" x="${M ? 20 : 60}" y="${M ? 318 : 330}">${M ? 'Nowhere to go.' : 'A request from Acme’s copy for Birch’s data has nowhere to go.'}</text></svg>`, 2),
+
+frame('C3', 'The cell, 3: asleep until it’s needed', 'night',
+  `<p class="eye">lower-cost</p><h2>Asleep until it’s needed.</h2>
+   <p>A copy nobody is using runs nothing. The next request wakes it in under half a second, with nothing lost.</p>
+   <div class="slider">Traffic: about 2,000 requests a day<div class="track"></div>
+     <div class="bars">Awake about 3 hours in 24 (illustrative)<div style="width:12.5%"></div>A server that never sleeps: 24 in 24<div style="width:100%;opacity:.35"></div></div></div>
+   <p class="src">Asleep, a cell draws in and dims. A request touches one and it fills out. Tap a sleeping one to wake it.</p>`,
+  `<svg viewBox="0 0 700 620">${ground()}
+   ${[...Array(15)].map((_, i) => { const c = i % 5, r = (i / 5) | 0, x = 80 + c * 130 + (r % 2) * 40, y = 270 + r * 115, on = i === 7;
+     return on ? `<circle cx="${x}" cy="${y}" r="92" fill="#2fd4ac" opacity=".12"/>${cell(x, y, 58, { wake: 1, seed: i })}` : cell(x, y, 34, { sleep: 1, sy: .84, sx: 1.08, seed: i }); }).join('')}
+   <circle cx="150" cy="110" r="5" fill="#ffe7a8"/><path d="M150 110 C 230 170, 290 250, 345 340" fill="none" stroke="#ffe7a8" stroke-dasharray="2 7"/>
+   <text class="lab" x="168" y="106">A request arrives</text><text class="lab" x="380" y="${M ? 480 : 468}" text-anchor="middle">Awake</text></svg>`, 3),
+
+frame('C4', 'The cell, 4: lose one, keep the rest', '',
+  `<p class="eye">resilient</p><h2>Lose one, keep the rest.</h2>
+   <p>Every change is copied off the server as it is written. If a server stops, the app starts again on another one from its copy. Every other customer carries on.</p>
+   <p class="ink">Stop a server.</p>
+   <p class="note">HONEST NUMBERS, unchanged from 20 November. Planned work: requests wait a few seconds. A server that fails without warning: up to 15 minutes today, and about the last second of writes can be lost. High availability is on Carloku’s US region, for accounts that have it.</p>`,
+  `<svg viewBox="0 0 700 620">${ground()}
+   ${slab(20, 520, 300, 40, { label: 'Server one', d: 26, fill: '#e6ebe2', op: .75 })}
+   ${[[70, 462], [160, 470], [250, 462], [110, 388], [205, 392]].map(([x, y], i) => cell(x, y, 42, { seed: i, ghost: 1 })).join('')}
+   <path d="M60 500 l14 22 l-16 10 l18 26" fill="none" stroke="#2b2f33" stroke-width="2.5"/>
+   ${slab(400, 520, 280, 40, { label: 'Server two', d: 26 })}
+   ${[[450, 462], [540, 470], [630, 462], [495, 388]].map(([x, y], i) => cell(x, y, 42, { seed: i })).join('')}${cell(590, 396, 24, { seed: 9 })}
+   <ellipse cx="350" cy="150" rx="150" ry="62" fill="#fff" stroke="#2b2f33"/>
+   ${[0, 1, 2, 3, 4].map(i => `<circle cx="${262 + i * 44}" cy="${150 + (i % 2) * 10 - 5}" r="9" fill="#067a68"/>`).join('')}
+   <text class="lab" x="350" y="${M ? 62 : 72}" text-anchor="middle">Storage · a copy of every database</text>
+   <path d="M150 340 C 150 270, 220 230, 262 190 M438 190 C 500 230, 580 300, 590 365" fill="none" stroke="#067a68" stroke-width="2" stroke-dasharray="2 9" stroke-linecap="round"/>
+   <text class="hint" x="${M ? 0 : 20}" y="${M ? 318 : 290}">each write, as it happens</text><text class="hint" x="${M ? 400 : 500}" y="${M ? 318 : 290}">it grows back from its copy</text></svg>`, 4),
+
+frame('C5', 'The cell, 5: at home anywhere', '',
+  `<p class="eye">deployable · open · globally distributed</p><h2>At home anywhere.</h2>
+   <p>The same file runs on Carloku, on your own servers, on a small VPS or on a laptop, in whichever region is nearest the people using it. The specification is open, and you can run the platform yourself.</p>
+   <p class="ink">Drop it somewhere else.</p>
+   <p class="src">It takes the shape of whatever holds it. On a plain server the app runs by itself. The sleeping, copying and moving come from the platform, hosted or your own.</p>`,
+  `<svg viewBox="0 0 700 620">${ground()}
+   <path d="M20 430 v110 a20 20 0 0 0 20 20 h110 a20 20 0 0 0 20 -20 v-110" fill="none" stroke="#2b2f33" stroke-width="2"/>${cell(95, 492, 62, { seed: 1, sx: 1.08, sy: .92 })}
+   <rect x="200" y="330" width="130" height="230" rx="4" fill="none" stroke="#2b2f33" stroke-width="2"/>${cell(265, 505, 44, { seed: 2, sx: 1.2, sy: .95 })}${cell(265, 400, 44, { seed: 3, sx: 1.2, sy: .95, op: .3, nuc: 0 })}
+   <rect x="368" y="460" width="120" height="100" rx="4" fill="none" stroke="#2b2f33" stroke-width="2"/>${cell(428, 512, 40, { seed: 4, sx: 1.22, sy: .98, op: .3, nuc: 0 })}
+   <path d="M520 560 h160 M540 560 v-18 h120 v18" fill="none" stroke="#2b2f33" stroke-width="2"/>${cell(600, 512, 30, { seed: 5, sx: 1.6, sy: .78, op: .3, nuc: 0 })}
+   <text class="lab" x="95" y="590" text-anchor="middle">Carloku</text><text class="lab" x="265" y="590" text-anchor="middle">Your servers</text><text class="lab" x="428" y="590" text-anchor="middle">${M ? 'A VPS' : 'A small VPS'}</text><text class="lab" x="600" y="590" text-anchor="middle">A laptop</text>
+   <path d="M120 400 C 170 300, 330 290, 410 420" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 5"/><path d="M410 420l-13-4 9-11z"/>
+   <text class="hint" x="150" y="270">Same file. Nothing rebuilt.</text></svg>`, 5),
+
+frame('C6', 'The cell, 6: no centre, and thin glue', '',
+  `<p class="eye">decentralisable</p><h2>Nothing in the middle.</h2>
+   <p>Every copy stands by itself, so nothing has to sit in the centre holding everyone’s data. Where copies need something shared, thin services pass it along and keep nothing.</p>
+   <p class="ink">Take the glue away.</p>
+   <p class="src">The cells keep going. Customers lose a convenience, never their data. Cells cluster but never fuse: fusing would be shared data.</p>
+   <p class="note">Shared email, storage, PDFs, schedules and a call relay work today. Relays and brokers of your own are a pattern in use. Pegamento is a design direction, with no code. The labels from “Fair questions” apply here too.</p>`,
+  `<svg viewBox="0 0 700 620">
+   <circle cx="350" cy="310" r="74" fill="none" stroke="currentColor" stroke-opacity=".4" stroke-dasharray="3 7"/><text class="hint" x="350" y="${M ? 318 : 315}" text-anchor="middle">${M ? 'empty' : 'nothing here'}</text>
+   ${[0, 1, 2, 3, 4, 5, 6].map(i => { const a = i / 7 * Math.PI * 2 - 1.2, x = 350 + Math.cos(a) * 190, y = 310 + Math.sin(a) * 225; return `<path d="M${x} ${y} L ${i % 2 ? 655 : 45} ${i % 2 ? 300 : 322}" stroke="#2b2f33" stroke-opacity=".3"/>` + cell(x, y, 48, { seed: i }); }).join('')}
+   <rect x="5" y="302" width="80" height="40" rx="8" fill="#fff" stroke="#2b2f33"/><text class="in" x="45" y="${M ? 329 : 327}" text-anchor="middle" style="fill:#17191c">relay</text>
+   <rect x="615" y="280" width="80" height="40" rx="8" fill="#fff" stroke="#2b2f33" stroke-dasharray="4 4"/><text class="in" x="655" y="${M ? 307 : 305}" text-anchor="middle" style="fill:#17191c">broker</text>
+   <text class="lab" x="5" y="${M ? 374 : 362}">${M ? 'keeps' : 'passes it on,'}</text><text class="lab" x="5" y="${M ? 398 : 378}">${M ? 'nothing' : 'keeps nothing'}</text><text class="lab" x="695" y="${M ? 352 : 340}" text-anchor="end">${M ? 'holds' : 'holds the'}</text><text class="lab" x="695" y="${M ? 376 : 356}" text-anchor="end">one key</text></svg>`, 6),
+
+frame('E', 'The ending: the words come back, and the cell meets Carloku’s block', 'long',
+  `<h2>Build uncompromising apps<br><span style="font-size:.62em;font-weight:650">with CARLOS</span></h2>
+   <p>Every word from the top of the page, and where you saw it.</p>
+   <ul class="words">${WORDS.map(w => `<li>${w[0]}</li>`).join('')}</ul>
+   ${paste}<p style="font-size:13px;margin-top:10px">Rather set it up yourself? <u>Get started by hand</u></p>`,
+  `<div class="svgbox" style="height:${M ? 250 : 520}px"><svg viewBox="0 0 700 520">
+   ${[[90, 110, 30], [170, 70, 22], [150, 170, 26], [240, 130, 34], [70, 200, 20]].map(([x, y, r], i) => cell(x, y, r, { seed: i })).join('')}
+   <path d="M270 170 C 330 220, 370 250, 420 280" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 5"/><path d="M420 280l-14-2 7-12z"/>
+   ${block(400, 262, 8, '')}<path d="M640 480 l40 40" stroke="#2b2f33" stroke-width="7" stroke-linecap="round"/><circle cx="596" cy="436" r="62" fill="#f4f7f1" stroke="#2b2f33" stroke-width="3"/>${cell(596, 436, 40, { seed: 2 })}
+   <text class="lab" x="505" y="${M ? 246 : 250}" text-anchor="middle">Your app, on Carloku</text>
+   <text class="hint" x="${M ? 0 : 40}" y="${M ? 300 : 290}">${M ? 'This is what’s inside.' : 'What you built here is what’s inside.'}</text>
+   <text class="hint" x="40" y="${M ? 336 : 314}">${M ? '' : 'The cell never gets a face. The block keeps its own.'}</text>
+   <text class="in" x="40" y="${M ? 400 : 380}" style="fill:#5b3e96">Want it hosted? Start with Carloku →</text></svg></div>`, 6),
+
+`<section class="f var"><span class="tag"><b>V</b> · Three looks for the cell, for Paul to choose</span><span class="draft">SAME SHAPES, THREE FINISHES</span>
+   <div class="vhead"><span></span><span>at rest</span><span>swollen</span><span>dividing</span><span>divided</span><span>asleep</span></div>
+   ${VLOOK.map(([k, n, t]) => `<div class="vrow"><div><h3>${n}</h3><p>${t}</p></div>${[0, 1, 2, 3, 4].map(i => pose(k, i)).join('')}</div>`).join('')}</section>`,
+].join(''));
+</script>
+</body>
+</html>

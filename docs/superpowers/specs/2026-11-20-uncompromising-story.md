@@ -6,6 +6,13 @@ direction; it does not replace it. Nothing here is built. Every line of page
 copy below is **draft**, for Paul's copy review, and none of it goes into
 `src/_data/start-copy.json` except through one.
 
+> **Revised later on 2026-11-20 by [the cell story](2026-11-20-cell-story.md)
+> (round 3).** Paul's review replaced the hero (section 0), the six lettered
+> chapters (sections 1 to 6), the C A R L O S rail and the start (section 10's
+> second half). Still standing as written here: the turn (7), Fair questions
+> (8), How it works (9), What you get (10), the fallbacks and budget, and all
+> twelve corrections to the brief. Read round 3 first.
+
 Supporting files, in `2026-11-20-uncompromising-story/`:
 
 - `storyboard.html`: sixteen rough key frames. Open it directly; add `?m` for
