@@ -14,7 +14,7 @@
       "type": "skill-md",
       "description": "Design, port or adapt a CARLOS app: choose tenant boundaries, trust, app shape and where to host, or find the platform capability for the current task. Read task-specific references only when needed. For the first conversation with the operator and a first build, use getting-started.",
       "url": "/.well-known/agent-skills/building-carlos-apps/SKILL.md",
-      "digest": "sha256:148f5c8bab708c8db1d939f3a745ad2e33517e2052b54066a57ba8b195bbfb59"
+      "digest": "sha256:9e805cd4d6acaf77cd046c859fd21844ab266591915c6006bf5f434ed17482fd"
     }
   ]
 }

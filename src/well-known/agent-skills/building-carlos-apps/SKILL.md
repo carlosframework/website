@@ -60,6 +60,7 @@ For the simple first-app defaults, use [getting-started](../getting-started/SKIL
 | Implement Rastrillo handlers, models or UI | [Framework](references/rastrillo.md); then the installed framework skill and its relevant topic |
 | Deploy, operate, add a platform service, debug or inspect costs | [Platform topic index](references/platform.md); open only the matching topic |
 | Set project rules or assess a departure from CARLOS principles | [Principles](references/principles.md) |
+| Someone has an existing web app, or asks about real-time or hosting cost | [Decisions](references/decisions.md), “An existing app: present the port first” |
 | Port an app from another stack | The interview in [getting-started](../getting-started/SKILL.md), then Rastrillo's skill/port.md |
 | Adopt CARLOS in an existing app or check app conventions | [Conventions](references/conventions.md) |
 | Work on commits, tests, review or canaries | [Process](references/process.md) |
