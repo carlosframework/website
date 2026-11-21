@@ -1,0 +1,103 @@
+{#- 🤖 "How uncompromising are you?" (/uncompromising/), rendered by hack/build-quiz.mjs. Every word comes from
+    src/_data/quiz-copy.json by its copy-review id: t('quiz.x') is the string. Spec: website branch
+    story-proposal-20261117, docs/superpowers/specs/2026-11-20-uncompromising-quiz.md. Copy and the character's look are
+    PROVISIONAL. The page as served is complete without script: the title, a line, the twelve statements as a
+    numbered list with the fact and its picture under each, and the paste line. quiz.js turns the same markup into
+    one step per screen; everything marked q-js is hidden until it does. -#}
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101c23">
+<title>{{ t('quiz.meta.title') }}</title>
+<meta name="description" content="{{ t('quiz.meta.description') }}">
+<link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
+<link rel="canonical" href="{{ origin }}/uncompromising/">
+<meta property="og:title" content="{{ t('quiz.meta.title') }}">
+<meta property="og:description" content="{{ t('quiz.meta.description') }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ origin }}/uncompromising/">
+<meta property="og:image" content="{{ origin }}/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<script src="/home/theme.js?v=0"></script>
+<link rel="stylesheet" href="/home/theme.css?v=0">
+<link rel="stylesheet" href="/uncompromising/quiz.css?v=0">
+<script type="module" src="/uncompromising/quiz.js?v=0"></script>
+<script src="/start/start-tabs.js?v=0" defer></script>
+</head>
+<body class="site-home quiz-page">
+<main>
+<form class="qz" id="qz" data-step="intro" novalidate>
+<div class="q-bar q-js" hidden>
+  <button type="button" class="q-back"><span aria-hidden="true">←</span> <span class="q-back-label">{{ t('quiz.bar.back') }}</span></button>
+  <span class="q-name">{{ t('quiz.intro.title') }}</span>
+  <span class="q-prog"><span class="q-ticks" aria-hidden="true">{% for s in statements %}<i></i>{% endfor %}</span><span class="q-prog-text"></span></span>
+</div>
+
+<section class="q-step q-intro" data-step="intro">
+  <a class="q-home" href="/" aria-label="CARLOS">{{ wordmark | safe }}</a>
+  <div class="q-hero-cell" aria-hidden="true">{{ introCell | safe }}</div>
+  <h1 class="q-title" tabindex="-1">{{ t('quiz.intro.title') }}</h1>
+  <p class="q-lede q-js" hidden>{{ t('quiz.intro.body') }}</p>
+  <p class="q-lede q-nojs">{{ t('quiz.noscript.body') }}</p>
+  <button type="button" class="q-btn q-big q-start q-js" hidden><span>{{ t('quiz.intro.start') }}</span><kbd aria-hidden="true">Enter</kbd></button>
+</section>
+
+<fieldset class="q-step q-stack q-js" data-step="stack" hidden>
+  <legend class="q-legend"><h2 class="q-h" tabindex="-1">{{ t('quiz.stack.title') }}</h2></legend>
+  <p class="q-hint">{{ t('quiz.stack.hint') }}</p>
+  <div class="q-chips">{% for th in things %}<label class="q-chip"><input type="checkbox" name="stack" value="{{ th.slug }}"><span>{{ th.name }}</span></label>{% endfor %}</div>
+  <div class="q-go"><button type="button" class="q-btn q-done">{{ t('quiz.stack.done') }}</button> <button type="button" class="q-link q-fresh">{{ t('quiz.stack.fresh') }}</button></div>
+</fieldset>
+
+<ol class="q-list">
+{%- for s in statements %}
+<li class="q-step q-st" data-step="{{ s.n }}" data-key="{{ s.key }}">
+<fieldset>
+  <legend class="q-legend"><h2 class="q-h" tabindex="-1"><span class="q-sr">{{ s.heading }} </span><span class="q-q">{{ t('quiz.s.' + s.key + '.q') }}</span></h2></legend>
+  <p class="q-eye q-js" aria-hidden="true" hidden>{{ s.progress }}</p>
+  <div class="q-ans q-js" hidden><button type="button" class="q-a" data-a="yes" aria-pressed="false"><span>{{ t('quiz.answer.yes') }}</span><kbd aria-hidden="true">1</kbd></button><button type="button" class="q-a" data-a="no" aria-pressed="false"><span>{{ t('quiz.answer.no') }}</span><kbd aria-hidden="true">2</kbd></button></div>
+  <div class="q-after">
+    <div class="q-react" role="status">
+      <p class="q-say">{{ t('quiz.s.' + s.key + '.no') }}</p>
+      <p class="q-gone" hidden></p>
+    </div>
+    <button type="button" class="q-btn q-next q-js" hidden><span>{{ t('quiz.next') }}</span><kbd aria-hidden="true">Enter</kbd></button>
+  </div>
+  <div class="q-pic">
+    <img class="q-img q-img-fact" src="/uncompromising/pictures/{{ s.key }}-fact.svg" alt="{{ t('quiz.pic.' + s.key + '.fact.alt') }}" width="400" height="280" loading="lazy" decoding="async">
+    <img class="q-img q-img-joke q-js" data-src="/uncompromising/pictures/{{ s.key }}-joke.svg" alt="{{ t('quiz.pic.' + s.key + '.joke.alt') }}" width="400" height="280" decoding="async" hidden>
+    {%- if s.key == 'hello' %}
+    <img class="q-img q-img-yes q-js" data-src="/uncompromising/pictures/hello-yes.svg" alt="{{ t('quiz.pic.hello.yes.alt') }}" width="400" height="280" decoding="async" hidden>
+    {%- endif %}
+  </div>
+</fieldset>
+</li>
+{%- endfor %}
+</ol>
+
+<section class="q-step q-result q-js" data-step="result" hidden>
+  <h2 class="q-h q-verdict" tabindex="-1">{% for v in ['all', 'most', 'few'] %}<span data-v="{{ v }}" hidden>{{ t('quiz.result.' + v) }}</span>{% endfor %}</h2>
+  <p class="q-count"></p>
+  <div class="q-end-slot"></div>
+  <div class="q-acts"><button type="button" class="q-btn q-ghost q-share">{{ t('quiz.result.share') }}</button> <button type="button" class="q-link q-again">{{ t('quiz.result.again') }}</button></div>
+  <p class="q-share-status" role="status"></p>
+</section>
+
+<div class="q-end">{{ paste | safe }}</div>
+
+{#- The visitor’s pile and the character (provisional), on one floor. The pile is a real list, updated as bricks leave; the physics in
+    pile.mjs is decoration on top of it. Hidden until quiz.js runs. #}
+<div class="q-stage q-js" hidden>
+  <p class="q-pile-empty" aria-hidden="true">{{ t('quiz.stack.empty') }}</p>
+  <ul class="q-pile" aria-label=""></ul>
+  <div class="q-cell" aria-hidden="true">{{ liveCell | safe }}</div>
+  <div class="q-block" aria-hidden="true"></div>
+  <div class="q-floor" aria-hidden="true"></div>
+  <p class="q-pile-label" aria-hidden="true"></p>
+</div>
+</form>
+</main>
+<script type="application/json" id="qz-data">{{ data | safe }}</script>
+<footer>{{ themeSwitch | safe }}</footer>
+</body></html>

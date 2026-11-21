@@ -1,0 +1,271 @@
+/* 🤖 "How uncompromising are you?" (/uncompromising/). Light and dark through light-dark(); /home/theme.js and
+   theme.css (the homepage's Auto, Light and Dark) set the scheme. Without .q-on (no script) the page is one column:
+   the title, a line, the twelve statements with their facts and pictures, the paste line. With .q-on each step fills
+   the screen. Animations use transform and opacity only; under reduced motion nothing moves. */
+:root { color-scheme: light dark; }
+.quiz-page {
+  --q-bg: light-dark(#f4f7f1, #101c23); --q-ink: light-dark(#14232b, #eef5ed); --q-soft: light-dark(#4c5a60, #aebcb6);
+  --q-line: light-dark(#d3dbd0, #2e434b); --q-teal: light-dark(#067a68, #2fd4ac); --q-card: light-dark(#ffffff, #16262f);
+  --q-btn: light-dark(#1b5e50, #7fd0b6); --q-btn-ink: light-dark(#ffffff, #062a24); --q-focus: light-dark(#0b4fb3, #c8ef8b);
+  --q-brick: light-dark(#ffffff, #1c303a); --q-brick-top: light-dark(#eef2ea, #2a4651); --q-brick-side: light-dark(#d7ddd2, #132530); --q-brick-line: light-dark(#2b2f33, #9fb6ae);
+  --q-sans: Inter, Roboto, "Helvetica Neue", "Arial Nova", "Nimbus Sans", Arial, sans-serif;
+  --q-mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  --q-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --site-sans: var(--q-sans); --ease-out: var(--q-ease); --mono: var(--q-mono);
+  margin: 0; background: var(--q-bg); color: var(--q-ink); font: 17px/1.5 var(--q-sans); -webkit-text-size-adjust: 100%;
+}
+.quiz-page *, .quiz-page *::before, .quiz-page *::after { box-sizing: border-box; }
+.quiz-page main { display: block; }
+.quiz-page :where(a, button, input, summary):focus-visible, .quiz-page [tabindex="-1"]:focus-visible { outline: 3px solid var(--q-focus); outline-offset: 3px; }
+.quiz-page [tabindex="-1"]:focus:not(:focus-visible) { outline: none; }
+.q-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.qz [hidden] { display: none !important; }
+
+/* ---- Without script: one readable column ------------------------------------------------------------------------ */
+.qz { max-width: 46rem; margin: 0 auto; padding: clamp(1.5rem, 5vw, 3rem) clamp(1.1rem, 4vw, 2rem) 3rem; }
+.q-home { display: inline-flex; color: var(--q-ink); padding: 6px 0; }
+.q-home:hover { color: var(--q-teal); }
+.q-intro { margin-bottom: 2rem; }
+.q-hero-cell svg { display: block; width: 120px; height: 120px; overflow: visible; margin: 1.2rem 0 0.4rem; }
+.q-title { font-size: clamp(2.2rem, 7vw, 4rem); font-weight: 750; line-height: 1.05; letter-spacing: -0.03em; margin: 0 0 0.8rem; text-wrap: balance; }
+.q-lede { font-size: clamp(1.06rem, 2.4vw, 1.25rem); line-height: 1.45; color: var(--q-soft); margin: 0 0 1.5rem; max-width: 34rem; }
+.q-list { margin: 0; padding: 0; list-style: none; counter-reset: q; }
+.q-list > li { margin: 0 0 2.4rem; counter-increment: q; }
+/* The number is drawn, and hidden from screen readers, which hear "Statement 3 of 12" and the list itself. */
+.q-list .q-q::before { content: counter(q) ". " / ""; font: 600 0.95em var(--q-mono); color: var(--q-teal); }
+.q-on .q-list .q-q::before { content: none; }
+.q-st fieldset, .q-stack { border: 0; margin: 0; padding: 0; min-width: 0; }
+.q-legend { padding: 0; width: 100%; }
+.q-h { font-size: clamp(1.25rem, 3vw, 1.5rem); font-weight: 700; line-height: 1.2; letter-spacing: -0.015em; margin: 0 0 0.5rem; text-wrap: balance; }
+.q-say { margin: 0 0 0.9rem; color: var(--q-soft); clear: both; }
+.q-pic { display: grid; max-width: 400px; }
+.q-pic .q-img { grid-area: 1 / 1; display: block; width: 100%; height: auto; }
+.q-end { margin-top: 1rem; }
+
+/* ---- The paste box (the homepage's markup and copy script; its light and dark colours come from /home/theme.css) -- */
+.paste { position: relative; container: paste / inline-size; text-align: left; }
+.paste .pb-text, .paste .pb-text span { user-select: text; overflow-wrap: normal; word-break: normal; }
+.paste .pb-text { min-width: 0; }
+.paste .pb-url { white-space: nowrap; }
+@container paste (max-width: 18rem) {
+  .paste .pb-url { white-space: normal; display: inline-block; }
+  .paste .pb-brk::after { content: "\200B"; }
+  .paste .pb-url-end { white-space: nowrap; }
+  .paste .pb-line { font-size: 0.94rem; }
+}
+.paste .pb-url-wrap { white-space: normal; }
+.paste .pb-url-wrap > span { white-space: nowrap; }
+.paste .pb-copy { display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; flex: 1 0 auto; min-height: 44px; padding: 0 1.15rem; border: 0; border-radius: 12px; cursor: pointer; font: 500 0.98rem/1 var(--q-sans); min-width: 7.6rem; }
+.paste .pb-copy[hidden] { display: none; }
+.paste .pb-copy svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.paste .ic-ok { display: none; stroke-dasharray: 22; stroke-dashoffset: 22; }
+.paste.is-copied .ic-copy { display: none; }
+.paste.is-copied .ic-ok { display: block; animation: q-draw 0.4s var(--q-ease) forwards; }
+@keyframes q-draw { to { stroke-dashoffset: 0; } }
+.paste .pb-done { margin: 0; font: 600 0.95rem/1.4 var(--q-sans); }
+.paste:not(.copy-failed) .pb-done { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.paste.copy-failed .pb-done { margin-top: 0.7rem; }
+.v-soft { padding: 0.8rem 0.8rem 0.8rem 1.15rem; border-radius: 18px; border: 1px solid; }
+.v-soft .pb-to { margin: 0 0 0.35rem; font: 400 0.8rem/1.3 var(--q-sans); }
+.v-soft .pb-line { display: flex; gap: 0.5rem; align-items: baseline; margin: 0; min-width: 0; flex: 999 1 15rem; font: 400 1.04rem/1.5 ui-rounded, "SF Pro Rounded", "Nunito", var(--q-sans); }
+.v-soft .pb-sign { width: 0.95rem; height: 0.95rem; flex: none; translate: 0 0.12em; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; opacity: 0.65; }
+.v-soft .pb-caret { display: inline-block; width: 3px; height: 1.15em; margin-left: 3px; border-radius: 2px; vertical-align: -0.2em; animation: q-caret 1.4s ease-in-out infinite; }
+@keyframes q-caret { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
+.hv-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem 0.75rem; }
+
+/* ---- Buttons ---------------------------------------------------------------------------------------------------- */
+.q-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; min-height: 48px; padding: 0 1.4rem; border: 1.5px solid var(--q-btn); border-radius: 11px; background: var(--q-btn); color: var(--q-btn-ink); font: 650 1rem/1 var(--q-sans); text-decoration: none; cursor: pointer; transition: transform 0.14s var(--q-ease), background-color 0.15s; }
+.q-btn:active { transform: translateY(1px); }
+.q-btn.q-big { min-height: 56px; padding: 0 2.6rem; font-size: 1.15rem; border-radius: 13px; }
+.q-btn.q-ghost { background: var(--q-card); color: var(--q-ink); border-color: var(--q-ink); }
+.q-link { min-height: 48px; padding: 0 0.3rem; border: 0; background: none; color: var(--q-ink); font: 400 0.98rem/1.3 var(--q-sans); text-decoration: underline; text-decoration-color: var(--q-line); text-underline-offset: 4px; cursor: pointer; }
+.q-link:hover { text-decoration-color: currentColor; }
+.quiz-page kbd { font: 500 0.7rem/1 var(--q-mono); padding: 3px 5px; border-radius: 4px; border: 1px solid color-mix(in srgb, currentColor 30%, transparent); opacity: 0.75; }
+
+/* ---- With script: one step per screen ----------------------------------------------------------------------------- */
+.qz.q-on { max-width: 1280px; min-height: 100svh; display: grid; grid-template-columns: minmax(0, 1fr) 240px; grid-template-rows: 60px minmax(0, 1fr); column-gap: 36px; padding: 0 56px 32px; }
+.q-on .q-nojs { display: none; }
+.q-on .q-list { display: contents; }
+.q-on .q-step { display: none; grid-column: 1; grid-row: 2; margin: 0; padding: 0; }
+.q-on .q-step.is-now { display: block; }
+.q-on .q-end { margin: 0; }
+.q-on .q-stage { grid-column: 2; grid-row: 2; }
+
+/* The bar: Back, the quiz's name, twelve ticks and "3 of 12". */
+.q-bar { grid-column: 1 / -1; grid-row: 1; display: flex; align-items: center; gap: 18px; min-width: 0; border-bottom: 1px solid var(--q-line); font-size: 14px; color: var(--q-soft); }
+.q-back { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border: 1px solid var(--q-line); border-radius: 9px; background: var(--q-card); color: var(--q-ink); font: 600 14px var(--q-sans); cursor: pointer; white-space: nowrap; }
+.q-name { font-weight: 650; color: var(--q-ink); letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-prog { margin-left: auto; display: flex; align-items: center; gap: 10px; font: 12px/1 var(--q-mono); letter-spacing: 0.06em; color: var(--q-ink); white-space: nowrap; }
+.q-ticks { display: flex; gap: 5px; }
+.q-ticks i { width: 18px; height: 6px; border-radius: 3px; background: var(--q-line); }
+.q-ticks i.on { background: var(--q-teal); }
+.q-ticks i.now { background: var(--q-ink); }
+.q-on[data-kind="intro"] .q-bar { display: none; }
+
+/* The intro: the character above one sentence, centred, the site header reduced to the word CARLOS. */
+.q-on[data-kind="intro"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+.q-on[data-kind="intro"] .q-stage { display: none; }
+.q-on .q-intro.is-now { grid-row: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; position: relative; padding: 72px 0 40px; }
+.q-on .q-intro .q-home { position: absolute; left: 0; top: 18px; }
+.q-on .q-hero-cell svg { width: 200px; height: 200px; margin: 0 auto 8px; }
+.q-on .q-intro .q-lede { margin: 0 auto 28px; max-width: 560px; }
+.q-hero-cell svg > g, .q-cell-breathe { transform-origin: 50% 100%; transform-box: fill-box; animation: q-breathe 4s ease-in-out infinite; }
+
+/* A statement: the words on the left, the picture beside them, the pile and the character on the right. */
+.q-on .q-st.is-now { display: block; align-self: stretch; }
+.q-on .q-st fieldset { height: 100%; display: grid; grid-template-columns: minmax(0, 430px) minmax(0, 1fr); grid-template-areas: "eye pic" "q pic" "ans pic" "after pic"; grid-template-rows: auto auto auto auto; align-content: center; column-gap: 36px; padding: 40px 0 0; }
+.q-on .q-st .q-legend { grid-area: q; float: left; }
+.q-on .q-st .q-h, .q-on .q-stack .q-h { font-size: clamp(1.6rem, 2.6vw, 2.2rem); font-weight: 720; letter-spacing: -0.025em; line-height: 1.1; margin: 0 0 22px; }
+.q-on .q-st .q-sr { position: absolute; }
+.q-eye { grid-area: eye; margin: 0 0 14px; font: 600 12px/1 var(--q-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--q-teal); }
+.q-ans { grid-area: ans; display: flex; gap: 12px; }
+.q-a { flex: 1 1 0; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 0 10px; border: 1.5px solid var(--q-ink); border-radius: 12px; background: var(--q-card); color: var(--q-ink); font: 650 17px/1.1 var(--q-sans); cursor: pointer; transition: background-color 0.2s, color 0.2s, opacity 0.25s; }
+.q-a[aria-pressed="true"] { background: var(--q-ink); color: var(--q-bg); }
+.is-answered .q-a[aria-pressed="false"] { opacity: 0.4; }
+.q-on .q-after { grid-area: after; min-height: 210px; margin-top: 18px; }
+.q-on .q-say { font-size: 20px; line-height: 1.4; color: var(--q-ink); margin: 0 0 12px; }
+.q-gone { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; font: 12px/1.4 var(--q-mono); letter-spacing: 0.05em; color: var(--q-soft); }
+.q-gone s { border: 1px solid var(--q-soft); border-radius: 3px; padding: 3px 8px; color: var(--q-ink); background: var(--q-card); }
+.q-on .q-next { margin-top: 14px; }
+.q-on .q-next[hidden] { display: inline-flex !important; visibility: hidden; }
+.q-on .q-pic { grid-area: pic; align-self: center; max-width: none; }
+.q-on .q-pic .q-img { opacity: 0; transition: opacity 0.4s var(--q-ease); }
+.q-on .q-pic .q-img.is-on { opacity: 1; }
+
+/* The picker. */
+.q-on[data-kind="stack"], .q-on[data-kind="result"] { grid-template-columns: minmax(0, 430px) minmax(0, 1fr); }
+.q-on .q-stack.is-now, .q-on .q-result.is-now { align-self: center; padding-top: 24px; }
+.q-hint { font-size: 20px; color: var(--q-soft); margin: 0; clear: both; }
+.q-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 22px; }
+.q-chip { position: relative; display: inline-flex; }
+.q-chip input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.q-chip span { display: inline-flex; align-items: center; min-height: 40px; padding: 0 13px; border: 1.5px solid var(--q-line); border-radius: 999px; background: var(--q-card); font-size: 15px; font-weight: 550; }
+.q-chip input:checked + span { border-color: var(--q-teal); background: color-mix(in srgb, var(--q-teal) 14%, var(--q-card)); }
+.q-chip input:checked + span::before { content: "✓"; color: var(--q-teal); font-weight: 700; margin-right: 6px; }
+.q-chip input:focus-visible + span { outline: 3px solid var(--q-focus); outline-offset: 2px; }
+.q-go { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+
+/* The result. */
+.q-on .q-result .q-h { font-size: clamp(2.2rem, 4vw, 3rem); font-weight: 750; letter-spacing: -0.03em; line-height: 1.05; margin: 0 0 16px; }
+.q-count { font-size: 21px; line-height: 1.35; font-weight: 600; margin: 0 0 18px; }
+.q-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin-top: 16px; }
+.q-share-status { min-height: 1.5em; margin: 10px 0 0; font-size: 15px; color: var(--q-soft); }
+
+/* ---- The stage: the pile and the character on one floor ---------------------------------------------------------------- */
+.q-stage { position: relative; align-self: stretch; min-height: 420px; }
+.q-floor { position: absolute; left: 0; right: 0; bottom: 28px; height: 1px; background: color-mix(in srgb, var(--q-ink) 30%, transparent); }
+.q-pile-label, .q-pile-empty { position: absolute; left: 0; bottom: 0; margin: 0; font: 500 12px/20px var(--q-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--q-soft); }
+.q-pile-empty { display: none; }
+.q-on[data-kind="stack"] .q-stage.is-empty .q-pile-empty { display: block; left: 30%; bottom: 29px; width: 172px; height: 120px; padding: 10px; border: 1.5px dashed color-mix(in srgb, var(--q-ink) 35%, transparent); border-radius: 4px; text-align: center; line-height: 1.4; display: grid; place-items: center; }
+.q-pile { position: absolute; right: 0; bottom: 29px; top: 0; width: 140px; margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap-reverse; align-content: flex-start; justify-content: center; column-gap: 8px; }
+.q-cell { position: absolute; left: 0; bottom: 21px; width: 110px; pointer-events: none; }
+.q-cell svg { display: block; width: 100%; height: auto; overflow: visible; }
+.q-stage.is-fresh .q-pile-label { display: none; }
+.q-stage.is-merged .q-pile, .q-stage.is-merged .q-pile-label { visibility: hidden; }
+
+/* A brick: a face with a top and a side, as on the homepage's stacks. */
+.q-brick { position: relative; flex: none; width: 104px; height: 26px; margin-top: 5px; display: grid; place-items: center; padding: 0 4px; border: 1px solid var(--q-brick-line); background: var(--q-brick); color: var(--q-ink); font: 500 12px/1 var(--q-sans); white-space: nowrap; overflow: visible; will-change: transform; }
+.q-brick::before { content: ""; position: absolute; left: -1px; right: -1px; bottom: 100%; height: 5px; background: var(--q-brick-top); border: 1px solid var(--q-brick-line); border-bottom: 0; transform: skewX(-55deg); transform-origin: 0 100%; }
+.q-brick::after { content: ""; position: absolute; left: 100%; top: -1px; bottom: -1px; width: 7px; background: var(--q-brick-side); border: 1px solid var(--q-brick-line); border-left: 0; transform: skewY(-35deg); transform-origin: 0 0; }
+.q-brick:nth-child(4n+1) { left: -6px; } .q-brick:nth-child(4n+3) { left: 7px; }
+.q-brick.q-drop { animation: q-drop 0.55s cubic-bezier(0.5, 0, 0.75, 0) both, q-rock 0.35s 0.55s var(--q-ease); }
+@keyframes q-drop { from { transform: translateY(-420px) rotate(-3deg); } to { transform: none; } }
+@keyframes q-rock { 40% { transform: rotate(1.6deg); } }
+.q-brick.q-leave { animation: q-leave 0.45s cubic-bezier(0.3, 0, 0.6, 1) forwards; }
+@keyframes q-leave { 35% { transform: translate(-14px, -26px) rotate(-12deg); opacity: 1; } to { transform: translate(-40px, 160px) rotate(-38deg); opacity: 0; } }
+
+/* The picker and the result: a wider stage, two bricks to a row, the character on the right. */
+.q-on[data-kind="stack"] .q-pile, .q-on[data-kind="result"] .q-pile { right: auto; left: 22%; width: 300px; }
+.q-on[data-kind="stack"] .q-brick, .q-on[data-kind="result"] .q-brick { width: 132px; height: 32px; font-size: 14px; }
+.q-on[data-kind="stack"] .q-cell { left: auto; right: 4%; width: 170px; }
+/* The result: the pile is gone into the character, which stands in the middle of the floor. */
+.q-on[data-kind="result"] .q-cell { left: 50%; width: 230px; margin-left: -115px; }
+
+/* The character's moods (src/uncompromising/character.mjs, provisional: the HalfStack deck's amber light). quiz.js
+   changes its shape; these are its colours. It breathes once every four seconds. */
+.q-glow { fill: #ffb454; fill-opacity: 0.07; transition: fill-opacity 0.4s; }
+.q-wall { fill: none; stroke: #c97a16; stroke-opacity: 0.45; stroke-width: 1.2; }
+.q-cell-body { fill: #ffb454; stroke: #c97a16; stroke-width: 1.5; stroke-linejoin: round; transition: fill 0.3s; }
+.q-core { fill: #fff0d2; transition: fill 0.3s; }
+.q-ring { fill: none; stroke: #ffb454; stroke-width: 1.4; opacity: 0; transition: opacity 0.4s; }
+.q-ring1 { stroke-opacity: 0.75; } .q-ring2 { stroke-opacity: 0.4; }
+.q-stage[data-mood="wake"] .q-ring { opacity: 1; }
+.q-stage[data-mood="wake"] .q-glow { fill-opacity: 0.1; }
+.q-stage[data-mood="wake"] .q-cell-body { fill: #ffc169; }
+.q-stage[data-mood="sad"] .q-glow { fill-opacity: 0.035; }
+.q-stage[data-mood="sad"] .q-cell-body { fill: #e2b680; }
+.q-stage[data-mood="sad"] .q-core { fill: #f2dcbc; }
+.q-one-in { opacity: 0; transition: opacity 0.35s; }
+.q-one-in rect { fill: #ffffff; stroke: #2b2f33; stroke-width: 1; }
+.q-one-in text { font: 500 12px var(--q-sans); fill: #17191c; }
+.q-stage.is-merged .q-one-in, .q-block.is-in ~ .q-cell .q-one-in { opacity: 1; }
+@keyframes q-breathe { 50% { transform: scale(1.025, 1.035); } }
+
+/* The ending's one block: it appears where the pile gathered, slides to the character and goes in. */
+.q-block { position: absolute; left: 0; top: 0; width: 54px; height: 24px; margin: -12px 0 0 -27px; border: 1px solid var(--q-brick-line); background: var(--q-brick); opacity: 0; pointer-events: none; }
+.q-block.is-on { opacity: 1; }
+.q-block.is-moving { transition: transform 0.6s var(--q-ease); }
+.q-block.is-in { opacity: 0; transition: opacity 0.25s, transform 0.6s var(--q-ease); }
+
+/* ---- 390 px: bar, picture, statement, the two answers side by side, reaction and Next, then the pile as a strip --- */
+@media (max-width: 899px) {
+  .qz.q-on { grid-template-columns: minmax(0, 1fr); grid-template-rows: 52px auto minmax(0, 1fr) auto; column-gap: 0; padding: 0 18px 12px; }
+  .q-on .q-step { grid-row: 2 / 4; }
+  .q-on .q-stage { grid-column: 1; grid-row: 4; min-height: 0; height: auto; display: grid; grid-template-columns: minmax(0, 1fr) 76px; align-items: end; padding-bottom: 24px; margin-top: 12px; }
+  .q-bar { position: sticky; top: 0; z-index: 2; background: var(--q-bg); gap: 10px; }
+  .q-name { display: none; }
+  .q-ticks i { width: 9px; }
+  .q-back { padding: 0 10px; }
+  .q-on .q-st fieldset { grid-template-columns: minmax(0, 1fr); grid-template-areas: "pic" "q" "ans" "after"; grid-template-rows: auto auto auto auto; align-content: start; padding-top: 14px; row-gap: 0; }
+  .q-on .q-pic { margin: 0 0 14px; }
+  .q-on .q-eye, .quiz-page .q-a kbd, .quiz-page .q-next kbd, .quiz-page .q-start kbd { display: none; }
+  .q-on .q-st .q-h { font-size: 24px; margin-bottom: 14px; }
+  .q-ans { gap: 8px; }
+  .q-a { font-size: 16px; padding: 0 4px; }
+  .q-on .q-after { min-height: 0; margin-top: 12px; }
+  .q-on .q-say { font-size: 16.5px; margin-bottom: 8px; }
+  .q-gone { font-size: 11px; margin-bottom: 10px; }
+  .q-on .q-next { width: 100%; margin-top: 4px; }
+  .q-on .q-next[hidden] { display: none !important; }
+  .q-pile { position: relative; top: auto; right: auto; bottom: auto; left: auto; width: auto; min-height: 31px; justify-content: flex-start; column-gap: 6px; padding-left: 4px; }
+  .q-brick { width: calc((100% - 30px) / 3); height: 22px; font-size: 11px; }
+  .q-brick:nth-child(4n+1), .q-brick:nth-child(4n+3) { left: 0; }
+  .q-brick:nth-child(6n+4), .q-brick:nth-child(6n+5), .q-brick:nth-child(6n+6) { left: 8px; }
+  .q-floor { bottom: 24px; }
+  .q-pile-label { bottom: 2px; }
+  .q-cell { position: relative; left: auto; bottom: -3px; width: 76px; }
+  /* The picker and the result put the stage above the words. */
+  .q-on[data-kind="stack"], .q-on[data-kind="result"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: 52px auto auto minmax(0, 1fr); }
+  .q-on[data-kind="stack"] .q-stage, .q-on[data-kind="result"] .q-stage { grid-row: 2; margin: 14px 0 6px; grid-template-columns: minmax(0, 1fr) 96px; }
+  .q-on[data-kind="stack"] .q-step, .q-on[data-kind="result"] .q-step { grid-row: 3; padding-top: 6px; }
+  .q-on[data-kind="stack"] .q-pile, .q-on[data-kind="result"] .q-pile { left: auto; width: auto; }
+  .q-on[data-kind="stack"] .q-brick, .q-on[data-kind="result"] .q-brick { width: calc((100% - 22px) / 2); height: 24px; font-size: 12px; }
+  .q-on[data-kind="stack"] .q-cell { right: auto; width: 96px; }
+  .q-on[data-kind="result"] .q-stage { grid-template-columns: minmax(0, 1fr); justify-items: center; padding-top: 8px; }
+  .q-on[data-kind="result"] .q-pile { position: absolute; left: 0; bottom: 25px; width: 100%; }
+  .q-on[data-kind="result"] .q-cell { left: auto; margin: 0; width: 150px; }
+  .q-on[data-kind="stack"] .q-stage.is-empty .q-pile-empty { left: 20%; width: 50%; height: 80px; bottom: 25px; }
+  .q-on[data-kind="stack"] .q-stage.is-empty { min-height: 140px; }
+  .q-on .q-stack .q-h { font-size: 26px; margin-bottom: 8px; }
+  .q-hint { font-size: 17px; }
+  .q-chips { gap: 7px; margin: 12px 0 14px; }
+  .q-chip span { font-size: 14px; padding: 0 11px; min-height: 40px; }
+  .q-go .q-done { width: 100%; }
+  .q-go .q-fresh { width: 100%; }
+  .q-on .q-result .q-h { font-size: 30px; margin-bottom: 10px; }
+  .q-count { font-size: 18px; margin-bottom: 12px; }
+  .q-on .q-intro.is-now { padding-top: 64px; }
+  .q-on .q-hero-cell svg { width: 170px; height: 170px; }
+  .q-on .q-start { width: 100%; }
+}
+
+/* ---- The result pages (/uncompromising/all/ and the others) ------------------------------------------------------- */
+.q-shared { max-width: 40rem; margin: 0 auto; min-height: 80svh; padding: 24px clamp(1.1rem, 4vw, 2rem) 48px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.q-shared .q-home { align-self: flex-start; }
+.q-eyebrow { margin: 3rem 0 1rem; font: 600 14px/1.3 var(--q-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--q-teal); }
+.q-shared-cell svg { width: 200px; height: 190px; display: block; margin: 0.5rem auto 1.8rem; overflow: visible; color: var(--q-ink); }
+
+/* ---- The pictures' one slow thing each, and reduced motion -------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .quiz-page *, .quiz-page *::before, .quiz-page *::after { animation: none !important; transition: none !important; }
+}

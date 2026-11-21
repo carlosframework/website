@@ -37,6 +37,22 @@ It does this before shared footer injection. The build publishes only
 the starter archive, manifest and source listing. Raw starter files, config and
 claim fixtures remain private build inputs.
 
+🤖 `/uncompromising/` is the "How uncompromising are you?" quiz (spec on the
+`story-proposal-20261117` branch, `docs/superpowers/specs/2026-11-20-uncompromising-quiz.md`).
+It is a prototype, not linked from anywhere yet; its copy and its character are
+provisional. `hack/build-quiz.mjs` renders it after `buildStart`: the page
+(`src/_includes/quiz.njk`), three result pages (`/all/`, `/most/`, `/few/`, which
+Share links to) and twenty-five pictures (`hack/quiz-pictures.mjs`), every word from
+`src/_data/quiz-copy.json` keyed by its copy-review id. Served without script it is
+the twelve statements with their facts, pictures and the paste line;
+`src/uncompromising/quiz.js` turns the same markup into steps (rules in `state.mjs`,
+the pile's Matter.js physics in `pile.mjs`). The character is drawn only in
+`src/uncompromising/character.mjs`, so a final design is swapped there. The share
+PNGs are rendered by `node hack/quiz-share-images.mjs /path/to/chrome`; run it again
+when a verdict or the character changes. `test/quiz.test.mjs` checks the rules and the
+build; `test/quiz-browser.test.mjs` (with `QUIZ_PLAYWRIGHT` and `QUIZ_CHROME`) checks
+keys, focus, storage, reduced motion and no script.
+
 Every user-facing string on those pages passed a copy review (the indexes and
 results are archived under `copy-review/done/`); rewrite copy only through
 another review. `/docs` does: its pages come from markdown through Eleventy, the

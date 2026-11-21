@@ -3,6 +3,7 @@ import markdownIt from "markdown-it";
 import { createDocsMarkdown, slugify } from "./hack/docs-markdown.mjs";
 import { addFooter } from "./hack/add-footer.mjs";
 import { buildStart } from "./hack/build-start.mjs";
+import { buildQuiz } from "./hack/build-quiz.mjs";
 import { loadStartConfig } from "./src/_data/start-config.mjs";
 
 // slugify lives in hack/docs-markdown.mjs with the rest of the docs
@@ -33,6 +34,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addGlobalData("startConfig", () => loadStartConfig());
   eleventyConfig.on("eleventy.after", async ({ directories }) => {
     await buildStart(directories.output, loadStartConfig());
+    await buildQuiz(directories.output, loadStartConfig());
     await addFooter(directories.output);
   });
   eleventyConfig.addPassthroughCopy({ "src/index.html": "index.html" });
@@ -43,6 +45,8 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/case-studies": "case-studies" });
   eleventyConfig.addPassthroughCopy({ "src/attributes": "attributes" });
   eleventyConfig.addPassthroughCopy({ "src/trust": "trust" });
+  // 🤖 The quiz's styles, scripts and share images; hack/build-quiz.mjs writes its pages and pictures.
+  eleventyConfig.addPassthroughCopy({ "src/uncompromising": "uncompromising" });
   // Only generated twins and the three versioned downloads are published.
   eleventyConfig.ignores.add("src/start/**");
   eleventyConfig.addPassthroughCopy({ "src/start/start.css": "start/start.css" });

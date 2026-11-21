@@ -43,7 +43,8 @@ const human = "<!-- 👨 Paul's words, verbatim -->";
 // 2026-11-12 rework. Markup lives in src/_includes/home-{hero,body}.njk.
 // Set to false to show the number-free "What you get" alternatives (home.get.*.alt).
 export const homeFigures = true;
-function homePromptHTML(config,copy,id,works) {
+// label replaces Paul's homepage lead-in with another page's own (the quiz's), which is not his verbatim words.
+export function homePromptHTML(config,copy,id,works,label) {
  const line=pasteLine(config), url=`${config.siteOrigin}/start`;
  // Keep the production URL together; other origins may wrap only at URL separators. In a very narrow box (a 320 px
  // phone) the production URL may break once, after its scheme (.pb-brk, a break offered only there: see home.css;
@@ -59,7 +60,7 @@ function homePromptHTML(config,copy,id,works) {
  // The hero's box is one calm row; the closing box keeps the line under it.
  const body=works===undefined?`<div class="hv-row">${lineHTML}${button}</div>`:`${lineHTML}\n<div class="pb-foot"><p class="pb-works">${escapeHTML(works)}</p>${button}</div>`;
  return `<div class="paste v-soft${works===undefined?' hv-paste':''}">
-${human}<p class="pb-to">${escapeHTML(copy['home.paste.label'])}</p><!-- /👨 -->
+${label===undefined?`${human}<p class="pb-to">${escapeHTML(copy['home.paste.label'])}</p><!-- /👨 -->`:`<p class="pb-to">${escapeHTML(label)}</p>`}
 ${body}
 <p class="pb-done" id="${id}-status" role="status" aria-live="polite"></p></div>`;
 }
@@ -179,7 +180,7 @@ const themeIcons={
  light:'<circle cx="12" cy="12" r="3.5"/><path d="M12 2.5V5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/>',
  dark:'<path d="M19.5 14.6A8 8 0 1 1 9.4 4.5a6.5 6.5 0 0 0 10.1 10.1z"/>',
 };
-function themeSwitchHTML(copy) {
+export function themeSwitchHTML(copy) {
  const t=key=>escapeHTML(copy[`home.theme.${key}`]);
  return `<div class="theme-switch" role="group" aria-label="${t('label')}" hidden>${['auto','light','dark'].map(k=>`<button type="button" data-theme-set="${k}" aria-pressed="${k==='auto'}" aria-label="${t(k)}" title="${t(k)}"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${themeIcons[k]}</svg></button>`).join('')}</div>`;
 }

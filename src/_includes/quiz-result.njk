@@ -1,0 +1,36 @@
+{#- 🤖 One result page per verdict (/uncompromising/all/, /most/, /few/), rendered by hack/build-quiz.mjs. Share sends
+    these addresses, so a link preview gets this verdict's title, description and image. Nothing personal is in
+    them: everyone with the same result shares the same page. -#}
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101c23">
+<title>{{ t('quiz.page.' + kind + '.title') }}</title>
+<meta name="description" content="{{ t('quiz.page.' + kind + '.description') }}">
+<link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
+<link rel="canonical" href="{{ origin }}/uncompromising/{{ kind }}/">
+<meta property="og:title" content="{{ t('quiz.page.' + kind + '.title') }}">
+<meta property="og:description" content="{{ t('quiz.page.' + kind + '.description') }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ origin }}/uncompromising/{{ kind }}/">
+<meta property="og:image" content="{{ origin }}/uncompromising/share/{{ kind }}.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{ t('quiz.share.' + kind + '.alt') }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{{ origin }}/uncompromising/share/{{ kind }}.png">
+<script src="/home/theme.js?v=0"></script>
+<link rel="stylesheet" href="/home/theme.css?v=0">
+<link rel="stylesheet" href="/uncompromising/quiz.css?v=0">
+</head>
+<body class="site-home quiz-page">
+<main class="q-shared">
+  <a class="q-home" href="/" aria-label="CARLOS">{{ wordmark | safe }}</a>
+  <p class="q-eyebrow">{{ t('quiz.intro.title') }}</p>
+  <h1 class="q-title">{{ t('quiz.result.' + kind) }}</h1>
+  <div class="q-shared-cell" aria-hidden="true">{{ cell | safe }}</div>
+  <a class="q-btn q-big" href="/uncompromising/">{{ t('quiz.page.cta') }}</a>
+</main>
+<footer>{{ themeSwitch | safe }}</footer>
+</body></html>
