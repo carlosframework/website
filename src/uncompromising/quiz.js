@@ -1,10 +1,11 @@
 // 🤖 "How uncompromising are you?": turns the page's numbered list into one step per screen. Without this script
-// the page is the list, complete. With it: an intro, the stack picker, twelve statements and a result, each with an
-// address (#stack, #1 to #12, #result) so Back and Forward walk the steps; answers and the pile kept in
+// the page is the list, complete. With it: an intro, what the app is built with, that ecosystem's typical stack,
+// twelve statements (two of them depend on the stack) and a result, each with an address (#built, #stack, #1 to #12,
+// #result) so Back and Forward walk the steps; answers and the pile kept in
 // sessionStorage and sent nowhere; keys (1, 2, arrows, Page Up and Down); focus on each step's heading; reactions in a
 // status region. The character and the pile move only when motion is allowed. Spec: website branch story-proposal-20261117,
 // docs/superpowers/specs/2026-11-20-uncompromising-quiz.md.
-import { KEYS, STEPS, empty, clean, pile, toggleThing, startFresh, answer, verdict, stepOf, keyOf, next, prev, fill } from './state.mjs';
+import { empty, clean, pile, chooseEco, offered, toggleThing, startFresh, answer, verdict, split, stepOf, keyOf, next, prev, fill } from './state.mjs';
 import { MOODS, livePaths } from './character.mjs';
 import { createPile } from './pile.mjs';
 
@@ -26,7 +27,10 @@ for (const el of $$('.q-st .q-say')) el.textContent = '';
 $('.q-end-slot').replaceWith($('.q-end'));
 form.addEventListener('submit', e => e.preventDefault());
 const bar = $('.q-bar'), stage = $('.q-stage'), ul = $('.q-pile');
-const steps = Object.fromEntries($$('.q-step').map(el => [el.dataset.step, el]));
+const steps = Object.fromEntries($$('.q-step[data-step]').map(el => [el.dataset.step, el]));
+// A numbered step shows whichever statement this visitor gets in that slot (state.mjs, keysFor).
+const byKey = Object.fromEntries($$('.q-st').map(el => [el.dataset.key, el]));
+const stepEl = step => (/^\d+$/.test(step) ? byKey[keyOf(state, step)] : steps[step]);
 const pileView = createPile(ul, { names: D.things, still });
 
 // ---- the character (src/uncompromising/character.mjs: provisional, swapped there) ---------------------------------
@@ -69,13 +73,13 @@ function showPile(how = 'none') {
   pileView.show(left, how);
   ul.setAttribute('aria-label', plural(left.length, 'quiz.pile.aria.one', 'quiz.pile.aria'));
   const label = $('.q-pile-label');
-  label.textContent = now === 'stack' ? (left.length ? plural(left.length, 'quiz.stack.count.one', 'quiz.stack.count') : '') : (state.fresh ? '' : fill(T['quiz.pile.label'], { n: left.length }));
+  label.textContent = now === 'stack' ? (left.length ? plural(left.length, 'quiz.stack.count.one', 'quiz.stack.count') : '') : (state.fresh || now === 'built' ? '' : fill(T['quiz.pile.label'], { n: left.length }));
   stage.classList.toggle('is-empty', !left.length);
 }
 // The current step's two pictures, and the next step's, are fetched; the rest wait.
 function fetchPictures(step) {
   for (const s of [step, next(step)]) {
-    const el = steps[s]; if (!el?.matches('.q-st')) continue;
+    const el = stepEl(s); if (!el?.matches('.q-st')) continue;
     for (const img of $$('img[data-src]', el)) { img.src = img.dataset.src; img.removeAttribute('data-src'); }
     const fact = $('.q-img-fact', el); if (fact) fact.loading = 'eager';
   }
@@ -102,28 +106,44 @@ function reaction(el, key, value) {
 function bars(step) {
   const n = Number(step), ticks = $$('.q-ticks i', bar), text = $('.q-prog-text', bar);
   ticks.forEach((i, k) => { i.className = step === 'result' || (n && k < n - 1) ? 'on' : n && k === n - 1 ? 'now' : ''; });
-  $('.q-ticks', bar).hidden = step === 'stack';
-  text.textContent = step === 'stack' ? T['quiz.bar.stack'] : step === 'result' ? T['quiz.bar.result'] : fill(T['quiz.bar.progress'], { n });
+  $('.q-ticks', bar).hidden = step === 'stack' || step === 'built';
+  text.textContent = step === 'stack' || step === 'built' ? T['quiz.bar.stack'] : step === 'result' ? T['quiz.bar.result'] : fill(T['quiz.bar.progress'], { n });
+}
+// Step two: the groups and things the chosen ecosystem offers, its typical stack ticked, and its heading.
+function picker() {
+  const eco = state.eco ?? 'unsure', el = steps.stack, show = new Map(offered(eco).map(g => [g.group, new Set(g.things)]));
+  for (const g of $$('.q-group', el)) {
+    const things = show.get(g.dataset.group);
+    g.hidden = !things;
+    for (const chip of $$('.q-chip', g)) chip.hidden = !things?.has(chip.dataset.thing);
+  }
+  for (const box of $$('input[name="stack"]')) box.checked = state.stack.includes(box.value);
+  const h = $('.q-h', el), hint = $('.q-hint', el);
+  h.textContent = eco === 'go' ? T['quiz.stack2.go'] : eco === 'unsure' ? T['quiz.stack2.unsure'] : fill(T['quiz.stack2.title'], { ecosystem: D.ecoNames[eco] });
+  hint.textContent = eco === 'go' ? T['quiz.stack2.go.hint'] : eco === 'unsure' ? T['quiz.stack.hint'] : '';
+  hint.hidden = !hint.textContent;
 }
 function render(step, { focus = false, from = null } = {}) {
   now = step;
-  const kind = step === 'intro' ? 'intro' : step === 'stack' ? 'stack' : step === 'result' ? 'result' : 'st';
+  const kind = step === 'intro' ? 'intro' : step === 'built' ? 'built' : step === 'stack' ? 'stack' : step === 'result' ? 'result' : 'st';
   form.dataset.step = step; form.dataset.kind = kind;
-  for (const [s, el] of Object.entries(steps)) el.classList.toggle('is-now', s === step);
+  const current = stepEl(step);
+  for (const el of $$('.q-step')) el.classList.toggle('is-now', el === current);
   bars(step);
   stage.classList.toggle('is-fresh', state.fresh);
   stage.classList.remove('is-merged', 'is-ending');
-  if (kind === 'stack') for (const box of $$('input[name="stack"]')) box.checked = state.stack.includes(box.value);
+  if (kind === 'built') for (const b of $$('.q-eco')) b.setAttribute('aria-pressed', String(b.dataset.eco === state.eco));
+  if (kind === 'stack') picker();
   if (kind === 'st') {
-    const key = keyOf(step), el = steps[step];
-    reaction(el, key, answered(key)); picture(el, key, answered(key));
+    const key = keyOf(state, step);
+    reaction(current, key, answered(key)); picture(current, key, answered(key));
     fetchPictures(step);
   }
   if (kind !== 'intro') { pileView.preload(); }
   showPile();
   if (kind === 'result') result(from === '12' || from === 12);
-  else setMood(kind === 'st' && answered(keyOf(step)) ? (answered(keyOf(step)) === 'no' ? 'wake' : 'sad') : 'rest', from ? 400 : 0);
-  if (focus) { scrollTo(0, 0); $(step === 'intro' ? '.q-title' : '.q-h', steps[step])?.focus({ preventScroll: true }); }
+  else setMood(kind === 'st' && answered(keyOf(state, step)) ? (answered(keyOf(state, step)) === 'no' ? 'wake' : 'sad') : 'rest', from ? 400 : 0);
+  if (focus) { scrollTo(0, 0); $(step === 'intro' ? '.q-title' : '.q-h', current)?.focus({ preventScroll: true }); }
 }
 
 // ---- moving between steps ---------------------------------------------------------------------------------------
@@ -132,7 +152,9 @@ function go(step) {
   else location.hash = step;
 }
 addEventListener('hashchange', () => render(stepOf(location.hash), { focus: true, from: now }));
-$('.q-start').addEventListener('click', () => go('stack'));
+$('.q-start').addEventListener('click', () => go('built'));
+// Step one: one tap chooses what the app is built with and moves on.
+for (const b of $$('.q-eco')) b.addEventListener('click', () => { state = chooseEco(state, b.dataset.eco); save(); go('stack'); });
 $('.q-back', bar).addEventListener('click', () => go(prev(now)));
 for (const b of $$('.q-next')) b.addEventListener('click', () => go(next(now)));
 
@@ -147,7 +169,7 @@ $('.q-fresh').addEventListener('click', () => { state = startFresh(state); save(
 // An answer: the character first, then the picture, then the brick. One thing moves at a time; each is under half a second.
 let pending = [];
 function choose(value) {
-  const key = keyOf(now), el = steps[now];
+  const key = keyOf(state, now), el = stepEl(now);
   if (!key || answered(key) === value) return;
   pending.forEach(clearTimeout); pending = [];
   state = answer(state, key, value); save();
@@ -164,6 +186,9 @@ for (const b of $$('.q-a')) b.addEventListener('click', () => choose(b.dataset.a
 let ending = null;
 function result(animate) {
   const v = verdict(state), el = steps.result;
+  const parts = split(state), name = t => D.things[t] ?? D.always[t];
+  for (const col of $$('.q-split-col', el)) $('ul', col).replaceChildren(...parts[col.dataset.to].map(t => Object.assign(document.createElement('li'), { textContent: name(t) })));
+  $('.q-split', el).hidden = state.fresh || !state.stack.length;
   for (const s of $$('[data-v]', el)) s.hidden = s.dataset.v !== v;
   $('.q-count', el).textContent = state.fresh || !state.stack.length ? T['quiz.result.fresh'] : fill(T['quiz.result.count'], { before: state.stack.length });
   $('.q-share-status', el).textContent = '';
@@ -213,19 +238,19 @@ addEventListener('keydown', e => {
   const t = e.target, typing = t.matches?.('input:not([type="checkbox"]), textarea, select, [contenteditable]');
   if (typing) return;
   const onControl = t.matches?.('button, a, input, summary');
-  const key = keyOf(now), stepKind = form.dataset.kind;
+  const key = keyOf(state, now), stepKind = form.dataset.kind;
   const nav = to => { e.preventDefault(); go(to); };
   if (stepKind === 'st' && !e.shiftKey && (e.key === '1' || e.key === '2')) { e.preventDefault(); choose(e.key === '1' ? 'yes' : 'no'); return; }
   if (stepKind === 'st' && (e.key === 'ArrowLeft' || e.key === 'ArrowRight') && t.matches?.('.q-a')) {
-    e.preventDefault(); const [a, b] = $$('.q-a', steps[now]); (t === a ? b : a).focus(); return;
+    e.preventDefault(); const [a, b] = $$('.q-a', stepEl(now)); (t === a ? b : a).focus(); return;
   }
   if (e.shiftKey) return;
   if ((e.key === 'ArrowUp' || e.key === 'PageUp') && now !== 'intro') return nav(prev(now));
   if (e.key === 'ArrowDown' || e.key === 'PageDown') {
-    if (now === 'intro') return nav('stack');
+    if (now === 'intro') return nav('built');
     if (stepKind === 'st' && answered(key)) return nav(next(now));
   }
-  if (now === 'intro' && e.key === 'Enter' && !onControl) return nav('stack');
+  if (now === 'intro' && e.key === 'Enter' && !onControl) return nav('built');
 });
 reduce.addEventListener('change', () => { if (still()) { pileView.settle(); draw(mood = { ...MOODS[moodName] ?? MOODS.rest }); } });
 

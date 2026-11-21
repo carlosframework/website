@@ -113,7 +113,9 @@
 
 /* A statement: the words on the left, the picture beside them, the pile and the character on the right. */
 .q-on .q-st.is-now { display: block; align-self: stretch; }
-.q-on .q-st fieldset { height: 100%; display: grid; grid-template-columns: minmax(0, 430px) minmax(0, 1fr); grid-template-areas: "eye pic" "q pic" "ans pic" "after pic"; grid-template-rows: auto auto auto auto; align-content: center; column-gap: 36px; padding: 40px 0 0; }
+/* The statement, its answers and the reaction are one group, centred in the space under the bar: the two flexible
+   rows above and below take the spare height (the picture spans them all and is centred on its own). */
+.q-on .q-st fieldset { height: 100%; display: grid; grid-template-columns: minmax(0, 430px) minmax(0, 1fr); grid-template-areas: "top pic" "eye pic" "q pic" "ans pic" "after pic" "end pic"; grid-template-rows: minmax(16px, 1fr) auto auto auto auto minmax(16px, 1fr); column-gap: 36px; padding: 0; }
 .q-on .q-st .q-legend { grid-area: q; float: left; }
 .q-on .q-st .q-h, .q-on .q-stack .q-h { font-size: clamp(1.6rem, 2.6vw, 2.2rem); font-weight: 720; letter-spacing: -0.025em; line-height: 1.1; margin: 0 0 22px; }
 .q-on .q-st .q-sr { position: absolute; }
@@ -122,32 +124,49 @@
 .q-a { flex: 1 1 0; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 0 10px; border: 1.5px solid var(--q-ink); border-radius: 12px; background: var(--q-card); color: var(--q-ink); font: 650 17px/1.1 var(--q-sans); cursor: pointer; transition: background-color 0.2s, color 0.2s, opacity 0.25s; }
 .q-a[aria-pressed="true"] { background: var(--q-ink); color: var(--q-bg); }
 .is-answered .q-a[aria-pressed="false"] { opacity: 0.4; }
-.q-on .q-after { grid-area: after; min-height: 210px; margin-top: 18px; }
+.q-on .q-after { grid-area: after; min-height: 210px; margin-top: 16px; }
 .q-on .q-say { font-size: 20px; line-height: 1.4; color: var(--q-ink); margin: 0 0 12px; }
 .q-gone { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; font: 12px/1.4 var(--q-mono); letter-spacing: 0.05em; color: var(--q-soft); }
 .q-gone s { border: 1px solid var(--q-soft); border-radius: 3px; padding: 3px 8px; color: var(--q-ink); background: var(--q-card); }
 .q-on .q-next { margin-top: 14px; }
 .q-on .q-next[hidden] { display: inline-flex !important; visibility: hidden; }
 .q-on .q-pic { grid-area: pic; align-self: center; max-width: none; }
+@media (min-width: 900px) { .q-on .q-after { min-height: 168px; } .q-on .q-st .q-h { margin-bottom: 18px; } }
 .q-on .q-pic .q-img { opacity: 0; transition: opacity 0.4s var(--q-ease); }
 .q-on .q-pic .q-img.is-on { opacity: 1; }
 
 /* The picker. */
-.q-on[data-kind="stack"], .q-on[data-kind="result"] { grid-template-columns: minmax(0, 430px) minmax(0, 1fr); }
-.q-on .q-stack.is-now, .q-on .q-result.is-now { align-self: center; padding-top: 24px; }
+.q-on[data-kind="built"], .q-on[data-kind="stack"], .q-on[data-kind="result"] { grid-template-columns: minmax(0, 470px) minmax(0, 1fr); }
+/* "safe": a step taller than the screen starts under the bar instead of spilling up behind it. */
+.q-on .q-built.is-now, .q-on .q-stack.is-now, .q-on .q-result.is-now { align-self: safe center; padding: 0 0 24px; margin-top: 28px; }
+/* On a long picker the pile stays in view while the chips scroll. */
+@media (min-width: 900px) { .q-on[data-kind="stack"] .q-stage { position: sticky; top: 60px; align-self: start; height: calc(100svh - 92px); min-height: 360px; } }
+.q-ecos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 6px; clear: both; }
+.q-eco { min-height: 52px; padding: 8px 14px; border: 1.5px solid var(--q-line); border-radius: 12px; background: var(--q-card); color: var(--q-ink); font: 600 16px/1.2 var(--q-sans); text-align: left; cursor: pointer; transition: border-color 0.15s; }
+.q-eco:hover { border-color: var(--q-ink); }
+.q-eco[aria-pressed="true"] { border-color: var(--q-teal); background: color-mix(in srgb, var(--q-teal) 14%, var(--q-card)); }
+.q-group { margin: 12px 0 0; }
+.q-group-h { margin: 0 0 6px; font: 600 11px/1.3 var(--q-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--q-soft); }
+.q-stack .q-chips { margin: 0; gap: 6px; }
+.q-stack .q-go { margin-top: 18px; }
+.q-on .q-stack .q-h { font-size: clamp(1.35rem, 2vw, 1.75rem); }
 .q-hint { font-size: 20px; color: var(--q-soft); margin: 0; clear: both; }
 .q-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 22px; }
 .q-chip { position: relative; display: inline-flex; }
 .q-chip input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
-.q-chip span { display: inline-flex; align-items: center; min-height: 40px; padding: 0 13px; border: 1.5px solid var(--q-line); border-radius: 999px; background: var(--q-card); font-size: 15px; font-weight: 550; }
+.q-chip span { display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border: 1.5px solid var(--q-line); border-radius: 999px; background: var(--q-card); font-size: 15px; font-weight: 550; }
 .q-chip input:checked + span { border-color: var(--q-teal); background: color-mix(in srgb, var(--q-teal) 14%, var(--q-card)); }
-.q-chip input:checked + span::before { content: "✓"; color: var(--q-teal); font-weight: 700; margin-right: 6px; }
+.q-chip input:checked + span::before { content: "✓" / ""; color: var(--q-teal); font-weight: 700; margin-right: 6px; }
 .q-chip input:focus-visible + span { outline: 3px solid var(--q-focus); outline-offset: 2px; }
 .q-go { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
 
 /* The result. */
 .q-on .q-result .q-h { font-size: clamp(2.2rem, 4vw, 3rem); font-weight: 750; letter-spacing: -0.03em; line-height: 1.05; margin: 0 0 16px; }
-.q-count { font-size: 21px; line-height: 1.35; font-weight: 600; margin: 0 0 18px; }
+.q-count { font-size: 21px; line-height: 1.35; font-weight: 600; margin: 0 0 14px; }
+.q-split { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 0 0 18px; }
+.q-split-col h3 { margin: 0 0 6px; padding-bottom: 4px; border-bottom: 1px solid var(--q-line); font: 600 11px/1.3 var(--q-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--q-soft); }
+.q-split-col ul { margin: 0; padding: 0; list-style: none; font-size: 14px; line-height: 1.45; }
+.q-split-col[data-to="carloku"] h3 { color: var(--q-teal); }
 .q-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin-top: 16px; }
 .q-share-status { min-height: 1.5em; margin: 10px 0 0; font-size: 15px; color: var(--q-soft); }
 
@@ -175,9 +194,9 @@
 @keyframes q-leave { 35% { transform: translate(-14px, -26px) rotate(-12deg); opacity: 1; } to { transform: translate(-40px, 160px) rotate(-38deg); opacity: 0; } }
 
 /* The picker and the result: a wider stage, two bricks to a row, the character on the right. */
-.q-on[data-kind="stack"] .q-pile, .q-on[data-kind="result"] .q-pile { right: auto; left: 22%; width: 300px; }
-.q-on[data-kind="stack"] .q-brick, .q-on[data-kind="result"] .q-brick { width: 132px; height: 32px; font-size: 14px; }
-.q-on[data-kind="stack"] .q-cell { left: auto; right: 4%; width: 170px; }
+.q-on[data-kind="built"] .q-pile, .q-on[data-kind="stack"] .q-pile, .q-on[data-kind="result"] .q-pile { right: auto; left: 22%; width: 300px; }
+.q-on[data-kind="built"] .q-brick, .q-on[data-kind="stack"] .q-brick, .q-on[data-kind="result"] .q-brick { width: 132px; height: 32px; font-size: 14px; }
+.q-on[data-kind="built"] .q-cell, .q-on[data-kind="stack"] .q-cell { left: auto; right: 4%; width: 170px; }
 /* The result: the pile is gone into the character, which stands in the middle of the floor. */
 .q-on[data-kind="result"] .q-cell { left: 50%; width: 230px; margin-left: -115px; }
 
@@ -207,6 +226,20 @@
 .q-block.is-moving { transition: transform 0.6s var(--q-ease); }
 .q-block.is-in { opacity: 0; transition: opacity 0.25s, transform 0.6s var(--q-ease); }
 
+
+/* ---- 900 to 1199 px: the statement and its picture side by side, the pile as a strip along the bottom --------- */
+@media (min-width: 900px) and (max-width: 1199px) {
+  .q-on[data-kind="st"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: 60px minmax(0, 1fr) auto; }
+  .q-on[data-kind="st"] .q-stage { grid-column: 1; grid-row: 3; min-height: 0; height: auto; display: grid; grid-template-columns: minmax(0, 1fr) 96px; align-items: end; padding-bottom: 24px; margin-top: 8px; }
+  .q-on[data-kind="st"] .q-pile { position: relative; inset: auto; width: auto; min-height: 31px; justify-content: flex-start; column-gap: 6px; padding-left: 4px; }
+  .q-on[data-kind="st"] .q-brick { width: calc((100% - 60px) / 6); height: 24px; font-size: 11.5px; }
+  .q-on[data-kind="st"] .q-brick:nth-child(4n+1), .q-on[data-kind="st"] .q-brick:nth-child(4n+3) { left: 0; }
+  .q-on[data-kind="st"] .q-brick:nth-child(12n+7), .q-on[data-kind="st"] .q-brick:nth-child(12n+8), .q-on[data-kind="st"] .q-brick:nth-child(12n+9), .q-on[data-kind="st"] .q-brick:nth-child(12n+10), .q-on[data-kind="st"] .q-brick:nth-child(12n+11), .q-on[data-kind="st"] .q-brick:nth-child(12n+12) { left: 8px; }
+  .q-on[data-kind="st"] .q-floor { bottom: 24px; }
+  .q-on[data-kind="st"] .q-pile-label { bottom: 2px; }
+  .q-on[data-kind="st"] .q-cell { position: relative; left: auto; bottom: -3px; width: 96px; }
+}
+
 /* ---- 390 px: bar, picture, statement, the two answers side by side, reaction and Next, then the pile as a strip --- */
 @media (max-width: 899px) {
   .qz.q-on { grid-template-columns: minmax(0, 1fr); grid-template-rows: 52px auto minmax(0, 1fr) auto; column-gap: 0; padding: 0 18px 12px; }
@@ -216,7 +249,7 @@
   .q-name { display: none; }
   .q-ticks i { width: 9px; }
   .q-back { padding: 0 10px; }
-  .q-on .q-st fieldset { grid-template-columns: minmax(0, 1fr); grid-template-areas: "pic" "q" "ans" "after"; grid-template-rows: auto auto auto auto; align-content: start; padding-top: 14px; row-gap: 0; }
+  .q-on .q-st fieldset { grid-template-columns: minmax(0, 1fr); grid-template-areas: "pic" "q" "ans" "after"; grid-template-rows: auto auto auto auto; height: auto; align-content: start; padding-top: 14px; row-gap: 0; }
   .q-on .q-pic { margin: 0 0 14px; }
   .q-on .q-eye, .quiz-page .q-a kbd, .quiz-page .q-next kbd, .quiz-page .q-start kbd { display: none; }
   .q-on .q-st .q-h { font-size: 24px; margin-bottom: 14px; }
@@ -235,11 +268,15 @@
   .q-pile-label { bottom: 2px; }
   .q-cell { position: relative; left: auto; bottom: -3px; width: 76px; }
   /* The picker and the result put the stage above the words. */
-  .q-on[data-kind="stack"], .q-on[data-kind="result"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: 52px auto auto minmax(0, 1fr); }
+  .q-on[data-kind="built"], .q-on[data-kind="stack"], .q-on[data-kind="result"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: 52px auto auto minmax(0, 1fr); }
+  .q-on[data-kind="built"] .q-stage { display: none; }
+  .q-on[data-kind="built"] .q-step { grid-row: 2 / -1; padding-top: 18px; }
+  .q-split { gap: 10px; }
+  .q-split-col ul { font-size: 13px; }
   .q-on[data-kind="stack"] .q-stage, .q-on[data-kind="result"] .q-stage { grid-row: 2; margin: 14px 0 6px; grid-template-columns: minmax(0, 1fr) 96px; }
   .q-on[data-kind="stack"] .q-step, .q-on[data-kind="result"] .q-step { grid-row: 3; padding-top: 6px; }
-  .q-on[data-kind="stack"] .q-pile, .q-on[data-kind="result"] .q-pile { left: auto; width: auto; }
-  .q-on[data-kind="stack"] .q-brick, .q-on[data-kind="result"] .q-brick { width: calc((100% - 22px) / 2); height: 24px; font-size: 12px; }
+  .q-on[data-kind="built"] .q-pile, .q-on[data-kind="stack"] .q-pile, .q-on[data-kind="result"] .q-pile { left: auto; width: auto; }
+  .q-on[data-kind="built"] .q-brick, .q-on[data-kind="stack"] .q-brick, .q-on[data-kind="result"] .q-brick { width: calc((100% - 22px) / 2); height: 24px; font-size: 12px; }
   .q-on[data-kind="stack"] .q-cell { right: auto; width: 96px; }
   .q-on[data-kind="result"] .q-stage { grid-template-columns: minmax(0, 1fr); justify-items: center; padding-top: 8px; }
   .q-on[data-kind="result"] .q-pile { position: absolute; left: 0; bottom: 25px; width: 100%; }

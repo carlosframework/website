@@ -129,6 +129,56 @@ export function pictures(t, { bind = false } = {}) {
       f: () => gnd() + cell(104, 172, 64, { seed: 2, flat: 0.98 }) + `<rect x="286" y="118" width="96" height="122" rx="6" fill="#fff" stroke="${INK}" stroke-width="1.2"/>` + db(334, 160, 20, 40)
         + `<g class="slow trickle">${[0, 1, 2, 3, 4, 5].map(i => { const q = i / 5, x = 178 + q * 100, y = 150 - Math.sin(q * Math.PI) * 26; return `<rect x="${x - 5}" y="${y - 3}" width="10" height="6" rx="3" fill="#0b8a76" opacity="${(0.45 + q * 0.5).toFixed(2)}"/>`; }).join('')}</g>`
         + L(228, 100, P + 'backups.every') + L(334, 262, P + 'backups.storage') + L(104, 262, P + 'backups.app') },
+    // ---- The bonus statements: one per ecosystem (in place of statement 2) and one for Kubernetes (statement 5). ----
+    'b-rails': {
+      j: () => gnd() + bx(16, 150, 86, 40, P + 'b-rails.app', { cls: 'card' }) + bx(140, 150, 78, 40, P + 'b-rails.worker', { cls: 'card' }) + db(258, 146, 20, 34) + L(258, 210, P + 'b-rails.queue')
+        + `<path d="M102 170 h38 M218 170 h20 M278 170 h40 v-60" fill="none" stroke="${INK}" stroke-width="3"/><rect x="300" y="78" width="40" height="32" rx="3" fill="#fff" stroke="${INK}" stroke-width="1.2"/><path d="M300 80 l20 16 l20 -16" fill="none" stroke="${INK}" stroke-width="1.2"/><line x1="320" y1="110" x2="320" y2="240" stroke="${INK}" stroke-width="2"/>`
+        + L(320, 64, P + 'b-rails.mail'),
+      f: () => gnd() + cell(170, 162, 80, { seed: 2, flat: 0.98, inside: [-20, 0, 20].map(x => `<rect x="${x - 7}" y="-8" width="14" height="10" rx="1" fill="#fff" stroke="#c97a16"/><path d="M${x - 7} -7 l7 5 l7 -5" fill="none" stroke="#c97a16"/>`).join('') }) + L(170, 264, P + 'b-rails.inside') },
+    'b-php': {
+      j: () => gnd() + `<circle cx="200" cy="118" r="74" fill="#fff" stroke="${INK}" stroke-width="1.6"/>` + [...Array(11)].map((_, i) => { const a = Math.PI * (0.8 + i * 0.14); return `<line x1="${200 + 60 * Math.cos(a)}" y1="${118 + 60 * Math.sin(a)}" x2="${200 + 70 * Math.cos(a)}" y2="${118 + 70 * Math.sin(a)}" stroke="${INK}" stroke-width="1.4"/>`; }).join('')
+        + `<path d="M200 118 L244 76" stroke="${RED}" stroke-width="3" stroke-linecap="round"/><path d="M200 118 L236 70" stroke="${RED}" stroke-opacity=".3" stroke-width="3" stroke-linecap="round"/><circle cx="200" cy="118" r="6" fill="${INK}"/>`
+        + w(P + 'b-php.dial', `x="200" y="222" text-anchor="middle"`, 'tm" style="fill:#14232b') + `<g transform="rotate(6 330 70)"><rect x="290" y="44" width="84" height="48" fill="#fff3a8" stroke="${INK}" stroke-width="1"/>` + w(P + 'b-php.note', `x="332" y="72" text-anchor="middle"`, 'card') + `</g>`,
+      f: () => gnd() + cell(200, 162, 80, { seed: 3, flat: 0.98 }) + L(200, 264, P + 'b-php.tune') },
+    'b-django': {
+      j: () => gnd() + [['b-django.django', 20], ['b-django.rabbit', 146], ['b-django.celery', 272]].map(([id, x]) => bx(x, 160, 108, 44, P + id, { cls: 'card' })).join('')
+        + [74, 200, 326].map(x => `<path d="M${x - 26} 110 h52 a8 8 0 0 1 8 8 v18 a8 8 0 0 1 -8 8 h-30 l-10 10 v-10 h-12 a8 8 0 0 1 -8 -8 v-18 a8 8 0 0 1 8 -8z" fill="#fff" stroke="${INK}"/><text class="card" x="${x}" y="132" text-anchor="middle">…</text>`).join('')
+        + arr(128, 182, 144, 182) + arr(254, 182, 270, 182) + L(200, 264, P + 'b-django.caption'),
+      f: () => gnd() + cell(200, 162, 80, { seed: 1, flat: 0.98, inside: [0, 1, 2].map(i => `<rect x="${-18 + i * 4}" y="${4 - i * 9}" width="30" height="7" rx="2" fill="#fff" stroke="#c97a16"/>`).join('') }) + L(200, 264, P + 'b-django.inside') },
+    'b-node': {
+      j: () => gnd() + `<path d="M40 70 h120 l16 18 h170 v152 h-306z" fill="#ead9b4" stroke="${INK}" stroke-width="1.4"/><path d="M40 98 h306" stroke="${INK}" stroke-opacity=".4"/>` + w(P + 'b-node.folder', `x="52" y="86"`, 'tm" style="fill:#14232b') + L(196, 176, P + 'b-node.size')
+        + `<path d="M360 214 h20 l8 8 v18 h-28z" fill="#fff" stroke="${INK}"/>` + L(390, 264, P + 'b-node.file', 'end'),
+      f: () => gnd() + cell(140, 162, 80, { seed: 2, flat: 0.98 }) + bx(276, 194, 80, 46, '', { fill: '#fff' }) + L(316, 186, P + 'b-node.binary') + L(200, 266, P + 'b-node.install') },
+    'b-java': {
+      j: () => gnd() + `<rect x="140" y="40" width="28" height="170" rx="14" fill="#fff" stroke="${INK}" stroke-width="1.6"/><circle cx="154" cy="214" r="22" fill="${RED}" stroke="${INK}" stroke-width="1.6"/><rect x="148" y="150" width="12" height="64" fill="${RED}"/>`
+        + [0, 1, 2, 3, 4, 5].map(i => `<line x1="168" y1="${60 + i * 24}" x2="178" y2="${60 + i * 24}" stroke="${INK}"/>`).join('') + w(P + 'b-java.jvm', `x="154" y="30" text-anchor="middle"`, 'card')
+        + `<g transform="translate(270 168)"><rect x="-22" y="-48" width="44" height="96" fill="${PAPER}" stroke="${INK}" stroke-width="1.2"/><path d="M-17 -44 h34 l-17 40z M-17 44 h34 l-17 -40z" fill="#fff" stroke="${INK}" stroke-width="1.2"/><path d="M-10 44 h20 l-10 -16z" fill="#d8b65e"/></g>` + L(220, 266, P + 'b-java.warming'),
+      f: () => gnd() + cell(200, 162, 80, { wake: 1, seed: 4, flat: 0.98 }) + L(200, 266, P + 'b-java.ready') },
+    'b-dotnet': {
+      j: () => gnd() + db(150, 90, 70, 130) + L(150, 266, P + 'b-dotnet.db') + `<line x1="214" y1="100" x2="262" y2="70" stroke="${INK}"/><path d="M262 52 h96 l14 18 l-14 18 h-96z" fill="#fff3d6" stroke="${INK}" stroke-width="1.2"/><circle cx="272" cy="70" r="4" fill="none" stroke="${INK}"/>` + w(P + 'b-dotnet.tag', `x="320" y="75" text-anchor="middle"`, 'card')
+        + [0, 1, 2, 3].map(i => `<ellipse cx="320" cy="${232 - i * 8}" rx="22" ry="6" fill="#d8b65e" stroke="#7a6220"/>`).join(''),
+      f: () => gnd() + cell(160, 162, 80, { seed: 2, flat: 0.98, nuc: 0, inside: db(0, -14, 16, 22, '#c97a16', '#ffe0a8') }) + L(160, 266, P + 'b-dotnet.inside') + L(320, 150, P + 'b-dotnet.licence') },
+    'b-wordpress': {
+      j: () => gnd() + [...Array(20)].map((_, i) => { const x = 40 + (i % 5) * 66, y = 34 + (i / 5 | 0) * 48; return `<rect x="${x}" y="${y}" width="50" height="34" rx="4" fill="#fff" stroke="${INK}" stroke-width="1.2"/><path d="M${x + 14} ${y + 12} h22 M${x + 14} ${y + 20} h14" stroke="${INK}" stroke-opacity=".4" stroke-width="2"/><circle cx="${x + 48}" cy="${y + 2}" r="6" fill="${RED}"/>`; }).join('') + L(200, 266, P + 'b-wordpress.count'),
+      f: () => gnd() + cell(200, 162, 80, { seed: 5, flat: 0.98 }) + L(200, 266, P + 'b-wordpress.patch') },
+    'b-go': {
+      j: () => gnd() + bx(20, 196, 76, 44, '', { fill: '#9adfce' }) + L(58, 266, P + 'b-go.binary')
+        + `<rect x="150" y="60" width="70" height="180" rx="3" fill="#e7ebe3" stroke="${INK}" stroke-width="1.2"/>` + [0, 1, 2, 3, 4].map(i => `<line x1="158" y1="${84 + i * 30}" x2="212" y2="${84 + i * 30}" stroke="${INK}" stroke-opacity=".4"/>`).join('') + L(185, 50, P + 'b-go.db')
+        + bx(250, 150, 64, 90, '', { fill: '#e7ebe3' }) + L(282, 140, P + 'b-go.queue') + bx(330, 110, 56, 130, '', { fill: '#e7ebe3' }) + L(358, 100, P + 'b-go.host')
+        + `<path d="M96 218 C 120 218 130 200 150 200 M96 226 C 150 236 220 236 250 220 M96 232 C 200 250 300 250 330 230" fill="none" stroke="${INK}" stroke-width="1.6"/>`,
+      f: () => gnd() + cell(200, 162, 80, { seed: 2, flat: 0.98, nuc: 0, inside: db(0, -14, 16, 22, '#c97a16', '#ffe0a8') }) + L(200, 266, P + 'b-go.inside') },
+    'b-supabase': {
+      j: () => gnd() + `<rect x="30" y="24" width="340" height="216" rx="8" fill="#fff" stroke="${INK}" stroke-width="1.4"/><path d="M30 46 h340" stroke="${INK}"/>` + [0, 1, 2].map(i => `<circle cx="${44 + i * 12}" cy="35" r="3.5" fill="#d3dbd0"/>`).join('')
+        + w(P + 'b-supabase.dash', `x="200" y="39" text-anchor="middle"`, 'bt') + [0, 1, 2, 3, 4, 5].map(i => `<rect x="${60 + i * 34}" y="${200 - [60, 90, 40, 110, 80, 130][i]}" width="22" height="${[60, 90, 40, 110, 80, 130][i]}" fill="#c9d6dc"/>`).join('')
+        + `<path d="M280 190 q20 -60 70 -90" fill="none" stroke="#c9d6dc" stroke-width="6"/><rect x="330" y="206" width="16" height="16" fill="#9adfce" stroke="${INK}"/>` + L(338, 264, P + 'b-supabase.yours'),
+      f: () => gnd() + cell(130, 162, 80, { seed: 2, flat: 0.98 }) + `<path d="M190 118 q26 -30 56 -32" fill="none" stroke="${INK}" stroke-width="1.2"/><path d="M244 72 h72 l12 14 l-12 14 h-72z" fill="#fff" stroke="${INK}" stroke-width="1.2"/><circle cx="254" cy="86" r="3" fill="none" stroke="${INK}"/>`
+        + w(P + 'b-supabase.tag', `x="289" y="91" text-anchor="middle"`, 'card') + L(130, 266, P + 'b-supabase.app') },
+    'b-helm': {
+      j: () => gnd() + `<g transform="translate(140 132)"><circle r="62" fill="none" stroke="#8a5a12" stroke-width="7"/><circle r="16" fill="#8a5a12"/>` + [...Array(8)].map((_, i) => { const a = i * Math.PI / 4; return `<line x1="0" y1="0" x2="${86 * Math.cos(a)}" y2="${86 * Math.sin(a)}" stroke="#8a5a12" stroke-width="6" stroke-linecap="round"/>`; }).join('') + `</g>`
+        + `<path d="M80 80 C 180 40 120 200 230 150 S 260 60 200 220 M100 200 C 160 120 250 240 230 100" fill="none" stroke="${TEAL}" stroke-width="2"/>`
+        + `<rect x="276" y="70" width="96" height="150" fill="#fff" stroke="${INK}" stroke-width="1.2"/>` + [...Array(8)].map((_, i) => `<line x1="${286 + (i % 4) * 6}" y1="${96 + i * 14}" x2="${336 + (i % 3) * 8}" y2="${96 + i * 14}" stroke="${TEAL}" stroke-width="3"/>`).join('')
+        + w(P + 'b-helm.file', `x="324" y="88" text-anchor="middle"`, 'bt') + L(324, 264, P + 'b-helm.count'),
+      f: () => gnd() + bx(236, 196, 130, 44, P + 'b-helm.server') + cell(301, 147, 50, { seed: 3, flat: 0.98 }) + L(120, 150, P + 'b-helm.nocluster') },
   };
   const board = (k, body) => {
     const nt = ILL[k].night;
@@ -136,7 +186,7 @@ export function pictures(t, { bind = false } = {}) {
       + (nt ? '' : `<rect width="400" height="280" rx="14" fill="${PAPER}"/>`) + body + '</svg>';
   };
   const out = {};
-  for (const k of ORDER) {
+  for (const k of Object.keys(ILL)) {
     out[`${k}-joke`] = board(k, ILL[k].j());
     out[`${k}-fact`] = board(k, ILL[k].f());
   }

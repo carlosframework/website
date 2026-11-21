@@ -7,7 +7,7 @@ import nunjucks from 'nunjucks';
 import { homePromptHTML, themeSwitchHTML } from './build-start.mjs';
 import { pictures } from './quiz-pictures.mjs';
 import { character, defs, liveCharacter } from '../src/uncompromising/character.mjs';
-import { KEYS, THINGS, PULL } from '../src/uncompromising/state.mjs';
+import { KEYS, BONUS, HELM, ALL_KEYS, THINGS, GROUPS, ECO_ORDER, PULL } from '../src/uncompromising/state.mjs';
 import { configError } from '../src/_data/start-config.mjs';
 const read = p => readFile(p, 'utf8');
 const templates = new nunjucks.Environment(null, { autoescape: true, throwOnUndefined: true });
@@ -23,25 +23,31 @@ const oneBrick = t => `<rect x="-23" y="-11" width="46" height="22" rx="1"/><tex
 
 export function quizContext(config, copy, startCopy) {
   const t = quizText(copy);
-  const statements = KEYS.map((key, i) => ({
-    key, n: i + 1,
-    heading: t('quiz.step.heading').replace('{n}', i + 1),
-    progress: t('quiz.bar.progress').replace('{n}', i + 1),
-  }));
-  const things = THINGS.map(slug => ({ slug, name: t(`quiz.stack.thing.${slug}`) }));
-  // What quiz.js needs and cannot read from the markup: the reactions, the brick names and the sentences with numbers in them.
+  const statement = (key, n, bonus) => ({ key, n, bonus,
+    heading: t('quiz.step.heading').replace('{n}', n),
+    progress: t('quiz.bar.progress').replace('{n}', n),
+  });
+  // The twelve everyone can get, then the bonus statements, which only the script shows (in slot 2, or slot 5 for Helm).
+  const statements = [...KEYS.map((key, i) => statement(key, i + 1, false)), ...Object.values(BONUS).map(key => statement(key, 2, true)), statement(HELM, 5, true)];
+  const groups = GROUPS.map(g => ({ slug: g, name: t(`quiz.stack.group.${g}`), things: Object.keys(THINGS).filter(x => THINGS[x].group === g).map(slug => ({ slug, name: t(`quiz.stack.thing.${slug}`) })) }));
+  const ecos = ECO_ORDER.map(slug => ({ slug, label: t(`quiz.eco.${slug}`) }));
+  // What quiz.js needs and cannot read from the markup: the reactions, the names and the sentences with words in them.
   const data = {
-    s: Object.fromEntries(KEYS.map(k => [k, { yes: t(`quiz.s.${k}.yes`), no: t(`quiz.s.${k}.no`) }])),
-    things: Object.fromEntries(things.map(x => [x.slug, x.name])), pull: PULL,
+    s: Object.fromEntries(ALL_KEYS.map(k => [k, { yes: t(`quiz.s.${k}.yes`), no: t(`quiz.s.${k}.no`) }])),
+    things: Object.fromEntries(Object.keys(THINGS).map(x => [x, t(`quiz.stack.thing.${x}`)])),
+    always: { tls: t('quiz.result.item.tls'), backups: t('quiz.result.item.backups'), repo: t('quiz.result.item.repo') },
+    ecoNames: Object.fromEntries(ECO_ORDER.filter(e => copy[`quiz.eco.${e}.name`] !== undefined).map(e => [e, t(`quiz.eco.${e}.name`)])),
+    pull: PULL,
     text: Object.fromEntries(['quiz.bar.progress', 'quiz.bar.stack', 'quiz.bar.result', 'quiz.stack.count', 'quiz.stack.count.one', 'quiz.pile.label',
       'quiz.pile.aria', 'quiz.pile.aria.one', 'quiz.pile.gone', 'quiz.result.count', 'quiz.result.fresh', 'quiz.result.share.text',
-      'quiz.result.share.text.most', 'quiz.result.share.text.few', 'quiz.result.share.copied', 'quiz.meta.title'].map(id => [id, t(id)])),
+      'quiz.result.share.text.most', 'quiz.result.share.text.few', 'quiz.result.share.copied', 'quiz.meta.title', 'quiz.stack.hint',
+      'quiz.stack2.title', 'quiz.stack2.go', 'quiz.stack2.go.hint', 'quiz.stack2.unsure', 'quiz.step.heading'].map(id => [id, t(id)])),
   };
   const json = JSON.stringify(data).replace(/</g, '\\u003c');
   // Links point at the configured site; the paste line is the homepage's, with the quiz's own lead-in.
   const origin = config.siteOrigin;
   const introCell = `<svg viewBox="0 0 200 200" focusable="false">${defs()}${character(100, 100, 62, { seed: 1 })}</svg>`;
-  return { t, origin, statements, things, data: json, wordmark, introCell, liveCell: liveCharacter(oneBrick(t)),
+  return { t, origin, statements, groups, ecos, data: json, wordmark, introCell, liveCell: liveCharacter(oneBrick(t)),
     paste: homePromptHTML(config, startCopy, 'quiz-prompt', undefined, t('quiz.result.cta')), themeSwitch: themeSwitchHTML(startCopy) };
 }
 

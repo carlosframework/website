@@ -6,7 +6,7 @@ import { test } from 'node:test';
 import { readFile, readdir, mkdtemp, rm, mkdir } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
-import { KEYS, THINGS, empty, clean, pile, toggleThing, startFresh, answer, verdict, stepOf, next, prev, fill } from '../src/uncompromising/state.mjs';
+import { KEYS, THINGS, ECOS, BONUS, HELM, empty, clean, pile, chooseEco, offered, toggleThing, startFresh, answer, verdict, split, keysFor, stepOf, next, prev, fill } from '../src/uncompromising/state.mjs';
 import { buildQuiz, loadQuizCopy } from '../hack/build-quiz.mjs';
 import { AMBER } from '../src/uncompromising/character.mjs';
 import { loadStartConfig } from '../src/_data/start-config.mjs';
@@ -15,25 +15,45 @@ const config = loadStartConfig({ CARLOS_START_DEMO: '1', CARLOS_START_SITE_ORIGI
 const base = process.env.STARTER_SCRATCH || tmpdir();
 assert.ok(!/^\/tmp(?:\/|$)/.test(resolve(base)), 'use disk scratch');
 async function built(fn) { await mkdir(base, { recursive: true }); const dir = await mkdtemp(join(base, 'quiz-')); try { await buildQuiz(dir, config); await fn(join(dir, 'uncompromising')); } finally { await rm(dir, { recursive: true, force: true }); } }
-const stack = (...things) => things.reduce((s, t) => toggleThing(s, t, true), empty());
-const allNo = s => KEYS.reduce((x, k) => answer(x, k, 'no'), s);
+const allNo = s => keysFor(s).reduce((x, k) => answer(x, k, 'no'), s);
+
+test('choosing what the app is built with starts at its typical stack; choosing it again keeps the edits', () => {
+  let s = chooseEco(empty(), 'rails');
+  assert.deepEqual(s.stack, ['puma', 'postgres', 'sidekiq', 'redis', 'actioncable', 'heroku']);
+  s = toggleThing(toggleThing(s, 'heroku', false), 'docker', true);
+  assert.deepEqual(chooseEco(s, 'rails').stack, s.stack);
+  assert.deepEqual(chooseEco(s, 'unsure').stack, []);
+  // Go is halfway there: only a database, a job runner and a host. "Not sure" gets the shared group only.
+  assert.deepEqual(offered('go').map(g => g.group), ['db', 'jobs', 'hosting', 'shared']);
+  assert.deepEqual(offered('unsure').map(g => g.group), ['shared']);
+  for (const [eco, e] of Object.entries(ECOS)) for (const t of [...e.ticked, ...e.more]) assert.ok(THINGS[t], `${eco}: ${t}`);
+});
+
+test('each ecosystem gets its own statement 2, and Kubernetes gets Helm as statement 5', () => {
+  assert.deepEqual(keysFor(empty()), KEYS);
+  assert.equal(keysFor(chooseEco(empty(), 'laravel'))[1], 'b-php');
+  assert.equal(keysFor(chooseEco(empty(), 'node'))[1], 'b-node');
+  assert.equal(keysFor(chooseEco(empty(), 'unsure'))[1], 'toolchain');
+  assert.equal(keysFor(toggleThing(chooseEco(empty(), 'unsure'), 'kubernetes', true))[4], HELM);
+  assert.equal(Object.keys(BONUS).length, 9);
+});
 
 test('"Absolutely not" pulls the brick its fact is about, else the top one; "Absolutely" puts it back', () => {
-  let s = stack('rails', 'postgres', 'redis', 'cdn');
+  let s = chooseEco(empty(), 'django');
   s = answer(s, 'onedb', 'no');
   assert.equal(s.pulled.onedb, 'postgres');
-  assert.deepEqual(pile(s), ['rails', 'redis', 'cdn']);
-  s = answer(s, 'data', 'no');   // no brick named for this fact: the top one goes
-  assert.equal(s.pulled.data, 'cdn');
+  s = answer(s, 'b-django', 'no');
+  assert.equal(s.pulled['b-django'], 'rabbitmq');
+  s = answer(s, 'data', 'no');   // nothing in this stack is what the fact is about: the top brick goes
+  assert.equal(s.pulled.data, 'render');
   s = answer(s, 'onedb', 'yes');   // a changed answer puts the brick back
   assert.equal(s.pulled.onedb, undefined);
-  assert.deepEqual(pile(s), ['rails', 'postgres', 'redis']);
-  // Heroku goes with whichever of idle servers and lock-in comes first.
-  let h = answer(answer(stack('heroku', 'rails'), 'idle', 'no'), 'lockin', 'no');
-  assert.deepEqual([h.pulled.idle, h.pulled.lockin], ['heroku', 'rails']);
+  assert.ok(pile(s).includes('postgres'));
+  // A statement this visitor does not get pulls nothing.
+  assert.equal(answer(s, 'b-node', 'no').pulled['b-node'], undefined);
   // An empty pile, or starting fresh, pulls nothing.
-  h = allNo(startFresh(empty()));
-  assert.deepEqual(h.pulled, {}); assert.equal(h.fresh, true);
+  const f = allNo(startFresh(empty()));
+  assert.deepEqual(f.pulled, {}); assert.equal(f.fresh, true);
 });
 
 test('the verdict: all twelve, 7 to 11, 0 to 6 "Absolutely not"', () => {
@@ -43,21 +63,26 @@ test('the verdict: all twelve, 7 to 11, 0 to 6 "Absolutely not"', () => {
   assert.equal(verdict(n(7)), 'most');
   assert.equal(verdict(n(6)), 'few');
   assert.equal(verdict(empty()), 'few');
+  assert.equal(verdict(allNo(chooseEco(empty(), 'dotnet'))), 'all');
+});
+
+test('the result splits the stack: into the app, Carloku, or still yours', () => {
+  const s = toggleThing(toggleThing(chooseEco(empty(), 'rails'), 'ci', true), 'cdn', true);
+  assert.deepEqual(split(s), { app: ['puma', 'postgres', 'sidekiq', 'redis', 'actioncable'], carloku: ['heroku', 'cdn', 'tls', 'backups'], yours: ['ci', 'repo'] });
 });
 
 test('changing the stack keeps the answers and works their pulls out again; new bricks land on top', () => {
-  let s = answer(stack('rails', 'redis'), 'pager', 'no');
-  assert.equal(s.pulled.pager, 'redis');
-  s = toggleThing(s, 'redis', false);
-  assert.equal(s.answers.pager, 'no'); assert.equal(s.pulled.pager, 'rails');
-  s = toggleThing(s, 'docker', true);
-  assert.deepEqual(s.stack, ['rails', 'docker']);
+  let s = answer(chooseEco(empty(), 'unsure'), 'pager', 'no');
+  s = toggleThing(toggleThing(s, 'docker', true), 'cron', true);
+  assert.equal(s.answers.pager, 'no'); assert.equal(s.pulled.pager, 'cron');
+  assert.deepEqual(s.stack, ['docker', 'cron']);
 });
 
 test('storage is checked: junk, unknown things and impossible pulls are dropped', () => {
   assert.deepEqual(clean('nonsense'), empty());
-  const s = clean({ stack: ['rails', 'rails', 'nope', 'postgres'], fresh: true, answers: { onedb: 'no', data: 'maybe' }, pulled: { onedb: 'postgres', data: 'rails', yaml: 'kubernetes' } });
-  assert.deepEqual(s.stack, ['rails', 'postgres']);
+  const s = clean({ eco: 'cobol', stack: ['postgres', 'postgres', 'nope', 'redis'], fresh: true, answers: { onedb: 'no', data: 'maybe' }, pulled: { onedb: 'redis' } });
+  assert.equal(s.eco, null);
+  assert.deepEqual(s.stack, ['postgres', 'redis']);
   assert.equal(s.fresh, false);
   assert.deepEqual(s.answers, { onedb: 'no' });
   assert.deepEqual(s.pulled, { onedb: 'postgres' });
@@ -65,15 +90,14 @@ test('storage is checked: junk, unknown things and impossible pulls are dropped'
 
 test('every step has an address, and Back and Next walk them in order', () => {
   assert.equal(stepOf(''), 'intro'); assert.equal(stepOf('#3'), '3'); assert.equal(stepOf('#13'), 'intro'); assert.equal(stepOf('#result'), 'result');
-  assert.equal(next('intro'), 'stack'); assert.equal(next('stack'), '1'); assert.equal(next('12'), 'result'); assert.equal(next('result'), 'result');
+  assert.equal(next('intro'), 'built'); assert.equal(next('built'), 'stack'); assert.equal(next('stack'), '1'); assert.equal(next('12'), 'result');
   assert.equal(prev('1'), 'stack'); assert.equal(prev('intro'), 'intro');
   assert.equal(fill('{thing} out of your pile. {n} left.', { thing: 'Postgres', n: 8 }), 'Postgres out of your pile. 8 left.');
-  assert.equal(THINGS.length, 16); assert.equal(KEYS.length, 12);
 });
 
 test('the page as served is the twelve statements with their facts and pictures, and nothing that needs script', () => built(async dir => {
   const html = await read(join(dir, 'index.html')), copy = await loadQuizCopy();
-  const items = [...html.matchAll(/<li class="q-step q-st" data-step="(\d+)" data-key="(\w+)">([\s\S]*?)<\/li>/g)];
+  const items = [...html.matchAll(/<li class="q-step q-st" data-slot="(\d+)" data-key="([\w-]+)">([\s\S]*?)<\/li>/g)];
   assert.deepEqual(items.map(m => m[2]), KEYS);
   for (const [, n, key, li] of items) {
     assert.ok(li.includes(copy[`quiz.s.${key}.q`].replace(/’/g, '’')), `statement ${n}`);
@@ -106,9 +130,9 @@ test('every word comes from the copy file, by id', () => built(async dir => {
   }
 }));
 
-test('twenty-five pictures; every fact has the character in it and no joke does', () => built(async dir => {
+test('forty-five pictures; every fact has the character in it and no joke does', () => built(async dir => {
   const names = (await readdir(join(dir, 'pictures'))).sort();
-  assert.equal(names.length, 25);
+  assert.equal(names.length, 45);
   for (const name of names) {
     const svg = await read(join(dir, 'pictures', name));
     assert.match(svg, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg"[^>]*viewBox="0 0 400 280"/);

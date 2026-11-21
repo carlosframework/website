@@ -42,10 +42,13 @@ claim fixtures remain private build inputs.
 It is a prototype, not linked from anywhere yet; its copy and its character are
 provisional. `hack/build-quiz.mjs` renders it after `buildStart`: the page
 (`src/_includes/quiz.njk`), three result pages (`/all/`, `/most/`, `/few/`, which
-Share links to) and twenty-five pictures (`hack/quiz-pictures.mjs`), every word from
+Share links to) and forty-five pictures (`hack/quiz-pictures.mjs`), every word from
 `src/_data/quiz-copy.json` keyed by its copy-review id. Served without script it is
 the twelve statements with their facts, pictures and the paste line;
-`src/uncompromising/quiz.js` turns the same markup into steps (rules in `state.mjs`,
+`src/uncompromising/quiz.js` turns the same markup into steps: what the app is built
+with, that ecosystem's typical stack (`ECOS` in `state.mjs`, which also says which
+statement each ecosystem gets in slot 2 and where each thing goes in the result), the
+statements and the result (rules in `state.mjs`,
 the pile's Matter.js physics in `pile.mjs`). The character is drawn only in
 `src/uncompromising/character.mjs`, so a final design is swapped there. The share
 PNGs are rendered by `node hack/quiz-share-images.mjs /path/to/chrome`; run it again

@@ -40,21 +40,27 @@ test('the quiz by keyboard, with storage, reduced motion and without script', { 
       const focused = () => page.evaluate(() => document.activeElement?.textContent.trim());
       const now = () => page.evaluate(() => document.getElementById('qz').dataset.step);
       const at = step => page.waitForFunction(x => document.getElementById('qz').dataset.step === x, step, { timeout: 5000 });
-      // Enter starts; the picker's heading takes focus.
+      // Enter starts; step one's heading takes focus. One tap on an ecosystem moves on with its typical stack ticked.
       await page.keyboard.press('Enter');
+      await at('built');
+      assert.equal(await focused(), 'What’s your app built with?');
+      await page.getByRole('button', { name: 'Django or Python' }).click();
       await at('stack');
-      assert.equal(await focused(), 'First, what are you running today?');
-      for (const thing of ['Rails', 'Postgres', 'Redis']) await page.getByRole('checkbox', { name: thing, exact: true }).check();
-      assert.equal(await page.locator('.q-pile li').count(), 3);
+      assert.match(await focused(), /^Here’s a typical Django stack\. Untick what you don’t run, add what’s missing\.$/);
+      assert.equal(await page.locator('.q-pile li').count(), 7);
+      assert.equal(await page.getByRole('checkbox', { name: 'Laravel' }).count(), 0);
+      await page.getByRole('checkbox', { name: 'Render', exact: true }).uncheck();
+      await page.getByRole('checkbox', { name: 'Docker', exact: true }).check();
+      assert.deepEqual(await page.locator('.q-pile li').allTextContents(), ['Gunicorn', 'Postgres', 'Celery', 'RabbitMQ', 'Redis', 'Channels', 'Docker']);
       await page.getByRole('button', { name: 'That’s my stack' }).click();
       await at('1');
       assert.match(await focused(), /^Statement 1 of 12 I prefer corporations/);
       // 2 answers "Absolutely not": the fact in the status region, the top brick gone from the list, Next focused.
       await page.keyboard.press('2');
-      await page.waitForFunction(() => document.querySelectorAll('.q-pile li').length === 2);
+      await page.waitForFunction(() => document.querySelectorAll('.q-pile li').length === 6);
       assert.equal(await page.locator('.is-now .q-a[data-a="no"]').getAttribute('aria-pressed'), 'true');
-      assert.match(await page.locator('.is-now [role="status"]').textContent(), /SQLite file you can take with you.*Redis out of your pile\. 2 left\./s);
-      assert.equal(await page.locator('.q-pile').getAttribute('aria-label'), 'Your stack, 2 things');
+      assert.match(await page.locator('.is-now [role="status"]').textContent(), /SQLite file you can take with you.*Docker out of your pile\. 6 left\./s);
+      assert.equal(await page.locator('.q-pile').getAttribute('aria-label'), 'Your stack, 6 things');
       assert.equal(await focused(), 'NextEnter');
       // Arrows move between the answers without choosing; 1 changes the answer and puts the brick back.
       await page.locator('.is-now .q-a[data-a="yes"]').focus();
@@ -62,10 +68,11 @@ test('the quiz by keyboard, with storage, reduced motion and without script', { 
       assert.equal(await page.evaluate(() => document.activeElement.dataset.a), 'no');
       assert.equal(await page.locator('.is-now .q-a[data-a="no"]').getAttribute('aria-pressed'), 'true');
       await page.keyboard.press('1');
-      await page.waitForFunction(() => document.querySelectorAll('.q-pile li').length === 3);
+      await page.waitForFunction(() => document.querySelectorAll('.q-pile li').length === 7);
       assert.equal(await page.locator('.is-now .q-gone').isHidden(), true);
-      // Page Down goes on once a statement is answered, and not before; Page Up goes back.
+      // Page Down goes on once a statement is answered, and not before. Statement 2 is Django's own.
       await page.keyboard.press('PageDown'); await at('2');
+      assert.match(await page.locator('.is-now .q-q').textContent(), /RabbitMQ is there so Celery/);
       await page.keyboard.press('PageDown'); await page.waitForTimeout(150); assert.equal(await page.evaluate(() => location.hash), '#2', 'not answered: Page Down stays');
       await page.keyboard.press('2');
       await page.keyboard.press('PageUp'); await at('1');
@@ -74,14 +81,16 @@ test('the quiz by keyboard, with storage, reduced motion and without script', { 
       await page.reload({ waitUntil: 'networkidle' });
       await at('2');
       assert.equal(await page.locator('.is-now .q-a[data-a="no"]').getAttribute('aria-pressed'), 'true');
-      assert.deepEqual(await page.locator('.q-pile li').allTextContents(), ['Rails', 'Postgres']);
+      assert.deepEqual(await page.locator('.q-pile li').allTextContents(), ['Gunicorn', 'Postgres', 'Celery', 'Redis', 'Channels', 'Docker']);
       // Keys are ignored while a modifier is held.
       await page.keyboard.press('Control+1');
       assert.equal(await page.locator('.is-now .q-a[data-a="yes"]').getAttribute('aria-pressed'), 'false');
-      // The result: the verdict and the count of what was picked, not what is left.
+      // The result: the verdict, the count of what was picked, and where each thing goes.
       await page.goto(url + '#result', { waitUntil: 'networkidle' });
       assert.equal(await page.locator('.q-verdict span:not([hidden])').textContent(), 'You might be compromising. That’s fine. We’ll be here.');
-      assert.equal(await page.locator('.q-count').textContent(), '3 things to run, patch and pay for. With CARLOS: 1.');
+      assert.equal(await page.locator('.q-count').textContent(), '7 things today. With CARLOS: 1 app, and Carloku runs the rest.');
+      assert.deepEqual(await page.locator('.q-split-col[data-to="carloku"] li').allTextContents(), ['Docker', 'TLS certificates', 'Backups']);
+      assert.deepEqual(await page.locator('.q-split-col[data-to="yours"] li').allTextContents(), ['Your code repository']);
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `${width}: no sideways scroll`);
       // Under reduced motion the physics engine is never fetched.
       assert.ok(!fetched.some(p => p.includes('matter')), 'Matter.js stayed home');
@@ -92,7 +101,7 @@ test('the quiz by keyboard, with storage, reduced motion and without script', { 
     const ctx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
     const page = await ctx.newPage();
     await page.goto(url, { waitUntil: 'networkidle' });
-    assert.equal(await page.locator('.q-list > li').count(), 12);
+    assert.equal(await page.locator('.q-list > li:visible').count(), 12);
     assert.equal(await page.locator('.q-say:visible').count(), 12);
     assert.equal(await page.locator('.q-a:visible, .q-start:visible, .q-stack:visible, .q-bar:visible').count(), 0);
     assert.equal(await page.locator('.q-img-fact').first().getAttribute('alt') !== '', true);

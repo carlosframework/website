@@ -31,7 +31,7 @@
 <div class="q-bar q-js" hidden>
   <button type="button" class="q-back"><span aria-hidden="true">←</span> <span class="q-back-label">{{ t('quiz.bar.back') }}</span></button>
   <span class="q-name">{{ t('quiz.intro.title') }}</span>
-  <span class="q-prog"><span class="q-ticks" aria-hidden="true">{% for s in statements %}<i></i>{% endfor %}</span><span class="q-prog-text"></span></span>
+  <span class="q-prog"><span class="q-ticks" aria-hidden="true">{% for i in range(0, 12) %}<i></i>{% endfor %}</span><span class="q-prog-text"></span></span>
 </div>
 
 <section class="q-step q-intro" data-step="intro">
@@ -43,16 +43,26 @@
   <button type="button" class="q-btn q-big q-start q-js" hidden><span>{{ t('quiz.intro.start') }}</span><kbd aria-hidden="true">Enter</kbd></button>
 </section>
 
-<fieldset class="q-step q-stack q-js" data-step="stack" hidden>
+{#- Step one: what the app is built with. One tap chooses and moves on. #}
+<fieldset class="q-step q-built q-js" data-step="built" hidden>
   <legend class="q-legend"><h2 class="q-h" tabindex="-1">{{ t('quiz.stack.title') }}</h2></legend>
-  <p class="q-hint">{{ t('quiz.stack.hint') }}</p>
-  <div class="q-chips">{% for th in things %}<label class="q-chip"><input type="checkbox" name="stack" value="{{ th.slug }}"><span>{{ th.name }}</span></label>{% endfor %}</div>
+  <div class="q-ecos">{% for e in ecos %}<button type="button" class="q-eco" data-eco="{{ e.slug }}" aria-pressed="false">{{ e.label }}</button>{% endfor %}</div>
+</fieldset>
+
+{#- Step two: that ecosystem's typical stack, ticked, in groups. quiz.js shows the groups and things the chosen
+    ecosystem offers (state.mjs, offered()) and writes the heading. #}
+<fieldset class="q-step q-stack q-js" data-step="stack" hidden>
+  <legend class="q-legend"><h2 class="q-h" tabindex="-1"></h2></legend>
+  <p class="q-hint" hidden></p>
+  {%- for g in groups %}
+  <div class="q-group" data-group="{{ g.slug }}"><h3 class="q-group-h">{{ g.name }}</h3><div class="q-chips">{% for th in g.things %}<label class="q-chip" data-thing="{{ th.slug }}"><input type="checkbox" name="stack" value="{{ th.slug }}"><span>{{ th.name }}</span></label>{% endfor %}</div></div>
+  {%- endfor %}
   <div class="q-go"><button type="button" class="q-btn q-done">{{ t('quiz.stack.done') }}</button> <button type="button" class="q-link q-fresh">{{ t('quiz.stack.fresh') }}</button></div>
 </fieldset>
 
 <ol class="q-list">
 {%- for s in statements %}
-<li class="q-step q-st" data-step="{{ s.n }}" data-key="{{ s.key }}">
+<li class="q-step q-st{% if s.bonus %} q-js{% endif %}" data-slot="{{ s.n }}" data-key="{{ s.key }}"{% if s.bonus %} hidden{% endif %}>
 <fieldset>
   <legend class="q-legend"><h2 class="q-h" tabindex="-1"><span class="q-sr">{{ s.heading }} </span><span class="q-q">{{ t('quiz.s.' + s.key + '.q') }}</span></h2></legend>
   <p class="q-eye q-js" aria-hidden="true" hidden>{{ s.progress }}</p>
@@ -79,6 +89,8 @@
 <section class="q-step q-result q-js" data-step="result" hidden>
   <h2 class="q-h q-verdict" tabindex="-1">{% for v in ['all', 'most', 'few'] %}<span data-v="{{ v }}" hidden>{{ t('quiz.result.' + v) }}</span>{% endfor %}</h2>
   <p class="q-count"></p>
+  {#- Where everything the visitor picked goes: into the app, to Carloku, or still theirs. #}
+  <div class="q-split">{% for to in ['app', 'carloku', 'yours'] %}<section class="q-split-col" data-to="{{ to }}"><h3>{{ t('quiz.result.group.' + to) }}</h3><ul></ul></section>{% endfor %}</div>
   <div class="q-end-slot"></div>
   <div class="q-acts"><button type="button" class="q-btn q-ghost q-share">{{ t('quiz.result.share') }}</button> <button type="button" class="q-link q-again">{{ t('quiz.result.again') }}</button></div>
   <p class="q-share-status" role="status"></p>
