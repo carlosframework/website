@@ -9,7 +9,7 @@ export function localiseFacts(text,config) {
 }
 export function factsLines(config,copy=defaultCopy) {
  const lines=copy['start.facts'];
- if(typeof copy['start.facts.heading']!=='string' || !Array.isArray(lines) || lines.length<6 || lines.length>8) throw configError('start.facts needs a heading and 6 to 8 lines');
+ if(typeof copy['start.facts.heading']!=='string' || !Array.isArray(lines) || lines.length<6 || lines.length>9) throw configError('start.facts needs a heading and 6 to 9 lines');
  if(!lines[0].includes('https://carlosframework.com/start/index.md')) throw configError('the first fact must link the directions as text');
  return {heading:copy['start.facts.heading'],lines:lines.map(line=>localiseFacts(line,config))};
 }

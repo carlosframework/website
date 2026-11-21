@@ -461,7 +461,7 @@ test('paste line comes from the reviewed copy, names /start once and keeps the c
 for(const [name,overrides] of [['production',{}],['dev',{CARLOS_START_SITE_ORIGIN:'https://dev.example.com',CARLOS_START_CONSOLE_ORIGIN:'https://console.dev.example.com',CARLOS_START_ACCOUNT_URL:'https://console.dev.example.com/'}]]) test(`facts block opens /start and its text twin: ${name}`,()=>pages(async(_,start,dir)=>{
  const site=loadStartConfig({...env,...overrides}).siteOrigin, api=new URL(loadStartConfig({...env,...overrides}).apiOrigin).host;
  const lines=copy['start.facts'].map(l=>l.replaceAll('https://carlosframework.com',site).replaceAll('console.carloku.com',api));
- assert.ok(lines.length>=6 && lines.length<=8);
+ assert.ok(lines.length>=6 && lines.length<=9);
  const main=start.split('<main class="demo-start">')[1];
  assert.ok(main.trimStart().startsWith('<section class="start-facts"'),'first in main');
  const facts=main.match(/<section class="start-facts"[\s\S]*?<\/section>/)[0];

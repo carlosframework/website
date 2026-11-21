@@ -8,6 +8,7 @@
     "CARLOS is an open architecture for web apps. Each app is one compiled Go program with its own SQLite database, which sleeps while nobody is using it and wakes on the next request.",
     "The demo here: your agent builds a one-screen app from a Go starter and uploads only its source to console.carloku.com, which builds it and returns a public link that lasts 24 hours. No account, no install, no backup.",
     "The demo builds Go apps only. Other stacks, and existing apps, go through an account.",
+    "Accounts start free: Carloku’s Free plan costs nothing and holds 3 apps, and Personal is $28 a year. Every plan and limit: https://carloku.com/pricing/",
     "Measured port: a fresh Claude Opus agent ported a 630-line PHP chat app to CARLOS in 15 min 43 s, with everything working.",
     "Measured SQLite, on a Carloku m7g box: 27,000–36,000 writes a second by default and 370–450 a second fully durable, one writer at a time.",
     "Your agent asks what to make before it builds anything, and installs nothing without asking.",
