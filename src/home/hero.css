@@ -145,29 +145,29 @@ body.site-home .c-hero, .rp { touch-action: manipulation; }
    the loop restarts. Times are in seconds of a 68.5 s cycle; .rp-s9 is the app. Without JavaScript only the first
    session (the status page) shows, so these are its times; home/replay.js times every session from its own words.
    Generated: s1 0.4, s2 2.5, s3 14.5, s4 32.6, s5 44.0, s6 46.1, s7 51.8, s8 58.1, s9 60.8, scene 2 at 32.2, pan 62.3 to 67.3. */
-.rp { --rp-cycle: 68.5s; } /* the whole loop at 1x */
-@keyframes rp-k1 { 0%, 0.58% { opacity: 0; transform: translateY(6px); } 0.95%, 99.27% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+.rp { --rp-cycle: 71.3s; } /* the whole loop at 1x */
+@keyframes rp-k1 { 0%, 0.56% { opacity: 0; transform: translateY(6px); } 0.91%, 99.3% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
 .rp-s1 { animation: rp-k1 var(--rp-cycle) infinite both; }
-@keyframes rp-k2 { 0%, 3.65% { opacity: 0; transform: translateY(6px); } 4.01%, 99.27% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes rp-k2 { 0%, 7.43% { opacity: 0; transform: translateY(6px); } 7.78%, 99.3% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
 .rp-s2 { animation: rp-k2 var(--rp-cycle) infinite both; }
-@keyframes rp-k3 { 0%, 21.17% { opacity: 0; transform: translateY(6px); } 21.53%, 99.27% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes rp-k3 { 0%, 24.27% { opacity: 0; transform: translateY(6px); } 24.61%, 99.3% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
 .rp-s3 { animation: rp-k3 var(--rp-cycle) infinite both; }
-@keyframes rp-k4 { 0%, 47.59% { opacity: 0; transform: translateY(6px); } 47.96%, 99.27% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes rp-k4 { 0%, 49.65% { opacity: 0; transform: translateY(6px); } 50%, 99.3% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
 .rp-s4 { animation: rp-k4 var(--rp-cycle) infinite both; }
-@keyframes rp-k5 { 0%, 64.23% { opacity: 0; transform: translateY(6px); } 64.6%, 99.27% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes rp-k5 { 0%, 65.63% { opacity: 0; transform: translateY(6px); } 65.99%, 99.3% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
 .rp-s5 { animation: rp-k5 var(--rp-cycle) infinite both; }
-@keyframes rp-k6 { 0%, 67.3% { opacity: 0; transform: translateY(6px); } 67.66%, 99.27% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes rp-k6 { 0%, 68.58% { opacity: 0; transform: translateY(6px); } 68.93%, 99.3% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
 .rp-s6 { animation: rp-k6 var(--rp-cycle) infinite both; }
-@keyframes rp-k7 { 0%, 75.62% { opacity: 0; transform: translateY(6px); } 75.99%, 99.27% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes rp-k7 { 0%, 76.58% { opacity: 0; transform: translateY(6px); } 76.93%, 99.3% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
 .rp-s7 { animation: rp-k7 var(--rp-cycle) infinite both; }
-@keyframes rp-k8 { 0%, 84.82% { opacity: 0; transform: translateY(6px); } 85.18%, 99.27% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes rp-k8 { 0%, 85.42% { opacity: 0; transform: translateY(6px); } 85.76%, 99.3% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
 .rp-s8 { animation: rp-k8 var(--rp-cycle) infinite both; }
-@keyframes rp-k9 { 0%, 88.76% { opacity: 0; transform: translateY(14px); } 89.2%, 99.27% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes rp-k9 { 0%, 89.2% { opacity: 0; transform: translateY(14px); } 89.62%, 99.3% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
 .rp-s9 { animation: rp-k9 var(--rp-cycle) infinite both; }
-@keyframes rp-scene1 { 0%, 47.01% { opacity: 1; } 47.59%, 100% { opacity: 0; } }
+@keyframes rp-scene1 { 0%, 49.09% { opacity: 1; } 49.65%, 100% { opacity: 0; } }
 .rp-scene1 { animation: rp-scene1 var(--rp-cycle) infinite both; }
 /* The pan ends with the picture's foot at the window's foot, whatever the window's height. */
-@keyframes rp-pan { 0%, 90.95% { top: 0; transform: none; } 98.25%, 100% { top: 100%; transform: translateY(-100%); } }
+@keyframes rp-pan { 0%, 91.31% { top: 0; transform: none; } 98.32%, 100% { top: 100%; transform: translateY(-100%); } }
 .rp-shot img { animation: rp-pan var(--rp-cycle) infinite both; }
 
 /* Speed: slower, the current pace, faster. Small and quiet like Pause; shown by home/replay-speed.js. */

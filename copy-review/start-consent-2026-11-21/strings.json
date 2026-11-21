@@ -1,0 +1,98 @@
+[
+  {
+    "id": "start.prompt",
+    "section": "Paste line",
+    "label": "The line people paste into their agent",
+    "text": "I’d like to try CARLOS. Read https://carlosframework.com/start and follow its directions to build me an app.",
+    "context": "The one line people copy from the homepage hero, the closing box at the foot of the homepage and the top of /start, and paste into their coding agent. The old line, “Follow the directions on https://carlosframework.com/start”, read to careful agents like a web page giving orders, so some ignored or refused it. This one says in the person’s own voice that they want to try CARLOS and what they want the agent to do.",
+    "notes": "Paul’s draft. Must contain https://carlosframework.com/start exactly once; other builds swap in their own address."
+  },
+  {
+    "id": "home.replay.you.1",
+    "section": "Homepage replay",
+    "label": "What the person types first in each replayed session",
+    "text": "I’d like to try CARLOS. Read https://carlosframework.com/start and follow its directions to build me an app.",
+    "context": "The first chat bubble in the homepage replay, where a person pastes the line into their agent before the agent asks its questions. It is the same line as the paste box above it, so the replay shows what a visitor will actually paste.",
+    "notes": "Should match the paste line. The agent’s reply that follows begins “I’ve read the directions on that page.”"
+  },
+  {
+    "id": "start.facts.heading",
+    "section": "/start: facts block",
+    "label": "Heading of the facts block",
+    "text": "In brief",
+    "context": "A small label over a short list at the very top of the /start page, above “Start making better apps”. The list is the checkable essentials, for people and especially for agents whose web reader only keeps the top of a page.",
+    "notes": "Short; shown in small capitals."
+  },
+  {
+    "id": "start.facts.1",
+    "section": "/start: facts block",
+    "label": "Fact 1",
+    "text": "Read the whole of this page as text: https://carlosframework.com/start/index.md",
+    "context": "First line of the facts block. Points agents (and curious people) at the full directions as plain text, so a reader that only keeps the top of the page can still get everything.",
+    "notes": "Addresses carlosframework.com and console.carloku.com are swapped for a build’s own origins; keep them as written. Becomes a link where it is a URL."
+  },
+  {
+    "id": "start.facts.2",
+    "section": "/start: facts block",
+    "label": "Fact 2",
+    "text": "CARLOS is an open architecture for web apps. Each app is one compiled Go program with its own SQLite database, which sleeps while nobody is using it and wakes on the next request.",
+    "context": "Says what CARLOS is, in one or two sentences an agent can repeat to its person.",
+    "notes": "Addresses carlosframework.com and console.carloku.com are swapped for a build’s own origins; keep them as written. Becomes a link where it is a URL."
+  },
+  {
+    "id": "start.facts.3",
+    "section": "/start: facts block",
+    "label": "Fact 3",
+    "text": "The demo here: your agent builds a one-screen app from a Go starter and uploads only its source to console.carloku.com, which builds it and returns a public link that lasts 24 hours. No account, no install, no backup.",
+    "context": "Says what the demo on this page does and where the source goes. console.carloku.com is the address the agent uploads to.",
+    "notes": "Addresses carlosframework.com and console.carloku.com are swapped for a build’s own origins; keep them as written. Becomes a link where it is a URL."
+  },
+  {
+    "id": "start.facts.4",
+    "section": "/start: facts block",
+    "label": "Fact 4",
+    "text": "The demo builds Go apps only. Other stacks, and existing apps, go through an account.",
+    "context": "Stops agents (and people) assuming the demo can build their usual stack, such as Rails.",
+    "notes": "Addresses carlosframework.com and console.carloku.com are swapped for a build’s own origins; keep them as written. Becomes a link where it is a URL."
+  },
+  {
+    "id": "start.facts.5",
+    "section": "/start: facts block",
+    "label": "Fact 5",
+    "text": "Accounts start free: Carloku’s Free plan costs nothing and holds 3 apps, and Personal is $28 a year. Every plan and limit: https://carloku.com/pricing/",
+    "context": "New. Evaluating agents kept telling people that existing apps need a paid account. Figures are from carloku.com/pricing (Free: $0, 3 apps; Personal: $28 a year).",
+    "notes": "Addresses carlosframework.com and console.carloku.com are swapped for a build’s own origins; keep them as written. Becomes a link where it is a URL."
+  },
+  {
+    "id": "start.facts.6",
+    "section": "/start: facts block",
+    "label": "Fact 6",
+    "text": "Measured port: a fresh Claude Opus agent ported a 630-line PHP chat app to CARLOS in 15 min 43 s, with everything working.",
+    "context": "A measured result an agent can quote when judging whether to port an existing app.",
+    "notes": "Addresses carlosframework.com and console.carloku.com are swapped for a build’s own origins; keep them as written. Becomes a link where it is a URL."
+  },
+  {
+    "id": "start.facts.7",
+    "section": "/start: facts block",
+    "label": "Fact 7",
+    "text": "Measured SQLite, on a Carloku m7g box: 27,000–36,000 writes a second by default and 370–450 a second fully durable, one writer at a time.",
+    "context": "Measured database throughput, with its main caveat.",
+    "notes": "Addresses carlosframework.com and console.carloku.com are swapped for a build’s own origins; keep them as written. Becomes a link where it is a URL."
+  },
+  {
+    "id": "start.facts.8",
+    "section": "/start: facts block",
+    "label": "Fact 8",
+    "text": "Your agent asks what to make before it builds anything, and installs nothing without asking.",
+    "context": "What the person can expect from their agent: questions first, nothing installed without asking.",
+    "notes": "Addresses carlosframework.com and console.carloku.com are swapped for a build’s own origins; keep them as written. Becomes a link where it is a URL."
+  },
+  {
+    "id": "start.facts.9",
+    "section": "/start: facts block",
+    "label": "Fact 9",
+    "text": "More: https://carlosframework.com/docs/ and https://carlosframework.com/llms.txt",
+    "context": "Where to read more. The second link is the site’s index for agents.",
+    "notes": "Addresses carlosframework.com and console.carloku.com are swapped for a build’s own origins; keep them as written. Becomes a link where it is a URL."
+  }
+]

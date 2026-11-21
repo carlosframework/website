@@ -3,13 +3,23 @@ import { test } from 'node:test';
 import { readFile, mkdtemp, rm, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { buildStart, escapeHTML, homeApps } from '../hack/build-start.mjs';
+import { buildStart, escapeHTML, homeApps, pasteLine } from '../hack/build-start.mjs';
 import { loadStartConfig } from '../src/_data/start-config.mjs';
 const read=p=>readFile(p,'utf8');
 const copy=JSON.parse(await read('src/_data/start-copy.json'));
+// 🤖 The paste line as a build for this site origin shows it (the copy names the production /start).
+const lineFor=site=>copy['start.prompt'].replace('https://carlosframework.com/start',`${site}/start`);
+// 🤖 2026-11-21: Paul's consent-first paste line, in review under copy-review/start-consent-2026-11-21. Its result.json supersedes strings.json once approved.
+const consentReview=async()=>{
+ const dir='copy-review/start-consent-2026-11-21';
+ let rows;
+ try { const result=JSON.parse(await read(`${dir}/result.json`)); assert.equal(result.action,'approve'); rows=result.strings; }
+ catch(e) { if(e.code!=='ENOENT') throw e; rows=JSON.parse(await read(`${dir}/strings.json`)); }
+ return new Map(rows.map(s=>[s.id,s.text]));
+};
 const env={CARLOS_START_DEMO:'1',CARLOS_START_SITE_ORIGIN:'https://carlosframework.com',CARLOS_START_CONSOLE_ORIGIN:'https://console.carloku.com',CARLOS_START_ACCOUNT_URL:'https://console.carloku.com/'};
 const base=process.env.STARTER_SCRATCH||tmpdir();assert.ok(!/^\/tmp(?:\/|$)/.test(base),'use disk scratch');
-async function pages(fn,overrides={}) {await mkdir(base,{recursive:true});const dir=await mkdtemp(join(base,'start-pages-'));try{await buildStart(dir,loadStartConfig({...env,...overrides}));await fn(await read(join(dir,'index.html')),await read(join(dir,'start/index.html')));}finally{await rm(dir,{recursive:true,force:true});}}
+async function pages(fn,overrides={}) {await mkdir(base,{recursive:true});const dir=await mkdtemp(join(base,'start-pages-'));try{await buildStart(dir,loadStartConfig({...env,...overrides}));await fn(await read(join(dir,'index.html')),await read(join(dir,'start/index.html')),dir);}finally{await rm(dir,{recursive:true,force:true});}}
 const plain=html=>html.replace(/<!--[\s\S]*?-->/g,'').replace(/<[^>]*>/g,'').replace(/&#39;/g,"'").replace(/&amp;/g,'&').replace(/&quot;/g,'"');
 test('enabled homepage has hero B, its replay and the approved rework sections',()=>pages(async(home,start)=>{
  // the hero: its section ends after the replay's pane (the panel and its dots)
@@ -268,11 +278,12 @@ test('apps carousel overrides are explicit and checked against the Apps page',()
 test('development paste URL wraps only at separators and copies the generated line',()=>pages((home,start)=>{
  const url='https://tmp-pj4lpm.bab.dev.oncarlos.com/start';
  const prompt=home.match(/<span id="home-prompt">([\s\S]*?)<\/p>/)[1];
- assert.ok(plain(prompt).includes(`Follow the directions on ${url}`));
+ assert.ok(plain(prompt).includes(lineFor('https://tmp-pj4lpm.bab.dev.oncarlos.com')));
+ assert.ok(plain(prompt).includes(url));
  assert.match(prompt,/class="pb-url pb-url-wrap"/);
  assert.match(prompt,/<wbr>/);
  for(const match of prompt.matchAll(/(.)<\/span><wbr>/g)) assert.match(match[1],/[./]/);
- assert.ok(start.includes(`>Follow the directions on ${url}</code>`));
+ assert.ok(start.includes(`>${escapeHTML(lineFor('https://tmp-pj4lpm.bab.dev.oncarlos.com'))}</code>`));
 },{CARLOS_START_SITE_ORIGIN:'https://tmp-pj4lpm.bab.dev.oncarlos.com'}));
 for(const [name,overrides,hosts] of [
  ['production defaults',{},['carlosframework.com','console.carloku.com']],
@@ -288,7 +299,7 @@ for(const [name,overrides,hosts] of [
   assert.ok(html.includes(`<!-- 👨 Paul's words, verbatim -->${expected}`));
   assert.ok(html.indexOf(`id="${id}"`)<html.indexOf(expected));
   const site=loadStartConfig({...env,...overrides}).siteOrigin;
-  assert.ok(plain(html).includes(`Follow the directions on ${site}/start`));
+  assert.ok(plain(html).includes(lineFor(site)));
  }
 },overrides));
 test('start points agents at its Markdown twin, in the head and at the top of For your agent',()=>pages(async(_,start)=>{
@@ -300,7 +311,7 @@ test('start points agents at its Markdown twin, in the head and at the top of Fo
 test('start order, approved text arrays, complete instructions and unchanged account block',()=>pages(async(_,start)=>{
  const positions=['<h1>','class="intro"','id="start-prompt"','<ol>','Keep it','href="#account"','id="account"','id="for-your-agent"','<!-- agent-content -->'].map(s=>start.indexOf(s));
  assert.ok(positions.every((p,i)=>p>=0 && (!i||p>positions[i-1])));
- for(const [id,value] of Object.entries(copy).filter(([id])=>id.startsWith('start.')&&!id.startsWith('start.hosts.')&&!['start.prompt','start.config.error'].includes(id))) for(const text of [value].flat()) assert.ok(start.includes(id==='start.terms_line'?text:escapeHTML(text)),id);
+ for(const [id,value] of Object.entries(copy).filter(([id])=>id.startsWith('start.')&&!id.startsWith('start.hosts.')&&!['start.prompt','start.config.error','start.facts','start.facts.heading'].includes(id))) for(const text of [value].flat()) assert.ok(start.includes(id==='start.terms_line'?text:escapeHTML(text)),id);
  const account=(await read('src/start/index.html')).match(/<div class="start-tabs">[\s\S]*?(?=<\/div><\/section><\/main>)/)[0];assert.ok(start.includes(account));
  const section=start.split('id="for-your-agent"')[1];assert.doesNotMatch(section,/<details|<[^>]*\bhidden\b/);assert.match(section,/GOOS=linux GOARCH=arm64/);
 }));
@@ -311,6 +322,7 @@ test('approved copy archive and starter UI bytes agree exactly',async()=>{
  const later=JSON.parse(await read('copy-review/start-2026-11-07/result.json'));
  const approved=new Map(later.strings.map(s=>[s.id,s.text]));
  for(const row of rows) if(approved.has(row.id)) row.text=approved.get(row.id);
+ for(const [id,text] of await consentReview()) for(const row of rows) if(row.id===id) row.text=text;
  // Paul, 2026-11-07: no robot marker anywhere on this site. The approved
  // words stand; only a leading marker from the archive is dropped.
  for(const {id,text} of rows) {
@@ -375,6 +387,8 @@ test('homepage carries Paul’s 2026-11-12 approved copy byte for byte, with cur
  // Paul's later verbatim rewrites (2026-11-12, after the review) replace the reviewed text.
  const later={'get.save.title':'Spend less','what.prop1.body':'Web server, database engine, background jobs and interface, compiled into a single binary.','get.ship.figure.note':'faster shipping to production','get.build.figure':'20 ms','get.build.figure.note':'Average response time, down from 250ms','get.ship.item2':'Roll releases to a few customers first','end.paste.works':'Try it with your preferred agent setup','get.save.figure.note':'less to run than a traditional web app','get.save.figure':'80%','tools.heading':'To make it easy, we built an agent-first modern web framework to build apps and a platform to deploy them on','tools.platform.body':'Get your CARLOS apps online with HTTPS, backups, provisioning, observability and analytics. Static sites work great too.','tools.skill.lead':'Try CARLOS with zero effort.','tools.skill.body':'The CARLOS skill has everything it needs to build and deploy a sample app and get it live right now.','what.heading':'CARLOS is a system for building better quality, more resilient, secure web apps that deploy easily.','hero.gloss':'A system for building better web apps.'};
  for(const s of result.strings) if(later[s.id]) s.text=later[s.id];
+ const consent=await consentReview();
+ for(const s of result.strings) if(consent.has(`home.${s.id}`)) s.text=consent.get(`home.${s.id}`);
  // Paul, 2026-11-12: the replay no longer needs its "A real run, sped up" badge. Removed, not reworded.
  // The re-recorded run 4 (2026-11-12) replaces the replay's quotations, alt text and caption: verbatim from
  // ~/.cache/start-recording/replay4.json, trimmed with "…". Pending Paul's OK through the coordinator.
@@ -409,7 +423,7 @@ test('clipboard success, reset, failure and retry keep both paste boxes usable',
  const {runInNewContext}=await import('node:vm');
  for(const kind of ['paste','start-prompt']) {
   const classes=new Set(), label={textContent:'Copy'}, status={textContent:''};
-  const code={textContent:'Follow the directions on https://carlosframework.com/start'};
+  const code={textContent:copy['start.prompt']};
   let click, timer, selected, written, fail=false;
   const box={classList:{add:(...names)=>names.forEach(n=>classes.add(n)),remove:(...names)=>names.forEach(n=>classes.delete(n))}};
   const button={hidden:true,dataset:{copyTarget:'prompt',copyStatus:'status',original:copy['copy.label'],copied:copy['copy.done'],copySuccess:copy['home.paste.done'],copyFallback:copy['copy.fallback']},querySelector:()=>label,closest:selector=>{assert.ok(selector.includes('.'+kind));return box;},addEventListener:(event,handler)=>{assert.equal(event,'click');click=handler;}};
@@ -428,3 +442,34 @@ test('clipboard success, reset, failure and retry keep both paste boxes usable',
   fail=false;await click();assert.ok(classes.has('is-copied'));assert.ok(!classes.has('copy-failed'));assert.equal(status.textContent,copy['home.paste.done']);
  }
 });
+
+// 🤖 2026-11-21: the paste line asks in the person's voice, with the URL mid-line; the caret still ends the line.
+test('paste line comes from the reviewed copy, names /start once and keeps the caret on its last word',()=>pages(home=>{
+ assert.equal(copy['start.prompt'],copy['home.replay.you.1']);
+ assert.equal(pasteLine({siteOrigin:'https://dev.example.com'},copy),lineFor('https://dev.example.com'));
+ for(const bad of ['Follow the directions.','Read https://carlosframework.com/start and https://carlosframework.com/start']) assert.throws(()=>pasteLine({siteOrigin:'https://carlosframework.com'},{'start.prompt':bad}),/exactly once/);
+ for(const id of ['home-prompt','end-prompt']) {
+  const line=home.match(new RegExp(`<span id="${id}">([\\s\\S]*?)</p>`))[1];
+  assert.equal((line.match(/pb-caret/g)||[]).length,1,id);
+  assert.match(line,/<span class="pb-tail">app\.<span class="pb-caret" aria-hidden="true"><\/span><\/span>/,id);
+  assert.ok(plain(line).includes(copy['start.prompt']),id);
+ }
+}));
+
+// 🤖 2026-11-21: summarising fetchers keep the top of a page, so the checkable essentials and the link to the
+// whole text come first on /start and first in its Markdown twin, from the same reviewed copy.
+for(const [name,overrides] of [['production',{}],['dev',{CARLOS_START_SITE_ORIGIN:'https://dev.example.com',CARLOS_START_CONSOLE_ORIGIN:'https://console.dev.example.com',CARLOS_START_ACCOUNT_URL:'https://console.dev.example.com/'}]]) test(`facts block opens /start and its text twin: ${name}`,()=>pages(async(_,start,dir)=>{
+ const site=loadStartConfig({...env,...overrides}).siteOrigin, api=new URL(loadStartConfig({...env,...overrides}).apiOrigin).host;
+ const lines=copy['start.facts'].map(l=>l.replaceAll('https://carlosframework.com',site).replaceAll('console.carloku.com',api));
+ assert.ok(lines.length>=6 && lines.length<=9);
+ const main=start.split('<main class="demo-start">')[1];
+ assert.ok(main.trimStart().startsWith('<section class="start-facts"'),'first in main');
+ const facts=main.match(/<section class="start-facts"[\s\S]*?<\/section>/)[0];
+ assert.ok(start.indexOf(facts)<start.indexOf('<h1>'));
+ assert.ok(facts.includes(`<h2 id="start-facts-title">${copy['start.facts.heading']}</h2>`));
+ for(const line of lines) assert.ok(plain(facts).includes(line),line);
+ assert.ok(facts.includes(`<a href="${site}/start/index.md">${site}/start/index.md</a>`));
+ const md=await read(join(dir,'start/index.md'));
+ assert.ok(md.startsWith(`# Agent directions: make a small app\n\n## ${copy['start.facts.heading']}\n\n- Read the whole of this page as text: <${site}/start/index.md>\n`));
+ for(const line of lines) assert.ok(md.replace(/<(https?:[^>]+)>/g,'$1').includes(`- ${line}\n`),line);
+},overrides));
