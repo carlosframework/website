@@ -45,6 +45,11 @@
           "blurb": "Render an invoice, attach it to an email, and use Gotenberg from your app."
         },
         {
+          "slug": "media-conversion",
+          "label": "Media conversion",
+          "blurb": "Turn an uploaded video or audio file into files for browser playback, and serve them from your app."
+        },
+        {
           "slug": "scan-callbacks",
           "label": "Receiving scan results",
           "blurb": "Ask for one object to be scanned, read the verdict, and verify the callback that tells you it is done."
