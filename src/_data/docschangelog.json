@@ -3,6 +3,603 @@
   "repo": "https://amadan.net/carlos/platform",
   "releases": [
     {
+      "tag": "v0.41.0",
+      "date": "2026-11-21",
+      "sha": "fe854a4e086fbbb0cf950764cb17748dcba488a0",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.41.0",
+      "notes": {
+        "form": "markdown",
+        "md": "#### What's new\n\n- **Start an instance from a database file.** `carlos instances create --app <app> --host <host> --seed-file <file>` starts a new instance from a SQLite database file you already have, up to 4 GiB. The CLI uploads it, the console checks that it is a sound database, and the new instance starts from it the first time it wakes. This works for an app that runs in a region and for an app on a fleet of your own. You can't combine it with `--from`, and the new instance is an ordinary one, so `--kind`, `--addr` and `--role` don't apply. If the upload or the check fails, nothing is created, and the hostname is free again once its box has cleaned up. On a fleet of your own, the fleet must have exactly one active box, and that box must keep each instance in its own directory. If a copy of the data is left in the fleet's bucket, the hostname stays taken until you remove that copy, and the delete answer names where it is. Your operator has to publish the seeds floor for this release before `--seed-file` works.\n- **Live pages keep up with more viewers.** The edge now holds up to 1,000 event streams opened with `carlos_hold=1` per host, up from 64. Before, viewers past the 64th on one app got a page that never updated.\n\n#### For operators\n\n- **Roll order.** Roll your development deployment first, then production. Boxes first, then the console.\n- **Seed files need the seeds floor raised, and the raise is deployment-wide.** Roll every box, in every region and on every customer fleet, so that both the running binary and its rollback binary `carlos.prev` are on this release, before you run `carlos system seeds-floor publish`. A publish from this release's console raises the floor to protocol 4 for the whole deployment. From then on, `carlos instances create --from`, `carlos instances import` and demo claims are refused wherever a box is below that, until it is rolled. Until the floor is raised, `--seed-file` is refused. For a seed file on a customer fleet, the fleet's box must run this release and keep each instance in its own directory (the nested layout).\n- **Held event streams have new caps.** One host can hold up to 1,000 streams on a box. The box's total now comes from its memory instead of a fixed 4,096: about 1,000 on a 1 or 2 GiB box, 2,000 at 4 GiB, 4,000 at 8 GiB and 8,000 at 16 GiB, and never more than its open-file limit allows. Streams that arrive through a fleet or linked deployment's channel are capped at 64 in all, so one busy page can't stall the other apps on that box.\n- **Platform accounts: quieter held creates.** When the console holds a customer create because the bucket and the console disagree, it now retries at most once every 5 minutes, and logs the held line at most that often. After a repair, the create can take up to 5 minutes to go through. Expired per-customer credentials bound to an app are now deleted with other expired credentials, except on a console with `CARLOS_HOST_CLAIM` on, where they stay until their app is purged. They already stopped working when they expired."
+      },
+      "changes": [
+        {
+          "sha": "fe854a4e086fbbb0cf950764cb17748dcba488a0",
+          "date": "2026-11-21",
+          "subject": "Seed files on customer fleets (#1139, slice 3)",
+          "branch": "fleet-seeded-create-3",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fleet-seeded-create-3",
+          "commits": 9,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1139,
+              "title": "instances import for apps on a customer fleet",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-instances"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "772aabbb069c0b3e683c81891f1c6bdc51c7b672",
+          "date": "2026-11-20",
+          "subject": "Box release for seed files on customer fleets (#1139, slice 2)",
+          "branch": "fleet-seeded-create-2",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fleet-seeded-create-2",
+          "commits": 15,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1139,
+              "title": "instances import for apps on a customer fleet",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "82e237a955b068b5663ed9af615eb47002424c6a",
+          "date": "2026-11-20",
+          "subject": "Seed files for region instances (#1139, slice 1)",
+          "branch": "fleet-seeded-create-1",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fleet-seeded-create-1",
+          "commits": 29,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1139,
+              "title": "instances import for apps on a customer fleet",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-instances",
+            "/docs/cli#the-seeds-floor"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "40d86b44c2412c76348b106c680ed1e8fc5a6897",
+          "date": "2026-11-20",
+          "subject": "platform accounts: back off held creates; sweep expired customer creds",
+          "branch": "platform-accounts-followups",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/platform-accounts-followups",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 1295,
+              "title": "Platform accounts slice 1: follow-ups after merge",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#a-customer-create-that-stays-pending"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "e468866a4a9bb6048d970987b9cbf1ea3efad289",
+          "date": "2026-11-20",
+          "subject": "edge: hold up to 1,000 live streams per host; size the box cap",
+          "branch": "edge-held-cap",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/edge-held-cap",
+          "commits": 4,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1297,
+              "title": "Measure held-stream cost (memory, fds, goroutines)",
+              "state": "closed"
+            },
+            {
+              "id": 1298,
+              "title": "Pick PerHost/PerBox; weigh proxy-past-cap",
+              "state": "closed"
+            },
+            {
+              "id": 1299,
+              "title": "Build caps + load witness",
+              "state": "closed"
+            },
+            {
+              "id": 1300,
+              "title": "Spec §3.6 rev 4 + follow-ups + census card",
+              "state": "closed"
+            },
+            {
+              "id": 1301,
+              "title": "Astra review (max 3 rounds)",
+              "state": "closed"
+            },
+            {
+              "id": 1302,
+              "title": "CI green and merge",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.40.3",
+      "date": "2026-11-20",
+      "sha": "69b44f53a5de92307b4a577913a420d4429052b8",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.40.3",
+      "notes": {
+        "form": "markdown",
+        "md": "#### What's new\n\n- **Domains for the whole account.** Each account has a Domains page in the console. It lists every domain the account uses, whether bought here, still being bought, or registered elsewhere, with each address under its domain, and each domain has a page of its own. You can buy a domain there in three steps, for an app or for no app yet. From a terminal, `carlos domains list --all` shows the same list and any account member can run it; `carlos domains buy <domain> --not-yet` buys a domain without pointing it anywhere, and `carlos domains point <domain> --app <app>` sets up the domain and its `www` for an app later. A domain is registered to a contact you save once and reuse: `carlos domains contacts` lists them, and `contacts add`, `contacts edit` and `contacts remove` change them. Editing a contact changes future purchases only. Only account owners can buy domains, point them or use saved contacts. An account that holds a domain, or has a purchase in progress, can't be deleted.\n- **Deploy a static site from CI.** A service token with the Publish role can now give a static app its first host at `<app>.<account>.<apps-domain>`, so `carlos deploy --kind static` uses that host from CI with `CARLOS_SERVICE_TOKEN` and `CARLOS_CONSOLE`.\n- **Platform accounts.** An operator can let an account run customer accounts of its own. That account's platform credential creates and manages them with `carlos platform customers` and mints a short-lived credential for one customer with `carlos platform credentials mint`. Nothing changes until an operator grants an account with `carlos accounts platform`.\n- **Video and audio conversion, plus browser uploads.** `carlos media convert` starts a conversion and can follow its job, while `carlos media status` shows the job. `carlos store uploads` lets browsers upload large files straight to an app's store. Conversion is off until your operator sets up the conversion engine. Browser uploads are off until you enable them for an app.\n\n#### For operators\n\n- **Roll order.** Roll your development deployment first, then production.\n- **Every wake protects the database before the app starts.** Writes an app made while starting, such as migrations, could be missed by its replica, and a later restore could fail as a malformed database. Now each wake first checks that the database is exactly as its last clean close left it, and holds it so the app's first writes reach the replica. If that can't be proven, the wake uploads a full copy of the database before it serves. Every database takes a full copy on its first wake after the upgrade, so expect one larger upload per database. A wake whose replica can't be reached now fails instead of serving without replication, and `carlos logs --stream platform` shows `replicate <host>: ...`. The clean-close records are kept in the agent's data directory, under `.continuity`.\n- **Media conversion is off by default.** Nothing changes until you apply the media engine module, set `store_conversion` on the region host module, and set `CARLOS_STORE_CONVERSION=1` and `CARLOS_MEDIA_ENGINE` on a console. `carlos system media status` shows whether the engine is ready.\n- **Platform accounts are off until you grant one.** `carlos accounts platform --account <sqid> --grant` turns it on for one account, and `--revoke` stops its credentials at once. Customer accounts it creates skip billing and the free-account cap, and their plan notices go to the platform's owners.\n- **Domain buying stays off while `CARLOS_HOST_CLAIM` is on.** On such a console the buy pages and the CLI's buy are refused. When a bought domain's records are removed, alias records are now deleted before the records they point at."
+      },
+      "changes": [
+        {
+          "sha": "69b44f53a5de92307b4a577913a420d4429052b8",
+          "date": "2026-11-20",
+          "subject": "domains: account-level Domains page, buy without an app, saved contacts",
+          "branch": "plan-domains-2a",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/plan-domains-2a",
+          "commits": 58,
+          "discussions": [
+            {
+              "id": 1264,
+              "title": "Plan 2a ready for review: domains at the account level",
+              "state": "open"
+            },
+            {
+              "id": 1265,
+              "title": "T1 UX pass: domains screens redrawn in the mockup kit",
+              "state": "closed"
+            },
+            {
+              "id": 1266,
+              "title": "T2 Store: versioned saved contacts, registrant snapshot, app-less purchases",
+              "state": "closed"
+            },
+            {
+              "id": 1267,
+              "title": "T3 Zone host: unpointed zones and one canonical pointed set",
+              "state": "closed"
+            },
+            {
+              "id": 1268,
+              "title": "T4 Purchase engine: optional app, frozen contacts, app gone, deletion exclusion",
+              "state": "closed"
+            },
+            {
+              "id": 1269,
+              "title": "T5 The account's domains, assembled",
+              "state": "closed"
+            },
+            {
+              "id": 1270,
+              "title": "T6 Purge releases domain claims; accounts holding domains cannot be deleted",
+              "state": "closed"
+            },
+            {
+              "id": 1271,
+              "title": "T7 Point a bought domain at an app through the attach door",
+              "state": "closed"
+            },
+            {
+              "id": 1272,
+              "title": "T8 Domains nav, overview page and a domain's page",
+              "state": "closed"
+            },
+            {
+              "id": 1273,
+              "title": "T9 Three-step buy and saved contacts in the browser",
+              "state": "closed"
+            },
+            {
+              "id": 1274,
+              "title": "T10 CLI and its API doors",
+              "state": "closed"
+            },
+            {
+              "id": 1275,
+              "title": "T11 Copy pass (Luna DOMAINS-2A)",
+              "state": "closed"
+            },
+            {
+              "id": 1276,
+              "title": "T12 merged 69b44f5; v0.40.3 release + dev roll + witnesses next",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-domains"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "cdf98181c40def06a8ebc780c2c58a04e42e0c59",
+          "date": "2026-11-20",
+          "subject": "replicas: replicate before the app starts on every wake (#1290)",
+          "branch": "fix/replica-wake-gap",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fix%2Freplica-wake-gap",
+          "commits": 16,
+          "discussions": [
+            {
+              "id": 1290,
+              "title": "Replica silently loses pages when an app writes before Replicate starts",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "3f3ef7b0c6933ab72c5639efaa369f310a7fcb35",
+          "date": "2026-11-20",
+          "subject": "platform accounts: platforms create and run customer accounts (slice 1)",
+          "branch": "design-platform-accounts",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/design-platform-accounts",
+          "commits": 46,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1289,
+              "title": "Platform accounts slice 3: the Customers section on the platform account page",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-accounts-platform",
+            "/docs/cli#a-customer-create-that-stays-pending",
+            "/docs/cli#carlos-platform",
+            "/docs/cli#carlos-platform-customers",
+            "/docs/cli#carlos-platform-credentials"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "f359ec13ad0c4986553fccdec4b420b0a2616a0d",
+          "date": "2026-11-19",
+          "subject": "media: platform video and audio conversion on Fargate",
+          "branch": "media-conversion",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/media-conversion",
+          "commits": 139,
+          "discussions": [
+            {
+              "id": 1,
+              "title": "Flagship went fully dark on memory pressure (2026-08-28): one tenant can take the box, and nothing notices",
+              "state": "open"
+            },
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1177,
+              "title": "Plan 2 T1 shared types, job API, simulation (red)",
+              "state": "closed"
+            },
+            {
+              "id": 1178,
+              "title": "Plan 2 T2 media_jobs table and transitions [Astra]",
+              "state": "closed"
+            },
+            {
+              "id": 1179,
+              "title": "Plan 2 T3 store provenance and verification [Astra]",
+              "state": "closed"
+            },
+            {
+              "id": 1180,
+              "title": "Plan 2 T4 refusal gate [Astra]",
+              "state": "closed"
+            },
+            {
+              "id": 1181,
+              "title": "Plan 2 T5 the door [Astra]",
+              "state": "closed"
+            },
+            {
+              "id": 1182,
+              "title": "Plan 2 T6 allowance, metering, plan cap [Astra]",
+              "state": "closed"
+            },
+            {
+              "id": 1183,
+              "title": "Plan 2 T7 retirement at teardown [Astra]",
+              "state": "closed"
+            },
+            {
+              "id": 1184,
+              "title": "Plan 2 T8 pass worker and system media [Astra]",
+              "state": "closed"
+            },
+            {
+              "id": 1185,
+              "title": "Plan 2 T9 carlos store uploads [Astra]",
+              "state": "closed"
+            },
+            {
+              "id": 1186,
+              "title": "Plan 2 T10 carlos media CLI",
+              "state": "closed"
+            },
+            {
+              "id": 1187,
+              "title": "Plan 2 T11 docs",
+              "state": "closed"
+            },
+            {
+              "id": 1188,
+              "title": "Plan 2 T12 census and hand-off",
+              "state": "closed"
+            },
+            {
+              "id": 1216,
+              "title": "Plan 3 T1 deadline container [Astra]",
+              "state": "closed"
+            },
+            {
+              "id": 1217,
+              "title": "Plan 3 T2 handler download/resume/exit 75 [Astra]",
+              "state": "closed"
+            },
+            {
+              "id": 1218,
+              "title": "Plan 3 T3 sniff, probe, child cleanup [Astra]",
+              "state": "closed"
+            },
+            {
+              "id": 1219,
+              "title": "Plan 3 T4 encodes and playlist (provisional on spike)",
+              "state": "closed"
+            },
+            {
+              "id": 1220,
+              "title": "Plan 3 T5 loudness and waveform",
+              "state": "closed"
+            },
+            {
+              "id": 1221,
+              "title": "Plan 3 T6 outputs, upload, result [Astra]",
+              "state": "closed"
+            },
+            {
+              "id": 1222,
+              "title": "Plan 3 T7 hostile inputs, selftest, drill",
+              "state": "closed"
+            },
+            {
+              "id": 1223,
+              "title": "Plan 3 T8 the image",
+              "state": "closed"
+            },
+            {
+              "id": 1224,
+              "title": "Plan 3 T9 AWS adapters [Astra]",
+              "state": "closed"
+            },
+            {
+              "id": 1225,
+              "title": "Plan 3 T10 console wiring",
+              "state": "closed"
+            },
+            {
+              "id": 1226,
+              "title": "Plan 3 T11 media-engine module [Astra]",
+              "state": "closed"
+            },
+            {
+              "id": 1227,
+              "title": "Plan 3 T12 region-host store_conversion [Astra]",
+              "state": "closed"
+            },
+            {
+              "id": 1228,
+              "title": "Plan 3 T13 provider boundary, local runner [Astra]",
+              "state": "closed"
+            },
+            {
+              "id": 1229,
+              "title": "Plan 3 T14 census, whole-branch review, merge",
+              "state": "closed"
+            },
+            {
+              "id": 1251,
+              "title": "Gitleaks CI step: digest allowlist design",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-store-uploads",
+            "/docs/cli#carlos-media",
+            "/docs/cli#carlos-media-convert",
+            "/docs/cli#carlos-media-status",
+            "/docs/cli#carlos-system-media-status"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "23fd01244bb502f57fff5ea3ac15cf5520c6259e",
+          "date": "2026-11-19",
+          "subject": "changelog: regenerate through v0.40.1 (release step 10)",
+          "branch": "changelog-catchup-v0-40-1",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/changelog-catchup-v0-40-1",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 335,
+              "title": "doc-engine routes are reachable from the internet: engines should be fleet-internal",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.40.2",
+      "date": "2026-11-19",
+      "sha": "c0df6a51e16974034a986ccc10a78df15850d519",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.40.2",
+      "notes": {
+        "form": "markdown",
+        "md": "#### What's new\n\nThe CLI has no new commands.\n\n#### For operators\n\n- **Roll order.** Roll your development deployment first, then production.\n- **Instance control gets more memory.** `carlos-instance-control` now has a `MemoryMax=256M` limit, up from 64M. Starting an instance launches short-lived helper processes of about 10 to 17 MB each inside that limit, so several starts at once could exceed 64M. When that happened, the kernel killed instance control and the starts failed. This occurred while one member of a region was taking over several hosts. 256M covers roughly twelve concurrent starts at those sizes. It is a limit, not memory set aside.\n- **A box updated by an older build catches up at its next hourly adopt pass.** On a box with claims enabled, an updater older than this release can leave out the claim mode's 192 MiB runtime memory target. On a box with the demo build worker enabled, it can leave out the worker's 1 GiB memory limit and 768 MiB runtime target. The next adopt pass rewrites the unit and restarts instance control, with no manual restart. On a region HA group member, that pass rewrites the unit only under a repair permit."
+      },
+      "changes": [
+        {
+          "sha": "c0df6a51e16974034a986ccc10a78df15850d519",
+          "date": "2026-11-19",
+          "subject": "instance-control: MemoryMax 64M -> 256M (#1291)",
+          "branch": "instance-control-memory-1291",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/instance-control-memory-1291",
+          "commits": 5,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1291,
+              "title": "Flagship US: carlos-instance-control OOM-killed (MemoryMax=64M) during a four-host HA take; 6 x 503 on a customer app",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "40d7a9cf25390c6d90098ae2a36b12cad2e6ddbb",
+          "date": "2026-11-19",
+          "subject": "README: apt has no retention policy yet (#1288)",
+          "branch": "readme-apt-retention",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/readme-apt-retention",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 1288,
+              "title": "Retention can't be set for a bucket-only app (apt, console): carlos releases retention needs a console",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v0.40.1",
       "date": "2026-11-19",
       "sha": "a980e15250b888dd8c74a8a649b595f8cd24993a",
@@ -140,7 +737,7 @@
             {
               "id": 114,
               "title": "Secrets and env never reach hand-built unit routes (the Woodstar shape): nothing is rendered, and the only path left is SSM",
-              "state": "open"
+              "state": "closed"
             },
             {
               "id": 280,
@@ -15037,7 +15634,7 @@
             {
               "id": 114,
               "title": "Secrets and env never reach hand-built unit routes (the Woodstar shape): nothing is rendered, and the only path left is SSM",
-              "state": "open"
+              "state": "closed"
             },
             {
               "id": 280,

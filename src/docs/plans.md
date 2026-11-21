@@ -32,9 +32,11 @@ The console reads the file when it starts. If the file is missing or wrong, the 
 }
 ```
 
-Every account without a plan of its own is on `default_plan`. Packs may only raise counts and sizes: apps and instances, disk, storage, email and bandwidth. A ceiling is the most any plan with packs can reach.
+Every account without a plan of its own is on `default_plan`. Packs may only raise counts and sizes: apps and instances, disk, storage, email, bandwidth and media minutes. A ceiling is the most any plan with packs can reach.
 
 Set `pdf_renders_month` in a plan's limits to give your account a monthly PDF allowance shared by its apps. A value of 0 means no monthly limit. The PDF service's fair-use limits still apply.
+
+Set `media_minutes_month` to give your account a monthly allowance of media minutes for [media conversion](/docs/media-conversion), shared by its apps. A minute of video counts as 1 and a minute of audio as 0.1. A value of 0 means no monthly limit. As a starting point: 30 on a free plan, 600 on a personal plan, 1,200 on a community plan and 12,000 on a business plan, with a pack that adds 1,000. With no catalog, `account_minutes` in `CARLOS_MEDIA_LIMITS` sets one allowance for every account.
 
 Set `email_per_hour` to cap how many emails an account can send in one UTC hour. 0 means no hourly limit. There's no grace: once the hour's sends reach the limit, every sender of every app is held back until the next UTC hour.
 
@@ -74,23 +76,24 @@ A plan can cap how far an account may raise an instance's rate limits, with `rat
 
 ## Warnings and grace
 
-Once an hour the console compares each account's usage with its limits, for six caps:
+Once an hour the console compares each account's usage with its limits, for seven caps:
 
 - apps and instances running;
 - object storage;
 - emails sent today;
 - bandwidth this month;
 - awake hours this month;
-- PDFs rendered this month.
+- PDFs rendered this month;
+- media minutes this month.
 
-The figures come from what the console already records: its own app list, the monthly usage statements, the daily storage sweep, the mail counts and completed PDF requests. A cap whose limit is 0 is skipped.
+The figures come from what the console already records: its own app list, the monthly usage statements, the daily storage sweep, the mail counts, completed PDF requests and media conversions. A cap whose limit is 0 is skipped.
 
 At 80% of a limit, the account's owners get an email, and a banner appears on every account page. A `carlos` command run against the account prints a line starting `warning:`, from a CLI new enough to print it.
 
 Going over the limit starts a grace period:
 - 7 days for apps and instances, and for storage;
 - the rest of the UTC day for email;
-- the rest of the UTC month for bandwidth, awake hours and PDFs.
+- the rest of the UTC month for bandwidth, awake hours, PDFs and media minutes.
 
 While an account is over, its owners get one reminder a day, saying when grace ends and how to get back under: buy a pack, move to a bigger plan, or clean up.
 
@@ -98,6 +101,7 @@ After grace, only the capped action is refused, and each refusal lifts by itself
 
 - **Email.** When an account has sent twice its daily limit, every sender of every app is paused until midnight UTC. This does not wait for notice, because sending reputation is shared by every tenant. The catalog's email ceiling caps it. An operator's `carlos email resume` lifts the hold anyway, as a deliberate override, but the app's next send puts it back while the limit is still used up. To let an account send more, raise its limit with `carlos accounts plan --sponsored`.
 - **PDFs.** At twice your account's monthly PDF allowance, new requests are refused with `402` until the 1st of the UTC month or until you move to a larger plan. This does not wait for notice. Your apps share the allowance, and the PDF service's fair-use limits still apply.
+- **Media minutes.** At twice your account's monthly media allowance, new conversions are refused with `402` until the 1st of the UTC month, or until you buy a media pack or move to a larger plan. This does not wait for notice. Conversions already running finish.
 - **Storage.** New uploads to the account's stores are refused once grace has ended and an owner has had notice for 3 days, or straight away at twice the limit. Downloads, listing and deletes keep working, so the account can clean up. Uploads come back once usage is under the limit or the limit is raised.
 
 - **Bandwidth.** At twice the month's limit, the account's apps are served more slowly until the month ends or the plan grows: one shared allowance of 5 requests a second, with bursts up to 30, across all its instances. This does not wait for notice, because twice the limit is bandwidth's hard ceiling.
@@ -107,7 +111,7 @@ The slowdown is a plan stage, not abuse protection, so it applies whatever `CARL
 
 The account banner and the CLI warning line say which stage is in force.
 
-The console also records when an owner actually received notice: an email that was accepted for delivery, an owner viewing an account page with the banner, or an owner's CLI printing the warning. Apart from the ceilings above (email, storage, bandwidth and PDFs at twice their limits), whatever acts after grace starts only once grace has ended and an owner received notice at least 3 days earlier. So an account nobody has heard from is never cut off for anything short of a ceiling.
+The console also records when an owner actually received notice: an email that was accepted for delivery, an owner viewing an account page with the banner, or an owner's CLI printing the warning. Apart from the ceilings above (email, storage, bandwidth, PDFs and media minutes at twice their limits), whatever acts after grace starts only once grace has ended and an owner received notice at least 3 days earlier. So an account nobody has heard from is never cut off for anything short of a ceiling.
 
 ## When a plan lapses
 

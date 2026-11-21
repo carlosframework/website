@@ -1400,6 +1400,14 @@ carlos instances create --app shop --host canary.example.com --from www.example.
 carlos instances create --app shop --host canary.example.com --from www.example.com --at 4211
 ```
 
+To start a new instance from a SQLite database file you already have, add --seed-file. The file can be up to 4 GiB. The CLI uploads it, the console checks that it is a sound database, and the new instance starts from it the first time it wakes. This works for an app that runs in a region and for an app on a fleet of your own. You can't combine it with --from, and the new instance is an ordinary one, so --kind, --addr and --role don't apply. If the upload or the check fails, nothing is created, and the hostname is free again once its box has cleaned up.
+
+```sh
+carlos instances create --app shop --host new.example.com --seed-file shop.db
+```
+
+On a fleet of your own, the fleet must have exactly one active box, and that box must keep each instance in its own directory. If the upload or the check fails, or you delete the instance before it first wakes, the hostname stays taken until the fleet's box has cleaned up. If a copy of the data is still in the fleet's bucket, the hostname stays taken after that too, and the delete answer names where the copy is. Remove that host's copy from the fleet's bucket, and the hostname is free again on the box's next pass. For example, if fleet main holds a leftover copy of new.example.com, remove it from main's bucket.
+
 carlos instances import moves an instance the platform never ran onto the platform. Stop the old process, take a consistent snapshot of its database (VACUUM INTO works), and run the import with the address of the route it replaces. The console checks the file, the box swaps the route on its next pass, and from then until you commit, the host answers only requests that carry the verify token. With --verify, the CLI requests that path with the token and commits on a 2xx or aborts otherwise. Without it, the CLI prints the token and the two commands to finish by hand. Aborting puts the old route back exactly as it was.
 
 ```sh
@@ -1744,10 +1752,32 @@ The REGION column names where each route or box runs, such as London (UK).
 ```sh
 carlos domains check shop.example
 carlos domains buy shop.example --app shop
+carlos domains buy shop.example --not-yet
+carlos domains point shop.example --app shop
+carlos domains list --all
 ```
 
-Attaches a customer's own hostname to one of the app's routes, detaches it,
-or lists what is claimed.
+`buy` needs either `--app` to point the new domain at an app or
+`--not-yet` to buy it without pointing it anywhere. Use `point` later to
+set up the domain and its `www` for the app. Only account owners can buy,
+point domains or use saved contacts.
+
+A domain is registered to a contact you save once and reuse. Editing a saved
+contact changes future purchases only. With no contact flag, `buy` uses the
+one you used last and names it before you confirm. `--contact <id>` picks
+another, and `--contact-file contact.json` uses new details and saves them.
+`carlos domains contacts` lists the saved contacts, and
+`contacts add --file`, `contacts edit <id> --file` and
+`contacts remove <id>` change them.
+
+`carlos domains list --all` shows every domain the account uses, whether
+bought here, still being bought or registered elsewhere, with each address
+under its domain. Any member of the account can run it. Without `--all`,
+`list` shows one app’s hostnames, as below: the app you name with `--app`,
+else your configured app or the account’s only app. When there is no app
+to show, it lists every domain, as `--all` does.
+
+Attaches your hostname to one of the app’s routes, or detaches it.
 
 ```sh
 carlos domains attach --app hello www.example.com
@@ -1757,11 +1787,12 @@ New creates in an HA region need a box with room. A 503 response tells you to re
 
 Named-pool creates need a serving box that reports membership of the requested pool. Older boxes do not report this evidence. If no box confirms capacity and evidence is missing, the create returns 503 because capacity is unknown. Nothing is created. Shared-pool creates use the existing shared-pool reports.
 
-`--route` picks which route to point at, and you can leave it off when the app
-has exactly one instance record. The `list` verb joins the claims to the
-fleet's own readings sweep, so DNS state, certificate expiry and delegation
-are readable without leaving the terminal. The hostname comes live on the
-box owning its route at its next domains pass, certificate and all.
+`--route` picks which route to point at, and you can leave it off when the
+app has exactly one instance record. `list --app` combines the app’s
+hostname claims with the fleet’s own readings for DNS state, certificate
+expiry and delegation, so you can read them without leaving the terminal.
+The hostname comes live on the box owning its route at its next domains
+pass, certificate and all.
 
 On a deployment that sets `CONSOLE_DOMAIN_PROOF=true`, a hostname is not
 served until you prove you control it. `attach` reserves the name and prints
@@ -2197,6 +2228,16 @@ receives the same 404 as everyone else. `approvals`, `approve` and `decline`
 require both the fleet-operator role and that allowlist entry, but the operator
 does not need membership in the account being reviewed.
 
+#### carlos store uploads
+
+```sh
+carlos store uploads enable --app shop
+carlos store uploads status --app shop
+carlos store uploads disable --app shop
+```
+
+Lets browsers on the origins you name upload large files in parts straight to the app's store. With no --origin, it uses and prints the app's hostnames today. disable removes the rules again.
+
 #### carlos store scan
 
 Virus scanning over the objects in an app's store. **Off by default and
@@ -2316,6 +2357,26 @@ carlos store scan rotate-webhook-key --app hello
 ```
 
 This changes only `hello`. A scan grant can also deliver a callback secret. Delivering changed config restarts affected apps.
+
+### carlos media
+
+Convert an object from a terminal and follow the job. Apps call the same API with a Service token. See the Media conversion page.
+
+#### carlos media convert
+
+```sh
+carlos media convert uploads/a1b2.mov --app shop --wait
+```
+
+Starts converting one object, or shows the existing job when that object was already sent with the same preset and class. With --wait it follows the job until it is done or failed.
+
+#### carlos media status
+
+```sh
+carlos media status 5e0b7a9c1d3f5b7d9e1a3c5e7f9b1d03 --app shop
+```
+
+Shows a conversion's state, its output files once it is done, and why it failed if it did.
 
 ### carlos relay
 
@@ -2628,6 +2689,65 @@ carlos accounts plan --account bac --set free --sponsored limits.json --reason "
 
 Without `--set` it prints the plan, who set it and why, and every limit the account has. With `--set` it changes the plan and prints the result. `--reason` is required for a change. `--pack` can be repeated. `--sponsored` names a JSON file of limits; each one replaces the plan's limit where it is more generous.
 
+### carlos accounts platform
+
+Shows an account’s platform grant, or changes it. A platform account can create customer accounts and deploy into them for its own customers. It is a deployment-operator command.
+
+```sh
+carlos accounts platform --account bcd
+carlos accounts platform --account bcd --grant --max-customers 50 --plans free,personal --default-plan free --reason "agreed by email"
+carlos accounts platform --account bcd --revoke --reason "contract ended"
+```
+
+Turning platform access off stops the platform’s credentials at once. Its customers’ sites keep serving.
+
+#### A customer create that stays pending
+
+When a platform creates a customer account, the console first records a promise for the account. The promise holds the customer’s ref and a place in `--max-customers`. The console then writes the account to the deployment bucket and records it in the database. If the bucket and database disagree, the console stops the create and keeps the promise. Nothing else is written until an operator repairs the mismatch.
+
+While a promise is held, the console logs this line at most once every 5 minutes, when the platform makes a request:
+
+```text
+console: platform <platform>: pending customer create <mint id> held for account <id>: <reason>; repair the bucket or console
+```
+
+Only that platform’s create requests are affected. It can still list customers, update them and use its credentials. A create for the held ref fails. If the reason is `is in this console with no manifest in the bucket`, every create on that platform fails because the bucket gives each new create the same id. The promise counts towards `--max-customers` until it is repaired.
+
+Read the promise and account from the console’s database first:
+
+```text
+SELECT mint_id, platform, ref, name FROM platform_pending_mints WHERE mint_id = '<mint id>';
+SELECT id, sqid, name, created_at, platform, platform_ref, platform_mint, deleted_at FROM accounts WHERE id = <id>;
+```
+
+The account’s manifest is `accounts/<sqid>/account.json` in the deployment bucket.
+
+**The account has no manifest, or the create’s manifest is at its id.** The reason is `is in this console with no manifest in the bucket` or `is another account in this console`. Check that the manifest is missing, or that its `platform_mint` is the mint id and the account row’s `platform_mint` is not the mint id. Then restore the account’s manifest. Write `accounts/<sqid>/account.json` from the row: `id`, `sqid`, `name` and `created_at` as an RFC 3339 UTC time. Add `platform`, `platform_ref` and `platform_mint` when the row has them. Add `deleted_at` as an RFC 3339 UTC time when the row’s value is not 0.
+
+If the row has no `platform`, also add `owner`, using the account’s first owner from the console’s memberships table. Find it with this query:
+
+```text
+SELECT address FROM memberships WHERE account_id = <id> AND role = 'owner' ORDER BY added_at, address LIMIT 1;
+```
+
+If the query returns no address, stop and escalate. Do not write the manifest. A rebuilt console would give the account no owner. For an account with a `platform`, leave `owner` out. It has no owner until someone claims it.
+
+This replaces the create’s manifest if one is present. After the repair, the console retries the create when the platform next requests it, with a delay of up to 5 minutes, and creates the customer with a new id.
+
+**Another live customer holds the ref.** The reason starts with `holds ref` or `would take ref`. Check which account holds it:
+
+```text
+SELECT id, sqid, name, platform_mint FROM accounts WHERE platform = '<platform>' AND platform_ref = '<ref>' AND deleted_at = 0;
+```
+
+If it is the customer the platform intended, the promise is stale. Search the bucket’s account manifests for `"platform_mint":"<mint id>"`. If one has that value, add `deleted_at` with the current UTC time. Do not delete the manifest: an account id is never given out twice. Then remove the promise:
+
+```text
+DELETE FROM platform_pending_mints WHERE mint_id = '<mint id>';
+```
+
+After the repair, the console retries the create on a platform request, with a delay of up to 5 minutes; once it succeeds, the log line stops and `carlos platform customers list --platform <platform>` shows the expected count.
+
 ### carlos accounts subdomain
 
 Assigns a readable name to an account's app addresses, so `shop.bdq.oncarlos.com` also works as `shop.harbour.oncarlos.com`. Only platform operators can use it.
@@ -2871,6 +2991,33 @@ without the `CARLOS_SERVICE_TOKEN=` the human output puts in front of it:
 carlos services create --role publish --app hello --json ci-shipper \
   | jq -r .secret | carlos secrets set --app hello CARLOS_SERVICE_TOKEN -
 ```
+
+### carlos platform
+
+Runs customer accounts from a platform account: `customers` creates and manages them, and `credentials` mints a credential for deploying into one.
+
+#### carlos platform customers
+
+Creates and manages the customer accounts a platform account runs. Each customer account is a full account of its own, with nobody signed in to it.
+
+```sh
+carlos platform customers create --platform bcd --name shop --ref 4812
+carlos platform customers list --platform bcd
+carlos platform customers show --platform bcd --ref 4812
+carlos platform customers update --platform bcd --customer bdf --plan personal
+```
+
+`--ref` is your own id for the customer. Creating again with the same ref returns the same account. Without `--ref`, a create retried after a timeout can make a second account, so pass `--ref` when your server retries.
+
+#### carlos platform credentials
+
+Mints a short-lived credential for one customer account, for deploying into it.
+
+```sh
+carlos platform credentials mint --platform bcd --customer bdf --json
+```
+
+It lasts an hour unless you pass `--ttl`, up to 24 hours. It works only in that one account. It stops working when the platform’s access is turned off, or when the platform credential that minted it is revoked or rotated. Use it as `CARLOS_SERVICE_TOKEN`.
 
 ### carlos add
 
@@ -3409,6 +3556,14 @@ carlos system pdf status
 
 System operators (`CARLOS_SYSTEM_OPERATORS`) and store operators (`CARLOS_STORE_OPERATORS`) can run this read-only command.
 
+#### carlos system media status
+
+```sh
+carlos system media status
+```
+
+System operators (`CARLOS_SYSTEM_OPERATORS`) and store operators (`CARLOS_STORE_OPERATORS`) can run this read-only command. It shows whether the conversion engine is set up, how old its image is, whether each kind of job passes the engine's safety checks, and the queue.
+
 #### Deployment-wide object scanning
 
 ```sh
@@ -3493,7 +3648,7 @@ Ops account owners and `CARLOS_SYSTEM_OPERATORS`.
 
 #### The seeds floor
 
-carlos system seeds-floor publish sets the first release whose boxes can place a seed. Publish it once every box runs that release. Each box arms it within the hour, and from then on a box never recovers to an older build. Until every box in a region has armed it, carlos instances create --from and carlos instances import refuse there.
+carlos system seeds-floor publish sets the first release whose boxes can place a seed. Publish it once every box runs that release. Each box arms it within the hour, and from then on a box never recovers to an older build. Until every box in a region has armed it, carlos instances create --from, carlos instances create --seed-file and carlos instances import refuse there.
 
 ```sh
 carlos system seeds-floor publish --min-release v0.27.0
