@@ -1,0 +1,68 @@
+/* 🤖 The CARLOS character: a small amber sun. Spec: ../2026-11-21-sun-story.md, "The character".
+   Four circles and nothing else: a glow, a boundary ring, a body and a core. No face, no path, no gradient, no filter.
+   Every state is a transform, an opacity or a fill on those circles, so the whole character is CSS.
+   Markup comes from sun.js (sun() for a drawing, sunSVG() for a live one). PROVISIONAL until Paul approves it. */
+:root, .sun-day {
+  --sun: #ffb454;        /* the deck's amber (halfstack-vienna-build engine/deck.css --accent) */
+  --sun-hot: #ffc66e;    /* bright */
+  --sun-pale: #f3c891;   /* squished */
+  --sun-core: #fff0d2;   /* the smaller circle inside */
+  --sun-edge: #c97a16;   /* a darker amber line, so the body and ring hold on a light page */
+  --sun-glow: .075;      /* opacity of each of the four glow discs; they stack */
+}
+.sun-night { --sun-edge: #ffb454; --sun-core: #fff3dc; --sun-glow: .05; }   /* on charcoal the amber needs no line */
+
+.sun-glow circle, .sun-glow ellipse { fill: var(--sun); fill-opacity: var(--sun-glow); }
+.sun-ring { fill: none; stroke: var(--sun-edge); stroke-width: 1.5; opacity: .6; vector-effect: non-scaling-stroke; }
+.sun-body { fill: var(--sun); stroke: var(--sun-edge); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.sun-core { fill: var(--sun-core); }
+.sun-pulse { fill: none; stroke: var(--sun); stroke-width: 1.5; opacity: 0; vector-effect: non-scaling-stroke; }
+.sun-self, .sun-glow, .sun-pulse { transform-box: fill-box; transform-origin: 50% 50%; }
+.sun.on-floor .sun-self { transform-origin: 50% 100%; }                     /* standing on a line: it grows up from it */
+
+/* its wall drawn heavy, where the chapter is about the wall */
+.sun.is-walled .sun-ring { stroke-width: 3; opacity: 1; }
+/* under 20 px across: a body and a ring, no core and no glow */
+.sun.is-small .sun-core, .sun.is-small .sun-glow { display: none; }
+
+/* ---- states: data-state on the .sun element ---- */
+.sun[data-state=swell] .sun-self { transform: scale(1.18); }
+.sun[data-state=swell] .sun-glow { transform: scale(1.12); }
+.sun[data-state=shrink] .sun-self, .sun[data-state=shrink] .sun-glow { transform: scale(.8); }
+
+.sun[data-state=squish] .sun-self { transform-origin: 50% 100%; transform: scale(1.2, .72); }
+.sun[data-state=squish] .sun-body { fill: var(--sun-pale); }
+.sun[data-state=squish] .sun-glow { opacity: .35; transform: scale(1.1, .8); }
+
+.sun[data-state=asleep] .sun-self { transform: scale(.86); }
+.sun[data-state=asleep] .sun-body { fill-opacity: .34; stroke-opacity: .7; }
+.sun[data-state=asleep] .sun-core, .sun[data-state=asleep] .sun-glow { opacity: 0; }
+.sun[data-state=asleep] .sun-ring { opacity: .32; }
+
+.sun[data-state=bright] .sun-self { transform: scale(1.08); }
+.sun[data-state=bright] .sun-body { fill: var(--sun-hot); }
+.sun[data-state=bright] .sun-core { fill: #fff; }
+.sun[data-state=bright] .sun-glow circle { fill-opacity: calc(var(--sun-glow) * 1.7); }
+.sun[data-state=bright] .sun-pulse { opacity: .5; transform: scale(1.3); }   /* one more thin ring; a still shows it here */
+
+.sun[data-state=ghost] .sun-body, .sun[data-state=ghost] .sun-core, .sun[data-state=ghost] .sun-glow { display: none; }
+.sun[data-state=ghost] .sun-ring { stroke-dasharray: 4 5; opacity: .75; }
+
+/* ---- motion: only when the reader allows it ---- */
+@media (prefers-reduced-motion: no-preference) {
+  .sun-self, .sun-glow { transition: transform .4s cubic-bezier(.2, .7, .3, 1), opacity .4s ease; }
+  .sun-body, .sun-core, .sun-ring { transition: fill .4s ease, fill-opacity .4s ease, opacity .4s ease, stroke-width .3s ease; }
+  .sun[data-state=asleep] :is(.sun-self, .sun-glow, .sun-body, .sun-core, .sun-ring) { transition-duration: 1.4s; }   /* slow down, as the deck's light goes out */
+  .sun[data-state=bright] :is(.sun-self, .sun-glow, .sun-body, .sun-core, .sun-ring) { transition-duration: .3s; }    /* quick up: under half a second */
+  .sun[data-state=squish] :is(.sun-self, .sun-glow) { transition-timing-function: ease-out; }
+  /* the one thing that loops: a live sun at rest breathes once every four seconds */
+  .sun.is-live[data-state=rest] .sun-self { animation: sun-breathe 4s ease-in-out infinite; }
+  .sun.is-live[data-state=rest] .sun-glow { animation: sun-glow 4s ease-in-out infinite; }
+  /* brightening sends one ring out, once, and it stays as the second ring */
+  .sun.is-live[data-state=bright] .sun-pulse { animation: sun-pulse .6s ease-out 1 both; }
+  /* moving from place to place: the deck's glide. Put it on whatever positions the sun. */
+  .sun-glide { transition: transform .6s cubic-bezier(.45, 0, .25, 1); }
+}
+@keyframes sun-breathe { 50% { transform: scale(1.035); } }
+@keyframes sun-glow { 50% { opacity: .72; transform: scale(1.05); } }
+@keyframes sun-pulse { from { opacity: .85; transform: scale(1); } to { opacity: .5; transform: scale(1.3); } }

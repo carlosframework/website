@@ -1,5 +1,11 @@
 # 🤖 The cell story: carlosframework.com, round 3 (2026-11-20)
 
+**Revised by round 4, [the sun story](2026-11-21-sun-story.md) (2026-11-21).**
+Paul found the cell too organic. The character is now a small amber sun,
+and round 4 replaces the section “The cell” and every frame here. The hero
+mechanics, the copy drafts, the attribute list and the build stages below
+still stand.
+
 Round 3 of the homepage story. Paul reviewed
 [round 2](2026-11-20-uncompromising-story.md) and gave new direction: a
 one-sentence hero, a character for CARLOS that is a cell and has no face,
