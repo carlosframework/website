@@ -1,5 +1,19 @@
 // 🤖 One substitution pass; JSON examples remain mechanically comparable to the fixture.
 import { configError } from '../src/_data/start-config.mjs';
+import { readFileSync } from 'node:fs';
+// The facts block's words are reviewed copy (start.facts*), shared by the top of /start and the Markdown twin.
+const defaultCopy=JSON.parse(readFileSync(new URL('../src/_data/start-copy.json',import.meta.url),'utf8'));
+// The copy names production addresses; other builds show their own.
+export function localiseFacts(text,config) {
+ return text.replaceAll('https://carlosframework.com',config.siteOrigin).replaceAll('console.carloku.com',new URL(config.apiOrigin).host);
+}
+export function factsLines(config,copy=defaultCopy) {
+ const lines=copy['start.facts'];
+ if(typeof copy['start.facts.heading']!=='string' || !Array.isArray(lines) || lines.length<6 || lines.length>8) throw configError('start.facts needs a heading and 6 to 8 lines');
+ if(!lines[0].includes('https://carlosframework.com/start/index.md')) throw configError('the first fact must link the directions as text');
+ return {heading:copy['start.facts.heading'],lines:lines.map(line=>localiseFacts(line,config))};
+}
+const urls=/https?:\/\/[^\s]+[^\s.,;:)]/g;
 export function validateClaimContract(c, config) {
  if (!/^[a-f0-9]{40}$/.test(c?.producerCommit ?? '')) throw configError('claim producerCommit must be a 40-hex SHA');
  if (typeof c.producerMerged !== 'boolean') throw configError('claim producerMerged must be a boolean');
@@ -40,11 +54,12 @@ export function publicClaimOperation(value) {
    && !(key==='body' && typeof item==='string' && /<!doctype html|<html[\s>]/i.test(item)))
   .map(([key,item])=>[key,publicClaimOperation(item)]));
 }
-export function renderAgent(template, config, claimContract, starter) {
+export function renderAgent(template, config, claimContract, starter, copy=defaultCopy) {
  if(!config.enabled) throw configError('agent instructions require the demo (CARLOS_START_DEMO=0 turns it off)');
  if(!config.claimOff) validateClaimContract(claimContract,config);
  if(config.starterVersion!=='v1' || !/^[a-f0-9]{64}$/.test(starter?.archiveSHA256 ?? '') || starter?.schema!==1 || !starter.files?.length) throw configError('starter manifest is incomplete');
- const values={siteOrigin:config.siteOrigin,consoleOrigin:config.consoleOrigin,apiOrigin:config.apiOrigin,apiHost:new URL(config.apiOrigin).host,accountUrl:config.accountUrl,starterVersion:config.starterVersion,starterSHA256:starter.archiveSHA256};
+ const facts=factsLines(config,copy);
+ const values={facts:`## ${facts.heading}\n\n${facts.lines.map(line=>`- ${line.replace(urls,url=>`<${url}>`)}`).join('\n')}`,siteOrigin:config.siteOrigin,consoleOrigin:config.consoleOrigin,apiOrigin:config.apiOrigin,apiHost:new URL(config.apiOrigin).host,accountUrl:config.accountUrl,starterVersion:config.starterVersion,starterSHA256:starter.archiveSHA256};
  values.urlValidation=config.apiOrigin===config.consoleOrigin
   ? `Validate returned status and claim URLs as HTTPS with the exact configured console origin \`${config.consoleOrigin}\`, no userinfo; reject unexpected origins.`
   : `Validate returned status URLs as HTTPS with the exact configured API origin \`${config.apiOrigin}\`, and returned claim URLs as HTTPS with the exact configured console origin \`${config.consoleOrigin}\`, no userinfo; reject unexpected origins.`;

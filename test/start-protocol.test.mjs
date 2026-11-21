@@ -485,3 +485,14 @@ test('browser email refusal and completion match the rebound contract',()=>{
  assert.deepEqual(browser.forms.prove.responses[0],publicClaimOperation(refusal));
  assert.ok(browser.semantics.includes('303 to /auth/signin?next=%2Fdemo%2Fclaim'));
 });
+
+// 🤖 2026-11-21: the claim link carries the token, so the one read it needs is spelled out, with its reason.
+for(const claimOff of [false,true]) test(`claim link is read once, alone, at handover: claim ${claimOff?'off':'on'}`,()=>{
+ const create=section(renderAgent(template,{...config,claimOff},claimOff?undefined:contract,manifest),5);
+ const rule=['That link ends in the token itself, so you can\'t hand it over without reading it once.',
+  'Read it only when `claimAvailable` is true, the conversation is private and you are about to give it to the person, with one command that prints `claimUrl` and nothing else',
+  'That single read is the one time the token may appear in tool output: printing only that field keeps every other secret out of it, and reading it only at handover keeps it out of the turns before.',
+  'Never print the create response, `claimToken` or any other field to find it, and don\'t combine that read with other output.'];
+ for(const text of rule) assert.equal(create.includes(text),!claimOff,text);
+ assert.ok(create.includes('so the token never appears in tool output.'));
+});

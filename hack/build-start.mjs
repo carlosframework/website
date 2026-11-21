@@ -3,7 +3,7 @@ import { readFile, writeFile, mkdir, readdir, rm, copyFile, cp } from 'node:fs/p
 import { join } from 'node:path';
 import markdownIt from 'markdown-it';
 import nunjucks from 'nunjucks';
-import { renderAgent } from './start-content.mjs';
+import { renderAgent, factsLines } from './start-content.mjs';
 import { configError } from '../src/_data/start-config.mjs';
 const read=p=>readFile(p,'utf8');
 const md=markdownIt({html:false,linkify:false,typographer:false});
@@ -43,6 +43,13 @@ export function hostsHTML(config,copy) {
 }
 export function promptHTML(config,copy,id) {
  return `<div class="start-prompt"><pre><code id="${id}">${escapeHTML(pasteLine(config,copy))}</code></pre><button type="button" class="copy-button primary" hidden data-copy-target="${id}" data-original="${escapeHTML(copy['copy.label'])}" data-copied="${escapeHTML(copy['copy.done'])}" data-copy-success="${escapeHTML(copy['home.paste.done'])}" data-copy-fallback="${escapeHTML(copy['copy.fallback'])}" data-copy-status="${id}-status" aria-label="${escapeHTML(copy['copy.aria'])}"><span>${escapeHTML(copy['copy.label'])}</span></button>${hostsHTML(config,copy)}<p id="${id}-status" class="copy-status" role="status" aria-live="polite"></p></div>`;
+}
+// The facts block at the very top of /start: summarising fetchers keep the top of a page, so the checkable
+// essentials and the link to the whole text come before anything else.
+export function factsHTML(config,copy) {
+ const {heading,lines}=factsLines(config,copy);
+ const link=text=>escapeHTML(text).replace(/https?:\/\/[^\s<]+[^\s<.,;:)]/g,url=>`<a href="${url}">${url}</a>`);
+ return `<section class="start-facts" aria-labelledby="start-facts-title"><div class="wrap"><h2 id="start-facts-title">${escapeHTML(heading)}</h2><ul>${lines.map(line=>`<li>${link(line)}</li>`).join('')}</ul></div></section>`;
 }
 const human = "<!-- 👨 Paul's words, verbatim -->";
 // The homepage for enabled demo builds: hero B and the sections of the approved
@@ -212,10 +219,10 @@ export async function buildStart(outputDir,config) {
    .replace('</head>',`${homeHead}\n</head>`);
   const contract=config.claimOff ? undefined : JSON.parse(await read('src/_data/start-claim-contract.json'));
   const starter=JSON.parse(await read(`src/start/starter/${config.starterVersion}/manifest.json`));
-  agent=renderAgent(await read('src/start/agent.md'),config,contract,starter);
+  agent=renderAgent(await read('src/start/agent.md'),config,contract,starter,copy);
   const account=original.match(/<div class="start-tabs">[\s\S]*?(?=<\/div><\/section><\/main>)/)?.[0];
   if(!account) throw configError('account tabs marker is missing');
-  const main=templates.renderString(await read('src/_includes/start.njk'),{copy,config,accountHTML:account,agentHTML:renderMarkdown(agent),promptHTML:promptHTML(config,copy,'start-prompt')});
+  const main=templates.renderString(await read('src/_includes/start.njk'),{copy,config,accountHTML:account,agentHTML:renderMarkdown(agent),promptHTML:promptHTML(config,copy,'start-prompt'),factsHTML:factsHTML(config,copy)});
   html=original.replace(/<main>[\s\S]*?<\/main>/,()=>main)
    .replace(/<title>[^<]*<\/title>/,()=>`<title>${escapeHTML(copy['start.title'])}</title>`)
    .replace(/<meta name="description" content="[^"]*">/,()=>`<meta name="description" content="${escapeHTML(copy['start.meta.description'])}">\n<meta property="og:description" content="${escapeHTML(copy['start.meta.description'])}">`)

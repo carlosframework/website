@@ -19,7 +19,7 @@ const consentReview=async()=>{
 };
 const env={CARLOS_START_DEMO:'1',CARLOS_START_SITE_ORIGIN:'https://carlosframework.com',CARLOS_START_CONSOLE_ORIGIN:'https://console.carloku.com',CARLOS_START_ACCOUNT_URL:'https://console.carloku.com/'};
 const base=process.env.STARTER_SCRATCH||tmpdir();assert.ok(!/^\/tmp(?:\/|$)/.test(base),'use disk scratch');
-async function pages(fn,overrides={}) {await mkdir(base,{recursive:true});const dir=await mkdtemp(join(base,'start-pages-'));try{await buildStart(dir,loadStartConfig({...env,...overrides}));await fn(await read(join(dir,'index.html')),await read(join(dir,'start/index.html')));}finally{await rm(dir,{recursive:true,force:true});}}
+async function pages(fn,overrides={}) {await mkdir(base,{recursive:true});const dir=await mkdtemp(join(base,'start-pages-'));try{await buildStart(dir,loadStartConfig({...env,...overrides}));await fn(await read(join(dir,'index.html')),await read(join(dir,'start/index.html')),dir);}finally{await rm(dir,{recursive:true,force:true});}}
 const plain=html=>html.replace(/<!--[\s\S]*?-->/g,'').replace(/<[^>]*>/g,'').replace(/&#39;/g,"'").replace(/&amp;/g,'&').replace(/&quot;/g,'"');
 test('enabled homepage has hero B, its replay and the approved rework sections',()=>pages(async(home,start)=>{
  // the hero: its section ends after the replay's pane (the panel and its dots)
@@ -311,7 +311,7 @@ test('start points agents at its Markdown twin, in the head and at the top of Fo
 test('start order, approved text arrays, complete instructions and unchanged account block',()=>pages(async(_,start)=>{
  const positions=['<h1>','class="intro"','id="start-prompt"','<ol>','Keep it','href="#account"','id="account"','id="for-your-agent"','<!-- agent-content -->'].map(s=>start.indexOf(s));
  assert.ok(positions.every((p,i)=>p>=0 && (!i||p>positions[i-1])));
- for(const [id,value] of Object.entries(copy).filter(([id])=>id.startsWith('start.')&&!id.startsWith('start.hosts.')&&!['start.prompt','start.config.error'].includes(id))) for(const text of [value].flat()) assert.ok(start.includes(id==='start.terms_line'?text:escapeHTML(text)),id);
+ for(const [id,value] of Object.entries(copy).filter(([id])=>id.startsWith('start.')&&!id.startsWith('start.hosts.')&&!['start.prompt','start.config.error','start.facts','start.facts.heading'].includes(id))) for(const text of [value].flat()) assert.ok(start.includes(id==='start.terms_line'?text:escapeHTML(text)),id);
  const account=(await read('src/start/index.html')).match(/<div class="start-tabs">[\s\S]*?(?=<\/div><\/section><\/main>)/)[0];assert.ok(start.includes(account));
  const section=start.split('id="for-your-agent"')[1];assert.doesNotMatch(section,/<details|<[^>]*\bhidden\b/);assert.match(section,/GOOS=linux GOARCH=arm64/);
 }));
@@ -455,3 +455,21 @@ test('paste line comes from the reviewed copy, names /start once and keeps the c
   assert.ok(plain(line).includes(copy['start.prompt']),id);
  }
 }));
+
+// 🤖 2026-11-21: summarising fetchers keep the top of a page, so the checkable essentials and the link to the
+// whole text come first on /start and first in its Markdown twin, from the same reviewed copy.
+for(const [name,overrides] of [['production',{}],['dev',{CARLOS_START_SITE_ORIGIN:'https://dev.example.com',CARLOS_START_CONSOLE_ORIGIN:'https://console.dev.example.com',CARLOS_START_ACCOUNT_URL:'https://console.dev.example.com/'}]]) test(`facts block opens /start and its text twin: ${name}`,()=>pages(async(_,start,dir)=>{
+ const site=loadStartConfig({...env,...overrides}).siteOrigin, api=new URL(loadStartConfig({...env,...overrides}).apiOrigin).host;
+ const lines=copy['start.facts'].map(l=>l.replaceAll('https://carlosframework.com',site).replaceAll('console.carloku.com',api));
+ assert.ok(lines.length>=6 && lines.length<=8);
+ const main=start.split('<main class="demo-start">')[1];
+ assert.ok(main.trimStart().startsWith('<section class="start-facts"'),'first in main');
+ const facts=main.match(/<section class="start-facts"[\s\S]*?<\/section>/)[0];
+ assert.ok(start.indexOf(facts)<start.indexOf('<h1>'));
+ assert.ok(facts.includes(`<h2 id="start-facts-title">${copy['start.facts.heading']}</h2>`));
+ for(const line of lines) assert.ok(plain(facts).includes(line),line);
+ assert.ok(facts.includes(`<a href="${site}/start/index.md">${site}/start/index.md</a>`));
+ const md=await read(join(dir,'start/index.md'));
+ assert.ok(md.startsWith(`# Agent directions: make a small app\n\n## ${copy['start.facts.heading']}\n\n- Read the whole of this page as text: <${site}/start/index.md>\n`));
+ for(const line of lines) assert.ok(md.replace(/<(https?:[^>]+)>/g,'$1').includes(`- ${line}\n`),line);
+},overrides));

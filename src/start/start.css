@@ -52,3 +52,9 @@
 .start-keep h3 { margin-top:2rem; }
 .agent-content .start-keep .code-wrap pre { margin:0; padding:3.5rem 1rem 1rem; }
 @media(max-width:26rem) { .start-prompt pre { flex-basis:100%; } .start-prompt .copy-button { width:100%; } }
+/* 🤖 The facts block at the very top of /start: quiet, compact, before the hero, in the hero's dark palette. */
+.start-facts { background:#0d181e; color:#c4d5ce; border-bottom:1px solid #82c9b530; padding:1rem 0 1.15rem; }
+.start-facts h2 { font:600 .78rem/1.3 var(--font-sans); letter-spacing:.08em; text-transform:uppercase; color:#9db8b0; margin:0 0 .5rem; }
+.start-facts ul { margin:0; padding-left:1.15rem; list-style:disc; display:grid; gap:.25rem; max-width:52rem; font-size:.92rem; line-height:1.5; }
+.start-facts li::marker { color:#82c9b5; }
+main.demo-start .start-facts a { color:#82c9b5; overflow-wrap:anywhere; }
