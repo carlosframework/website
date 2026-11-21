@@ -1,7 +1,7 @@
 {
   "home.meta.description": "Tell your coding agent what you want to make. Try the app it builds at a public link for 24 hours. No account needed.",
   "home.og.description": "Tell your coding agent what you want to make. Try the app it builds at a public link for 24 hours.",
-  "start.prompt": "Follow the directions on https://carlosframework.com/start",
+  "start.prompt": "I’d like to try CARLOS. Read https://carlosframework.com/start and follow its directions to build me an app.",
   "start.title": "Start making better apps",
   "start.meta.description": "Tell your coding agent what you want to make and try the app it builds at a public link for 24 hours. No account or install needed.",
   "start.intro": "One line for your agent which will get you up and running with the CARLOS tools to build and deploy a small app with its own database.",
@@ -86,7 +86,7 @@
   "home.replay.thinking": "Thinking",
   "home.replay.who.you": "You",
   "home.replay.who.agent": "Agent",
-  "home.replay.you.1": "Follow the directions on https://carlosframework.com/start",
+  "home.replay.you.1": "I’d like to try CARLOS. Read https://carlosframework.com/start and follow its directions to build me an app.",
   "home.replay.tabs": "Example sessions",
   "home.replay.time.at": "at {time}",
   "home.replay.time.live": "Live at {time}",

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "start.prompt",
+    "section": "Paste line",
+    "label": "The line people paste into their agent",
+    "text": "I’d like to try CARLOS. Read https://carlosframework.com/start and follow its directions to build me an app.",
+    "context": "The one line people copy from the homepage hero, the closing box at the foot of the homepage and the top of /start, and paste into their coding agent. The old line, “Follow the directions on https://carlosframework.com/start”, read to careful agents like a web page giving orders, so some ignored or refused it. This one says in the person’s own voice that they want to try CARLOS and what they want the agent to do.",
+    "notes": "Paul’s draft. Must contain https://carlosframework.com/start exactly once; other builds swap in their own address."
+  },
+  {
+    "id": "home.replay.you.1",
+    "section": "Homepage replay",
+    "label": "What the person types first in each replayed session",
+    "text": "I’d like to try CARLOS. Read https://carlosframework.com/start and follow its directions to build me an app.",
+    "context": "The first chat bubble in the homepage replay, where a person pastes the line into their agent before the agent asks its questions. It is the same line as the paste box above it, so the replay shows what a visitor will actually paste.",
+    "notes": "Should match the paste line. The agent’s reply that follows begins “I’ve read the directions on that page.”"
+  }
+]
