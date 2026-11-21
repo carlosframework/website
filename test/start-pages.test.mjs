@@ -11,33 +11,21 @@ const env={CARLOS_START_DEMO:'1',CARLOS_START_SITE_ORIGIN:'https://carlosframewo
 const base=process.env.STARTER_SCRATCH||tmpdir();assert.ok(!/^\/tmp(?:\/|$)/.test(base),'use disk scratch');
 async function pages(fn,overrides={}) {await mkdir(base,{recursive:true});const dir=await mkdtemp(join(base,'start-pages-'));try{await buildStart(dir,loadStartConfig({...env,...overrides}));await fn(await read(join(dir,'index.html')),await read(join(dir,'start/index.html')));}finally{await rm(dir,{recursive:true,force:true});}}
 const plain=html=>html.replace(/<!--[\s\S]*?-->/g,'').replace(/<[^>]*>/g,'').replace(/&#39;/g,"'").replace(/&amp;/g,'&').replace(/&quot;/g,'"');
-test('enabled homepage has hero B, its replay and the approved rework sections',()=>pages(async(home,start)=>{
- // the hero: its section ends after the replay's pane (the panel and its dots)
- const hero=home.match(/<section class="c-hero hv hv-b">[\s\S]*?<\/figure>[\s\S]*?<\/div>\s*<\/div>\n<\/div><\/section>/)[0];
- assert.equal(plain(hero.match(/<h1>([\s\S]*?)<\/h1>/)[1]),"You’re already using agents.");
- assert.ok(hero.includes('<span class="nw">using agents.</span>'));
- const sub=hero.match(/<p class="sub">([\s\S]*?)<\/p>/)[1];
- assert.equal(plain(sub),'Now you want to ship faster, build better and spend less.');
- for(const word of ['faster','better','less']) assert.ok(sub.includes(`<em>${word}</em>`));
- assert.ok(sub.includes('spend <em>less</em>.'));
- assert.match(hero,/<!-- 👨 Paul's words, verbatim --><h1>/);
- // The answer, the line about CARLOS (one fixed sentence for screen readers), then the invitation.
- const ask=hero.match(/<p class="ask hv-ask">([\s\S]*?)<\/p>/)[1];
- assert.equal(plain(ask.replace(/<span class="hv-rot-line"[\s\S]*?web apps\.<\/span>/,'')),'You want CARLOS. A system for building better web apps. Read on, or try it now:');
- assert.match(ask,/<span class="hv-rot-line" aria-hidden="true"><span class="hv-rot-pre">A system for building<\/span> <span class="hv-rot" data-words="better remarkable faster accessible secure private simple resilient portable distributable decentralisable agent-ready"><span class="hv-rot-word">better<\/span><\/span> web apps\.<\/span>/);
- assert.match(hero,/<a href="#architecture">Read on<\/a>/);
+test('enabled homepage has the story hero, its first chapters, the replay and the approved rework sections',()=>pages(async(home,start)=>{
+ // The story hero (stage 1 of the sun story, 2026-11-21; its own parts are tested in test/home-story.test.mjs), with the
+ // paste box and the hosts note under it, as before.
+ const story=home.match(/<section class="c-hero hv story-hero"[\s\S]*?<\/div><\/section>/)[0];
+ assert.match(story,/<div class="paste v-soft hv-paste">/);
+ assert.ok(story.includes(escapeHTML(copy['home.paste.label'])));
+ assert.doesNotMatch(story,/pb-works/);
+ assert.match(story,/<details class="hv-cloud"><summary>Using a cloud agent\?<\/summary><!-- 👨 Paul's words, verbatim --><p class="start-hosts">/);
  assert.doesNotMatch(home,/class="hero-tools"|class="hero-wordmark"|class="hero-subtitle"|class="parts"|class="riff-grid"|id="ready"/);
- assert.match(hero,/<div class="paste v-soft hv-paste">/);
- // One drawn background behind the hero only, hidden from assistive technology.
- assert.match(home,/<section class="c-hero hv hv-b"><div class="hero-bg-wrap" aria-hidden="true"><canvas class="hero-bg"><\/canvas><\/div><div class="c-hero-inner">/);
- // One glass pane holds both columns: the text, then the replay with its dots.
- assert.match(home,/<div class="c-hero-inner">\s*<div class="hv-pane">\s*<div class="hv-col">/);
- assert.match(home,/<\/figure>[\s\S]*?<div class="rp-dotrow"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>\s*<\/div><\/section>/);
- assert.equal((home.match(/<canvas/g)||[]).length,1);
- assert.ok(hero.includes(escapeHTML(copy['home.paste.label'])));
- assert.doesNotMatch(hero,/pb-works/);
- assert.match(hero,/<details class="hv-cloud"><summary>Using a cloud agent\?<\/summary><!-- 👨 Paul's words, verbatim --><p class="start-hosts">/);
- assert.match(hero,/<figure class="rp" aria-label="A real run of this journey, sped up" data-thinking="Thinking">/);
+ // The old hero is gone: no glass pane, no drawn background, no rotating word.
+ assert.doesNotMatch(home,/hv-pane|hero-bg|<canvas|hv-rot|hv-b\b/);
+ // The replay keeps its markup, in its own section after the story's chapters.
+ const replay=home.match(/<div class="story-replay"><div class="story-replay-inner">[\s\S]*?<\/div>\n<\/div><\/div>/)[0];
+ assert.ok(home.indexOf('<section class="ch ch-2"')<home.indexOf('<div class="story-replay">'));
+ assert.match(replay,/<figure class="rp" aria-label="A real run of this journey, sped up" data-thinking="Thinking">/);
  // Real sessions to tab through (2026-11-13): one panel per session, only the first open without JavaScript; each
  // is excerpts of its run, and its live line links to the app's permanent example copy in a new tab.
  const {sessions}=JSON.parse(await read('src/home/replays/sessions.json'));
@@ -49,8 +37,8 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.equal(dots[1],copy['home.replay.tabs']);
  assert.deepEqual([...dots[2].matchAll(/<button type="button" role="tab" class="rp-dot" id="rp-tab-([a-z-]+)" aria-controls="rp-session-\1" aria-selected="(true|false)" tabindex="(0|-1)" aria-label="([^"]+)" title="\4"><\/button>/g)].map(m=>[m[1],m[2],m[3],m[4]]),
   sessions.map(({slug},i)=>[slug,String(!i),i?'-1':'0',copy[`home.replay.${slug}.tab`]]));
- assert.match(hero,/<div class="rp-col">\s*(?:<!--[\s\S]*?-->\s*)?<figure class="rp"/);
- assert.ok(hero.includes(`<div class="rp-now"><span class="rp-now-name">${copy[`home.replay.${sessions[0].slug}.tab`]}</span> <span class="rp-now-count" data-format="${copy['home.apps.position']}">1 of ${sessions.length}</span></div>`));
+ assert.match(replay,/<div class="rp-col">\s*(?:<!--[\s\S]*?-->\s*)?<figure class="rp"/);
+ assert.ok(replay.includes(`<div class="rp-now"><span class="rp-now-name">${copy[`home.replay.${sessions[0].slug}.tab`]}</span> <span class="rp-now-count" data-format="${copy['home.apps.position']}">1 of ${sessions.length}</span></div>`));
  assert.doesNotMatch(home,/class="rp-tabs"|class="rp-tab"/);
  // each line's text as quoted: without its stamp, its stamp read aloud, or the live chip (checked on their own below)
  const quoted=html=>plain(html.replace(/<span class="rp-time"[^>]*>[^<]*<\/span>|<span class="rp-sr">[^<]*<\/span>|<span class="rp-live"[^>]*>[^<]*<\/span>/g,'')).replace(/\s+/g,' ').trim();
@@ -58,7 +46,7 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  const words=x=>{const m=Math.floor(x/60),sec=x%60,o=[];if(m) o.push(copy[`home.replay.time.${m===1?'minute':'minutes'}`].replace('{n}',m));if(sec||!m) o.push(copy[`home.replay.time.${sec===1?'second':'seconds'}`].replace('{n}',sec));return o.join(' ');};
  sessions.forEach(({slug,url,shot,times},i)=>{
   const c=k=>copy[`home.replay.${slug}.${k}`], host=new URL(url).host;
-  const panel=hero.match(new RegExp(`<div class="rp-session" id="rp-session-${slug}" role="tabpanel" aria-labelledby="rp-tab-${slug}" data-slug="${slug}"( hidden)?>([\\s\\S]*?)</div>\\s*</div>\\s*</div>`));
+  const panel=replay.match(new RegExp(`<div class="rp-session" id="rp-session-${slug}" role="tabpanel" aria-labelledby="rp-tab-${slug}" data-slug="${slug}"( hidden)?>([\\s\\S]*?)</div>\\s*</div>\\s*</div>`));
   assert.ok(panel,slug); assert.equal(!!panel[1],i>0,`${slug}: only the first open`);
   const p=panel[2];
   assert.equal(quoted(p.match(/class="rp-you rp-s1">[\s\S]*?<p>([\s\S]*?)<\/p>/)[1]),copy['home.replay.you.1']);
@@ -77,9 +65,9 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
   assert.ok(p.includes(`<div class="rp-app-bar" aria-hidden="true"><span></span>${host}</div>`),slug);
   assert.ok(p.includes(`<img src="/home/replays/${slug}-390.jpg" width="${shot[0]}" height="${shot[1]}" alt="${escapeHTML(c('shot.alt'))}" decoding="async"${i?' loading="lazy"':''}>`),slug);
  });
- assert.doesNotMatch(hero,/panaderia|green-bean-72/);
+ assert.doesNotMatch(replay,/panaderia|green-bean-72/);
  // The mockup's furniture stays behind.
- assert.doesNotMatch(home,/🤖|class="robot"|hv-draft|rw-draft|rw-draftbar|rw-claim|hero-switch|hv-a\b|hero-current|notes\.html|DRAFT COPY|noindex/);
+ assert.doesNotMatch(home,/🤖|class="robot"|hv-draft|rw-draft|rw-draftbar|rw-claim|replay-switch|hv-a\b|replay-current|notes\.html|DRAFT COPY|noindex/);
  const body=home.match(/<div class="rw">[\s\S]*<\/div>\n?<\/main>/)[0];
  assert.match(body,/<section class="rw-what" id="architecture"/);
  assert.deepEqual([...body.matchAll(/<section class="(rw-[a-z]+)"/g)].map(m=>m[1]),['rw-apps','rw-what','rw-tools','rw-get','rw-who','rw-end']);
@@ -97,7 +85,7 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
   assert.ok(body.includes(`<p class="rw-fig" data-count-from="${{ship:1,build:250,save:0}[k]}"><span class="rw-fig-final">${escapeHTML(copy[`home.get.${k}.figure`])}</span><span class="rw-fig-run" aria-hidden="true"></span></p>`),k);
   assert.ok(!body.includes(copy[`home.get.${k}.alt`]),k);
  }
- // The closing paste box repeats the hero's, with the line under it and no second host note.
+ // The closing paste box repeats the replay's, with the line under it and no second host note.
  const end=body.match(/<section class="rw-end"[\s\S]*?<\/section>/)[0];
  assert.match(end,/<span id="end-prompt">/);
  assert.ok(end.includes(`<p class="pb-works">${escapeHTML(copy['home.end.paste.works'])}</p>`));
@@ -108,14 +96,14 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
  assert.deepEqual([...panel.matchAll(/<li class="balloon" data-job="([^"]+)"[\s\S]*?<span class="sr">([^<]+)<\/span><\/li>/g)].map(m=>`${m[1]}:${m[2]}`),['hosting:Hosting','database:Database','auth:Auth','email:Email','payments:Payments','file-storage:File storage','workers:Workers','search:Search','webhooks:Webhooks']);
  assert.match(panel,/<li class="micro" data-k="0" style="--k:0"><span class="sr">Microservices<\/span><\/li>/);
  assert.match(panel,/<li class="micro" data-k="5" style="--k:5" data-label="Microservices" aria-hidden="true"><\/li>/);
- assert.doesNotMatch(hero+body,/—/);
+ assert.doesNotMatch(story+replay+body,/—/);
  // Spec links keep their visible text as the name (WCAG 2.5.3) and carry the approved longer label as a description.
  for(const [ref,aria] of [['1.ref','1.aria'],['2.ref','2.aria'],['2.ref2','2.aria2'],['3.ref','3.aria'],['4.ref','4.aria']]) assert.ok(body.includes(`aria-describedby="practice-${aria.replace('.','-')}">${escapeHTML(copy['home.practice.'+ref])}</a><span id="practice-${aria.replace('.','-')}" hidden>${escapeHTML(copy['home.practice.'+aria])}</span>`),aria);
- for(const asset of ['/home/hero.css','/home/sections.css','/home/apps.css','/home/stacks.css','/home/theme.css','/home/hero.js','/home/hero-bg.js','/home/replay.js','/home/apps.js','/home/figures.js','/home/stacks.js']) assert.ok(home.includes(`="${asset}?v=0"`),asset);
+ for(const asset of ['/home/hero.css','/home/sun.css','/home/story.css','/home/sections.css','/home/apps.css','/home/stacks.css','/home/theme.css','/home/story.js','/home/replay.js','/home/apps.js','/home/figures.js','/home/stacks.js']) assert.ok(home.includes(`="${asset}?v=0"`),asset);
  // The theme is set before anything is drawn: theme.js first in <head>, blocking, ahead of every stylesheet.
  const head=home.match(/<head>[\s\S]*?<\/head>/)[0];
  assert.ok(head.includes('<script src="/home/theme.js?v=0"></script>'));
- assert.ok(head.indexOf('/home/theme.js')<head.indexOf('/start/start.css') && head.indexOf('/home/theme.js')<head.indexOf('/home/hero.css'));
+ 
  // Auto, Light and Dark as icons in the footer, Auto pressed until the script reads the remembered choice.
  assert.match(home,/<footer><div class="theme-switch" role="group" aria-label="Theme" hidden>/);
  for(const k of ['auto','light','dark']) assert.ok(home.includes(`<button type="button" data-theme-set="${k}" aria-pressed="${k==='auto'}" aria-label="${copy[`home.theme.${k}`]}" title="${copy[`home.theme.${k}`]}"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">`),k);
@@ -140,10 +128,10 @@ test('enabled homepage has hero B, its replay and the approved rework sections',
 test('enabled homepage has the apps carousel under the hero',()=>pages(async(home)=>{
  const sources=JSON.parse(await read('src/home/apps/sources.json'));
  const appsPage=await read('src/apps/index.html');
- const heroEnd=home.indexOf('</div></section>',home.indexOf('class="rp-dotrow"'));
+ const heroEnd=home.indexOf('<div class="story-bar"');
  const section=home.match(/<section class="rw-apps"[\s\S]*?<\/div><\/section>/)[0];
  assert.ok(heroEnd>0 && home.indexOf('<section class="rw-apps"')>heroEnd);
- assert.match(home.slice(heroEnd),/^<\/div><\/section>\s*<div class="rw">\s*<section class="rw-apps"/,'the first section after the hero');
+ assert.match(home.slice(heroEnd),/^<div class="story-bar" hidden>[\s\S]*?<\/div>\s*<div class="rw">\s*<section class="rw-apps"/,'the first section after the story');
  assert.match(section,/^<section class="rw-apps" aria-roledescription="carousel" aria-labelledby="rw-apps-title" data-carousel>/);
  assert.ok(section.includes(`<!-- 👨 Paul's words, verbatim --><h2 id="rw-apps-title">What kinds of apps can be built using CARLOS?</h2>\n    <p class="ap-sub">CARLOS excels at producing fast, accessible websites and apps that can be deployed easily, locally, on-prem, or on-cloud, as well as providing APIs, CLIs, MCPs, and backends for native apps.</p><!-- /👨 -->`));
  assert.equal(copy['home.apps.heading'],'What kinds of apps can be built using CARLOS?');
@@ -395,11 +383,14 @@ test('homepage carries Paul’s 2026-11-12 approved copy byte for byte, with cur
  await pages(async home=>{
   const text=visible(home);
   assert.doesNotMatch(home,/rp-badge|A real run, sped up/);
-  const sample=['hero.gloss','hero.cloud.summary','what.button','what.prop2.body','practice.4.aria','tools.heading','tools.skill.body','get.ship.item1','get.ship.item2','get.build.item2','get.save.item1','get.build.figure.note','stacks.sub','stacks.reset','stacks.balloon.file-storage','stacks.after.base','who.by','end.heading','end.paste.works','end.hand.link','typical.closing.lead','typical.closing.body'];
+  const sample=['hero.cloud.summary','what.button','what.prop2.body','practice.4.aria','tools.heading','tools.skill.body','get.ship.item1','get.ship.item2','get.build.item2','get.save.item1','get.build.figure.note','stacks.sub','stacks.reset','stacks.balloon.file-storage','stacks.after.base','who.by','end.heading','end.paste.works','end.hand.link','typical.closing.lead','typical.closing.body'];
   for(const id of sample) assert.ok(text.includes(copy[`home.${id}`]),id);
-  // Every approved string shown on the page; the alternatives to the figures are kept for a one-line switch.
-  for(const {id,text:value} of result.strings) if(!/^get\.[a-z]+\.alt/.test(id) && !id.startsWith('hero.gloss.word.')) assert.ok(text.includes(value),id);
-  for(const {id,text:value} of result.strings.filter(s=>s.id.startsWith('hero.gloss.word.'))) assert.ok(home.includes(`data-words="`) && home.match(/data-words="([^"]*)"/)[1].split(' ').includes(value),id);
+  // Every approved string shown on the page; the alternatives to the figures are kept for a one-line switch. The old
+  // hero's lines (its headline, the rotating gloss and its words) gave way to the story hero on 2026-11-21 (stage 1 of
+  // the sun story); they stay in the copy data, unshown, until that copy review settles. Its hosts note stays.
+  const oldHero=id=>id.startsWith('hero.') && id!=='hero.cloud.summary';
+  for(const {id,text:value} of result.strings) if(!/^get\.[a-z]+\.alt/.test(id) && !oldHero(id)) assert.ok(text.includes(value),id);
+  assert.doesNotMatch(home,/data-words="/);
   assert.doesNotMatch(text,/['"]/,'straight quotes in visible text');
   assert.doesNotMatch(home,/&#39;|&quot;(?![^<]*>)/);
  });

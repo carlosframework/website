@@ -134,8 +134,8 @@ test('a plain build is the production site: the new homepage and /start with pro
  const result=spawnSync(process.execPath,['node_modules/@11ty/eleventy/cmd.cjs',`--output=${dir}`],{env:clean,encoding:'utf8'});
  assert.equal(result.status,0,result.stderr+'\n'+result.stdout);
  const home=await read(join(dir,'index.html'));
- assert.equal((home.match(/class="hv-col"/g)||[]).length,1,'the new hero');
- assert.match(home,/class="hv-pane"/);
+ assert.equal((home.match(/<section class="c-hero hv story-hero"/g)||[]).length,1,'the new hero (the story, stage 1)');
+ assert.match(home,/<section class="ch ch-1"/);
  assert.ok((await files(join(dir,'start'))).includes('index.md'),'/start/ with the agent page');
  assert.match(await read(join(dir,'start/index.html')),/<h1/);
  const agent=await read(join(dir,'start/index.md'));

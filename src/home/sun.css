@@ -1,0 +1,70 @@
+/* 🤖 The CARLOS character: a small amber sun. The drop-in from the sun-story spec (story-proposal-20261117,
+   docs/superpowers/specs/2026-11-21-sun-story/sun.css), adapted to this page's themes: the night colours come from
+   light-dark(), so the dark theme gets them whether it comes from the system or the theme switch.
+   Four circles and nothing else: a glow, a boundary ring, a body and a core. No face, no path, no gradient, no filter.
+   Every state is a transform, an opacity or a fill, set by data-state on the .sun group (hack/story-svg.mjs draws it).
+   It is the only amber thing on the page. PROVISIONAL until Paul approves the character. */
+:root {
+  --sun: #ffb454;                                            /* the deck's amber */
+  --sun-hot: #ffc66e;                                        /* bright */
+  --sun-pale: #f3c891;                                       /* squished */
+  --sun-core: light-dark(#fff0d2, #fff3dc);                  /* the smaller circle inside */
+  --sun-edge: light-dark(#c97a16, #ffb454);                  /* a darker line holds its edge on a light page; none needed at night */
+  --sun-glow: light-dark(rgb(255 180 84 / 0.075), rgb(255 180 84 / 0.05));    /* each of the four glow discs; they stack */
+  --sun-glow-hot: light-dark(rgb(255 180 84 / 0.13), rgb(255 180 84 / 0.085));
+}
+
+.sun-glow circle { fill: var(--sun-glow); }
+.sun-ring { fill: none; stroke: var(--sun-edge); stroke-width: 1.5; opacity: 0.6; vector-effect: non-scaling-stroke; }
+.sun-body { fill: var(--sun); stroke: var(--sun-edge); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.sun-core { fill: var(--sun-core); }
+.sun-pulse { fill: none; stroke: var(--sun); stroke-width: 1.5; opacity: 0; vector-effect: non-scaling-stroke; }
+.sun-self, .sun-glow, .sun-pulse { transform-box: fill-box; transform-origin: 50% 50%; }
+
+/* its wall drawn heavy, where the chapter is about the wall */
+.sun.is-walled .sun-ring { stroke-width: 3; opacity: 1; }
+/* under 20 px across: a body and a ring, no core and no glow */
+.sun.is-small .sun-core, .sun.is-small .sun-glow { display: none; }
+
+/* ---- states ---- */
+.sun[data-state="swell"] .sun-self { transform: scale(1.18); }
+.sun[data-state="swell"] .sun-glow { transform: scale(1.12); }
+.sun[data-state="shrink"] .sun-self, .sun[data-state="shrink"] .sun-glow { transform: scale(0.8); }
+
+.sun[data-state="squish"] .sun-self { transform-origin: 50% 100%; transform: scale(1.2, 0.72); }
+.sun[data-state="squish"] .sun-body { fill: var(--sun-pale); }
+.sun[data-state="squish"] .sun-glow { opacity: 0.35; transform: scale(1.1, 0.8); }
+
+.sun[data-state="asleep"] .sun-self { transform: scale(0.86); }
+.sun[data-state="asleep"] .sun-body { fill-opacity: 0.34; stroke-opacity: 0.7; }
+.sun[data-state="asleep"] .sun-core, .sun[data-state="asleep"] .sun-glow { opacity: 0; }
+.sun[data-state="asleep"] .sun-ring { opacity: 0.32; }
+
+.sun[data-state="bright"] .sun-self { transform: scale(1.08); }
+.sun[data-state="bright"] .sun-body { fill: var(--sun-hot); }
+.sun[data-state="bright"] .sun-core { fill: #fff; }
+.sun[data-state="bright"] .sun-glow circle { fill: var(--sun-glow-hot); }
+.sun[data-state="bright"] .sun-pulse { opacity: 0.5; transform: scale(1.3); }
+
+.sun[data-state="ghost"] .sun-body, .sun[data-state="ghost"] .sun-core, .sun[data-state="ghost"] .sun-glow { display: none; }
+.sun[data-state="ghost"] .sun-ring { stroke-dasharray: 4 5; opacity: 0.75; }
+
+/* ---- motion: only when the reader allows it ---- */
+@media (prefers-reduced-motion: no-preference) {
+  .sun-self, .sun-glow { transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.3, 1), opacity 0.4s ease; }
+  .sun-body, .sun-core, .sun-ring { transition: fill 0.4s ease, fill-opacity 0.4s ease, opacity 0.4s ease, stroke-width 0.3s ease; }
+  /* back from a swell or a squish more slowly than it went (600 and 500 ms) */
+  .sun[data-state="rest"] .sun-self, .sun[data-state="rest"] .sun-glow { transition-duration: 0.6s, 0.6s; }
+  .sun[data-state="asleep"] :is(.sun-self, .sun-glow, .sun-body, .sun-core, .sun-ring) { transition-duration: 1.4s; }
+  .sun[data-state="bright"] :is(.sun-self, .sun-glow, .sun-body, .sun-core, .sun-ring) { transition-duration: 0.3s; }
+  .sun[data-state="squish"] :is(.sun-self, .sun-glow) { transition-timing-function: ease-out; }
+  /* the one thing that loops: a live sun at rest breathes once every four seconds */
+  .sun.is-live[data-state="rest"] .sun-self { animation: sun-breathe 4s ease-in-out infinite; }
+  .sun.is-live[data-state="rest"] .sun-glow { animation: sun-glow 4s ease-in-out infinite; }
+  .sun.is-live[data-state="bright"] .sun-pulse { animation: sun-pulse 0.6s ease-out 1 both; }
+  /* a sun off screen, or in a hidden tab, stops breathing (story.js sets .is-still on its section) */
+  .is-still .sun.is-live .sun-self, .is-still .sun.is-live .sun-glow { animation-play-state: paused; }
+}
+@keyframes sun-breathe { 50% { transform: scale(1.035); } }
+@keyframes sun-glow { 50% { opacity: 0.72; transform: scale(1.05); } }
+@keyframes sun-pulse { from { opacity: 0.85; transform: scale(1); } to { opacity: 0.5; transform: scale(1.3); } }

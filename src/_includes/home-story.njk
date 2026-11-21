@@ -1,0 +1,62 @@
+{#- 🤖 The story homepage, stage 1 (hack/build-start.mjs): the hero, "What does uncompromising mean?" and the first
+    two chapters with the sun, then the replay. The rest of the page (home-body.njk) follows unchanged.
+    Spec: docs/superpowers/specs/2026-11-21-sun-story.md and the notes it revises, on story-proposal-20261117.
+    s('story.x') reads src/_data/story-copy.json, all of it DRAFT copy for Paul's review; t('x.y') reads the
+    approved "home.x.y" from start-copy.json. Without JavaScript, or under reduced motion, everything here is a
+    still: the attributes are a plain list under the headline and each chapter shows its last step. src/home/story.js
+    turns the motion on (the "is-live" classes); nothing is hidden until it does. -#}
+<section class="c-hero hv story-hero" aria-labelledby="story-title"><div class="c-hero-inner story-hero-inner">
+<div class="sky" aria-hidden="true">{{ svg.orbits | safe }}<div class="sky-sun">{{ svg.heroSun | safe }}</div></div>
+<h1 id="story-title">{{ hero.before }}<span class="unc">{{ hero.word }}</span>{{ hero.after }}</h1>
+{#- The eleven words, a real list straight after the headline, open or shut. The cloud is this list, moved with CSS. #}
+<ul class="attrs" id="story-attrs" role="list">
+{%- for a in attrs %}<li style="--x:{{ a.at[0] }};--y:{{ a.at[1] }};--s:{{ a.at[2] }}px;--mx:{{ a.at[3] }};--my:{{ a.at[4] }};--i:{{ loop.index0 }}">{{ a.word }}</li>{% endfor -%}
+</ul>
+<p class="with">{{ s('story.hero.with') }}</p>
+{{ heroPaste | safe }}
+<p class="story-under">{{ s('story.hero.under') }}</p>
+<details class="hv-cloud"><summary>{{ t('hero.cloud.summary') }}</summary>{{ hosts | safe }}</details>
+</div></section>
+
+<section class="story-u" id="uncompromising" aria-labelledby="u-title"><div class="story-wrap u-wrap">
+  <div class="u-text">
+    <h2 id="u-title">{{ s('story.u.heading') }}</h2>
+    <p class="u-big">{{ s('story.u.p1') }}</p>
+    <p>{{ s('story.u.p2') }}</p>
+    <p class="u-ink">{{ s('story.u.p3') }}</p>
+    <p>{{ s('story.u.p4') }}</p>
+  </div>
+  <figure class="u-pic"><div class="u-draw" role="img" aria-label="{{ s('story.u.figure') }}">{{ svg.usual | safe }}{{ svg.round | safe }}</div><figcaption class="u-round">{{ s('story.u.round') }}</figcaption></figure>
+  <ul class="u-groups" role="list">
+{%- for g in groups %}
+    <li><span class="u-for">{{ s('story.u.group.' + g.id) }}</span><ul class="u-words" role="list">{% for w in g.words %}<li>{{ s('story.attr.' + w) }}</li>{% endfor %}</ul></li>
+{%- endfor %}
+  </ul>
+</div></section>
+
+{#- A chapter: its text in steps, and one picture that each step changes. Live, the picture sticks while the steps
+    scroll past it, and the step nearest the middle of the screen sets data-step on the chapter. There is no
+    scroll-jacking: the page scrolls as it always does. -#}
+<section class="ch ch-1" id="everything-inside" aria-labelledby="ch1-title" data-ch="1"><div class="story-wrap ch-wrap">
+  <div class="ch-text">
+    <div class="ch-step" data-step="1"><p class="ch-eye">{{ s('story.attr.lightweight') }}</p><h2 id="ch1-title">{{ s('story.c1.heading') }}</h2><p class="ch-lead">{{ s('story.c1.body') }}</p></div>
+    <div class="ch-step" data-step="2"><p class="ch-lead">{{ s('story.c1.loose') }}</p></div>
+    <div class="ch-step" data-step="3"><button type="button" class="ch-act" data-act="poke" aria-describedby="ch1-status" hidden>{{ svg.actSun | safe }}<span>{{ s('story.c1.poke') }}</span></button><p class="ch-status" id="ch1-status" role="status" aria-live="polite" data-said="{{ s('story.c1.poked') }}"></p></div>
+  </div>
+  <figure class="ch-stage"><div class="ch-pic" role="img" aria-label="{{ s('story.c1.figure') }}">{{ svg.inside | safe }}</div></figure>
+</div></section>
+
+<section class="ch ch-2" id="one-each" aria-labelledby="ch2-title" data-ch="2"><div class="story-wrap ch-wrap">
+  <div class="ch-text">
+    <div class="ch-step" data-step="1"><p class="ch-eye">{{ s('story.attr.secure') }}<span aria-hidden="true"> · </span>{{ s('story.attr.private') }}</p><h2 id="ch2-title">{{ s('story.c2.heading') }}</h2><p class="ch-lead">{{ s('story.c2.body') }}</p></div>
+    <div class="ch-step" data-step="2"><p class="ch-lead">{{ s('story.c2.wall') }}</p></div>
+    <div class="ch-step" data-step="3"><button type="button" class="ch-act" data-act="try" aria-describedby="ch2-status" hidden>{{ svg.actSun | safe }}<span>{{ s('story.c2.try') }}</span></button><p class="ch-status" id="ch2-status" role="status" aria-live="polite" data-said="{{ s('story.c2.stopped') }}"></p></div>
+  </div>
+  <figure class="ch-stage"><div class="ch-pic" role="img" aria-label="{{ s('story.c2.figure') }}">{{ svg.each | safe }}</div><figcaption class="ch-note c2-stopped" aria-hidden="true">{{ s('story.c2.stopped') }}</figcaption></figure>
+</div></section>
+
+{{ replay | safe }}
+
+{#- The paste line is never more than one action away: once the hero's box has scrolled off, a slim bar offers the
+    same line, with the chapters told so far as small suns. Hidden until story.js shows it. -#}
+<div class="story-bar" hidden><span class="story-rail" aria-hidden="true">{% for c in [1, 2] %}<svg class="rail-sun" data-ch="{{ c }}" viewBox="-10 -10 20 20" focusable="false"><circle class="rail-ring" r="8.5"/><circle class="rail-body" r="5"/></svg>{% endfor %}</span><button type="button" class="story-bar-copy" data-copy-line="home-prompt" data-original="{{ s('story.bar.copy') }}" data-copied="{{ c('copy.done') }}" data-copy-success="{{ t('paste.done') }}" data-copy-fallback="{{ c('copy.fallback') }}"><svg class="ic-copy" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span>{{ s('story.bar.copy') }}</span></button><span class="story-bar-status" role="status" aria-live="polite"></span></div>

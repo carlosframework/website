@@ -1,0 +1,201 @@
+/* 🤖 The story homepage, stage 1: the hero, "What does uncompromising mean?" and the first two chapters with the sun
+   (src/_includes/home-story.njk). Spec: docs/superpowers/specs/2026-11-21-sun-story.md on story-proposal-20261117.
+   Everything is a still by default: the attributes are a plain list under the headline and each chapter shows its
+   last step. src/home/story.js adds .is-live (and data-step, .is-open) only when the reader allows motion.
+   Motion is calm on purpose: one easing for moves (the deck's glide), slow fades, nothing that flickers. */
+.story-hero, .story-u, .ch, .story-replay, .story-bar {
+  --st-ink: light-dark(#14181d, #f1f5ef); --st-muted: light-dark(#4f545b, #b3bdc9); --st-rule: light-dark(rgba(27, 31, 36, 0.12), rgba(255, 255, 255, 0.14));
+  --st-accent: light-dark(#067a68, #2fd4ac); --st-word: light-dark(#0a5a4d, #8fe3cb); --st-ground: light-dark(#faf8f4, #101c23);
+  --st-stop: light-dark(#b3261e, #ff8f85); --glide: cubic-bezier(0.45, 0, 0.25, 1); --settle: cubic-bezier(0.2, 0.7, 0.3, 1);
+  font-family: Inter, Roboto, "Helvetica Neue", "Arial Nova", "Nimbus Sans", Arial, sans-serif;
+}
+.story-wrap { max-width: 72rem; margin: 0 auto; padding-inline: clamp(1.15rem, 5vw, 4rem); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---------- the hero: a plain page, centred; the sun above one sentence ---------- */
+body.site-home .c-hero.story-hero { background: var(--st-ground); color: var(--st-ink); }
+.story-hero { --sky-h: 15.5rem; --sky-top: clamp(1.5rem, 4vw, 3rem); }
+.story-hero .story-hero-inner { position: relative; max-width: 78rem; display: flex; flex-direction: column; align-items: center; padding: var(--sky-top) clamp(1.15rem, 5vw, 4rem) clamp(3rem, 8vw, 5rem); }
+.story-hero .sky { order: 0; position: relative; width: 100%; max-width: 65rem; display: grid; place-items: center; }
+.story-hero .sky-sun { width: 13rem; }   /* the ring is 120 px across */
+.story-hero .sky-sun .sun-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.story-hero .sky-orbits { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; }
+.orbit { fill: none; stroke: var(--sun-edge); stroke-opacity: 0.3; stroke-dasharray: 2 6; vector-effect: non-scaling-stroke; }
+.story-hero h1 { order: 1; margin: 0.25rem 0 0; max-width: none; font: 750 clamp(2.6rem, 11vw, 4.6rem)/1.04 Inter, Roboto, "Helvetica Neue", Arial, sans-serif; letter-spacing: -0.035em; color: var(--st-ink); text-wrap: balance; }
+.story-hero .with { order: 2; margin: 0.4rem 0 0; font: 650 clamp(1.6rem, 6.8vw, 2.4rem)/1.2 Inter, Roboto, "Helvetica Neue", Arial, sans-serif; letter-spacing: -0.02em; color: var(--st-ink); }
+.story-hero .attrs { order: 3; }
+.story-hero .paste { order: 4; width: 100%; max-width: 38rem; margin: clamp(1.4rem, 4vw, 2rem) auto 0; }
+.story-hero .story-under { order: 5; margin: 0.8rem auto 0; max-width: 34rem; font-size: 0.92rem; line-height: 1.5; color: var(--st-muted); text-wrap: pretty; }
+.story-hero .hv-cloud { order: 6; }
+
+/* the word: teal, and (live) fizzing a little */
+.story-hero .unc { color: var(--st-accent); }
+.story-hero button.unc { position: relative; display: inline-block; margin: 0; padding: 0; border: 0; background: none; font: inherit; letter-spacing: inherit; line-height: inherit; color: var(--st-accent); cursor: pointer; border-radius: 0.12em; }
+.story-hero button.unc:focus-visible { outline: 3px solid var(--st-accent); outline-offset: 0.12em; }
+.unc-l { display: inline-block; }
+.unc-b { position: absolute; left: 0; right: 0; top: 0.08em; height: 0; pointer-events: none; }
+.unc-b i { position: absolute; left: var(--l); bottom: 0; width: var(--z); height: var(--z); border: 1.5px solid currentColor; border-radius: 50%; opacity: 0; }
+
+/* the eleven words, as a plain list: without script, under reduced motion, and for everyone's screen reader */
+.story-hero .attrs { list-style: none; margin: 1.1rem auto 0; padding: 0; max-width: 46rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.15rem 1.2rem; font-weight: 600; font-size: clamp(1.02rem, 3.6vw, 1.22rem); line-height: 1.5; color: var(--st-word); }
+
+/* ---------- live hero ---------- */
+.story-hero.is-live .sky { height: var(--sky-h); }
+.story-hero.is-live .attrs { position: absolute; left: 50%; top: var(--sky-top); width: min(65rem, calc(100% - 2rem)); height: var(--sky-h); max-width: none; margin: 0; translate: -50% 0; display: block; container-type: size; pointer-events: none; }
+.story-hero.is-live .attrs li { position: absolute; left: calc(var(--x) * 1%); top: calc(var(--y) * 1%); font-size: var(--s); white-space: nowrap; letter-spacing: -0.01em;
+  opacity: 0; transform: translate(calc((50 - var(--x)) * 0.6cqw), calc((100 - var(--y)) * 0.6cqh + 2.5rem)) scale(0.3); transform-origin: 50% 50%; }
+.story-hero.is-live .attrs li::before { content: ""; display: inline-block; width: 0.42em; height: 0.42em; margin-right: 0.4em; vertical-align: 0.12em; border: 1.5px solid var(--st-accent); border-radius: 50%; opacity: 0.7; }
+.story-hero.is-live.is-open .attrs li { opacity: 1; transform: none; }
+.story-hero.is-live.is-open .sky-orbits { opacity: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  .story-hero.is-live .attrs li { transition: opacity 0.45s ease, transform 0.5s var(--glide); transition-delay: calc(var(--i) * 20ms); }
+  .story-hero.is-live.is-open .attrs li { transition: opacity 0.6s ease, transform 0.75s var(--settle); transition-delay: calc(var(--i) * 45ms); }
+  .story-hero.is-live .sky-orbits { transition: opacity 0.8s ease; }
+  /* the fizz: each letter a hair off the line, out of step; a few small rings rise and fade within 16 px */
+  .story-hero.is-live .unc-l { animation: unc-drift 3.4s ease-in-out var(--d) infinite alternate; }
+  .story-hero.is-live .unc-b i { animation: unc-rise 2.6s ease-out var(--t) 3 both; }
+  /* after the first eight seconds it settles to one ring every two seconds */
+  .story-hero.is-live .unc-b i.slow { animation: unc-rise 2s ease-out 8.6s infinite both; }
+  .story-hero.is-still .unc-l, .story-hero.is-still .unc-b i, .story-hero.is-open .unc-b i { animation-play-state: paused; }
+}
+@keyframes unc-drift { from { transform: translateY(calc(var(--o) * 1px)); } to { transform: translateY(calc(var(--o) * -1px)); } }
+@keyframes unc-rise { 0% { opacity: 0; transform: translateY(0) scale(0.6); } 25% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-16px) scale(1); } }
+
+/* ---------- "What does uncompromising mean?" ---------- */
+.story-u { border-top: 1px solid var(--st-rule); padding-block: clamp(3rem, 8vw, 6rem); color: var(--st-ink); }
+.u-wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem; }
+.story-u h2, .ch h2 { margin: 0 0 1rem; font: 700 clamp(2rem, 6vw, 2.6rem)/1.08 Inter, Roboto, "Helvetica Neue", Arial, sans-serif; letter-spacing: -0.03em; color: var(--st-ink); text-wrap: balance; }
+.u-text p { margin: 0 0 0.9rem; max-width: 34rem; font-size: 1.05rem; line-height: 1.6; color: var(--st-muted); text-wrap: pretty; }
+.u-text .u-big { font-size: clamp(1.15rem, 3.6vw, 1.3rem); line-height: 1.4; }
+.u-text .u-ink { color: var(--st-ink); font-weight: 650; }
+.u-pic { margin: 0; }
+.u-draw { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 0.5rem; }
+.u-draw svg { display: block; width: 100%; height: auto; overflow: visible; }
+.u-usual { max-width: 24rem; } .u-sun { max-width: 17rem; }
+.u-oct { fill: light-dark(#ffffff, #18252b); stroke: light-dark(#2b2f33, #a9b8bd); stroke-width: 1.5; }
+.u-cut { fill: none; stroke: light-dark(#2b2f33, #a9b8bd); stroke-width: 1; stroke-dasharray: 3 4; stroke-opacity: 0.6; }
+.u-name { font: 600 18px Inter, Roboto, Arial, sans-serif; fill: var(--st-ink); }
+.u-usual .lab { font-size: 17px; }
+.lab { font: 400 14px Inter, Roboto, Arial, sans-serif; fill: var(--st-muted); }
+.u-round { margin: 0.25rem 0 0; text-align: center; font-style: italic; font-size: 1.05rem; color: var(--st-muted); }
+.u-groups { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0.9rem 1.6rem; }
+.u-groups > li { border-top: 1px solid var(--st-rule); padding-top: 0.6rem; }
+.u-for { display: block; font-size: 0.86rem; color: var(--st-muted); margin-bottom: 0.15rem; }
+.u-words { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; font-weight: 650; font-size: 1.05rem; color: var(--st-word); }
+.u-words li { white-space: nowrap; }
+.u-words li:not(:last-child)::after { content: "·" / ""; margin: 0 0.4em; color: var(--st-muted); }
+@media (min-width: 52rem) {
+  .u-wrap { grid-template-columns: minmax(0, 27rem) minmax(0, 1fr); column-gap: clamp(2rem, 5vw, 4rem); align-items: center; }
+  .u-text { grid-row: 1 / span 2; }
+  .u-draw { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: center; }
+  .u-round { margin-left: 53%; }
+}
+
+/* ---------- the chapters ---------- */
+.ch { border-top: 1px solid var(--st-rule); padding-block: clamp(2.5rem, 7vw, 5rem); color: var(--st-ink); }
+.ch-wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+.ch-stage { margin: 0; order: -1; }
+.ch-pic svg { display: block; width: 100%; height: auto; max-height: 70vh; overflow: visible; }
+.ch-eye { margin: 0 0 0.75rem; font-size: 0.82rem; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; color: var(--st-accent); }
+.ch-lead { margin: 0 0 0.9rem; max-width: 30rem; font-size: clamp(1.08rem, 3.4vw, 1.25rem); line-height: 1.5; color: var(--st-muted); text-wrap: pretty; }
+.ch-act { display: inline-flex; align-items: center; gap: 0.55rem; min-height: 44px; margin: 0.25rem 0 0; padding: 0.5rem 1.1rem 0.5rem 0.8rem; border: 1px solid light-dark(rgba(27, 31, 36, 0.28), rgba(255, 255, 255, 0.3)); border-radius: 99px; background: none; color: var(--st-ink); font: 650 1.02rem/1.2 Inter, Roboto, Arial, sans-serif; cursor: pointer; }
+.ch-act[hidden] { display: none; }
+@media (hover: hover) { .ch-act:hover { border-color: var(--st-accent); } }
+.ch-act:focus-visible { outline: 3px solid var(--st-accent); outline-offset: 2px; }
+.act-sun { width: 18px; height: 18px; flex: none; }
+.act-sun .rail-ring, .rail-sun .rail-ring { fill: none; stroke: var(--sun-edge); stroke-width: 1.5; opacity: 0.6; }
+.act-sun .rail-body { fill: var(--sun); stroke: var(--sun-edge); stroke-width: 1.5; }
+.ch-status { margin: 0.6rem 0 0; min-height: 1.5em; font-size: 0.95rem; color: var(--st-muted); }
+.ch-note { margin: 0.5rem 0 0; text-align: center; font-style: italic; font-size: 1rem; color: var(--st-muted); }
+.ch-svg .ground { stroke: currentColor; stroke-opacity: 0.22; }
+.ch-svg .in { font: 600 17px Inter, Roboto, Arial, sans-serif; fill: var(--st-word); }
+.ch-svg .cap { font-size: 15px; }
+@media (max-width: 51.99rem) { .ch-svg .lab { font-size: 24px; } .ch-svg .in { font-size: 25px; } .ch-svg .cap { font-size: 24px; } }
+@media (min-width: 52rem) {
+  .ch-wrap { grid-template-columns: minmax(0, 25rem) minmax(0, 1fr); column-gap: clamp(2rem, 5vw, 4rem); align-items: center; }
+  .ch-stage { order: 0; }
+}
+
+/* chapter 1: the pile, and the four parts inside the ring (the still shows the end) */
+.slab-front { fill: light-dark(#ffffff, #1d2b31); stroke: light-dark(#2b2f33, #9fb0b5); stroke-width: 1; }
+.slab-top { fill: light-dark(#eef2ea, #26363c); stroke: light-dark(#2b2f33, #9fb0b5); stroke-width: 1; }
+.slab-side { fill: light-dark(#d7ddd2, #14212a); stroke: light-dark(#2b2f33, #9fb0b5); stroke-width: 1; }
+.c1-rest { opacity: 0.25; }
+.c1-part { transform: translate(var(--tx), var(--ty)); }
+.c1-part > g { opacity: 0; }
+.c1-dot { fill: light-dark(#ffffff, #101c23); stroke: var(--sun-edge); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.c1-sun .sun { cursor: pointer; }
+/* chapter 2: one sun divides on a slant; three customers, each with its own ring; a request stops at the ring */
+.c2-half { transform: translateX(var(--dx)); }
+.c2-shared { transform-box: fill-box; transform-origin: 50% 50%; transform: scaleX(1.62); opacity: 0; }
+.c2-own { fill: none; stroke: var(--sun-edge); stroke-width: 1.5; opacity: 0.7; stroke-dasharray: 1; stroke-dashoffset: 0; vector-effect: non-scaling-stroke; }
+.c2-thread { fill: none; stroke: currentColor; stroke-opacity: 0.35; stroke-dasharray: 3 6; }
+.c2-request { fill: none; stroke: var(--st-stop); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
+.c2-stop { fill: none; stroke: var(--st-stop); stroke-width: 3; stroke-linecap: round; }
+
+/* ---------- live chapters: the picture sticks while the steps scroll past it ---------- */
+.ch.is-live .ch-step { min-height: 62vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
+.ch.is-live .ch-stage { position: sticky; top: 0; z-index: 1; align-self: start; background: var(--st-ground); padding-block: 0.5rem; }
+.ch.is-live .ch-pic svg { max-height: 42vh; margin-inline: auto; }
+@media (min-width: 52rem) {
+  .ch.is-live .ch-wrap { align-items: start; }
+  .ch.is-live .ch-step { min-height: 72vh; }
+  .ch.is-live .ch-stage { top: max(1rem, calc(50vh - 22rem)); background: none; padding: 0; }
+  .ch.is-live .ch-pic svg { max-height: min(44rem, 84vh); }
+}
+/* chapter 1, live: the pile whole until step 2, then four parts glide in and become points; labels at step 3 */
+.ch-1.is-live .c1-rest, .ch-1.is-live .c1-part, .ch-1.is-live .c1-part > g, .ch-1.is-live .c1-dot, .ch-1.is-live .c1-orbit, .ch-1.is-live .c1-labels, .ch-1.is-live .c1-cap-app { transition: opacity 0.7s ease, transform 0.9s var(--glide); }
+.ch-1.is-live .c1-part, .ch-1.is-live .c1-part > g, .ch-1.is-live .c1-dot { transition-delay: var(--d); }
+.ch-1.is-live:not([data-step="2"]):not([data-step="3"]) .c1-rest { opacity: 1; }
+.ch-1.is-live:not([data-step="2"]):not([data-step="3"]) .c1-part { transform: none; }
+.ch-1.is-live:not([data-step="2"]):not([data-step="3"]) .c1-part > g { opacity: 1; }
+.ch-1.is-live:not([data-step="2"]):not([data-step="3"]) .c1-dot { opacity: 0; }
+.ch-1.is-live:not([data-step="2"]):not([data-step="3"]) .c1-orbit { opacity: 0; }
+.ch-1.is-live:not([data-step="3"]) .c1-labels, .ch-1.is-live:not([data-step="3"]) .c1-cap-app { opacity: 0; }
+/* chapter 2, live */
+.ch-2.is-live .c2-half { transition: transform 0.5s var(--glide) 0.35s; }
+.ch-2.is-live .c2-shared { transition: transform 0.5s var(--glide) 0.35s, opacity 0.4s ease 0.75s; }
+.ch-2.is-live .c2-own { transition: stroke-dashoffset 0.3s ease-out 0.9s; }
+.ch-2.is-live .c2-signup, .ch-2.is-live .c2-thread { transition: opacity 0.6s ease; }
+.ch-2.is-live .c2-cust { transition: opacity 0.7s ease var(--d), transform 0.7s var(--settle) var(--d); }
+.ch-2.is-live .c2-request { transition: stroke-dashoffset 0.8s var(--glide) 0.2s; }
+.ch-2.is-live .c2-stop { transition: opacity 0.3s ease 1s; }
+.ch-2.is-live .c2-stopped { transition: opacity 0.5s ease 1.1s; }
+.ch-2.is-live:not([data-step="1"]):not([data-step="2"]):not([data-step="3"]) :is(.c2-half) { transform: none; }
+.ch-2.is-live:not([data-step="1"]):not([data-step="2"]):not([data-step="3"]) .c2-shared { transform: none; opacity: 0.6; }
+.ch-2.is-live:not([data-step="1"]):not([data-step="2"]):not([data-step="3"]) .c2-own { stroke-dashoffset: 1; }
+.ch-2.is-live:not([data-step="1"]):not([data-step="2"]):not([data-step="3"]) .c2-signup { opacity: 0; }
+.ch-2.is-live:not([data-step="2"]):not([data-step="3"]) :is(.c2-thread, .c2-cust) { opacity: 0; }
+.ch-2.is-live:not([data-step="2"]):not([data-step="3"]) .c2-cust { transform: translateY(14px); }
+.ch-2.is-live:not([data-step="3"]) .c2-request, .ch-2.is-retry .c2-request { stroke-dashoffset: 1; }
+.ch-2.is-live:not([data-step="3"]) :is(.c2-stop, .c2-stopped), .ch-2.is-retry :is(.c2-stop, .c2-stopped) { opacity: 0; }
+.ch-2.is-retry :is(.c2-request, .c2-stop, .c2-stopped) { transition: none !important; }
+
+/* ---------- the replay, in its own section after the chapters ---------- */
+.story-replay { border-top: 1px solid var(--st-rule); padding: clamp(2.5rem, 7vw, 4.5rem) clamp(0.75rem, 4vw, 4rem); }
+.story-replay-inner { max-width: 40rem; margin: 0 auto; }
+
+/* ---------- the bar: Copy the line, and the chapters told so far ---------- */
+.story-bar { position: fixed; z-index: 30; right: 1rem; bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; padding: 0.35rem 0.4rem 0.35rem 0.85rem; border: 1px solid var(--st-rule); border-radius: 99px; background: light-dark(#ffffff, #18252b); box-shadow: 0 12px 30px -16px light-dark(rgba(40, 30, 10, 0.35), rgba(0, 0, 0, 0.8)); opacity: 0; translate: 0 0.5rem; pointer-events: none; }
+.story-bar[hidden] { display: none; }
+.story-bar.is-shown { opacity: 1; translate: 0 0; pointer-events: auto; }
+@media (prefers-reduced-motion: no-preference) { .story-bar { transition: opacity 0.3s ease, translate 0.3s var(--settle); } }
+.story-rail { display: inline-flex; gap: 6px; }
+.rail-sun { width: 14px; height: 14px; }
+.rail-sun .rail-body { fill: none; stroke: var(--st-muted); stroke-width: 1.5; opacity: 0.6; }
+.rail-sun.is-on .rail-body { fill: var(--sun); stroke: var(--sun-edge); opacity: 1; }
+.story-bar-copy { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 40px; padding: 0 1rem; border: 0; border-radius: 99px; cursor: pointer; font: 600 0.95rem/1 Inter, Roboto, Arial, sans-serif; color: light-dark(#ffffff, #062a24); background: light-dark(#1a5f4f, #7fd0b6); }
+.story-bar-copy svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.story-bar-copy:focus-visible { outline: 3px solid var(--st-accent); outline-offset: 2px; }
+@media (hover: hover) { .story-bar-copy:hover { background: light-dark(#164f42, #9fe0c9); } }
+.story-bar-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---------- 390 px and other narrow screens ---------- */
+@media (max-width: 51.99rem) {
+  .story-hero { --sky-h: 17rem; }
+  .story-hero .sky-sun { width: 10.5rem; }   /* the ring is 96 px across */
+  .story-hero.is-live .attrs li { left: calc(var(--mx) * 1%); top: calc(var(--my) * 1%); font-size: calc(var(--s) * 0.68); }
+  .story-hero.is-live .attrs li { transform: translate(calc((50 - var(--mx)) * 0.6cqw), calc((100 - var(--my)) * 0.6cqh + 2.5rem)) scale(0.3); }
+  .story-hero.is-live.is-open .attrs li { transform: none; }
+  .story-bar { left: 0.75rem; right: 0.75rem; justify-content: space-between; }
+}

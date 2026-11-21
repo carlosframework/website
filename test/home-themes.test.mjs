@@ -46,113 +46,37 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
       const used = theme === 'auto' ? scheme : theme;
       assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme), theme === 'auto' ? 'light dark' : theme, `${width} ${theme}`);
       const ground = await page.evaluate(() => getComputedStyle(document.querySelector('.c-hero')).backgroundColor);
-      assert.equal(ground, used === 'light' ? 'rgb(250, 248, 244)' : 'rgb(15, 22, 28)', `${width} ${theme} hero ground`);
+      assert.equal(ground, used === 'light' ? 'rgb(250, 248, 244)' : 'rgb(16, 28, 35)', `${width} ${theme} hero ground`);
       await page.addScriptTag({ content: axe });
       const violations = await page.evaluate(async () => (await window.axe.run(document, { runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] })).violations.map(v => `${v.id}: ${v.nodes.map(n => n.target.join(' ')).slice(0, 5).join(', ')}`));
       assert.deepEqual(violations, [], `${width} ${theme} (system ${scheme})`);
       await ctx.close();
     }
-    // The glass pane over the drawn background: axe cannot see through backdrop-filter, so measure it. For
-    // several moments of the background, the pane is captured with its text made transparent, and each piece of
-    // text is compared with the worst of the pixels under its own line boxes (text only screen readers get is skipped:
-    // its line boxes are measured where it is clipped away).
+    // Moving, with the hero's attributes open and every chapter at its last step: axe again, in both themes.
     for (const width of [390, 1280]) for (const theme of ['light', 'dark']) {
-      const ctx = await browser.newContext({ viewport: { width, height: width === 390 ? 844 : 900 } });
+      const ctx = await browser.newContext({ viewport: { width, height: 900 } });
       await ctx.addInitScript(t => localStorage.setItem('carlos-theme', t), theme);
       const page = await ctx.newPage();
       await page.goto(url, { waitUntil: 'networkidle' });
-      const drawn = await page.evaluate(() => !document.querySelector('.c-hero').classList.contains('nogl'));
-      if (!drawn) { await ctx.close(); continue; }   // no WebGL in this browser: the CSS gradient is covered by axe above
-      await page.locator('.rp-pause').click();
-      // (every line shown at once, so the "loading" placeholder, which only ever stands in for lines not yet shown, goes)
-      await page.addStyleTag({ content: `.rp-log li, .rp-app, .rp-scene1 { animation: none !important; opacity: 1 !important; transform: none !important; } .rp-loading { display: none !important; }
-        .hide-text, .hide-text * { color: transparent !important; -webkit-text-fill-color: transparent !important; text-decoration-color: transparent !important; }
-        .hide-text svg, .hide-text .pb-caret, .hide-text .rp-dots, .hide-text .rp-app, .hide-text .pb-copy { visibility: hidden !important; } .hide-text .hv-rot-word { background: none !important; }
-        .scene-a .rp-scene2, .scene-b .rp-scene1 { display: none !important; }` });
-      for (const scene of ['scene-a', 'scene-b']) for (const t of [12, 61, 120, 240]) {
-        const items = await page.evaluate(([scene, t]) => {
-          document.body.classList.remove('scene-a', 'scene-b'); document.body.classList.add(scene); window.__heroBg.set(t);
-          document.querySelectorAll('.is-sheen').forEach(e => e.classList.remove('is-sheen'));
-          return [...document.querySelectorAll('.c-hero .hv-col *, .c-hero .rp-bar *, .c-hero .rp-log *, .c-hero .rp-cap')]
-            .filter(el => !el.closest('.rp-app, .pb-copy, svg, .rp-sr, .hv-sr') && getComputedStyle(el).opacity !== '0' && !el.closest('details:not([open]) > :not(summary)') && getComputedStyle(el).visibility !== 'hidden')
-            .flatMap(el => [...el.childNodes].filter(n => n.nodeType === 3 && n.textContent.trim()).map(n => {
-              const cs = getComputedStyle(el), r = document.createRange(); r.selectNodeContents(n);
-              return { text: `${el.className}: ${n.textContent.trim().slice(0, 40)}`, color: cs.color, large: parseFloat(cs.fontSize) >= 24 || (parseFloat(cs.fontSize) >= 18.66 && +cs.fontWeight >= 700),
-                rects: [...r.getClientRects()].filter(q => q.width > 2 && q.height > 2).map(q => [q.left, q.top + scrollY, q.width, q.height]) };
-            })).filter(i => i.rects.length);
-        }, [scene, t]);
-        await page.waitForTimeout(200);
-        const hero = await page.evaluate(() => { const r = document.querySelector('.c-hero').getBoundingClientRect(); return { y: r.top + scrollY, h: r.height }; });
-        await page.evaluate(() => document.querySelector('.c-hero').classList.add('hide-text'));
-        const shot = await page.screenshot({ fullPage: true, clip: { x: 0, y: hero.y, width, height: hero.h } });
-        await page.evaluate(() => document.querySelector('.c-hero').classList.remove('hide-text'));
-        const low = await page.evaluate(async ([b64, items, top]) => {
-          const img = new Image(); img.src = 'data:image/png;base64,' + b64; await img.decode();
-          const c = new OffscreenCanvas(img.width, img.height), x = c.getContext('2d'); x.drawImage(img, 0, 0);
-          const lin = v => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }, L = (r, g, b) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
-          return items.map(i => {
-            const [fr, fg, fb] = i.color.match(/[\d.]+/g).map(Number), lf = L(fr, fg, fb), rs = [];
-            for (const [l, tp, w, h] of i.rects) {
-              const X = Math.max(0, Math.round(l)), Y = Math.max(0, Math.round(tp - top)), W = Math.min(img.width - X, Math.round(w)), H = Math.min(img.height - Y, Math.round(h));
-              if (W < 1 || H < 1) continue;
-              const d = x.getImageData(X, Y, W, H).data;
-              for (let k = 0; k < d.length; k += 4) { const lb = L(d[k], d[k + 1], d[k + 2]); rs.push((Math.max(lf, lb) + 0.05) / (Math.min(lf, lb) + 0.05)); }
-            }
-            rs.sort((a, b) => a - b);
-            return { text: i.text, need: i.large ? 3 : 4.5, r: rs[Math.floor(rs.length * 0.005)] };   // the worst half percent of the pixels under the text
-          }).filter(v => v.r !== undefined && v.r < v.need);
-        }, [shot.toString('base64'), items, hero.y]);
-        assert.deepEqual(low, [], `${width} ${theme} background moment ${t} (${scene})`);
-      }
+      await page.evaluate(() => { document.querySelector('.story-hero').classList.add('is-open'); document.querySelectorAll('.ch.is-live').forEach(c => { c.dataset.step = '3'; }); });
+      await page.waitForTimeout(1600);
+      await page.addScriptTag({ content: axe });
+      // (the story's own sections: the apps carousel below keeps moving, and is checked still, above)
+      const violations = await page.evaluate(async () => (await window.axe.run({ include: [['.story-hero'], ['.story-u'], ['.ch-1'], ['.ch-2']] }, { runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] })).violations.map(v => `${v.id}: ${v.nodes.map(n => n.target.join(' ')).slice(0, 5).join(', ')}`));
+      assert.deepEqual(violations, [], `${width} ${theme} moving, attributes open`);
       await ctx.close();
     }
-    // The hero's held height is its content, never more, at any size and pixel density, before and
-    // after resizes (a hero locked while stylesheets were still loading once stood ten screens tall in Safari).
-    for (const [w, h] of [[1440, 900], [1728, 1117], [390, 844]]) for (const dpr of [1, 2]) {
-      const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: dpr });
-      const page = await ctx.newPage();
-      await page.goto(url, { waitUntil: 'load' });
-      const sane = async label => {
-        const m = await page.evaluate(() => { const hero = document.querySelector('.c-hero'), inner = hero.querySelector('.c-hero-inner');
-          return { hero: hero.getBoundingClientRect().height, inner: inner.getBoundingClientRect().height }; });
-        assert.ok(m.hero <= Math.ceil(m.inner) + 1, `${label}: hero ${m.hero} against content ${m.inner}`);
-        return m.hero;
-      };
-      const first = await sane(`${w}x${h} @${dpr}`);
-      await page.waitForTimeout(1500);
-      assert.equal(await sane(`${w}x${h} @${dpr} later`), first, 'steady while it runs');
-      for (const [nw, nh] of [[w - 160, h], [w, h - 120], [w, h]]) { await page.setViewportSize({ width: nw, height: nh }); await page.waitForTimeout(300); await sane(`${nw}x${nh} @${dpr}`); }
-      assert.equal(await sane('back'), first, 'back to where it started');
-      await ctx.close();
-    }
-    // A failed copy's message and the opened hosts line grow the glass pane, never the hero: the background
-    // keeps its size on the page (the slow-device guard may still change its drawing resolution) and the next section
-    // does not move.
-    for (const width of [390, 1280]) for (const copies of [true, false]) {
-      const ctx = await browser.newContext({ viewport: { width, height: 900 }, permissions: copies ? ['clipboard-read', 'clipboard-write'] : [] });
-      const page = await ctx.newPage();
-      if (!copies) await page.addInitScript(() => Object.defineProperty(navigator, 'clipboard', { value: { writeText: () => Promise.reject(new Error('denied')) } }));
-      await page.goto(url, { waitUntil: 'networkidle' });
-      // side by side, the replay (where it is and how tall) and the top of the text are held too
-      const where = () => page.evaluate(wide => { const c = document.querySelector('.hero-bg'); return { next: document.querySelector('.rw-what').getBoundingClientRect().top + scrollY, hero: document.querySelector('.c-hero').getBoundingClientRect().height, canvas: [c.clientWidth, c.clientHeight],
-        ...(wide ? { replay: document.querySelector('.c-hero .rp').offsetTop, replayH: document.querySelector('.c-hero .rp').offsetHeight, text: document.querySelector('.c-hero .hv-col').offsetTop } : {}) }; }, width >= 1024);
-      const before = await where();
-      await page.locator('.c-hero .pb-copy').click(); await page.waitForTimeout(600);
-      assert.ok(await page.locator('.c-hero .paste').evaluate(el => el.classList.contains('is-copied') || el.classList.contains('copy-failed')), 'the copy state shows');
-      assert.deepEqual(await where(), before, `${width} after Copy (${copies ? 'copied' : 'failed'})`);
-      await page.locator('.hv-cloud summary').click(); await page.waitForTimeout(400);
-      assert.deepEqual(await where(), before, `${width} with the hosts line open`);
-      await ctx.close();
-    }
+    // The story homepage replaced the old hero (stage 1, 2026-11-21): its frosted pane, drawn background, held height
+    // and rotating word are gone, and with them the checks that measured them.
     // A successful copy moves nothing, in the hero or the closing box: the button says "Copied" at the same size, and
     // the sentence after it is for screen readers only (it is in the polite status, visually hidden). Every element
-    // keeps its place and size on the page and the pane keeps its height. (Reduced motion keeps the replay and the
-    // rotating word still, and the pane from drifting, so only Copy can move anything.)
+    // keeps its place and size on the page. (Reduced motion keeps the replay, the fizz and the sun still, so only Copy can move
+    // anything.)
     for (const width of [390, 1280]) {
       const ctx = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: 'reduce', permissions: ['clipboard-read', 'clipboard-write'] });
       const page = await ctx.newPage();
       await page.goto(url, { waitUntil: 'networkidle' });
-      const layout = () => page.evaluate(() => ({ pane: document.querySelector('.hv-pane').getBoundingClientRect().height,
+      const layout = () => page.evaluate(() => ({
         boxes: [...document.querySelectorAll('.c-hero *, .rw-end .paste, .rw-end .paste *')].filter(el => !el.closest('.pb-copy > *, .pb-done, .hero-bg-wrap') && el.getClientRects().length)
           .map(el => { const r = el.getBoundingClientRect(); return [el.tagName, r.left + scrollX, r.top + scrollY, r.width, r.height].map(v => typeof v === 'number' ? Math.round(v * 2) / 2 : v).join(' '); }) }));
       for (const box of ['.c-hero .paste', '.rw-end .paste']) {
@@ -163,68 +87,26 @@ test('homepage themes pass axe in Light, Dark and Auto, and the switch works', {
         assert.equal(await page.locator(`${box} .pb-copy span`).textContent(), 'Copied');
         assert.equal(await page.locator(`${box} .pb-done`).textContent(), 'Copied. Paste it into your agent.', `${width} ${box}: screen readers still hear it`);
         assert.ok(await page.locator(`${box} .pb-done`).evaluate(el => el.getBoundingClientRect().width <= 1 && getComputedStyle(el).clipPath === 'inset(50%)'), `${width} ${box}: not shown`);
-        assert.equal(after.pane, before.pane, `${width} ${box}: pane height`);
         assert.deepEqual(after.boxes.filter((b, i) => b !== before.boxes[i]), [], `${width} ${box}: nothing moved`);
       }
       await ctx.close();
     }
-    // A window made taller at the same width grows the replay (it is sized from the screen's height): the held
-    // height follows, so nothing overflows the hero onto the section below. And back again.
-    for (const [w, h0, h1] of [[900, 300, 900], [1280, 520, 1000], [390, 500, 900]]) {
-      const ctx = await browser.newContext({ viewport: { width: w, height: h0 } });
+    // Narrow phones to a small laptop, moving and still: nothing on the page is wider than the screen, the paste
+    // lines' URLs stay inside their boxes, the replay's title bar fits its controls, and the hero's attributes, once
+    // open, stay on the page.
+    for (const width of [320, 360, 390, 430, 1024]) for (const reducedMotion of ['reduce', 'no-preference']) {
+      const ctx = await browser.newContext({ viewport: { width, height: 844 }, reducedMotion });
       const page = await ctx.newPage();
       await page.goto(url, { waitUntil: 'load' });
-      const fits = async label => {
-        const m = await page.evaluate(() => { const hero = document.querySelector('.c-hero').getBoundingClientRect(), inner = document.querySelector('.c-hero-inner').getBoundingClientRect(), rp = document.querySelector('.c-hero .rp').getBoundingClientRect(), next = document.querySelector('.rw-what').getBoundingClientRect();
-          return { hero: hero.bottom, inner: inner.bottom, replay: rp.bottom, next: next.top }; });
-        assert.ok(m.inner <= m.hero + 1 && m.replay <= m.hero + 1 && m.hero <= m.next + 1, `${label}: ${JSON.stringify(m)}`);
-      };
-      await fits(`${w}x${h0}`);
-      await page.setViewportSize({ width: w, height: h1 }); await page.waitForTimeout(300); await fits(`${w}x${h0} to ${w}x${h1}`);
-      await page.setViewportSize({ width: w, height: h0 }); await page.waitForTimeout(300); await fits(`back to ${w}x${h0}`);
-      await ctx.close();
-    }
-    // At rest the pane's two columns sit exactly as laid out (the hold changes nothing until something grows), and
-    // the pane is one card: the replay and the paste line have no frame or shadow of their own, and the columns are
-    // as tall as each other side by side.
-    for (const [width, height] of [[1280, 900], [1440, 900], [1728, 1117], [1280, 640]]) {
-      const ctx = await browser.newContext({ viewport: { width, height } });
-      const page = await ctx.newPage();
-      await page.goto(url, { waitUntil: 'load' });
-      const held = await page.evaluate(() => [...document.querySelectorAll('.hv-pane > *')].map(c => [c.offsetTop, c.offsetHeight]));
-      const free = await page.evaluate(() => [...document.querySelectorAll('.hv-pane > *')].map(c => { c.style.alignSelf = ''; c.style.marginTop = ''; c.style.minHeight = ''; return c; }).map(c => [c.offsetTop, c.offsetHeight]));
-      assert.deepEqual(held, free, `${width}x${height}: resting layout unchanged`);
-      const look = await page.evaluate(() => { const cs = s => getComputedStyle(document.querySelector(s)), pane = document.querySelector('.hv-pane').getBoundingClientRect();
-        return { rp: [cs('.c-hero .rp').borderTopWidth, cs('.c-hero .rp').boxShadow, cs('.c-hero .rp').backgroundImage], paste: [cs('.c-hero .paste').borderTopColor, cs('.c-hero .paste').boxShadow],
-          col: document.querySelector('.rp-col').getBoundingClientRect().height, pane: document.querySelector('.hv-pane').clientHeight, dots: document.querySelector('.rp-dotrow').getBoundingClientRect().bottom - pane.bottom }; });
-      assert.deepEqual(look.rp, ['0px', 'none', 'none'], `${width}: the replay is no card of its own`);
-      assert.deepEqual(look.paste, ['rgba(0, 0, 0, 0)', 'none'], `${width}: the paste line has no border or shadow`);
-      assert.ok(Math.abs(look.col - look.pane) <= 1, `${width}x${height}: the replay column fills the pane inside its frame (${look.col} of ${look.pane})`);
-      assert.ok(look.dots <= 0.5, `${width}x${height}: the dots are inside the pane`);
-      await ctx.close();
-    }
-    // Narrow phones (Paul's iPhone: "distributable" pushed the gloss past the pane): with every rotating word, nothing in
-    // the hero is wider than its pane or the page, the gloss line keeps one height (it is always two lines there), the
-    // paste line's URL stays inside its box, and the replay's title bar fits its controls.
-    for (const width of [320, 360, 390, 430, 1024]) {
-      const ctx = await browser.newContext({ viewport: { width, height: 844 }, reducedMotion: 'reduce' });
-      const page = await ctx.newPage();
-      await page.goto(url, { waitUntil: 'load' });
+      if (reducedMotion === 'no-preference') await page.evaluate(() => document.querySelector('.story-hero').classList.add('is-open'));
+      await page.waitForTimeout(reducedMotion === 'reduce' ? 0 : 1400);
       const r = await page.evaluate(() => {
-        const rot = document.querySelector('.hv-rot'), word = rot.querySelector('.hv-rot-word'), col = document.querySelector('.hv-col'), pane = document.querySelector('.hv-pane');
-        const heights = new Set(), over = [];
-        for (const x of rot.dataset.words.split(' ')) {
-          word.textContent = x; rot.style.width = word.getBoundingClientRect().width + 'px';
-          heights.add(document.querySelector('.hv-gloss').getBoundingClientRect().height);
-          const cr = col.getBoundingClientRect(), cs = getComputedStyle(col), left = cr.left + parseFloat(cs.paddingLeft), right = cr.right - parseFloat(cs.paddingRight);
-          if ([...document.querySelector('.hv-rot-line').getClientRects()].some(q => q.left < left - 0.5 || q.right > right + 0.5)) over.push(`${x}: line`);
-          if (pane.scrollWidth > pane.clientWidth || document.documentElement.scrollWidth > innerWidth) over.push(`${x}: page`);
-        }
         const urls = [...document.querySelectorAll('.paste')].filter(b => { const u = b.querySelector('.pb-url').getBoundingClientRect(), br = b.getBoundingClientRect(), cs = getComputedStyle(b); return u.right > br.right - parseFloat(cs.paddingRight) + 0.5; }).length;
+        const words = [...document.querySelectorAll('.story-hero.is-live .attrs li')].filter(li => { const q = li.getBoundingClientRect(); return q.left < -0.5 || q.right > innerWidth + 0.5; }).map(li => li.textContent);
         const bar = document.querySelector('.rp-bar');
-        return { heights: heights.size, over, urls, bar: bar.scrollWidth - bar.clientWidth };
+        return { page: document.documentElement.scrollWidth - innerWidth, urls, words, bar: bar.scrollWidth - bar.clientWidth };
       });
-      assert.deepEqual(r, { heights: 1, over: [], urls: 0, bar: 0 }, `${width}: every rotating word fits`);
+      assert.deepEqual(r, { page: 0, urls: 0, words: [], bar: 0 }, `${width} ${reducedMotion}: everything fits`);
       await ctx.close();
     }
     // The switch: visible, pressed state follows, the page changes at once and remembers.

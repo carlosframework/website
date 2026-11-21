@@ -5,6 +5,7 @@ import markdownIt from 'markdown-it';
 import nunjucks from 'nunjucks';
 import { renderAgent } from './start-content.mjs';
 import { configError } from '../src/_data/start-config.mjs';
+import { sunSVG, heroOrbits, cloud, usualSVG, roundSVG, insideSVG, eachSVG } from './story-svg.mjs';
 const read=p=>readFile(p,'utf8');
 const md=markdownIt({html:false,linkify:false,typographer:false});
 const templates=new nunjucks.Environment(null,{autoescape:true,throwOnUndefined:true});
@@ -39,8 +40,9 @@ export function promptHTML(config,copy,id) {
  return `<div class="start-prompt"><pre><code id="${id}">${escapeHTML(pasteLine(config))}</code></pre><button type="button" class="copy-button primary" hidden data-copy-target="${id}" data-original="${escapeHTML(copy['copy.label'])}" data-copied="${escapeHTML(copy['copy.done'])}" data-copy-success="${escapeHTML(copy['home.paste.done'])}" data-copy-fallback="${escapeHTML(copy['copy.fallback'])}" data-copy-status="${id}-status" aria-label="${escapeHTML(copy['copy.aria'])}"><span>${escapeHTML(copy['copy.label'])}</span></button>${hostsHTML(config,copy)}<p id="${id}-status" class="copy-status" role="status" aria-live="polite"></p></div>`;
 }
 const human = "<!-- 👨 Paul's words, verbatim -->";
-// The homepage for enabled demo builds: hero B and the sections of the approved
-// 2026-11-12 rework. Markup lives in src/_includes/home-{hero,body}.njk.
+// The homepage for enabled demo builds: the story's hero and first chapters (stage 1 of the sun story, copy in
+// src/_data/story-copy.json), the replay, then the sections of the approved 2026-11-12 rework.
+// Markup lives in src/_includes/home-{story,replay,body}.njk.
 // Set to false to show the number-free "What you get" alternatives (home.get.*.alt).
 export const homeFigures = true;
 function homePromptHTML(config,copy,id,works) {
@@ -143,20 +145,30 @@ export function homeReplays(copy,{sessions}) {
  });
 }
 const balloonTints=['#dcbcb2','#dccba8','#c3c6d6','#d2bcd9','#e3bf9f','#cfcac1','#dbaeb0','#c6bcd4','#cbb9a4']; // soft, no greens
-async function homeHTML(config,copy,original) {
+// The story's attributes, in the order the hero lists them (Paul's list, as the spec keeps it), and the four groups
+// "What does uncompromising mean?" sorts them into (the spec's proposed grouping, by who each word is for).
+export const storyAttributes=['secure','private','exciting','accessible','lower-cost','globally-distributed','deployable','decentralisable','resilient','lightweight','open'];
+export const storyGroups=[{id:'people',words:['secure','private','accessible','exciting']},{id:'pays',words:['lower-cost','lightweight']},{id:'breaks',words:['resilient','globally-distributed']},{id:'owns',words:['open','deployable','decentralisable']}];
+export function storyContext(story) {
+ const s=id=>{if(typeof story[id]!=='string'||!story[id]) throw configError(`story copy ${id} is missing`);return story[id];};
+ const unknown=Object.keys(story).filter(id=>id!=='//' && !id.startsWith('story.'));
+ if(unknown.length) throw configError(`story copy has ids outside story.*: ${unknown.join(', ')}`);
+ const heading=s('story.hero.heading'), word=s('story.hero.word'), at=heading.indexOf(word);
+ if(at<0) throw configError(`the hero no longer contains "${word}"`);
+ if(storyGroups.flatMap(g=>g.words).sort().join()!==[...storyAttributes].sort().join()) throw configError('every attribute belongs to exactly one group');
+ return {s,hero:{before:heading.slice(0,at),word,after:heading.slice(at+word.length)},
+  attrs:storyAttributes.map(id=>({id,word:s(`story.attr.${id}`),at:cloud[id]})),groups:storyGroups,
+  svg:{heroSun:sunSVG(),orbits:heroOrbits,usual:usualSVG(s),round:roundSVG(),inside:insideSVG(s),each:eachSVG(s),
+   actSun:'<svg class="act-sun" viewBox="-10 -10 20 20" aria-hidden="true" focusable="false"><circle class="rail-ring" r="8.5"/><circle class="rail-body" r="5"/></svg>'}};
+}
+async function homeHTML(config,copy,original,story) {
  const t=id=>{if(typeof copy[`home.${id}`]!=='string') throw configError(`homepage copy home.${id} is missing`);return copy[`home.${id}`];};
  const c=key=>{if(typeof copy[key]!=='string') throw configError(`homepage copy ${key} is missing`);return copy[key];};
- const words=Object.keys(copy).filter(key=>key.startsWith('home.hero.gloss.word.')).map(key=>copy[key]);
- const gloss=t('hero.gloss'), at=gloss.indexOf(words[0]);
- if(at<0) throw configError('the hero line no longer contains its first rotating word');
  const balloons=Object.keys(copy).filter(key=>key.startsWith('home.stacks.balloon.')).map((key,i)=>({job:key.slice('home.stacks.balloon.'.length),label:copy[key],tint:balloonTints[i%balloonTints.length],delay:(-0.9*i).toFixed(1),svg:balloonSVG(copy[key])}));
  // Preserve the existing human-authored credit line.
  const foot=original.match(/<p class="architecture-inspiration">[\s\S]*?<\/p>/)?.[0];
  if(!foot) throw configError('homepage credit line is missing');
  const html={
-  heading:escapeHTML(c('home.hero.heading')).replace(/using agents\./,text=>`<span class="nw">${text}</span>`),
-  sub:escapeHTML(c('home.hero.subheading')).replace(/ship faster,|build better|spend less\./g,text=>`<span class="nw">${text}</span>`).replace(/faster|better|less(?=\.)/g,text=>`<em>${text}</em>`),
-  ask:escapeHTML(c('home.hero.ask')).replace(/^Read on/,text=>`<a href="#architecture">${text}</a>`),
   whatHeading:escapeHTML(t('what.heading')),
   whatFollow:wrap(t('what.follow'),'open specification','<a href="https://spec.carlosframework.com" target="_blank" rel="noopener noreferrer">','</a>'),
   toolsFoot:`${human}${foot.replace('architecture-inspiration','rw-foot')}<!-- /👨 -->`,
@@ -164,14 +176,17 @@ async function homeHTML(config,copy,original) {
  const apps=homeApps(await read('src/apps/index.html'),JSON.parse(await read('src/home/apps/sources.json')));
  const context={t,c,html,human,figures:homeFigures,balloons,apps,hosts:hostsHTML(config,copy),
   replays:homeReplays(copy,JSON.parse(await read('src/home/replays/sessions.json'))),
-  gloss:{before:gloss.slice(0,at),word:words[0],after:gloss.slice(at+words[0].length),words:words.join(' ')},
+  ...storyContext(story),
   heroPaste:homePromptHTML(config,copy,'home-prompt'),endPaste:homePromptHTML(config,copy,'end-prompt',t('end.paste.works'))};
  const render=async name=>templates.renderString(await read(`src/_includes/${name}`),context).trim();
- return {hero:await render('home-hero.njk'),body:await render('home-body.njk')};
+ // The replay renders by itself and the story places it (the template environment has no loader for includes).
+ context.replay=await render('home-replay.njk');
+ return {hero:await render('home-story.njk'),body:await render('home-body.njk')};
 }
 // theme.js runs first and without defer, so a remembered Light or Dark is set before the first paint.
-const homeHead=['<script src="/home/theme.js?v=0"></script>'].concat(['/start/start.css','/home/hero.css','/home/sections.css','/home/apps.css','/home/stacks.css','/home/theme.css'].map(href=>`<link rel="stylesheet" href="${href}?v=0">`))
- .concat(['/start/start-tabs.js','/home/hero.js','/home/hero-bg.js','/home/replay.js','/home/apps.js','/home/figures.js','/home/stacks.js'].map(src=>`<script src="${src}?v=0" defer></script>`)).join('\n');
+// The story's character and pages (sun.css, story.css, story.js) replace the old hero's script and drawn background.
+const homeHead=['<script src="/home/theme.js?v=0"></script>'].concat(['/start/start.css','/home/hero.css','/home/sun.css','/home/story.css','/home/sections.css','/home/apps.css','/home/stacks.css','/home/theme.css'].map(href=>`<link rel="stylesheet" href="${href}?v=0">`))
+ .concat(['/start/start-tabs.js','/home/story.js','/home/replay.js','/home/apps.js','/home/figures.js','/home/stacks.js'].map(src=>`<script src="${src}?v=0" defer></script>`)).join('\n');
 // Auto, Light or Dark: three quiet icons at the end of the footer's meta row (hack/add-footer.mjs places them),
 // hidden until theme.js wires them. The labels are the accessible names and the tooltips.
 const themeIcons={
@@ -192,7 +207,7 @@ export async function buildStart(outputDir,config) {
   const heroRegion=/<!-- start-demo:hero -->[\s\S]*?<!-- \/start-demo:hero -->/;
   const bodyRegion=/<!-- start-demo:body -->[\s\S]*?<!-- \/start-demo:body -->/;
   if(!heroRegion.test(home) || !bodyRegion.test(home)) throw configError('homepage demo marker is missing');
-  const page=await homeHTML(config,copy,home.match(bodyRegion)[0]);
+  const page=await homeHTML(config,copy,home.match(bodyRegion)[0],JSON.parse(await read('src/_data/story-copy.json')));
   home=home.replace(heroRegion,()=>page.hero)
    .replace(bodyRegion,()=>page.body)
    .replace(/<meta name="description" content="[^"]*">/,()=>`<meta name="description" content="${escapeHTML(copy['home.meta.description'])}">`)
