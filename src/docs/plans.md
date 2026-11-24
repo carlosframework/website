@@ -36,7 +36,7 @@ Every account without a plan of its own is on `default_plan`. Packs may only rai
 
 Set `pdf_renders_month` in a plan's limits to give your account a monthly PDF allowance shared by its apps. A value of 0 means no monthly limit. The PDF service's fair-use limits still apply.
 
-Set `media_minutes_month` to give your account a monthly allowance of media minutes for [media conversion](/docs/media-conversion), shared by its apps. A minute of video counts as 1 and a minute of audio as 0.1. A value of 0 means no monthly limit. As a starting point: 30 on a free plan, 600 on a personal plan, 1,200 on a community plan and 12,000 on a business plan, with a pack that adds 1,000. With no catalog, `account_minutes` in `CARLOS_MEDIA_LIMITS` sets one allowance for every account.
+Set `media_minutes_month` to give your account a monthly allowance of media minutes for [media conversion](/docs/media-conversion), shared by its apps. A minute of video up to 1080p counts as 1, a minute of video above 1080p as 2, and a minute of audio as 0.1. A value of 0 means no monthly limit. As a starting point: 30 on a free plan, 600 on a personal plan, 1,200 on a community plan and 12,000 on a business plan, with a pack that adds 1,000. With no catalog, `account_minutes` in `CARLOS_MEDIA_LIMITS` sets one allowance for every account.
 
 Set `email_per_hour` to cap how many emails an account can send in one UTC hour. 0 means no hourly limit. There's no grace: once the hour's sends reach the limit, every sender of every app is held back until the next UTC hour.
 

@@ -18,7 +18,7 @@ carlos apps set shop --copies 2
 
 Each instance of shop gets two copies on different eligible fleet boxes. The command refuses a count larger than the eligible fleet.
 
-A box is eligible only if it has room for the instance's size: a size may use at most a quarter of a box's memory, and an app with no size set uses standard. If too few boxes have room, or the box already serving an instance has none, the command says so and changes nothing.
+A box is eligible only if it has room for the instance's size. Up to xlarge, a size may use at most a quarter of a box's memory. The fleet sizes 4g, 6g, 8g, 12g, 16g, 24g, 32g, 48g, 96g and 192g may use all but 1 GiB or one eighth of the box's memory, whichever is larger. An app with no size set uses standard. If too few boxes have room, or the box already serving an instance has none, the command says so and changes nothing.
 
 Raising the count adds the new copies one box at a time, on the build the instance already runs. The copy that is already running keeps serving, and the release command does not run again. Once a deploy has finished on all of an instance's copies, copies added later start on that build straight away, without waiting for each other.
 

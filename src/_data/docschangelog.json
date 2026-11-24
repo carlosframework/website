@@ -3,6 +3,1050 @@
   "repo": "https://amadan.net/carlos/platform",
   "releases": [
     {
+      "tag": "v0.43.4",
+      "date": "2026-11-24",
+      "sha": "e241f1ef954e5ab0a5f368dee9ff59e628460577",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.43.4",
+      "notes": {
+        "form": "markdown",
+        "md": "#### What's new\n\n- **Runtime directory names starting `carlos-` are reserved.** `carlos ship` now refuses an app whose capabilities set a `runtime_dir` beginning with `carlos-`, the same way it already refused `systemd-` names. The platform uses that prefix for its own directories. Pick another name if your app used one.\n\n#### For operators\n\n- **Roll order.** Roll your development deployment first, then production. Boxes first, then the console. The box roll sets up the console's runtime directory. The console's next deploy, or any restart, creates `/run/carlos-console` and the console's socket in it. Nothing restarts the console for you.\n- **Tunnel hubs reach the console through a socket.** A hub passes fleet boxes' calls to the console through `/run/carlos-console/fleet.sock`, and checks the listener is the console's user before it sends anything. `CARLOS_REPLICA_CONSOLE_ADDR` in `host.env` still wins when it is set. `carlos system status` shows, under each box with a console, the last call's result, how it reached the console and when, and why the socket isn't ready if it isn't.\n- **The `host.env` line can go.** If you set `CARLOS_REPLICA_CONSOLE_ADDR` on a hub by hand, remove it once `carlos system status` no longer shows \"socket not ready\" for that box, then restart `carlos-edge`. Check that the next call shows `socket` and `ok`.\n- **The console must not run as root.** The socket is used only when the console runs as a non-root user, because a root listener can't be proved to be the console. A hub whose console runs as root falls back to `CARLOS_REPLICA_CONSOLE_ADDR` or the old route scan.\n- **The old route scan is narrower, and goes next release.** Without the env line or the socket, the hub still looks for a console route, but now accepts only a loopback TCP route. The next release removes the scan.\n- **An app that already has a `carlos-` runtime directory** keeps it, but can't be shipped again with it. If it claims `carlos-console`, the hub on that box won't use the socket."
+      },
+      "changes": [
+        {
+          "sha": "e241f1ef954e5ab0a5f368dee9ff59e628460577",
+          "date": "2026-11-24",
+          "subject": "Hub reaches the console through a root-created socket",
+          "branch": "console-addr-from-install",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/console-addr-from-install",
+          "commits": 33,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1385,
+              "title": "Hub reaches the console from root's install (design stopped at review round 2: cut needed)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.43.3",
+      "date": "2026-11-24",
+      "sha": "55f34c3983f8c11381a8f4c2bc11ecdc267fbac3",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.43.3",
+      "notes": {
+        "form": "markdown",
+        "md": "#### What's new\n\n- **Move a domain here from another registrar.** Choose Move to Carloku on the domain's page, enter its transfer code and check out. Your card is held, not charged, until the current registrar accepts the move. If the move does not go through, the hold is released or your payment is refunded in full. The domain keeps the nameservers it uses today, so its DNS and email don't change. From the CLI, run `carlos domains transfer <name> --auth-code -`. Moves are only offered for the domain endings your deployment has turned on.\n\n#### For operators\n\n- **Roll order.** Roll your development deployment first, then production. Boxes first, then the console.\n- **Coming from v0.43.1 or older?** Read the v0.43.2 notes too. Coming from v0.42.1, also read the v0.43.0 and v0.43.1 notes: v0.43.0 adds settings and rollback limits that apply to you.\n- **Transfers stay off until you turn them on.** Nothing changes until your domain catalog sets `\"transferable\": true` on a TLD. Mark only TLDs where a transfer adds one year to the existing expiry, as `com` and `net` do. The optional `transfer` map sets the one-year transfer price per currency; a currency missing from it uses the `renew` price. The TLD's `max_cost` also caps the registrar's transfer cost. The domain buying guide has the details.\n- **Unknown transfers need a listed store operator.** If the registrar's outcome is unknown, the console alerts the operator and leaves the transfer open until the registrar answers or an operator resolves it. Only a person listed as a store operator can call `POST /api/cli/system/domains/purchases/{id}/resolve`; service credentials and ordinary account-owner access cannot. Set `outcome` to `failed` or `completed` for an unknown live transfer. `completed` requires the registrar to show the domain in this account. If a captured failed transfer's refund has been refused at least three times, refund it another way, then use `refunded_outside`.\n- **New alert: registrations nearing expiry.** The console alerts the operator once when any registration, bought or transferred, is within 60 days of expiry, including registrations that have already expired. Domains are not renewed automatically, so renew them at the registrar.\n- **Rollback limit.** Once any transfer exists, do not roll a console back below v0.43.3: an older console would handle transfers as purchases. Before the first transfer, rolling back to v0.43.2 is fine."
+      },
+      "changes": [
+        {
+          "sha": "55f34c3983f8c11381a8f4c2bc11ecdc267fbac3",
+          "date": "2026-11-24",
+          "subject": "domains: transfers in from another registrar (spec rev 5 §12)",
+          "branch": "design-domain-transfers",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/design-domain-transfers",
+          "commits": 47,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1335,
+              "title": "T1 UX pass: transfer form and card in the kit",
+              "state": "closed"
+            },
+            {
+              "id": 1336,
+              "title": "T2 Registrar: transfer check, request, status (Openprovider)",
+              "state": "closed"
+            },
+            {
+              "id": 1337,
+              "title": "T3 Billing: refunds with status reads",
+              "state": "closed"
+            },
+            {
+              "id": 1338,
+              "title": "T4 Catalog: transferable TLDs and transfer quotes",
+              "state": "closed"
+            },
+            {
+              "id": 1339,
+              "title": "T5 Store: transfer purchases, facts, expiry alerts",
+              "state": "closed"
+            },
+            {
+              "id": 1340,
+              "title": "T6 Transfer engine: one settlement function + simulation",
+              "state": "closed"
+            },
+            {
+              "id": 1341,
+              "title": "T7 Operator alert 60 days before expiry",
+              "state": "closed"
+            },
+            {
+              "id": 1342,
+              "title": "T8 Plan 2a paths for domains with no Carloku zone",
+              "state": "closed"
+            },
+            {
+              "id": 1343,
+              "title": "T9 Transfer form, start door and card",
+              "state": "closed"
+            },
+            {
+              "id": 1344,
+              "title": "T10 CLI: carlos domains transfer",
+              "state": "closed"
+            },
+            {
+              "id": 1345,
+              "title": "T11 Copy pass (Luna TRANSFERS-1)",
+              "state": "closed"
+            },
+            {
+              "id": 1346,
+              "title": "T12 Census, review, merge (55f34c3), release, first transfer",
+              "state": "open"
+            },
+            {
+              "id": 1347,
+              "title": "Transfers in: build under way; mockups to look at",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-domains",
+            "/docs/domains-buying#set-prices-and-verify"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.43.2",
+      "date": "2026-11-24",
+      "sha": "49bcf97a3579766c46ad3a16e20191db27a2f01c",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.43.2",
+      "notes": {
+        "form": "markdown",
+        "md": "#### What's new\n\n- **Pre-issued attached custom domains work through every edge as soon as DNS switches.** When a deployment has issued an attached custom domain's certificate before its DNS moves here, the box that hosts it serves the domain, and other boxes pass requests to that box instead of answering `503` \"Almost ready\" for 5 to 7 minutes.\n\n#### For operators\n\n- **Roll order.** Roll your development deployment first, then production. Boxes first, then the console.\n- **Coming from v0.42.1?** Read the v0.43.0 and v0.43.1 notes too: v0.43.0 adds settings and rollback limits that apply to you.\n- **Pre-issued custom domains are published before they point here.** With `CARLOS_DNS01_ZONES` and `CARLOS_DNS01_ACCOUNTS` set, a box publishes an attached hostname in a listed zone when the hostname belongs to a listed account and a current matching certificate is on the box, before its DNS points here. Other boxes pass its requests to the box that hosts it, so they no longer answer `503` \"Almost ready\" for 5 to 7 minutes after the switch. Without both settings, nothing changes."
+      },
+      "changes": [
+        {
+          "sha": "49bcf97a3579766c46ad3a16e20191db27a2f01c",
+          "date": "2026-11-24",
+          "subject": "edges: publish pre-issued DNS-01 aliases before they point (#1293)",
+          "branch": "alias-publish-precert-1293",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/alias-publish-precert-1293",
+          "commits": 8,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1293,
+              "title": "Production: issue custom-domain certs before DNS moves (Tito k8s exit)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.43.1",
+      "date": "2026-11-23",
+      "sha": "79075f0cae57a0e8354b3404ce1f6c044c78066f",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.43.1",
+      "notes": {
+        "form": "markdown",
+        "md": "#### What's new\n\n- **Custom domains follow a move to a new DNS host.** When a custom domain moves to a new DNS host, the platform's fresh DNS lookup now asks the domain's parent zone which name servers hold it, instead of using the box's cached list, which can stay out of date until its TTL runs out. Before, a box could keep asking the old DNS host, and the domain could stay unpublished on every box but its home box, so other regions answered \"unknown host\". If the parent zone gives no usable answer, the lookup uses the cached list, as before.\n\nThis release also carries everything in v0.43.0. If you skipped v0.43.0, read its notes too.\n\n#### For operators\n\n- **Roll order.** Roll your development deployment first, then production. Boxes first, then the console.\n- **SES topic message.** The console no longer logs a parse error at start for the message Amazon SES sends when it validates the console's event topic. The console now accepts that message, counts nothing for it, and logs one line saying the topic reaches it.\n- **Coming from v0.42.1?** This release replaces v0.43.0, and v0.43.0's operator notes apply:\n  - **What can't be rolled back below v0.43.0 once it's used.** The console refuses a fleet size until the console and every box the app can run on use v0.43.0 or later. It refuses an egress range while any currently reporting box in the deployment uses an older release. Once either feature is in an app's policy, an older box treats the whole policy as unverifiable and closes its egress allows and sizes. The console refuses to publish a release below v0.43.0 to a channel followed by an app using a fleet size. If the console is rolled back below v0.43.0, a policy using either feature expires after 72 hours and the boxes close its allows and sizes.\n  - **Before a box takes a fleet size.** Set `CARLOS_FLEET` in the box's root-owned `host.env`. Its effective sandbox must be systemd, not gVisor, so set `CARLOS_EXEC_SANDBOX=systemd` if needed. The box refuses a fleet size without a fleet name, with gVisor active, or when the size leaves too little memory.\n  - **16g and 24g on 32 GiB boxes.** An overlap deploy reserves the new copy's full memory limit before it starts, and the old and new limits together must fit the box's fleet budget: its memory less an eighth, about 27 GiB on a 32 GiB box. The console accepts 16g and 24g as sizes, but replacing a 16g or 24g build with another build at the same size is refused before the new build starts. The old build keeps serving, and the instance gets one warning event. Use 12g or below for same-size overlap deploys on 32 GiB boxes.\n  - **Certificates before DNS moves.** Set `CARLOS_DNS01_ZONES` and `CARLOS_DNS01_ACCOUNTS`, and configure a DNS provider. For DNSimple, leave `CARLOS_DNS_PROVIDER` unset or set it to `dnsimple`, then set `CARLOS_DNSIMPLE_TOKEN`. For Route 53, set `CARLOS_DNS_PROVIDER=route53` and give the box AWS credentials with DNS access. The issuing box then obtains certificates for attached custom hostnames in those zones and accounts over DNS-01 before DNS points here. Every box can serve the certificate when DNS switches. If either list is unset, this feature is off.\n  - **Store versioning is off by default.** To turn it on, use AWS S3: set `CARLOS_STORE_BACKEND=aws`, leave `CARLOS_STORE_ENDPOINT` unset, and set `CARLOS_STORE_REGION`, `CARLOS_STORE_BUCKET_PREFIX`, and `CARLOS_STORE_USER_BOUNDARY`. Set `CARLOS_STORE_VERSIONING=1` on the console and `store_versioning = true` in the region host module on the console's box. Use the same dedicated prefix for `CARLOS_STORE_BUCKET_PREFIX` and `store_bucket_prefix`; it must end in `-store-` and must not overlap deployment, data, staging, or fleet bucket prefixes. Earlier versions expire after `keep_days`, from 30 to 365 days, and that setting can only increase. Versioning cannot be used with media conversion or browser uploads.\n  - **The console database gains three columns and an index** for demo claim codes.\n  - **HA departures page once.** A departed group member that this box never saw now pages once instead of every hour. An older box keeps the hourly retry.\n  - **Group rolls.** `carlos system group` reads a member's status once more when the read that proves a revoke is cut off, instead of stopping with the transaction open."
+      },
+      "changes": [
+        {
+          "sha": "79075f0cae57a0e8354b3404ce1f6c044c78066f",
+          "date": "2026-11-23",
+          "subject": "domains: fresh lookup takes the delegation from the parent zone",
+          "branch": "parent-delegation-1383",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/parent-delegation-1383",
+          "commits": 2,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 724,
+              "title": "Custom-domain certs wait out the customer's negative-DNS TTL",
+              "state": "open"
+            },
+            {
+              "id": 1383,
+              "title": "Custom domains: stale misdirected verdict after a DNS fix; apex beyond A records",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "f5c3c84166c10cb883da4dbb1f7aae3f56d8319c",
+          "date": "2026-11-23",
+          "subject": "console: take SES's topic validation message without a parse error",
+          "branch": "ses-topic-validation-quiet",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/ses-topic-validation-quiet",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "James Adam",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.43.0",
+      "date": "2026-11-23",
+      "sha": "da8a1fe13782a48ea9361f9dece2556843381650",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.43.0",
+      "notes": {
+        "form": "markdown",
+        "md": "#### What's new\n\n- **Bigger sizes on your own fleet.** Apps whose instances run on your account's own fleet can now use 4g, 6g, 8g, 12g, 16g, 24g, 32g, 48g, 96g and 192g. The small to xlarge sizes, and apps on shared boxes, are unchanged.\n- **Egress to private ranges.** `carlos apps set --egress-allow` now takes private ranges, such as `10.0.64.0/20` or `fd00:5::/64`, as well as single addresses, so a managed database that moves within its subnets on failover stays reachable. A range can be no wider than /16 for IPv4 or /48 for IPv6, and you can still list at most 8 entries.\n- **Store versioning, when your deployment enables it.** `carlos store versioning on`, `carlos store versions` and `carlos store restore` keep earlier object versions and copy one back. `--keep-days` sets retention from 30 to 365 days, and retention can only increase. Once versioning is on, the platform has no off command. Earlier versions count toward storage limits. Versioned stores cannot use media conversion or browser uploads.\n- **Rootfs apps know their memory.** The web process and every worker of a rootfs app now get `CARLOS_MEMORY_MIB`, the memory limit they start with, so an app server can set its process counts from its size.\n- **Demo claim links carry their own code.** The claim link you hand over no longer contains the token that updates the demo. Demos made before this release still claim as before until they expire.\n- **More security headers for static sites.** A static site's `_headers` may now set `Content-Security-Policy`, `X-Content-Type-Options`, `Referrer-Policy` and `X-DNS-Prefetch-Control`.\n- **Fleet apps see the real visitor.** An app reached through a hub on your own fleet now sees the visitor's address the hub saw, not the hub's, so per-visitor limits work.\n- **Analytics for busy apps.** The analytics tab no longer fails for an app with more than 25 referrers in the period.\n\nUpdate your CLI to use these.\n\n#### For operators\n\n- **Roll order.** Roll your development deployment first, then production. Boxes first, then the console.\n- **What can't be rolled back below v0.43.0 once it's used.** The console refuses a fleet size until the console and every box the app can run on use v0.43.0 or later. It refuses an egress range while any currently reporting box in the deployment uses an older release. Once either feature is in an app's policy, an older box treats the whole policy as unverifiable and closes its egress allows and sizes. The console refuses to publish a release below v0.43.0 to a channel followed by an app using a fleet size. If the console is rolled back below v0.43.0, a policy using either feature expires after 72 hours and the boxes close its allows and sizes.\n- **Before a box takes a fleet size.** Set `CARLOS_FLEET` in the box's root-owned `host.env`. Its effective sandbox must be systemd, not gVisor, so set `CARLOS_EXEC_SANDBOX=systemd` if needed. The box refuses a fleet size without a fleet name, with gVisor active, or when the size leaves too little memory.\n- **Certificates before DNS moves.** Set `CARLOS_DNS01_ZONES` and `CARLOS_DNS01_ACCOUNTS`, and configure a DNS provider. For DNSimple, leave `CARLOS_DNS_PROVIDER` unset or set it to `dnsimple`, then set `CARLOS_DNSIMPLE_TOKEN`. For Route 53, set `CARLOS_DNS_PROVIDER=route53` and give the box AWS credentials with DNS access. The issuing box then obtains certificates for attached custom hostnames in those zones and accounts over DNS-01 before DNS points here. Every box can serve the certificate when DNS switches. If either list is unset, this feature is off.\n- **Store versioning is off by default.** It requires AWS S3 with `CARLOS_STORE_BACKEND=aws`, no `CARLOS_STORE_ENDPOINT`, `CARLOS_STORE_VERSIONING=1` on the console, and `store_versioning = true` in the region host module on the console's box. Use a dedicated `store_bucket_prefix` ending in `-store-`, with no overlap with deployment, data, staging or fleet bucket prefixes. Earlier versions expire after the store's `keep_days`, from 30 to 365 days, and that setting can only increase. Versioning cannot be used with media conversion or browser uploads.\n- **The console database gains three columns and an index** for demo claim codes.\n- **HA departures page once.** A departed group member that this box never saw now pages once instead of every hour. An older box keeps the hourly retry.\n- **Group rolls.** `carlos system group` reads a member's status once more when the read that proves a revoke is cut off, instead of stopping with the transaction open."
+      },
+      "changes": [
+        {
+          "sha": "da8a1fe13782a48ea9361f9dece2556843381650",
+          "date": "2026-11-22",
+          "subject": "console analytics: render the tab when an app has more than 25 referrers",
+          "branch": "fix-console-analytics-internal-error",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fix-console-analytics-internal-error",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "James Adam",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "5ecf38be6c1b5f13d52ce2a1c8163cc7bd25a6e9",
+          "date": "2026-11-22",
+          "subject": "store: opt-in versioning with platform retention and restore (#1372)",
+          "branch": "store-versioning",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/store-versioning",
+          "commits": 15,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1372,
+              "title": "Store versioning with noncurrent retention (opt-in per store)",
+              "state": "open"
+            },
+            {
+              "id": 1380,
+              "title": "Review: store versioning, spec and branch, round 1 of 3",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#storage-of-its-own-for-every-instance",
+            "/docs/cli#carlos-store-versioning",
+            "/docs/cli#carlos-store-versions",
+            "/docs/cli#carlos-store-restore",
+            "/docs/media-conversion#starting-a-conversion"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "a8c0fb989a8729b733c34f1f855364c361715615",
+          "date": "2026-11-22",
+          "subject": "feat: fleet sizes 4g to 192g for apps on owned fleets (#892 S2, #1350)",
+          "branch": "stateless-scale-2-fleet-sizes",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/stateless-scale-2-fleet-sizes",
+          "commits": 18,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 892,
+              "title": "Stateless replicas at production scale: worker instances, many copies, per-process sizes",
+              "state": "open"
+            },
+            {
+              "id": 1350,
+              "title": "App sizes above 2 GiB for fleet apps (Tito Classic needs about 4.5 GiB per copy)",
+              "state": "open"
+            },
+            {
+              "id": 1365,
+              "title": "Task 1: size table and root's gate",
+              "state": "closed"
+            },
+            {
+              "id": 1366,
+              "title": "Task 2: one fit predicate at every console door",
+              "state": "closed"
+            },
+            {
+              "id": 1367,
+              "title": "Task 3: the fleet-size floor",
+              "state": "closed"
+            },
+            {
+              "id": 1368,
+              "title": "Task 4: overlap reserves its memory first",
+              "state": "closed"
+            },
+            {
+              "id": 1369,
+              "title": "Task 5: CLI and docs",
+              "state": "closed"
+            },
+            {
+              "id": 1370,
+              "title": "Whole-branch review (Astra + Fable), census, CI, merge",
+              "state": "closed"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-apps",
+            "/docs/one-instance-per-customer#when-one-customer-gets-busy",
+            "/docs/stateless-replicas#setting-the-count"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "887caf2b16a29dfea99daa36bf58d6614feb1c66",
+          "date": "2026-11-22",
+          "subject": "ha departures: page once for a member never observed (#1192)",
+          "branch": "ha-departure-evidence",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/ha-departure-evidence",
+          "commits": 9,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1192,
+              "title": "Region HA: close-lost leaves a departed member's edges record admitted",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "b5d04a85361cb0abcc92a14fa6f9086891802376",
+          "date": "2026-11-22",
+          "subject": "dbreads tests: wait for in-process workers before TempDir cleanup",
+          "branch": "flake-dbreads-replan",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/flake-dbreads-replan",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "36b17ea5dd9d6a4811b6566c02fc102693b987a9",
+          "date": "2026-11-22",
+          "subject": "egress allow: private CIDR ranges, not only single addresses (#1357)",
+          "branch": "egress-allow-cidr",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/egress-allow-cidr",
+          "commits": 13,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1357,
+              "title": "Egress allow by private CIDR (and hostname) for managed stores",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-apps",
+            "/docs/cli#carlos-status"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "63c4ef98b195f5e99738ca7359e0978adfede6d5",
+          "date": "2026-11-22",
+          "subject": "hostexec: settle after a view answered past expiry (#1371)",
+          "branch": "flake-hostexec-renewal",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/flake-hostexec-renewal",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1371,
+              "title": "Flake: TestPlan14ExecutionClientHasOneRenewalOwner (Close: hostexec: lease lost)",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "74aeb271c6852d9adaa2b224acf7bfa2c8e48fba",
+          "date": "2026-11-22",
+          "subject": "edge: fleet apps see the client the hub saw (#1348)",
+          "branch": "fleet-client-address-1348",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fleet-client-address-1348",
+          "commits": 6,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1348,
+              "title": "Fleet apps see the hub's address, not the client's (Tito Classic/Pro)",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/rails#the-visitor-s-address",
+            "/docs/rootfs#the-visitor-s-address"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "042e1af6b8acad6a7b0f050584c0951544fef962",
+          "date": "2026-11-22",
+          "subject": "edge: issue custom-domain certs over DNS-01 before DNS moves (#1293)",
+          "branch": "precert-dns01-1293",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/precert-dns01-1293",
+          "commits": 6,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1293,
+              "title": "Production: issue custom-domain certs before DNS moves (Tito k8s exit)",
+              "state": "open"
+            },
+            {
+              "id": 1358,
+              "title": "Pre-issue manager: DNS-01 per-host certs for claims in CARLOS_DNS01_ZONES (test-first)",
+              "state": "closed"
+            },
+            {
+              "id": 1359,
+              "title": "Wire into the edge: env, issuer gate, shared cache, claim cache",
+              "state": "closed"
+            },
+            {
+              "id": 1360,
+              "title": "Console change cut: operators check with curl --resolve against the target edge",
+              "state": "closed"
+            },
+            {
+              "id": 1361,
+              "title": "Docs: CARLOS_DNS01_ZONES in agent.go config doc + hostenv allowlist",
+              "state": "closed"
+            },
+            {
+              "id": 1362,
+              "title": "Astra review: R1 NOT READY (2 P1, 1 P2) fixed; R2 READY AFTER FIXES, P2 fixed",
+              "state": "closed"
+            },
+            {
+              "id": 1363,
+              "title": "Census on #280",
+              "state": "closed"
+            },
+            {
+              "id": 1364,
+              "title": "Green CI, merge, tell Tito (09cca118) and Paul",
+              "state": "closed"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "86ac0553e488fe5611d9ebc276f02aa0f7229b10",
+          "date": "2026-11-22",
+          "subject": "activator tests: wait for a settle attempt to end, not begin",
+          "branch": "flake-activator-settle-wait",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/flake-activator-settle-wait",
+          "commits": 2,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "78938379e5ebd6c89c90e7e050ec4464a78283de",
+          "date": "2026-11-22",
+          "subject": "group verb: ask a cut post-revoke status read once more (#1255)",
+          "branch": "group-revoke-readback-1255",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/group-revoke-readback-1255",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1255,
+              "title": "Region HA verb: US roll refused after revoke when the status read timed out",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "3d7f95385db1f2f5a085dc60fd799af93139163b",
+          "date": "2026-11-22",
+          "subject": "feat: give rootfs web and workers CARLOS_MEMORY_MIB (#892 S1)",
+          "branch": "stateless-scale-1-memory-env",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/stateless-scale-1-memory-env",
+          "commits": 7,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 892,
+              "title": "Stateless replicas at production scale: worker instances, many copies, per-process sizes",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/rootfs#what-every-process-gets"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "d3266e8e6fbbad5367453a9d75ed016182b84a84",
+          "date": "2026-11-22",
+          "subject": "demo: claim links carry their own claim code, not the update bearer",
+          "branch": "demo-claim-code",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/demo-claim-code",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 1327,
+              "title": "Mint claim code at create, store hash only",
+              "state": "closed"
+            },
+            {
+              "id": 1328,
+              "title": "Claim doors accept code, refuse bearer; update refuses code",
+              "state": "closed"
+            },
+            {
+              "id": 1329,
+              "title": "Back-compat for pre-release demos",
+              "state": "closed"
+            },
+            {
+              "id": 1330,
+              "title": "Spend code with bearer on claim, expiry, takedown",
+              "state": "closed"
+            },
+            {
+              "id": 1331,
+              "title": "Tests",
+              "state": "closed"
+            },
+            {
+              "id": 1332,
+              "title": "Astra review",
+              "state": "closed"
+            },
+            {
+              "id": 1333,
+              "title": "Merge on green CI",
+              "state": "closed"
+            },
+            {
+              "id": 1334,
+              "title": "Astra review of demo-claim-code",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "343a3394bde37403687d7613030d56bac71bf838",
+          "date": "2026-11-21",
+          "subject": "edge: allow four security headers in a static site's _headers",
+          "branch": "headers-security-allowlist",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/headers-security-allowlist",
+          "commits": 4,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1323,
+              "title": "_headers: allow Content-Security-Policy, X-Content-Type-Options, Referrer-Policy, X-DNS-Prefetch-Control",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#response-headers-for-a-static-site"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.42.1",
+      "date": "2026-11-21",
+      "sha": "21e821a6880addcb5be9a5c4ac85fd97dd0f8695",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.42.1",
+      "notes": {
+        "form": "markdown",
+        "md": "#### What's new\n\n- **A path prefix reaches its app on any box.** When a hostname splits its traffic by path (for example, `example.com/shop` served by another app), the prefix now reaches its target app whichever box of the deployment serves that app, and whichever box the request arrives on. The box that receives the request makes at most one hop to the target's box, with the Host and the path unchanged. If the target is a region HA app, the hop goes to the box that serves it now. Before, a prefix whose target lived on another box fell through to the hostname's own app.\n- **Pages reached across boxes are not response-cached.** A page served through a prefix whose app is on another box is never read from or written to the response cache, so every cacheable page request reaches the app and a hibernating app wakes for it. Prefixes whose app is on the same box use the response cache as before.\n- **Imports.** While a hostname's own app is being imported, the import gate returns `503` with `Retry-After` until commit for that hostname's own route and prefixes to apps on the same box, except the app's verify requests. A prefix whose app is on another box keeps serving while the hostname's own app imports.\n\n#### For operators\n\n- **Roll order.** Roll your development deployment first, then production. Boxes first, then the console.\n- **Nothing changes until a path map names an app on another box.** Before you roll, run `go run ./scripts/pathmapcheck -bucket <control bucket> -region <region>` from a checkout of the platform repository at this release, once for each control bucket. It only reads published path claims and each box's edges file. It is a repository tool, not part of the release. If it prints `FAIL`, at least one target is missing from a box that serves its front, a front or target has no serving box, or a claim or edges file could not be listed, read, or decoded. Resolve the report before rolling. Roll every box before anything publishes such a map, because a box still on an older release can answer a hop to a region HA app with a 503. The repository's `docs/superpowers/runbooks/path-routes-across-boxes-rollout.md` has the steps.\n- **Coming from v0.40.x or v0.41.0?** Read the v0.41.0 and v0.42.0 notes too. Before you run `carlos system seeds-floor publish --min-release v0.41.0`, roll every box to v0.41.0 or later and make sure each box keeps a `carlos.prev` at v0.41.0 or later.\n- **Media conversion stays off by default.** Nothing changes until you apply the media engine module, set `store_conversion = true` in the region host module, set `CARLOS_STORE_CONVERSION=1`, and set `CARLOS_MEDIA_ENGINE` to the media engine module's output. If conversion is on, roll the console and the engine image from the same release."
+      },
+      "changes": [
+        {
+          "sha": "21e821a6880addcb5be9a5c4ac85fd97dd0f8695",
+          "date": "2026-11-21",
+          "subject": "Path routes across boxes: a prefix reaches its target on any box (#186)",
+          "branch": "path-routes-across-boxes",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/path-routes-across-boxes",
+          "commits": 91,
+          "discussions": [
+            {
+              "id": 186,
+              "title": "Path routes across boxes: a prefix whose target lives on another box",
+              "state": "open"
+            },
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1280,
+              "title": "Rule 4 check: no other edge-routing design in flight",
+              "state": "closed"
+            },
+            {
+              "id": 1281,
+              "title": "Write the design spec (rev 1)",
+              "state": "closed"
+            },
+            {
+              "id": 1282,
+              "title": "Astra review round 1",
+              "state": "closed"
+            },
+            {
+              "id": 1283,
+              "title": "Apply review fixes (R1-R4; rev 5 cuts the roll gate)",
+              "state": "closed"
+            },
+            {
+              "id": 1284,
+              "title": "Paul approves the spec",
+              "state": "closed"
+            },
+            {
+              "id": 1285,
+              "title": "Plan (after approval)",
+              "state": "closed"
+            },
+            {
+              "id": 1303,
+              "title": "T1 Cost measurement + diffed path writes",
+              "state": "closed"
+            },
+            {
+              "id": 1304,
+              "title": "T2 PathFront/PathTarget predicates",
+              "state": "closed"
+            },
+            {
+              "id": 1305,
+              "title": "T3 Derive path rows on every box",
+              "state": "closed"
+            },
+            {
+              "id": 1306,
+              "title": "T4 Route owner + eligibility in the edges file",
+              "state": "closed"
+            },
+            {
+              "id": 1307,
+              "title": "T5 Remote path map in the edge",
+              "state": "closed"
+            },
+            {
+              "id": 1308,
+              "title": "T6 Selection across boxes",
+              "state": "closed"
+            },
+            {
+              "id": 1309,
+              "title": "T7 Backhaul a route under its front Host",
+              "state": "closed"
+            },
+            {
+              "id": 1310,
+              "title": "T8 Wire into ServeHTTP + e2e",
+              "state": "closed"
+            },
+            {
+              "id": 1311,
+              "title": "T9 Region HA on the selected route",
+              "state": "closed"
+            },
+            {
+              "id": 1312,
+              "title": "T10 Purge for an unserved front host",
+              "state": "closed"
+            },
+            {
+              "id": 1313,
+              "title": "T11 Gate login refusal across boxes",
+              "state": "closed"
+            },
+            {
+              "id": 1314,
+              "title": "T12 route_paths readers + docs",
+              "state": "closed"
+            },
+            {
+              "id": 1315,
+              "title": "T13 Branch gate, census, merge (done); release, roll, dev witness owed",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.42.0",
+      "date": "2026-11-21",
+      "sha": "2b5b5b776d7e8425bd411feb4ef12ebca0f9eb24",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.42.0",
+      "notes": {
+        "form": "markdown",
+        "md": "#### What's new\n\n- **Media conversion limits from measured runs.** Conversion is still off until your operator sets up the conversion engine. Where it is on, the short class now refuses a video above 1080p with `needs_long_class`, however short the video is: send the same request again with `\"class\": \"long\"`. In the long class, HDR video up to 1080p converts up to 75 minutes. Other video keeps its maximum: 2 hours up to 1080p, 30 minutes above it. A minute of video above 1080p now counts as 2 media minutes against your account's allowance. Video up to 1080p still counts 1 and audio 0.1. Video is encoded with x264's `medium` preset instead of `veryfast`.\n\n#### For operators\n\n- **Roll order.** Roll your development deployment first, then production. Boxes first, then the console.\n- **Coming from v0.40.x?** Read the v0.41.0 notes too. Before you run `carlos system seeds-floor publish --min-release v0.41.0`, roll every box to v0.41.0 or later and make sure each box keeps a `carlos.prev` at v0.41.0 or later.\n- **Always-on instances come back sooner after an agent restart.** On a fleet box, an always-on instance with a single copy was down about 33 s while its box's agent restarted. A replica that is still fenced is now tried again on the next 2-second tick, instead of being treated as a failed build with the old 1 to 16 s backoff. An agent that has just restarted reads the instance record directly instead of refusing the wake until its first scan.\n- **Media conversion stays off by default.** Nothing changes until you apply the media engine module, set `store_conversion = true` in the region host module, set `CARLOS_STORE_CONVERSION=1`, and set `CARLOS_MEDIA_ENGINE` to the media engine module's output. If conversion is on, roll the console and the engine image from the same release. An older image refuses this console's video jobs, and an older console refuses this image's HDR results. The first push of the engine image to ECR now succeeds, and a plan right after applying the media engine module no longer replaces its task definitions."
+      },
+      "changes": [
+        {
+          "sha": "2b5b5b776d7e8425bd411feb4ef12ebca0f9eb24",
+          "date": "2026-11-21",
+          "subject": "media: conversion limits from the spike's measured values",
+          "branch": "media-spike-values",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/media-spike-values",
+          "commits": 11,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/media-conversion#job-states-and-errors",
+            "/docs/media-conversion#limits",
+            "/docs/media-conversion#the-allowance",
+            "/docs/plans#the-catalog"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "7f3eb02d382fcf336d243fbe80a1a61bfff5e319",
+          "date": "2026-11-21",
+          "subject": "docs: media conversion spike report and fixtures",
+          "branch": "media-spike-report",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/media-spike-report",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "bddf7b1e86250934718d71f046325b81d9c64591",
+          "date": "2026-11-21",
+          "subject": "media: fix the three defects the conversion spike found",
+          "branch": "media-spike-fixes",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/media-spike-fixes",
+          "commits": 6,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "1b83d68700a2c4357e20722ffbeba9c29df26011",
+          "date": "2026-11-21",
+          "subject": "ci: OpenTofu module tests beside make test, pinned and mirrored",
+          "branch": "ci-opentofu-tests",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/ci-opentofu-tests",
+          "commits": 4,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "c9dc5b8ef4f25451621dbd5ecac329149d72e485",
+          "date": "2026-11-21",
+          "subject": "activator, host: restart wake without the index wait or false backoff",
+          "branch": "fleet-restart-wake",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fleet-restart-wake",
+          "commits": 6,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "7baf81684f8a0600287fdf9718c187d2ef10a686",
+          "date": "2026-11-21",
+          "subject": "changelog: regenerate through v0.41.0 (release step 11b)",
+          "branch": "changelog-v0.41.0",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/changelog-v0.41.0",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "7833faab986efe0a1c25f9e5d415c046178181a8",
+          "date": "2026-11-21",
+          "subject": "docs: v0.41.0 release note (seed files and the seeds floor); the binary-size note names the 70 MB ceiling",
+          "branch": "release-note-v0.41.0",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/release-note-v0.41.0",
+          "commits": 2,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v0.41.0",
       "date": "2026-11-21",
       "sha": "fe854a4e086fbbb0cf950764cb17748dcba488a0",

@@ -45,6 +45,8 @@ Every process of the instance gets the same environment: web, the workers and re
 
 - CARLOS_HOST, CARLOS_REGION, CARLOS_CONTROL_SOCKET and CARLOS_PURGE mean what they mean for a binary instance, as [What an instance is started with](/docs/cli#what-an-instance-is-started-with) says.
 
+- CARLOS_MEMORY_MIB is the memory limit, in MiB, that web and each worker start with. For example, it is 2048 at the xlarge size. Use it to choose how many processes to start, such as Puma workers. Release, carlos run and consoles do not get this variable.
+
 - HOME is /tmp unless the image or the app sets it.
 
 ## Health
@@ -72,6 +74,12 @@ carlos ship --check warns when a process runs Node, Bun or Deno and the release 
 ## Network
 
 An instance can reach public addresses, such as an object store or a managed database's public endpoint. It cannot reach a private address unless a system operator allows it for the app with carlos apps set --egress-allow, and it never reaches the box it runs on or the cloud's metadata service.
+
+## The visitor's address
+
+Requests reach the web process with the visitor's address as the last entry of X-Forwarded-For. The platform writes that header itself and removes anything the visitor sent, so the last entry is always the address the platform saw. This also holds on a fleet box, where the request came in through the hub.
+
+Rails request.remote_ip and Rack::Request#ip, which Rack::Attack uses, both return it with no setup.
 
 ## Commands and consoles
 

@@ -118,7 +118,7 @@ The copy is read-only, and the live instance is untouched.
 
 ## When one customer gets busy
 
-An operator can give that one instance a bigger size: `small` (256 MiB), `standard` (512 MiB), `large` (1 GiB) or `xlarge` (2 GiB). See [carlos apps](/docs/cli#carlos-apps).
+An operator can give that one instance a bigger size: `small` (256 MiB), `standard` (512 MiB), `large` (1 GiB) or `xlarge` (2 GiB), and on the operator's own fleet one of `4g`, `6g`, `8g`, `12g`, `16g`, `24g`, `32g`, `48g`, `96g` or `192g`. See [carlos apps](/docs/cli#carlos-apps).
 
 To give customers machines of your own, place the app on your own fleet when you create it (`--place fleet/<name>`).
 
