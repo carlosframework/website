@@ -87,6 +87,10 @@ Then set config.active_storage.service = :carlos in production.rb, and add the a
 
 Instances run with memory that cannot be written and executed at once, unless the release is shipped with carlos ship --jit, so YJIT cannot start without it. Rails 7.2 and later turn YJIT on by default. This app turns it off in production.rb with config.yjit = false. To keep YJIT, ship with --jit instead.
 
+### The visitor's address
+
+Rails request.remote_ip and Rack::Attack see the visitor's address without configuring which proxies to trust. [The visitor's address](/docs/rootfs#the-visitor-s-address) explains where it comes from.
+
 ## The image
 
 Build the image for arm64, which is what the boxes run. buildx does that on any machine, an Intel laptop included. When the image runs, its root filesystem is read-only, and only /tmp and the directory CARLOS_DB is in can be written.

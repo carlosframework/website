@@ -253,21 +253,23 @@ If a box is lost or detached, the requested count stays the same. The platform u
 System operators can also set an app's instance policy: which private addresses its instances may reach and the size each instance runs at. `carlos apps show` reads it back.
 
 ```sh
-carlos apps set shop --egress-allow 10.0.5.20,fd00:5::20
+carlos apps set shop --egress-allow 10.0.5.20,10.0.64.0/20
 carlos apps set shop --size large
 carlos instances set shop-a.example.com --app shop --size xlarge
 carlos apps show shop
 ```
 
-An instance cannot reach a private address unless its app allows it. `--egress-allow` takes the app's whole list, comma-separated, and replaces the list before it. To drop one address, pass the list without it; `--egress-allow ""` removes them all. Each entry is a single IP address, with no range, port or zone. Public addresses are refused because instances can reach them already, and so are loopback, link-local, multicast and reserved addresses, the cloud metadata service and the NAT64 prefix. An app may allow at most 8.
+An instance cannot reach a private address unless its app allows it. `--egress-allow` takes the app's whole list, comma-separated, and replaces the list before it. To drop one entry, pass the list without it; `--egress-allow ""` removes them all. Each entry is a single IP address or a private range such as `10.0.64.0/20` or `fd00:5::/64`, with no port or zone. The widest range is /16 for IPv4 or /48 for IPv6. Every range must start at its first address, so `10.0.64.5/20` is refused. Public addresses are refused because instances can reach them already, and so are loopback, link-local, multicast and reserved addresses, the cloud metadata service and the NAT64 prefix, and any range that contains one of them. An app may allow at most 8 entries, and a range counts as one.
 
-A change that adds an address is checked against the deployment's boxes. An address that belongs to one of them is refused, and so is any new address while a box does not publish its address list yet. Boxes that publish none at all are named after the change. An allow takes effect only on a box where every instance runs nested (see `carlos status --layout`). It does not take effect while host claims are on. If a box later takes an allowed address, the console sends an alert.
+A change that adds an entry is checked against the deployment's boxes. An entry that covers an address of one of them is refused, and so is any new entry while a box does not publish its address list yet. Boxes that publish no address list are named after the change (fleet boxes never publish one), and each of them still refuses an entry that covers its own address. A range can be added only while every box runs v0.43.0 or later. Single addresses are not affected by the v0.43.0 floor; they keep working on the releases that already support egress allows. Once an app has a range, do not roll a console back below v0.43.0, because an older console cannot read that app's policy, and a later change from it would clear the app's allows and sizes. An allow takes effect only on a box where every instance runs nested (see `carlos status --layout`). It does not take effect while host claims are on. If a box later takes an allowed address, or an address in an allowed range, the console sends an alert.
 
 The sizes are `small` (256 MiB of memory), `standard` (512 MiB), `large` (1 GiB) and `xlarge` (2 GiB), with CPU and IO to match. `carlos apps set --size` sets the app's size, and `--size default` goes back to the build's size. `carlos instances set --size` gives one instance a size of its own, and `--size default` makes it follow the app's size again. A size above `standard` is refused when it is more than a quarter of the memory on the smallest box the app can run on, or when one of those boxes reports no memory total.
 
+On your own fleet, an app can also use 4g, 6g, 8g, 12g, 16g, 24g, 32g, 48g, 96g or 192g, measured in GiB. These sizes are refused if the app can run anywhere else. An instance at one of them leaves its box at least 1 GiB or one eighth of the box's memory, whichever is larger, so a 32 GiB box can use 24g at most. Every box the app can run on must report its memory and run a release that supports these sizes. The console must also run that release. Sizes are limits, not reservations. The console warns when the sizes on one box add up to more than it can give. A deploy starts the new build beside the old one. The box needs free memory for the new build's full size. If it does not, the deploy does not start the new build and the old build keeps serving.
+
 After a size change, the command prints each box's memory committed to awake instances, out of its total. CPU and IO change at once. A larger size's memory applies when an instance next starts or is deployed. A smaller size applies only when the instance starts cold. Restart it to apply the new memory now. `carlos status --layout` shows the size each instance runs at.
 
-The console records a change, and the app's boxes apply it. A box that follows the deployment's change index does so within seconds; any other box within about 33 minutes. `carlos apps show` prints the egress allow, the app's size, and every instance with a size of its own. A `!` before an address means one of the deployment's boxes now holds it.
+The console records a change, and the app's boxes apply it. A box that follows the deployment's change index does so within seconds; any other box within about 33 minutes. `carlos apps show` prints the egress allow, the app's size, and every instance with a size of its own. A `!` before an entry means one of the deployment's boxes now holds that address, or an address in that range.
 
 ### carlos ship
 
@@ -541,6 +543,10 @@ These headers can be set:
 | `Access-Control-Expose-Headers` | a list of header names |
 | `Cross-Origin-Resource-Policy` | `same-origin`, `same-site` or `cross-origin` |
 | `Timing-Allow-Origin` | `*` |
+| `Content-Security-Policy` | a policy, such as `default-src 'self'` |
+| `X-Content-Type-Options` | `nosniff` |
+| `Referrer-Policy` | one or more policies, such as `no-referrer` |
+| `X-DNS-Prefetch-Control` | `on` or `off` |
 
 `carlos ship` and `carlos deploy` refuse a `_headers` file with a line they
 cannot use, and name the line. Any other header is refused too. A file can
@@ -1518,6 +1524,13 @@ would reach that quota between them.
 `--private-storage=false` turns the policy off. Instances created before it
 keep the bindings and buckets they already have.
 
+Use `--store-versioning` to turn versioning on for every private store made
+from then on. Old versions are kept for 30 days (see
+[carlos store versioning](#carlos-store-versioning)). Each bucket has
+versioning on before the new instance gets a credential. Existing stores keep
+their setting. Use `--store-versioning=false` to turn this policy off for
+stores made later. It changes no existing store.
+
 #### Bringing back a deleted instance
 
 Deleting an instance keeps its database. To bring the instance back with
@@ -1754,6 +1767,7 @@ carlos domains check shop.example
 carlos domains buy shop.example --app shop
 carlos domains buy shop.example --not-yet
 carlos domains point shop.example --app shop
+carlos domains transfer shop.example --auth-code -
 carlos domains list --all
 ```
 
@@ -1769,6 +1783,19 @@ another, and `--contact-file contact.json` uses new details and saves them.
 `carlos domains contacts` lists the saved contacts, and
 `contacts add --file`, `contacts edit <id> --file` and
 `contacts remove <id>` change them.
+
+`transfer` moves a domain registered elsewhere here. Unlock it at its
+current registrar and get its transfer code first. The domain keeps the
+nameservers it uses today, so its DNS and email don’t change, and
+`transfer` shows them with the price before you confirm. Pass the code
+with `--auth-code`, or `--auth-code -` to type it or pipe it in on one line
+of stdin, which keeps it out of your shell history. The code is never
+printed. After checkout, `transfer` waits until the move is done or fails.
+It can take up to five days, or longer if the current registrar does not
+answer. You can stop waiting: the move carries on, and
+`carlos domains list --all` shows it. If the move does not go through, the
+hold is released or your payment is refunded in full. It takes the same
+contact flags as `buy`.
 
 `carlos domains list --all` shows every domain the account uses, whether
 bought here, still being bought or registered elsewhere, with each address
@@ -2237,6 +2264,61 @@ carlos store uploads disable --app shop
 ```
 
 Lets browsers on the origins you name upload large files in parts straight to the app's store. With no --origin, it uses and prints the app's hostnames today. disable removes the rules again.
+
+#### carlos store versioning
+
+```sh
+carlos store versioning on --app hello
+carlos store versioning status --app hello
+```
+
+Keep old versions so you can undo deletes and overwrites. Keep them for 30 days unless `--keep-days` sets a longer period. Once on, it stays on.
+
+With versioning on, a delete leaves the object's old versions behind. An overwrite keeps the bytes it replaced. Old versions are kept for 30 days by default, counted from when they stopped being current. The platform's lifecycle rule then removes them. Use `--keep-days` to set this period from 30 to 365 days. You can raise it later, but never lower it.
+
+Your app's store credential can't delete an old version, change the lifecycle rule, turn versioning off or write a bucket policy. A bug in your app or a stolen credential can still delete or overwrite objects. You can get them back for as long as their old versions are kept.
+
+There is no `off`. Once versioning is on, the store keeps it until the store is destroyed. You must be signed in as a person to turn versioning on. A service credential can't do it.
+
+Use `status` to read the bucket and check whether its settings match what you asked for:
+
+```text
+versioning  on
+keep        old versions for 30 days
+bucket      in place
+```
+
+To turn versioning on when you create a store, pass `--versioning` and optionally `--keep-days` to `carlos store create`. The bucket has versioning on before the first credential is delivered. For [private storage](#carlos-instances), use `carlos instances enable --store-versioning` to turn versioning on for every private store made after that command. Existing stores keep their setting. To turn it on for an existing private store, run `carlos store versioning on --app <app> --environment <environment>`.
+
+`carlos store status` shows a versioning line for any store that has versioning on.
+
+Old versions count towards the store's size, its usage and its plan's storage limit, just like current objects.
+
+Versioning is available only when the deployment has turned it on. The operator must apply `store_versioning = true` in the `region-host` module and set `CARLOS_STORE_VERSIONING=1` on the console. Versioning requires AWS S3. The console refuses to start if both `CARLOS_STORE_VERSIONING=1` and `CARLOS_STORE_ENDPOINT` are set. A store that has versioning on can't use [media conversion](/docs/media-conversion) or browser uploads.
+
+#### carlos store versions
+
+```sh
+carlos store versions --app hello --key uploads/a1b2.bin
+```
+
+Lists one object's versions, newest first, 100 at a time:
+
+```text
+VERSION                           MODIFIED              SIZE     STATE
+Wq3sVh1Hq2v7m4H0eS0pR8yIEwq0vM8A  2026-11-22 10:04 UTC  -        deleted
+3HL4kqtJlcpXroDTDmJ.rmSpXd3dIbrH  2026-11-21 18:30 UTC  4.0 MiB  old
+```
+
+`deleted` marks a delete. It holds no bytes. When there are more versions, the last line gives the `--after` value for the next page. Run the same command with that value.
+
+#### carlos store restore
+
+```sh
+carlos store restore --app hello --key uploads/a1b2.bin --version 3HL4kqtJlcpXroDTDmJ.rmSpXd3dIbrH
+```
+
+Restore makes an old version current by copying it. The version it replaces is kept like any other. Nothing is deleted. To recover a deleted object, restore the version before the delete. Any kept version can be restored by its id, however many newer versions there are. Restore refuses a delete marker, the version that is already current, or a version larger than 5 GiB (gibibytes). It also refuses a store whose bucket doesn't currently have versioning enabled, and a store that blocks uploads because its plan's storage is full.
 
 #### carlos store scan
 
@@ -3306,7 +3388,7 @@ socket does not exist. Requests to that address then fail. Like
 
 The REGION column names where each route or box runs, such as London (UK).
 
-The `SIZE` column is the size an awake nested instance runs at: `swap` while a deploy is swapping it, `?` when its box could not read it, and `-` for anything else. `standard>large` means it runs at standard and its policy asks for large; a note under the table says when that takes effect. The `EGRESS` column is the instance's egress allow as its box applies it. A `!` before an address means one of the deployment's boxes now holds it. A word after `!` means the allow is not in force: `failing`, `policy unreadable`, `policy unverifiable`, `policy expired`, `box not wholly nested`, `not yet supported under claims`, or `refused` when the box dropped an entry. `REASON` gives the detail after `egress:`.
+The `SIZE` column is the size an awake nested instance runs at: `swap` while a deploy is swapping it, `?` when its box could not read it, and `-` for anything else. `standard>large` means it runs at standard and its policy asks for large; a note under the table says when that takes effect. The `EGRESS` column is the instance's egress allow as its box applies it. A `!` before an entry means one of the deployment's boxes now holds that address, or an address in that range. A word after `!` means the allow is not in force: `failing`, `policy unreadable`, `policy unverifiable`, `policy expired`, `box not wholly nested`, `not yet supported under claims`, or `refused` when the box dropped an entry. `REASON` gives the detail after `egress:`.
 
 A box that runs `nested` instances beside `flat`, `foreign` or `external`
 ones gets a warning after the table. Each of those still shares the agent's

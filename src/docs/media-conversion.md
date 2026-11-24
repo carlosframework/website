@@ -89,7 +89,7 @@ If the same object was already sent with the same preset and class, `POST` answe
 
 Poll with `GET`. A repeated `POST` also returns the job, but each one makes the console read your store's settings and check the object in your bucket again.
 
-The first time your app uses its store for conversion or browser uploads, the console checks the bucket. It must be named and owned the way this deployment names and owns buckets, be in the store's region, use SSE-S3 encryption, have versioning off, and carry no bucket policy, lifecycle rule or CORS rule the platform didn't write. A store made with `carlos store create` and left alone passes. A store that fails is refused with `store_unverified` and the check it failed, and is checked again on your next request.
+The first time your app uses its store for conversion or browser uploads, the console checks the bucket. It must be named and owned the way this deployment names and owns buckets, be in the store's region, use SSE-S3 encryption, have versioning off, and carry no bucket policy, lifecycle rule or CORS rule the platform didn't write. A store made with `carlos store create` and left alone passes. A store that has ever had [versioning](/docs/cli#carlos-store-versioning) turned on can't use media conversion or browser uploads, and versioning can't be turned off. `carlos store versioning on` refuses a store that already uses either feature. A store that fails is refused with `store_unverified` and the check it failed, and is checked again on your next request.
 
 A console running in host-claim mode doesn't offer conversion or browser uploads. It refuses both with `claims_console`.
 
@@ -132,7 +132,9 @@ A job is `queued` while it waits for a place, `running` while the engine works o
 | `source_dimensions` | `the video is larger than %s` |
 | `source_frame_rate` | `the video has more than %d frames a second` |
 | `source_too_long` | `the file is longer than %s, the maximum for this preset` |
+| `source_too_long` | `the HDR video is longer than %s, the maximum for HDR video up to 1080p` |
 | `needs_long_class` | `the file is longer than %s, the most the short class converts. submit it again in the long class` |
+| `needs_long_class` | `the video is above 1080p, which only the long class converts. submit the same request again with "class": "long"` |
 | `allowance_exceeded` | `this account's media allowance for the month does not cover this file. buy a media pack or move to a larger plan to convert it` |
 | `unreadable` | `the file could not be read. it may be damaged or cut short` |
 | `output_too_large` | `a converted file would be over 5 GB, the maximum for one output` |
@@ -194,14 +196,15 @@ Each job runs in a class. By default the source's size picks it, and you can ask
 
 | Preset | Short class is used for | Short class converts up to | Stops a short job after | Stops a long job after |
 | --- | --- | --- | --- | --- |
-| `video-720p` | sources up to 1 GiB | 10 minutes | 15 minutes | 50 minutes |
+| `video-720p` | sources up to 1 GiB | 10 minutes at or below 1080p | 15 minutes | 50 minutes |
 | `audio-aac` | sources up to 256 MiB | 2 hours | 10 minutes | 50 minutes |
 
-A long job converts up to the preset's maximum. These maximums are provisional and may change:
+A video above 1080p converts only in the long class. The short class refuses it with `needs_long_class`, however short it is. A long job converts up to the preset's maximum:
 
 | | `video-720p` | `audio-aac` |
 | --- | --- | --- |
 | Length, sources up to 1080p | 2 hours | 8 hours |
+| Length, HDR sources up to 1080p | 75 minutes | |
 | Length, sources above 1080p | 30 minutes | |
 | Source size | 40 GiB | 10 GiB |
 | Largest picture, frame rate | 3840x2160, 60 | |
@@ -212,9 +215,9 @@ Fair use applies on every deployment. By default an account can have 20 conversi
 
 ### The allowance
 
-Your deployment can give your account a monthly allowance of media minutes, shared by its apps. Where billing is on, the account's Billing page shows the allowance and how much you've used. A minute of video counts as 1 media minute and a minute of audio as 0.1, so 10 minutes of audio is 1 media minute.
+Your deployment can give your account a monthly allowance of media minutes, shared by its apps. Where billing is on, the account's Billing page shows the allowance and how much you've used. A minute of video up to 1080p counts as 1 media minute, a minute of video above 1080p counts as 2, and a minute of audio counts as 0.1, so 10 minutes of audio is 1 media minute.
 
-A done job is charged for the length of its source. A failed job is charged for the engine time it used, or the full reserved time if the engine loses the task record. A job that never starts is uncharged. While a job runs, the most it could cost is held against the allowance.
+A done job is charged for the length of its source: 1 media minute per minute for video up to 1080p, 2 for video above 1080p, and 0.1 for audio. A failed job is charged for the engine time it used: 1 media minute per minute for video, or 0.1 for audio. A failed long video job whose result says the video is above 1080p is charged at 2 media minutes per minute. If the engine loses the task record, the job is charged the full time it was allowed to run, at 1 media minute per minute for video or 0.1 for audio. A job that never starts is uncharged. While a job runs, the most it could cost is held against the allowance. A long video job is held at 2 media minutes per minute because nothing is known of the picture until the engine reads the file.
 
 As with other monthly limits, the account's owners get a warning at 80% of the limit. At twice the monthly limit, new conversions are refused with `402` until the 1st of the UTC month, or until the account buys a media pack or moves to a larger plan. A job can also fail `allowance_exceeded` when what's left of the allowance won't cover the file. See [Plans](/docs/plans).
 

@@ -156,6 +156,17 @@ when enabling the feature. Change `version` when you change prices. The loader
 rejects unknown fields, invalid entries and trailing JSON. Renewal prices are
 required by the catalog format; automatic renewal is outside this buy-only plan.
 
+Set `"transferable": true` on a TLD to let customers move domains under it in
+from another registrar. Mark only TLDs where a transfer adds one year to the
+existing expiry, as `com` and `net` do. Some country-code TLDs keep or restart
+the expiry instead, so the year the customer pays for would not be added;
+leave those unmarked. A TLD without the flag refuses transfers. The optional
+`transfer` map sets the one-year transfer price per currency, in the same
+format as `renew`; a currency missing from it uses the `renew` price. The
+`max_cost` ceiling applies to the registrar's transfer cost as it does to
+purchases. The console never computes a transferred domain's expiry: it
+records the date the registrar reports when the transfer completes.
+
 During nameserver setup, query every assigned Route 53 server's A and AAAA
 records and compare them with its branded name. Then query each branded server
 directly. Replace the example names before running:
