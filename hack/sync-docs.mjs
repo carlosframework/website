@@ -120,7 +120,10 @@ const changelogOut =
 // right, and without permalink:false every page also writes itself to
 // its default output — index.md collides with the /docs index and the
 // build fails. Leaving it as a hand-maintained file meant the first
-// re-sync deleted it.
+// re-sync deleted it. templateEngineOverride "md" renders the vendored
+// markdown as markdown only: with Eleventy's default Liquid pass, a
+// literal "{{" in a code sample (Go struct literals, for one) fails the
+// build.
 const dirData =
   JSON.stringify(
     {
@@ -129,6 +132,7 @@ const dirData =
         "markdown is input for src/docs.njk and src/docsmd.njk, not pages of its own.",
       permalink: false,
       eleventyExcludeFromCollections: false,
+      templateEngineOverride: "md",
     },
     null,
     2,

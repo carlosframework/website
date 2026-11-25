@@ -3,6 +3,464 @@
   "repo": "https://amadan.net/carlos/platform",
   "releases": [
     {
+      "tag": "v0.43.8",
+      "date": "2026-11-25",
+      "sha": "95539056f63dad93191407478c1ac951a9e6d6df",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.43.8",
+      "notes": {
+        "form": "markdown",
+        "md": "#### What's new\n\n- **Accept the data processing agreement in the console.** The pane appears in account Settings only after an operator has set a letterhead and published a data processing agreement. Until an agreement is in force, an account owner sees the newest version, its text, and a form for the company's legal name, registered address, country, signer's name and role. Members see no acceptance form. Once an owner accepts, the console sends that owner a confirmation email. The acceptance still stands if delivery fails. Any member can then open the record showing what was accepted, by whom and when. When a later version has an apply date, account members see that date and the privacy email to use to object before then.\n- **Longer videos convert.** The `video-720p` preset now converts SDR video at or below 1080p for up to 3 hours, up from 2. HDR video at or below 1080p stays limited to 75 minutes, and video above 1080p to 30 minutes.\n- **Write credentials for one store folder, not available yet.** `carlos store credential --write` is documented for services such as a LiveKit recorder. It would issue a temporary write-only credential for one store prefix. This release issues none. On a normal console, both routes return `503`: when write credentials are not configured, the code is `write_credentials_not_configured`; when they are configured, the code is `write_credentials_not_released`.\n\n#### For operators\n\n- **Roll order.** Roll your development deployment first, then production. Boxes first, then the console.\n- **Check `/etc` on every box before you roll it.** Every box's instance control opens `/etc`, `/etc/carlos` and `/etc/carlos/managed-box.json` without following symlinks. `/etc` and `/etc/carlos` must be owned by root and not writable by group or others. If the identity file is present, it must also be root-owned, not group- or other-writable, a regular file and singly linked. A present identity file that fails any check makes the box refuse every workload start (`/start`, `/seed`, `/cmd`, `/tty`, `/parent`, `/demo-build` and `/demo-snapshot`) with `409` and `box is joining its fleet`. Check all three paths with `stat -c '%n %U %a %F %h' /etc /etc/carlos /etc/carlos/managed-box.json`. A missing `/etc/carlos` or identity file is treated as a BYO box. Managed fleets stay off until a system operator turns them on with `carlos system managed-fleets set` and the console sets `CARLOS_MANAGED_FLEETS_BACKEND=aws`.\n- **The legal page: nothing changes until you publish.** Operators open `/fleet/legal`. The required letterhead fields are company name, registered office, company number, signatory line and privacy email. Logo, VAT number and footer line are optional. Saving the letterhead and each publish require a fresh sign-in. For a data processing agreement, enter an HTTPS page URL and a separate HTTPS agreement-text URL. The console fetches the agreement text once, accepts only headings, paragraphs, lists, links and emphasis, stores the fetched bytes and records their SHA-256. For the terms and privacy policy, it fetches the HTTPS page URL once and records its SHA-256. The page shows the published versions, their fingerprints and the accounts with an agreement in force. The first agreement applies on publication. A later one that needs notice applies at least 35 days after publication. The first terms or privacy version records the date it took effect. Later versions need notice unless marked as a typo fix. Published versions can't be edited or removed. Customers see the agreement only after the letterhead is set and an agreement is published.\n- **Leave store write credentials off.** The region host module gains a `store_write_credentials` switch, off by default, and it requires `store_bucket_prefix`. On a normal console, `POST /api/cli/apps/{account}/{app}/store/credentials` and `POST /api/cli/apps/{account}/{app}/store/credentials/revoke` return `503`. With the deployment switch off, the code is `write_credentials_not_configured`. With it on, this release returns `write_credentials_not_released`. No credential is minted or revoked by these routes in this release.\n- **Media conversion.** If your deployment runs media conversion, the 3-hour limit applies once the console runs this release. A `CARLOS_MEDIA_LIMITS` override still sets the deployment's limits."
+      },
+      "changes": [
+        {
+          "sha": "95539056f63dad93191407478c1ac951a9e6d6df",
+          "date": "2026-11-25",
+          "subject": "console: accept the data processing agreement in settings",
+          "branch": "dpa-and-retention",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/dpa-and-retention",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 1396,
+              "title": "Data processing agreements in the console, and retention set by customers",
+              "state": "open"
+            },
+            {
+              "id": 1397,
+              "title": "Spec: DPA and retention (4 Astra rounds; closed by Paul at rev 5)",
+              "state": "closed"
+            },
+            {
+              "id": 1398,
+              "title": "DPA text for carloku.com/dpa/ (copy review)",
+              "state": "closed"
+            },
+            {
+              "id": 1399,
+              "title": "Plan slice 1 (others planned after it merges)",
+              "state": "closed"
+            },
+            {
+              "id": 1400,
+              "title": "Slice 1: DPA acceptance (MERGED 9553905)",
+              "state": "closed"
+            },
+            {
+              "id": 1401,
+              "title": "Slice 2: legal notices",
+              "state": "open"
+            },
+            {
+              "id": 1402,
+              "title": "Slice 3: retention (statistics, logs, mail events; console sweep)",
+              "state": "open"
+            },
+            {
+              "id": 1403,
+              "title": "Slice 3b: folded into slice 3 (console sweep, no box change)",
+              "state": "closed"
+            },
+            {
+              "id": 1404,
+              "title": "Slice 4: deleting a person",
+              "state": "open"
+            },
+            {
+              "id": 1405,
+              "title": "Slice 5: flagship switch-on (Paul's go)",
+              "state": "open"
+            },
+            {
+              "id": 1410,
+              "title": "DPA copy: database backups deleted on request (re-review one string)",
+              "state": "open"
+            },
+            {
+              "id": 1411,
+              "title": "S1 T0: UX pass and copy deck (with Paul)",
+              "state": "closed"
+            },
+            {
+              "id": 1412,
+              "title": "S1 T1: store tables",
+              "state": "closed"
+            },
+            {
+              "id": 1413,
+              "title": "S1 T2: guarded fetch and canonical agreement",
+              "state": "closed"
+            },
+            {
+              "id": 1414,
+              "title": "S1 T3: /fleet/legal",
+              "state": "closed"
+            },
+            {
+              "id": 1415,
+              "title": "S1 T4: dpaInForce",
+              "state": "closed"
+            },
+            {
+              "id": 1416,
+              "title": "S1 T5: settings pane and accepting",
+              "state": "closed"
+            },
+            {
+              "id": 1417,
+              "title": "S1 T6: record page",
+              "state": "closed"
+            },
+            {
+              "id": 1418,
+              "title": "S1 T7: merged 9553905; dev witness after the next dev roll",
+              "state": "open"
+            },
+            {
+              "id": 1439,
+              "title": "S1 follow-ups (six) on branch dpa-followups",
+              "state": "open"
+            },
+            {
+              "id": 1440,
+              "title": "Release v0.43.8 dev only (Paul's GO 11-25), then dev witness",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/data-processing"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "2cadcb4354034ef772684c2a1a6debfbc0155a2e",
+          "date": "2026-11-25",
+          "subject": "store: write-only credentials, phase 1 (doors refuse until phase 2)",
+          "branch": "store-write-credential",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/store-write-credential",
+          "commits": 27,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#a-store-for-one-environment",
+            "/docs/cli#carlos-store-credential",
+            "/docs/live-streams-bring-your-own-livekit#before-you-start",
+            "/docs/live-streams-bring-your-own-livekit#how-it-fits-together",
+            "/docs/live-streams-bring-your-own-livekit#recording-into-your-store"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "72e6fe91bfefbc7a8738e8e3cab338f967a5ebbe",
+          "date": "2026-11-25",
+          "subject": "managed fleets 2b-2: box side and the first real box (#457)",
+          "branch": "managed-fleets-2b2",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/managed-fleets-2b2",
+          "commits": 46,
+          "discussions": [
+            {
+              "id": 457,
+              "title": "Self-service managed fleets: rent EC2 boxes in carloku’s AWS account for rootfs apps",
+              "state": "open"
+            },
+            {
+              "id": 1251,
+              "title": "Gitleaks CI step: digest allowlist design",
+              "state": "open"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-system-managed-fleets-set",
+            "/docs/cli#managed-fleet-providers-on-the-console"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "c340dd431fdd4d6ecc709bdff22b0a6ce3253ec8",
+          "date": "2026-11-25",
+          "subject": "media: SDR video up to 1080p converts up to 3 hours",
+          "branch": "media-three-hour-sdr",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/media-three-hour-sdr",
+          "commits": 7,
+          "docs": [
+            "/docs/live-streams-bring-your-own-livekit#converting-and-playing-the-recording",
+            "/docs/media-conversion#limits"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.43.7",
+      "date": "2026-11-25",
+      "sha": "d74dff114597775618926c0400842b5d728d1018",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.43.7",
+      "notes": {
+        "form": "markdown",
+        "md": "#### What's new\n\n- **Rootfs images get a usable `/etc/hosts`.** When `carlos ship` builds a rootfs image, it replaces a missing or empty file, a directory, or a symlink that does not resolve to a non-empty regular file with `127.0.0.1 localhost` and `::1 localhost ip6-localhost ip6-loopback`. A non-empty regular file stays unchanged. A symlink to a non-empty regular file is replaced at `/etc/hosts` with that file's bytes, mode, owner and timestamp. Libraries that read it directly, such as Ruby's `Resolv`, no longer fail because the path is missing. Images shipped before this release are unchanged. Update your CLI and ship again to get the file.\n\nUpdate your CLI to use this.\n\n#### For operators\n\n- **No box or console update is needed.** Use the updated CLI before shipping rootfs images. The change is applied while `carlos ship` builds the image. Images already shipped are unchanged, and boxes and consoles already running v0.43.6 behave as before."
+      },
+      "changes": [
+        {
+          "sha": "d74dff114597775618926c0400842b5d728d1018",
+          "date": "2026-11-25",
+          "subject": "changelog: regenerate through v0.43.5 (release step 11b)",
+          "branch": "changelog-v0.43.5",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/changelog-v0.43.5",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "ca75631f311c415165f08eb031d4a66f8880bf7d",
+          "date": "2026-11-25",
+          "subject": "rootfs: carlos ship adds /etc/hosts to images that have none (#1349)",
+          "branch": "rootfs-etc-hosts-1349",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/rootfs-etc-hosts-1349",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1349,
+              "title": "Rootfs apps have no /etc/hosts: Excon/fog S3 calls fail with ENOENT",
+              "state": "open"
+            },
+            {
+              "id": 1351,
+              "title": "Write failing tests for the default /etc/hosts",
+              "state": "closed"
+            },
+            {
+              "id": 1352,
+              "title": "carlos ship adds /etc/hosts when the image has none",
+              "state": "closed"
+            },
+            {
+              "id": 1353,
+              "title": "Document it in rootfs.md (Luna copy pass)",
+              "state": "closed"
+            },
+            {
+              "id": 1354,
+              "title": "Astra review",
+              "state": "closed"
+            },
+            {
+              "id": 1355,
+              "title": "Census note on #280",
+              "state": "closed"
+            },
+            {
+              "id": 1356,
+              "title": "Merge on green CI; tell Tito and Paul",
+              "state": "closed"
+            }
+          ],
+          "docs": [
+            "/docs/rootfs#what-every-process-gets"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.43.6",
+      "date": "2026-11-25",
+      "sha": "02fa02e3f3960e2b2fc615d9b4fe71e0fc7d9544",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.43.6",
+      "notes": {
+        "form": "markdown",
+        "md": "#### What's new\n\n- **Promote the exact build that staging tested.** `carlos releases pull <version> --app <a> --out <dir>` copies a shipped release's manifest and every named file out of a console, checking each file's size and sha256. `carlos ship --from-release <dir>` sends those files to another console under the manifest's version and release settings. You may still provide `--message` or `--program-change`. The target console checks every artifact against the source digests and stores nothing if any artifact differs. The CLI docs show the recipe: staging tests a build, production promotes the same build.\n- **A new instance can start with its config.** Before planning a new wake, the box tries to put the app config in place, so the first process starts configured instead of being restarted a few seconds later. The pass can wait up to 5 seconds, with a separate 5-second acknowledgement budget. If it cannot fetch or write the config, the wake proceeds as before and a later config sync may restart the process. A host-claim wake keeps the old behavior.\n- **Live streams guide.** A new docs page shows how to run a live stream with chat on your own LiveKit Cloud project, recorded into your app's store.\n\nUpdate your CLI to use these.\n\n#### For operators\n\n- **Roll order.** Roll your development deployment first, then production. Boxes first, then the console.\n- **Copying releases needs this release on both consoles.** Both the console you pull from and the console you ship to must run v0.43.6 or later, and so must the CLI.\n- **Media conversion: apply IAM and lifecycle changes before the console.** If your deployment runs media conversion, apply the media engine module at this release before any console runs it. The console role needs `s3:ListBucketVersions` on the deployment bucket with `s3:prefix` set to `media-results/*`, and `s3:DeleteObjectVersion` on `arn:aws:s3:::<deployment-bucket>/media-results/*`. Apply the deployment buckets lifecycle rules too. They make current and noncurrent objects under `media-results/` eligible for expiry after one day and remove expired delete markers. Without the IAM change, each due result cleanup is refused and retried. The lifecycle rules are the backstop when cleanup misses a result. If media conversion is off, this cleanup path has no new result objects to process."
+      },
+      "changes": [
+        {
+          "sha": "02fa02e3f3960e2b2fc615d9b4fe71e0fc7d9544",
+          "date": "2026-11-25",
+          "subject": "edge: burst flood test counts only its own allocations",
+          "branch": "fix-edge-burst-flake",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/fix-edge-burst-flake",
+          "commits": 1,
+          "discussions": [
+            {
+              "id": 1387,
+              "title": "CI flakes on main at e241f1ef9: TestBurstSingleKeyFloodBounded and TestPDFDoorEngineDown",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "edaed8360ab2dd9e093f78b1558029ebecc40beb",
+          "date": "2026-11-25",
+          "subject": "docs: live streams on your own LiveKit Cloud project",
+          "branch": "docs-live-byo-livekit",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/docs-live-byo-livekit",
+          "commits": 3,
+          "docs": [
+            "/docs/live-streams-bring-your-own-livekit#before-you-start",
+            "/docs/live-streams-bring-your-own-livekit#how-it-fits-together",
+            "/docs/live-streams-bring-your-own-livekit#tokens-for-the-streamer-and-the-viewers",
+            "/docs/live-streams-bring-your-own-livekit#chat",
+            "/docs/live-streams-bring-your-own-livekit#recording-into-your-store"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "65951fbbdedcb1c5dffc925ff1148d947e14b5f9",
+          "date": "2026-11-25",
+          "subject": "Copy a shipped release between consoles (#1389)",
+          "branch": "release-copy-across-consoles",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/release-copy-across-consoles",
+          "commits": 19,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1389,
+              "title": "Deploy pipeline needs: promote a tested build, run release once per build",
+              "state": "open"
+            },
+            {
+              "id": 1390,
+              "title": "T1 console read doors for manifest and artifacts",
+              "state": "closed"
+            },
+            {
+              "id": 1391,
+              "title": "T2 ship door honours expect_artifacts",
+              "state": "closed"
+            },
+            {
+              "id": 1392,
+              "title": "T3 carlos releases pull",
+              "state": "closed"
+            },
+            {
+              "id": 1393,
+              "title": "T4 carlos ship --from-release + two-console e2e",
+              "state": "closed"
+            },
+            {
+              "id": 1394,
+              "title": "T5 docs: CI recipe + release-once line",
+              "state": "closed"
+            },
+            {
+              "id": 1395,
+              "title": "Final review, CI, squash-merge",
+              "state": "closed"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-ship",
+            "/docs/cli#staging-tests-x-production-promotes-x",
+            "/docs/cli#carlos-releases",
+            "/docs/cli#carlos-releases-pull",
+            "/docs/stateless-replicas#deploys"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "bac71e00894d36e81a607be3587cf62c4be69d44",
+          "date": "2026-11-25",
+          "subject": "media: result objects never outlive their job",
+          "branch": "media-results-cleanup",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/media-results-cleanup",
+          "commits": 12,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v0.43.5",
       "date": "2026-11-24",
       "sha": "33148c5bc52b0ba9de939ef76e200f6500bd9ab0",

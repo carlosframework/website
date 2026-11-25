@@ -303,6 +303,21 @@ Servers keep a copy only when your app answers with status 200, a `Cache-Control
 
 --env KEY=VALUE gives every process in the check a variable, such as a placeholder secret or a store setting. The check never reads the app's real config or secrets. It sets CARLOS_SOCKET, CARLOS_DB, CARLOS_HOST and CARLOS_REGION itself, so --env cannot set those.
 
+`--from-release <dir>` ships a release that
+[carlos releases pull](/docs/cli#carlos-releases-pull) wrote into a
+directory, so another console stores the exact bytes the first one tested.
+It ships under the release’s own version, with its label, notes and other
+settings, so it takes only `--app`, `--account`, `--account-id`,
+`--console`, `--destination`, `--message`, `--no-prompt` and
+`--program-change`, and no file arguments. Every file named by the
+manifest is checked against it first, and a mismatch stops the ship before
+anything is uploaded. The console then refuses any bytes that differ from
+the release's digests, and ship checks the digests it answers with.
+
+```sh
+carlos ship --from-release ./release --app shop
+```
+
 ### carlos promote
 
 Points a channel at a version you have already shipped.
@@ -602,6 +617,46 @@ file defines. Saved answers go into the destination you are using.
 removes destinations, so you don't need to edit the file yourself.
 `--target` is unrelated: it names the platform (GOOS-GOARCH) a binary was
 built for.
+
+#### Staging tests X, production promotes X
+
+To run in production the exact build that staging tested, copy the release
+from one console to the other instead of building it twice. Use two CI jobs,
+each with its own deploy credential (`CARLOS_SERVICE_TOKEN`) for `shop`.
+
+Job 1 runs against the staging console. It ships a named version, promotes
+it so staging serves it, waits until the app's `X-Carlos-Version` header
+shows that version, and runs your tests. Then it pulls the release into a directory and keeps that
+directory as a CI artifact:
+
+```sh
+export CARLOS_CONSOLE=https://staging.example.com
+carlos ship --app shop --version v12 ./bin/server
+carlos promote --app shop v12 edge
+# wait up to about 10 minutes for staging to serve v12, or fail the job
+for i in $(seq 30); do
+  curl -sI --max-time 10 https://shop.staging.example.com/ | tr -d '\r' | grep -qix 'x-carlos-version: v12' && break
+  [ "$i" = 30 ] && { echo "staging never served v12" >&2; exit 1; }
+  sleep 10
+done
+# run your tests against staging here
+carlos releases pull v12 --app shop --out release
+```
+
+Job 2 runs against the production console. It downloads the artifact, ships
+the same release and promotes it:
+
+```sh
+export CARLOS_CONSOLE=https://carlos.example.com
+carlos ship --from-release release --app shop
+carlos promote --app shop v12 edge
+```
+
+The files are byte-identical on both consoles, though the manifests differ:
+each console writes its own manifest and signs its own channel pointers.
+Production refuses any file whose digest differs from the release's, and
+stores nothing. A deploy credential can promote to `canary`,
+`edge` and `beta`, but not `stable`.
 
 ### carlos canary
 
@@ -1001,7 +1056,7 @@ to run".
 carlos releases --app hello
 ```
 
-There are two sub-verbs. `carlos releases retention --keep 20` sets an ambient
+There are three sub-verbs. `carlos releases retention --keep 20` sets an ambient
 prune policy, and `--dry-run` shows you what it would remove before you commit
 to it. The safety list always wins over the number: channel pointers,
 rollback history, tagged releases, anything inside the bake window, and each
@@ -1009,6 +1064,19 @@ box's own adopted versions are never pruned, so nothing promoted or recent
 disappears by policy. `--off` goes back to keeping everything.
 
 `carlos releases authorize <app> <version>` is for operators. It shows a build's manifest and file digests and, when you type yes, signs a promotion record for exactly those bytes. Every promotion writes one; this is for a build promoted before records existed, so an instance can be pinned to it or recovered onto it on a box that does not already have it.
+
+#### carlos releases pull
+
+Copies a shipped release out of a console into a directory: its
+`manifest.json`, exactly as the console stores it, and every file the
+manifest names. Each file is checked against the manifest’s size and sha256
+as it arrives, and a file that does not match is removed and the pull fails.
+The manifest is written last, so a directory that holds one holds the whole
+release. In CI the directory can be a build artifact handed to a later job.
+
+```sh
+carlos releases pull v12 --app shop --out ./release
+```
 
 ### carlos version
 
@@ -2233,7 +2301,7 @@ customer's own hostname is attached to it afterwards. `--route` is required
 on `domains attach` once an app has more than one instance — the console
 refuses to guess which one a hostname belongs to.
 
-`create`, `status`, `grant` and `rotate` all take `--environment`, and each
+`create`, `status`, `grant`, `rotate` and `credential` all take `--environment`, and each
 acts on that store alone. Without it they act on the app's own store, exactly
 as they always have — nothing about an app with no environment stores changes.
 
@@ -2254,6 +2322,32 @@ deployment-operator address on `CARLOS_STORE_OPERATORS`; a non-member still
 receives the same 404 as everyone else. `approvals`, `approve` and `decline`
 require both the fleet-operator role and that allowlist entry, but the operator
 does not need membership in the account being reviewed.
+
+#### carlos store credential
+
+```sh
+carlos store credential --write --prefix recordings/ --ttl 4h --app shop
+carlos store credential --write --prefix recordings/ --ttl 4h --app shop --json
+carlos store credential --revoke --app shop
+```
+
+Prints a temporary credential that can only upload files under one folder of the app's store. Give it to a service that uploads for you, such as a [LiveKit recorder](/docs/live-streams-bring-your-own-livekit), instead of the store's own credential.
+
+A write credential can upload a file under `--prefix`, including in parts, and nothing else. It can't read, list, delete or tag a file, change a bucket setting, or reach any other folder or store. It can replace a file already under its folder, so give each service a folder of its own. `--prefix` ends in `/`, and it can't be `derived/` or a folder under it, where media conversion writes.
+
+`--ttl` is how long it works, from 15 minutes to 24 hours. Pick enough for the longest upload you expect, with some to spare: a recorder that uploads when a 3-hour stream ends needs more than 3 hours.
+
+The answer leads with when the credential expires, then gives the access key, secret, session token, bucket and region. With `--json`, the field names are the ones LiveKit's `S3Upload` takes. An app's server mints one with its Service credential:
+
+```http
+POST /api/cli/apps/{account}/{app}/store/credentials
+Authorization: Bearer <service token>
+{"access": "write", "prefix": "recordings/", "ttl_seconds": 14400}
+```
+
+`--revoke` stops every write credential the store has issued so far. It can take a few minutes to reach every upload, and you can mint a new one a minute or two later. Rotating the store's own credential with `carlos store rotate` doesn't affect write credentials.
+
+Write credentials need AWS S3. Your operator turns them on. This release returns `503` with `write_credentials_not_released`; wait for a later release before using write credentials.
 
 #### carlos store uploads
 
@@ -3488,6 +3582,37 @@ and try again. Enabling requires a usable change index. This configures the
 provider-neutral core; real managed launches remain off until the approved
 provider drill. Disabling admission leaves existing reservations and cleanup
 intact.
+
+<!-- COPY: managed fleet provider settings await controller copy review. -->
+#### Managed fleet providers on the console
+
+Managed fleets are off by default. The console starts no cloud provider for
+them unless its environment sets `CARLOS_MANAGED_FLEETS_BACKEND=aws`. With
+that set, the console also needs all of these, and refuses to start if any is
+missing or invalid:
+
+- `CARLOS_MANAGED_FLEET_DEPLOYMENT`: the deployment name every managed box is tagged with
+- `CARLOS_MANAGED_FLEET_ACCOUNT_ID`: the 12-digit AWS account managed boxes run in
+- `CARLOS_MANAGED_FLEET_REGIONS`: the regions boxes may run in, comma-separated
+- `CARLOS_MANAGED_FLEET_IAM_REGION`: the region the console calls IAM through
+- `CARLOS_MANAGED_FLEET_BUCKET_PREFIX`, `CARLOS_MANAGED_FLEET_USER_PATH` and
+  `CARLOS_MANAGED_FLEET_BOUNDARY`: the infrastructure module's
+  `managed_fleet_bucket_prefix`, `managed_fleet_user_path` and
+  `managed_fleet_user_boundary_arn` outputs
+- `CARLOS_TUNNEL_HOST` and `CARLOS_RELEASE_KEY`: boxes connect to the fleet hub,
+  and the console signs each box's ready record with the release key
+
+The providers only make launches possible. `enabled` in the settings above
+still decides whether the console accepts managed fleet requests.
+
+Every access key the console delivers to a box stays recorded. Deleting an
+earlier box's key in IAM removes that box's bucket access. Do not delete or
+deactivate the key the fleet's boxes use now. The console does not watch IAM,
+so it keeps giving that key to new boxes, and they fail their storage check.
+The console finds out only when it next has to issue a key. Then
+`carlos fleets show` reports the fleet as `needs-operator` and no boxes can be
+added. A deactivated key can be made active again; giving the fleet a new key
+is not available yet.
 
 #### The platform's own binary
 

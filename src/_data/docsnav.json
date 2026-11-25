@@ -40,6 +40,11 @@
           "blurb": "Give each customer their own instance, with a hub app for sign-in, shared data, shared keys and reports."
         },
         {
+          "slug": "data-processing",
+          "label": "Data processing agreement",
+          "blurb": "Accept the agreement that covers personal data in your apps, and keep a record of it."
+        },
+        {
           "slug": "pdfs",
           "label": "PDFs",
           "blurb": "Render an invoice, attach it to an email, and use Gotenberg from your app."
@@ -48,6 +53,11 @@
           "slug": "media-conversion",
           "label": "Media conversion",
           "blurb": "Turn an uploaded video or audio file into files for browser playback, and serve them from your app."
+        },
+        {
+          "slug": "live-streams-bring-your-own-livekit",
+          "label": "Live streams with your own LiveKit",
+          "blurb": "Stream with chat on your own LiveKit Cloud project, record into your store, and play the recording back."
         },
         {
           "slug": "scan-callbacks",
