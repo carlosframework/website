@@ -3,6 +3,63 @@
   "repo": "https://amadan.net/carlos/platform",
   "releases": [
     {
+      "tag": "v0.43.5",
+      "date": "2026-11-24",
+      "sha": "33148c5bc52b0ba9de939ef76e200f6500bd9ab0",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.43.5",
+      "notes": {
+        "form": "markdown",
+        "md": "#### What's new\n\n- **A new instance starts with its config.** The first time a new instance wakes, its process now starts with the app's config already in place. Before, the first start ran briefly without it and was then restarted.\n\n#### For operators\n\n- **Roll order.** Roll your development deployment first, then production. Boxes first, then the console. The fix is in the box agent and activator; nothing needs setting.\n- **Coming from v0.43.3 or older?** Read the v0.43.4 notes too."
+      },
+      "changes": [
+        {
+          "sha": "33148c5bc52b0ba9de939ef76e200f6500bd9ab0",
+          "date": "2026-11-24",
+          "subject": "A new instance's first process starts with its config",
+          "branch": "instance-ready-before-wake",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/instance-ready-before-wake",
+          "commits": 3,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1386,
+              "title": "A new instance of an already staged build waits about 17 s for a whole-box root pass before it can wake",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "67a5b32da13c72d79b256e8b389a3f61e0ee41c2",
+          "date": "2026-11-24",
+          "subject": "changelog: regenerate through v0.43.4 (release step 11b)",
+          "branch": "changelog-v0.43.4",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/changelog-v0.43.4",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v0.43.4",
       "date": "2026-11-24",
       "sha": "e241f1ef954e5ab0a5f368dee9ff59e628460577",
