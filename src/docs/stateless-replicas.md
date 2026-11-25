@@ -26,7 +26,7 @@ More than one copy needs an always-on release. Set --copies 1 and wait for remov
 
 ## Deploys
 
-A deploy runs the release command once per instance, then switches its copies one box at a time. Your migrations must allow old and new code to serve together. Each copy runs every declared worker.
+A deploy runs the release command once per instance, not once per copy, then switches its copies one box at a time. Your migrations must allow old and new code to serve together. Each copy runs every declared worker.
 
 When a copy switches, its old build stops once the new one serves. A response still streaming from the old build when it stops is cut, as when a box stops. Websockets on the old build disconnect and their clients reconnect to a healthy copy.
 

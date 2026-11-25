@@ -49,6 +49,8 @@ Every process of the instance gets the same environment: web, the workers and re
 
 - HOME is /tmp unless the image or the app sets it.
 
+- /etc/hosts contains 127.0.0.1 localhost and ::1 localhost ip6-localhost ip6-loopback unless the image has a non-empty regular file there, or a link to one. carlos ship adds it when needed because Docker and Kubernetes write /etc/hosts when a container starts, and the read-only image prevents the app from creating it.
+
 ## Health
 
 web must answer GET / on CARLOS_SOCKET with a status below 500 within 120 seconds of starting. Until it does, the instance does not serve and its workers do not start.

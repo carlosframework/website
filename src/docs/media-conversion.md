@@ -203,7 +203,7 @@ A video above 1080p converts only in the long class. The short class refuses it 
 
 | | `video-720p` | `audio-aac` |
 | --- | --- | --- |
-| Length, sources up to 1080p | 2 hours | 8 hours |
+| Length, sources up to 1080p | 3 hours | 8 hours |
 | Length, HDR sources up to 1080p | 75 minutes | |
 | Length, sources above 1080p | 30 minutes | |
 | Source size | 40 GiB | 10 GiB |
