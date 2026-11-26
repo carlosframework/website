@@ -77,6 +77,8 @@ carlos ship --check warns when a process runs Node, Bun or Deno and the release 
 
 An instance can reach public addresses, such as an object store or a managed database's public endpoint. It cannot reach a private address unless a system operator allows it for the app with carlos apps set --egress-allow, and it never reaches the box it runs on or the cloud's metadata service.
 
+A process can read the box's network setup, such as its interfaces, addresses and routes, but cannot change it. So getifaddrs works, and with it Ruby's Socket.ip_address_list and Resolv and Node's os.networkInterfaces. Go's net.Interfaces works too. Other netlink sockets are refused.
+
 ## The visitor's address
 
 Requests reach the web process with the visitor's address as the last entry of X-Forwarded-For. The platform writes that header itself and removes anything the visitor sent, so the last entry is always the address the platform saw. This also holds on a fleet box, where the request came in through the hub.

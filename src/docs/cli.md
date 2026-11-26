@@ -1989,6 +1989,56 @@ With configured ingress, DNS guidance uses A records for both apexes and subdoma
 
 The root CLI help still says that `carlos domains placements` shows the addresses to point DNS at for each region. That help remains unchanged. The configured-ingress refusal limits that promise until regional placement readiness is available.
 
+#### carlos domains cert import
+
+A hostname whose DNS zone you don't control gets its certificate only after
+its DNS points here, so moving it means a few minutes of certificate errors.
+If you already hold a valid certificate and key for the name, import them
+first. Every edge then serves that certificate before you move DNS. Only
+platform operators can use this.
+
+```sh
+carlos domains cert import --app shop --cert fullchain.pem --key key.pem shop.example.com
+```
+
+The hostname must already be attached to the app. `--cert` is the
+certificate for the hostname followed by its intermediates, and `--key` is
+its unencrypted private key. Both files must be in PEM form. The console
+checks them before it stores anything:
+
+- the key is RSA with 2048 to 4096 bits, or ECDSA on P-256 or P-384, and
+  matches the certificate;
+- the certificate chain reaches a publicly trusted authority, the
+  certificate covers the hostname, and it is issued for use by web servers;
+- the certificate is valid now and expires more than seven days from now.
+
+Revocation is not checked. A certificate that covers the hostname only
+through a wildcard, such as `*.example.com`, requires `--allow-wildcard` and
+is still served for this one hostname only.
+
+Every box must run a release that supports imported certificates before you
+import. Then, before you move DNS, check that an edge other than the hub
+serves it:
+
+```sh
+curl -v --resolve shop.example.com:443:<edge address> https://shop.example.com/ -o /dev/null
+```
+
+Once DNS points here, the deployment orders its own certificate and serves
+it to every client that supports it. The imported certificate keeps serving
+the rest until it expires. To replace it, import the renewed one. Detaching
+the hostname removes its import within minutes.
+
+#### carlos domains cert remove
+
+```sh
+carlos domains cert remove --app shop shop.example.com
+```
+
+This stops serving the imported certificate. Edges usually stop serving it
+within seconds and, while storage is working, within 30 minutes. A storage
+outage can delay this. Detaching the hostname also removes its import within minutes.
+
 ### carlos features
 
 Sets or lists an app's own feature flags — switches the app defines, the
@@ -2347,7 +2397,9 @@ Authorization: Bearer <service token>
 
 `--revoke` stops every write credential the store has issued so far. It can take a few minutes to reach every upload, and you can mint a new one a minute or two later. Rotating the store's own credential with `carlos store rotate` doesn't affect write credentials.
 
-Write credentials need AWS S3. Your operator turns them on. This release returns `503` with `write_credentials_not_released`; wait for a later release before using write credentials.
+Write credentials need AWS S3. Your operator turns them on. While write credentials are off, the `--write` and `--revoke` forms and their API routes return `503` with one of two codes. `write_credentials_not_configured` means your deployment hasn't turned them on. `write_credentials_not_released` means the deployment has them turned on, but this console release cannot issue them yet. Until then, a service can use the store's own credential from the app's environment, as the [LiveKit guide](/docs/live-streams-bring-your-own-livekit#until-write-credentials-are-on) shows. That credential can read, list and delete every file in the store.
+
+`carlos store credential` needs CLI v0.43.8 or later. An older CLI doesn't know the command and prints the `carlos store` usage instead.
 
 #### carlos store uploads
 

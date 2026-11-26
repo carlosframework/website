@@ -10,8 +10,9 @@ You need:
 
 - A LiveKit Cloud project. Its settings page gives you the project URL, such as `wss://shop-a1b2c3.livekit.cloud`, and an API key and secret.
 - An object store for the app, made with `carlos store create --app shop`, on a deployment with media conversion turned on. The store must pass the check on the media conversion page. A store made with `carlos store create` and left alone passes.
-- A Service credential for media conversion, as in [the media conversion example](/docs/media-conversion#an-example). Use that credential to get a write credential for each recording.
-- Write credentials turned on for your deployment. Your operator does that. If they're off, `carlos store credential` says so. This release returns `503` with `write_credentials_not_released`; wait for a later release before using write credentials.
+- A Service credential for media conversion, as in [the media conversion example](/docs/media-conversion#an-example). Once write credentials are on, use that credential to get a write credential for each recording.
+- Write credentials turned on for your deployment. Your operator does that. While write credentials are off, the `--write` and `--revoke` forms and their API routes return `503` with one of two codes. `write_credentials_not_configured` means your deployment hasn't turned them on. `write_credentials_not_released` means the deployment has them turned on, but this console release cannot issue them yet. Until they're on, record with the store's own credential instead, as in [Until write credentials are on](#until-write-credentials-are-on).
+- CLI v0.43.8 or later for `carlos store credential`. An older CLI doesn't know the command and prints the `carlos store` usage instead.
 
 What the platform needs from your app:
 
@@ -85,7 +86,7 @@ To stop someone chatting, your server calls `UpdateParticipant` on LiveKit's roo
 
 ## Recording into your store
 
-Your server starts an Egress, LiveKit's recorder, and points it at the app's store. LiveKit gets a write credential, not the store's own credential. It can only upload files under one folder you name, and only until it expires.
+Your server starts an Egress, LiveKit's recorder, and points it at the app's store. Once write credentials are on, LiveKit gets a write credential, not the store's own credential. It can only upload files under one folder you name, and only until it expires. Until then, see [Until write credentials are on](#until-write-credentials-are-on).
 
 Ask the platform for a write credential just before each recording, with the Service credential:
 
@@ -213,9 +214,44 @@ info, err := egressClient().StartEgress(ctx, &livekit.StartEgressRequest{
 
 LiveKit Cloud stops a track recording at 12 hours, so that credential asks for 13. The longest a write credential can last is 24 hours.
 
-LiveKit uploads the file when the recording stops. It also writes a small JSON manifest beside the file. Set `DisableManifest: true` on the output if you don't want it.
+LiveKit uploads the file when the recording stops. It also writes a small JSON manifest beside the file in your store, named `<egress_id>.json`, and the webhook's `manifest_location` points to it. Your app can ignore it or delete it. Set `DisableManifest: true` on the output if you don't want it.
 
 Write credentials need AWS S3. If your app gets `CARLOS_STORE_ENDPOINT`, its store is on an S3-compatible server, and the platform can't issue one for it.
+
+### Until write credentials are on
+
+Until your deployment can issue write credentials, no `carlos` command gives you a credential to hand LiveKit. `carlos store status` shows only the store credential's key ID, and the secret is sealed in the app's config.
+
+Your app's server already has the store's own credential. The platform puts it in the app's environment as `CARLOS_STORE_ACCESS_KEY` and `CARLOS_STORE_SECRET_KEY`, beside `CARLOS_STORE_REGION` and `CARLOS_STORE_BUCKET`. If you made the store with `--env-prefix`, use that prefix in every variable name in the sample. Build LiveKit's `S3Upload` from them:
+
+```go
+import (
+	"errors"
+	"os"
+
+	"github.com/livekit/protocol/livekit"
+)
+
+// storeUpload gives LiveKit the store's own credential, from the app's
+// environment. Use it only until write credentials are on.
+func storeUpload() (*livekit.S3Upload, error) {
+	upload := &livekit.S3Upload{
+		AccessKey: os.Getenv("CARLOS_STORE_ACCESS_KEY"),
+		Secret:    os.Getenv("CARLOS_STORE_SECRET_KEY"),
+		Region:    os.Getenv("CARLOS_STORE_REGION"), // required: see Before you start
+		Bucket:    os.Getenv("CARLOS_STORE_BUCKET"),
+		// No Tagging. The store's credential can't tag either.
+	}
+	if upload.AccessKey == "" || upload.Secret == "" || upload.Bucket == "" {
+		return nil, errors.New("this app has no store credential in its environment")
+	}
+	return upload, nil
+}
+```
+
+In each recording example, call `storeUpload()` in place of `recordingUpload`. The rest of this page stays the same.
+
+This gives LiveKit a credential for the whole store. It can read, list, replace and delete every file in it, not only the recording's folder, and it doesn't expire. Whether LiveKit may hold that is your app's decision. If you finish a rotation with `carlos store rotate --finish` while a recording runs, its upload fails. Once write credentials are on, switch to `recordingUpload`, and LiveKit holds only a write credential for one folder.
 
 ## When the recording is done
 
@@ -286,7 +322,7 @@ If LiveKit can't upload the recording to your store, the recording isn't in your
 
 Without a backup copy, the webhook reports `EGRESS_FAILED`, and its error says the upload failed. With backup storage, it reports `EGRESS_COMPLETE` with `backup_storage_used` set instead.
 
-LiveKit Cloud can keep a copy of a recording whose upload failed in its own backup storage for 7 days. LiveKit turns this on for a project when you ask. When it happens, `manifest_location` in the webhook points to a manifest for retrieving it, and its file URLs are valid for 7 days. The recording is at LiveKit, not in your store.
+LiveKit Cloud can keep a copy of a recording whose upload failed in its own backup storage for 7 days. LiveKit turns this on for a project when you ask. When it happens, `manifest_location` in the webhook points to a manifest at LiveKit for retrieving it, not to one in your store, and its file URLs are valid for 7 days. The recording is at LiveKit, not in your store.
 
 ## Virus scanning
 
@@ -294,7 +330,7 @@ If your store has [virus scanning](/docs/cli#carlos-store-scan), a recording is 
 
 ## Privacy: a third party in the media path
 
-With this setup, LiveKit Cloud carries every stream. The video, the audio and the chat pass through LiveKit's servers, and LiveKit records the stream before it reaches your store. LiveKit also holds a write credential while a recording runs. It can only upload files to that recording's folder, until it expires. It can't read, list or delete anything in your store.
+With this setup, LiveKit Cloud carries every stream. The video, the audio and the chat pass through LiveKit's servers, and LiveKit records the stream before it reaches your store. LiveKit also holds a write credential while a recording runs. It can only upload files to that recording's folder, until it expires. It can't read, list or delete anything in your store. If you use the fallback above, LiveKit receives the store's own credential. It can read, list and delete every file in your store.
 
 The platform doesn't tell your users any of this. Whether and how to tell them is your app's decision. If you do, say it where people decide to stream or watch: near the start of your app's description, and on anything the stream produces, such as the recording's page.
 
