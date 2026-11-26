@@ -3,6 +3,379 @@
   "repo": "https://amadan.net/carlos/platform",
   "releases": [
     {
+      "tag": "v0.43.10",
+      "date": "2026-11-26",
+      "sha": "62d4828c80e3d146b447ef75f26ef7b5d7858d1a",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.43.10",
+      "notes": {
+        "form": "markdown",
+        "md": "#### What's new\n\n- **Download the data processing agreement as a PDF.** Any member of an account with a data processing agreement in force can download the accepted agreement as a PDF from its record page in account Settings when the console has a PDF engine configured. The PDF uses the operator's letterhead recorded with that acceptance. It contains the accepted agreement text, both parties, and an acceptance page with who accepted it, when, and the text's fingerprint. Without a PDF engine, there is no download button and members can print the record instead. If rendering or the PDF engine fails, the record page shows an error and still lets members print the record. When an owner accepts while the PDF engine is configured, the confirmation email also links to the PDF.\n- **Database replicas keep writes safe after an instance starts.** During each start, the replica now keeps protecting the writes it has not copied yet. Before this fix, a busy app could reuse the space holding those writes before the replica's next checkpoint, so the replica never got them. A restore or `carlos db pull` from that point could then fail its check. The change takes effect at the next start of each instance on a box running this release. It does not repair writes already missing from an existing replica.\n- **Import a certificate before you move a custom domain.** Platform operators can run `carlos domains cert import` for an attached custom domain before its DNS points here. The certificate must be a PEM chain of no more than five certificates, with the hostname's certificate first, and an unencrypted PEM private key that matches it. The key must be RSA with 2048 to 4096 bits or ECDSA on P-256 or P-384. The certificate must be publicly trusted, cover the hostname, be valid for web servers, be valid now, and expire more than seven days from now. A wildcard-only certificate needs `--allow-wildcard`. Revocation is not checked. Once DNS points here, the deployment orders its own certificate. The imported certificate can keep serving the rest until it expires. To replace it, import the renewed certificate. `carlos domains cert remove` stops serving the imported certificate, usually within seconds and within 30 minutes while storage is working. A storage outage can delay it. Detaching the hostname also removes the import within minutes.\n- **A site's own 404 page gets its page policy headers.** When a site's `_redirects` file serves its own 404 page, the matching `_headers` rule's `Content-Security-Policy`, `X-Content-Type-Options`, `Referrer-Policy` and `X-DNS-Prefetch-Control` now apply to that page too. Caching and cross-origin headers still do not.\n- **LiveKit recording guide.** The guide now shows how an app's server can give LiveKit the store's own credential for recordings while write credentials are unavailable. That credential does not expire and lets LiveKit read, list, replace and delete every file in the store. Switch to the write-credential example as soon as write credentials are available.\n\n#### For operators\n\n- **Roll order.** Roll your development deployment first, then production. Boxes first, then the console.\n- **Coming from v0.43.8 or older?** Read the notes for every release you skip. In particular, check `/etc` on every box before you roll it, as the v0.43.8 notes describe, and roll each box's binary and units together, as the v0.43.9 notes describe.\n- **Roll every box before you import a certificate.** An edge on an older release does not serve imported certificates. After an import, check with `curl --resolve` that an edge other than the hub serves it before you move DNS.\n- **The PDF engine.** Set `CARLOS_PDF_ADDR` to the console's PDF engine. No other setting is needed.\n- **The legal page.** On `/fleet/legal`, select the new **Remove the logo** checkbox when saving the letterhead. Earlier agreements keep the letterhead they were accepted with."
+      },
+      "changes": [
+        {
+          "sha": "62d4828c80e3d146b447ef75f26ef7b5d7858d1a",
+          "date": "2026-11-26",
+          "subject": "lease: keep litestream's WAL read lock alive past firstSync (#1443)",
+          "branch": "replica-read-lock-1443",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/replica-read-lock-1443",
+          "commits": 4,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1443,
+              "title": "Flagship replica stopped restoring (equipo-staging, 11-26)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "631f2258224906deac3cfaf7a940317485cb37cb",
+          "date": "2026-11-26",
+          "subject": "console: download the data processing agreement as a PDF",
+          "branch": "dpa-pdf",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/dpa-pdf",
+          "commits": 10,
+          "discussions": [
+            {
+              "id": 1396,
+              "title": "Data processing agreements in the console, and retention set by customers",
+              "state": "open"
+            },
+            {
+              "id": 1444,
+              "title": "S2 T0: mockup + copy (approved)",
+              "state": "open"
+            },
+            {
+              "id": 1445,
+              "title": "S2 T1: PDF HTML",
+              "state": "closed"
+            },
+            {
+              "id": 1446,
+              "title": "S2 T2: engine client",
+              "state": "closed"
+            },
+            {
+              "id": 1447,
+              "title": "S2 T3: route, button, email line",
+              "state": "closed"
+            },
+            {
+              "id": 1448,
+              "title": "S2 T4: gate, review, merge, witness",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "39073a9b05e6d2330c5cd4dc8570928c4dab33ab",
+          "date": "2026-11-26",
+          "subject": "docs: LiveKit guide fixes from the 2026-11-26 live test",
+          "branch": "docs-livekit-guide-fixes",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/docs-livekit-guide-fixes",
+          "commits": 2,
+          "docs": [
+            "/docs/cli#carlos-store-credential",
+            "/docs/live-streams-bring-your-own-livekit#before-you-start",
+            "/docs/live-streams-bring-your-own-livekit#recording-into-your-store",
+            "/docs/live-streams-bring-your-own-livekit#until-write-credentials-are-on",
+            "/docs/live-streams-bring-your-own-livekit#when-an-upload-fails"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "4bcb7e11a031917f542ce68d046f8952727f038d",
+          "date": "2026-11-26",
+          "subject": "edge: page-policy headers on a site's _redirects 404 page",
+          "branch": "static-error-page-headers",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/static-error-page-headers",
+          "commits": 2,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1323,
+              "title": "_headers: allow Content-Security-Policy, X-Content-Type-Options, Referrer-Policy, X-DNS-Prefetch-Control",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "cc6c77b230cd47561125566e6573ca31e0a0e9ff",
+          "date": "2026-11-26",
+          "subject": "store: console floor on every repoint; NotAction write policy",
+          "branch": "store-write-credential-phase2-fixes",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/store-write-credential-phase2-fixes",
+          "commits": 13,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "7a4e16e6c5c4d78cfc131fe26179334a58ac00e5",
+          "date": "2026-11-26",
+          "subject": "console: DPA follow-ups from the slice 1 reviews",
+          "branch": "dpa-followups",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/dpa-followups",
+          "commits": 11,
+          "discussions": [
+            {
+              "id": 1396,
+              "title": "Data processing agreements in the console, and retention set by customers",
+              "state": "open"
+            }
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "18d645645b64539b0e58a217549792db0c462621",
+          "date": "2026-11-26",
+          "subject": "domains: import certificates for custom domains before a DNS move (#1429)",
+          "branch": "cert-import-1429",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/cert-import-1429",
+          "commits": 37,
+          "discussions": [
+            {
+              "id": 1,
+              "title": "Flagship went fully dark on memory pressure (2026-08-28): one tenant can take the box, and nothing notices",
+              "state": "open"
+            },
+            {
+              "id": 8,
+              "title": "carlos adopt runs as root and carlos agent as carlos, on one SQLite registry — a fresh box can end up unstartable",
+              "state": "open"
+            },
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1429,
+              "title": "Import existing certificates for custom domains before a DNS move",
+              "state": "open"
+            },
+            {
+              "id": 1430,
+              "title": "Spec: Astra + Fable review (max 3 rounds each)",
+              "state": "closed"
+            },
+            {
+              "id": 1431,
+              "title": "Console door: import/remove, gates, validation, audit",
+              "state": "closed"
+            },
+            {
+              "id": 1432,
+              "title": "CLI: domains cert import/remove, docs/site/cli.md",
+              "state": "closed"
+            },
+            {
+              "id": 1433,
+              "title": "Edge: mirror +import, handshake layer, sweep retirement",
+              "state": "closed"
+            },
+            {
+              "id": 1434,
+              "title": "Host: edges file publishes imported aliases before pointing",
+              "state": "closed"
+            },
+            {
+              "id": 1435,
+              "title": "Luna copy pass on user-facing text",
+              "state": "closed"
+            },
+            {
+              "id": 1436,
+              "title": "Code review: Astra + Fable",
+              "state": "closed"
+            },
+            {
+              "id": 1437,
+              "title": "Census card on #280",
+              "state": "closed"
+            },
+            {
+              "id": 1438,
+              "title": "CI green, squash merge, post on #1429, tell Tito",
+              "state": "closed"
+            }
+          ],
+          "docs": [
+            "/docs/cli#carlos-domains-cert-import",
+            "/docs/cli#carlos-domains-cert-remove"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "v0.43.9",
+      "date": "2026-11-26",
+      "sha": "ce9fb958cd1f86b9a4cbc868080bff7534ec2c6b",
+      "published": true,
+      "notes_url": "https://github.com/carlosframework/releases/releases/tag/v0.43.9",
+      "notes": {
+        "form": "markdown",
+        "md": "#### What's new\n\n- **Rootfs apps can list their network interfaces.** Rootfs app processes can now open netlink route sockets, so `getifaddrs` works. Ruby's `Socket.ip_address_list` and `Resolv` (and so Excon and fog's S3 client), Node's `os.networkInterfaces` and Go's `net.Interfaces` stop failing with \"Address family not supported by protocol\". Every other kind of netlink socket is still refused, and the route socket is read-only: an app cannot change the box's links, addresses or routes. Apps you already shipped get this when their box runs this release, with no re-ship.\n\n#### For operators\n\n- **Roll order.** Roll your development deployment first, then production. Boxes first, then the console.\n- **Coming from v0.43.6 or v0.43.7?** Read the v0.43.7 and v0.43.8 notes too. In particular, check `/etc` on every box before you roll it, as the v0.43.8 notes describe.\n- **A rootfs box must pass four new probe lines.** The rootfs probe now checks that a netlink route socket works and that the other netlink protocols are refused. A box that fails them is not rootfs-ready.\n- **Compatibility and rollback.** The five tenant rootfs units pass `--netlink-scope`. A box running an older binary rejects that flag and refuses to start the tenant, rather than running it without the netlink filter. Roll the box's binary and units together, as `carlos system update` does. Rolling a box back to v0.43.8 removes this feature, but existing rootfs apps still run. You do not need to re-ship them."
+      },
+      "changes": [
+        {
+          "sha": "ce9fb958cd1f86b9a4cbc868080bff7534ec2c6b",
+          "date": "2026-11-25",
+          "subject": "changelog: regenerate through v0.43.8 (release step 11b)",
+          "branch": "changelog-v0.43.8",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/changelog-v0.43.8",
+          "commits": 1,
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        },
+        {
+          "sha": "408c387546dd59f959ea5bd3b055f3d6fc362db7",
+          "date": "2026-11-25",
+          "subject": "rootfs: NETLINK_ROUTE only, so getifaddrs works in rootfs apps (#1419)",
+          "branch": "rootfs-netlink-route-1419",
+          "branch_url": "https://amadan.net/carlos/platform/-/branch/rootfs-netlink-route-1419",
+          "commits": 6,
+          "discussions": [
+            {
+              "id": 280,
+              "title": "Root trusts service-writable hostguard and health records under /data (claim root paths)",
+              "state": "open"
+            },
+            {
+              "id": 1419,
+              "title": "Rootfs apps can't call getifaddrs: AF_NETLINK blocked (Ruby Resolv)",
+              "state": "open"
+            },
+            {
+              "id": 1420,
+              "title": "Design note + rough date on #1419",
+              "state": "closed"
+            },
+            {
+              "id": 1421,
+              "title": "Seccomp scope + units + probe lines (tests first)",
+              "state": "closed"
+            },
+            {
+              "id": 1422,
+              "title": "Census overlay",
+              "state": "closed"
+            },
+            {
+              "id": 1423,
+              "title": "Docs line (Luna pass)",
+              "state": "closed"
+            },
+            {
+              "id": 1424,
+              "title": "Astra review",
+              "state": "closed"
+            },
+            {
+              "id": 1425,
+              "title": "Fable review",
+              "state": "closed"
+            },
+            {
+              "id": 1426,
+              "title": "Census verdict on #280",
+              "state": "closed"
+            },
+            {
+              "id": 1427,
+              "title": "Merge on green CI; tell Tito and 8a3d302",
+              "state": "closed"
+            }
+          ],
+          "docs": [
+            "/docs/rootfs#network"
+          ],
+          "credit": [
+            {
+              "person": "Paul Campbell",
+              "agents": [
+                "claude"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v0.43.8",
       "date": "2026-11-25",
       "sha": "95539056f63dad93191407478c1ac951a9e6d6df",
@@ -48,8 +421,8 @@
             },
             {
               "id": 1401,
-              "title": "Slice 2: legal notices",
-              "state": "open"
+              "title": "Slice 2: PDF on headed paper (MERGED 631f225)",
+              "state": "closed"
             },
             {
               "id": 1402,
@@ -113,18 +486,18 @@
             },
             {
               "id": 1418,
-              "title": "S1 T7: merged 9553905; dev witness after the next dev roll",
-              "state": "open"
+              "title": "S1 T7: dev witness DONE by Paul 11-26 on v0.43.8",
+              "state": "closed"
             },
             {
               "id": 1439,
-              "title": "S1 follow-ups (six) on branch dpa-followups",
-              "state": "open"
+              "title": "S1 follow-ups MERGED 7a4e16e",
+              "state": "closed"
             },
             {
               "id": 1440,
-              "title": "Release v0.43.8 dev only (Paul's GO 11-25), then dev witness",
-              "state": "open"
+              "title": "v0.43.8 on dev (done); dev witness waits for Paul's browser (step-up)",
+              "state": "closed"
             }
           ],
           "docs": [
