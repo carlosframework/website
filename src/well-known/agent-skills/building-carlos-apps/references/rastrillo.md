@@ -39,7 +39,8 @@ serves which CARLOS choice (tenancy.md has the choices):
 | Server-blind apps | `crypto`, `keyring`, `vault`, `webauthn`, `passkey` | `docs/site/reference/` |
 | Work a person watches, or work on a clock | `jobs`, `background`, `carlos` (the platform's tick) | `skill/background.md` |
 | Files | `blobs` (the object store, never disk) | `skill/data.md` |
-| An API and agents acting for a person | `api`, `mcp`, `apitoken` | `skill/api.md`, `skill/mcp.md` |
+| An API and agents acting for a person | `api`, `mcp`, `apitoken`; `oauth` so Claude Code, Codex, claude.ai and ChatGPT connect by address (it needs sign-in; never put a secret in the MCP URL) | `skill/api.md`, `skill/mcp.md` |
+| Images, fonts or scripts from another host | `Options.CSPAllow` adds sources to the CSP; never replace `DefaultCSP` by hand | `skill/port.md`, `skill/scripts.md` |
 | Live regions | `live` | `skill/live.md` |
 | The platform contract | `Resolve` + `Serve`: activation, `/healthz`, `/api/version`, SIGTERM drain, security headers | SKILL.md "App shape" |
 
@@ -51,11 +52,13 @@ Client kits are separate modules, each with its own `SKILL.md`:
 
 ```sh
 go install amadan.net/rastrillo/rastrillo/cmd/rastrillo@latest
-rastrillo new --auth=magic myapp && cd myapp && go mod tidy && go test ./...
+rastrillo new --scaffold accounts myapp && cd myapp && go mod tidy && go test ./...
 make ci        # the gate
 ```
 
-Leave out `--auth=magic` only for an app nobody signs in to. The scaffold
+Leave out `--scaffold accounts` only for an app nobody signs in to. On Go 1.27,
+use Rastrillo v0.50.0 or later: older `rastrillo` binaries cannot compile
+the templates there. The scaffold
 compiles, passes and serves before you write a line, so never hand-write
 any of it; its `AGENTS.md` says where each piece is. Its `Makefile`'s
 **`ci` target is the gate**, on a Go release pinned by `GOTOOLCHAIN`:
@@ -99,7 +102,7 @@ Apps that already use manifests are covered by Rastrillo's
 
 1. Rastrillo's topic index in SKILL.md, one topic per piece of work.
 2. The chat tour, `tour/chat` in the repository (rastrillo.org/tour): a
-   signed-in app built step by step from `rastrillo new --auth=magic`.
+   signed-in app built step by step from `rastrillo new --scaffold accounts`.
 3. `examples/notes` in the repository (not in the published module):
    read it only for what the topics do not cover.
 
