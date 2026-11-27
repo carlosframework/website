@@ -41,6 +41,7 @@ serves which CARLOS choice (tenancy.md has the choices):
 | Files | `blobs` (the object store, never disk) | `skill/data.md` |
 | An API and agents acting for a person | `api`, `mcp`, `apitoken`; `oauth` so Claude Code, Codex, claude.ai and ChatGPT connect by address (it needs sign-in; never put a secret in the MCP URL) | `skill/api.md`, `skill/mcp.md` |
 | Images, fonts or scripts from another host | `Options.CSPAllow` adds sources to the CSP; never replace `DefaultCSP` by hand | `skill/port.md`, `skill/scripts.md` |
+| Tables of figures and charts (bar, line, sparkline), server-drawn SVG with no script | `ui` partials `data-table`, `chart-bar`, `chart-line`, `sparkline` over the `chart` package (v0.51.0+) | `skill/partials.md` |
 | Live regions | `live` | `skill/live.md` |
 | The platform contract | `Resolve` + `Serve`: activation, `/healthz`, `/api/version`, SIGTERM drain, security headers | SKILL.md "App shape" |
 
